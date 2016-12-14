@@ -1,0 +1,54 @@
+{
+  "name": "domoti-anp",
+  "version": "0.0.1",
+  "description": "El back de anp",
+  "engines": {
+    "node": "5.9.1"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "pretest": "npm run style",
+    "test": "./node_modules/.bin/mocha app/tests/dev*",
+    "style": " jshint index.js app/* public/index.js public/admin/*.js public/login/*.js public/info/*.json",
+    "script1": "node ./app/scripts/changeCoordinates.js"
+  },
+  "dependencies": {
+    "@google/cloud-debug": "^0.8.5",
+    "@google/cloud-trace": "^0.5.8",
+    "body-parser": "^1.15.2",
+    "connect-form2": "^0.1.2",
+    "cors": "^2.8.1",
+    "express": "4.13.3",
+    "geolib": "^2.0.22",
+    "get-image-urls": "^1.0.4",
+    "jquery": "^3.1.1",
+    "jsdom": "^9.8.3",
+    "method-override": "^2.3.6",
+    "mocha": "^3.1.2",
+    "morgan": "^1.7.0",
+    "mysql": "^2.11.1",
+    "request": "^2.79.0",
+    "jsonwebtoken": "7.2.1"
+  },
+  "jshintConfig": {
+    "esversion": 6,
+    "eqeqeq": true,
+    "freeze": true,
+    "futurehostile": true,
+    "node": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/domoti/anp-backend"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "jshint": "^2.9.4"
+  }
+}

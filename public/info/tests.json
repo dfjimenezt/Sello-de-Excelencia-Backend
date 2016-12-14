@@ -1,0 +1,13 @@
+[
+	{
+		"groupName": "Conexión de componentes:",
+		"list": [
+			{
+				"TYPE": "GET",
+				"url": "/api/test/anp1",
+				"params": {},
+				"description": "Testing 1"
+			}
+		]
+	}
+]

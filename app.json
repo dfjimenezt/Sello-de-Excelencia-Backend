@@ -1,0 +1,8 @@
+{
+  "name": "domoti-anp",
+  "description": "El back de anp",
+  "repository": "",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["node", "express", "static"],
+  "image": "heroku/nodejs"
+}

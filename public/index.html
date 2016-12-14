@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>ANP servicios</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="./bower_components/angular-bootstrap-lightbox/dist/angular-bootstrap-lightbox.css" type="text/css"/>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css" type="text/css"/>
+    <link rel="stylesheet" href="./bower_components/angular-loading-bar/build/loading-bar.css" type="text/css"/>
+    <link rel="stylesheet" href="./bower_components/sweetalert/dist/sweetalert.css" type="text/css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="./index.css" type="text/css"/>
+    <script src="https://use.fontawesome.com/299e699538.js"></script>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+  </head>
+  <body ng-app="anpApp" ng-cloak>
+    <div id="principal" class="row" ng-controller="apisController">
+
+      <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4" md-disable-scroll-target="principal">
+        <md-toolbar>
+          <h1 class="md-toolbar-tools">Mockups</h1>
+        </md-toolbar>
+        <md-content layout-margin="">
+          <div class="lol">
+            <p class="descripcion">Esta es la lista de mockups usados para el análisis de requerimientos. Para ver un documento mas estructurado por favor vea <a href="info/mockups.json">info/mockups.json</a>.</p>
+            <div ng-repeat="image in mockups" class="separados">
+              <a ng-click="openLightboxModal($index, mockups)">
+                  <figure>
+                    <img ng-src="{{image.url}}" width="100px" height="150px" class="bordeImagen">
+                    <figcaption>{{image.name}}</figcaption>
+                  </figure>
+              </a>
+            </div>
+          </div>
+        </md-content>
+      </md-sidenav>
+
+      <md-sidenav class="md-sidenav-right" md-component-id="right" md-whiteframe="4" md-disable-scroll-target="principal">
+        <md-toolbar>
+          <h1 class="md-toolbar-tools">Códigos de colores</h1>
+        </md-toolbar>
+        <md-content layout-margin="">
+          <table>
+            <tr><th><b>1) </b><span class="bluelink">La respuesta ya esta lista: <span></th><th><i class="fa fa-check green" aria-hidden="true"></i></th><tr>
+            <tr><th><b>2) </b><span class="bluelink"> Este servicio fue creado en vano: <span></th><th><i class="fa fa-check gray" aria-hidden="true"></i></th><tr>
+            <tr><th><b>3) </b><span class="bluelink"> La respuesta sera identica, pero la logica sera reformada: <span></th><th><i class="fa fa-check orange" aria-hidden="true"></i></th><tr>
+            <tr><th><b>4) </b> El servicio esta en desarrollo: </th><th><i class="fa fa-code" aria-hidden="true"></i></th><tr>
+            <tr><th><b>5) </b> <s>Falta información para crear el servicio: </s></th><th><i class="fa fa-close red" aria-hidden="true"></i></th><tr>
+          </table>
+        </md-content>
+      </md-sidenav>
+
+      <div class="col-sm-6 col-sm-offset-3 col-xs-12">
+        <center><h1>Exposición de servicios ANP</h1></center></br>
+        <p>Los servicios aquí expuestos fueron inferidos tras el análisis de los <a target="_blank" href="MockUps ANP.pdf">mockups</a> de la plataforma y un <a target="_blank" href="DiagramaDisenio.png">diagrama</a> provisto por el equipo de diseño.</p>
+        <md-button ng-click="toggleLeft(left)" class="md-raised">Mockups</md-button>
+        <md-button ng-click="toggleRight(right)" class="md-raised right">Códigos de colores</md-button>
+        <hr>
+        <div class="cuadrado">
+          <md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+            <md-nav-item md-nav-click="goto('page1')" name="page1">Api</md-nav-item>
+            <md-nav-item md-nav-click="goto('page2')" name="page2">Arquitectura</md-nav-item>
+            <md-nav-item md-nav-click="goto('page3')" name="page3">Testing</md-nav-item>
+            <md-nav-item md-nav-click="goto('page4')" name="page4">Assets</md-nav-item>
+          </md-nav-bar>
+
+          <div ng-show="currentNavItem==='page1'">
+            <p class="descripcion">A continuación se van a enumerar los servicios que provee el backend. Para ver un documento mas estructurado por favor vea <a href="info/services.json">info/services.json</a>.</p>
+            <ul class="numerada">
+              <div ng-repeat="group in services">
+                <h4>{{group.groupName}}</h4>
+                <li ng-repeat="service in group.list">
+                  <b>{{service.TYPE}}:</b>&nbsp;
+                  <a ng-if="service.status<=3" ng-click="getR(service.url, service.params)">{{service.description}}</a>
+                  <span ng-if="service.status>3">
+                    <s ng-if="service.status===5">{{service.description}}</s>
+                    <span ng-if="service.status!==5">{{service.description}}</span>
+                  </span>
+                  <i ng-if="service.status===1" class="fa fa-check green right" aria-hidden="true"></i>
+                  <i ng-if="service.status===2" class="fa fa-check gray right" aria-hidden="true"></i>
+                  <i ng-if="service.status===3" class="fa fa-check orange right" aria-hidden="true"></i>
+                  <i ng-if="service.status===4" class="fa fa-code right" aria-hidden="true"></i>
+                  <i ng-if="service.status===5" class="fa fa-close red right" aria-hidden="true"></i>
+                </li>
+                <hr>
+              </div>
+            </ul>
+          </div>
+
+          <div ng-show="currentNavItem==='page2'">
+            <center>
+              <h3>Modelo de datos.</h3>
+          		<img src="Modelo.png" class="lola">
+            </center>
+          </div>
+
+          <div ng-show="currentNavItem==='page3'">
+            <p class="descripcion">A continuación se muestran los test de la plataforma. Para ver un documento mas estructurado por favor vea <a href="info/tests.json">info/tests.json</a>.</p>
+            <ul class="numerada">
+              <div ng-repeat="group in tests">
+                <h4>{{group.groupName}}</h4>
+                <li ng-repeat="test in group.list">
+                  <b>{{test.TYPE}}:</b>&nbsp;<a ng-click="getR(test.url, {})">{{test.description}}</a>
+                </li>
+              </div>
+            </ul>
+          </div>
+
+          <div ng-show="currentNavItem==='page4'">
+              <p class="descripcion">A continuación se van a enumerar los assets de la plataforma y donde fueron almacenado. Para ver un documento mas estructurado por favor vea <a href="info/assets.json">info/assets.json</a>.</p>
+              <center>
+              <div ng-repeat="conjunto in assets">
+                <h4>{{conjunto.groupName}}</h4>
+                <div class="lol">
+                  <div ng-repeat="imagen in conjunto.list" class="separados">
+                    <a ng-click="openLightboxModal($index, conjunto.list)">
+                        <figure>
+                          <img ng-src="{{imagen.url}}" width="100px" height="150px" class="bordeImagen"/>
+                          <figcaption>{{imagen.name | limitTo: 10}}</figcaption>
+                        </figure>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </center>
+          </div>
+
+        </div>
+      </div>
+      <footer>
+        <md-toolbar class="md-scroll-shrink">
+          <div layout="row" layout-align="center center" flex>
+            <span class="left"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Juan Manuel González Garzon.</span>
+            <span class="right"><i class="fa fa-envelope" aria-hidden="true"></i>&nbsp;juan.gonzalez@domoti-sas.com</span>
+          </div>
+        </md-toolbar>
+      </footer>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="./bower_components/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <script src="./bower_components/angular-loading-bar/build/loading-bar.js"></script>
+    <script src="./bower_components/angular-bootstrap/ui-bootstrap.js"></script>
+    <script src="./bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="./bower_components/angular-bootstrap-lightbox/dist/angular-bootstrap-lightbox.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-messages.min.js"></script>
+    <!-- Angular Material Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script src="./index.js"></script>
+  </body>
+</html>
