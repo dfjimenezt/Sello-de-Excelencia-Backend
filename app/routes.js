@@ -60,7 +60,7 @@ var Routes = function (app) {
 				var params = req.params;
 				controller.post(params, req.headers.authorization, fields, files)
 					.then(function (data) { res.send(data); })
-					.catch(function (err) { res.send(err); });
+					.catch(function (err) { res.status(err.htmlCode).send(err); });
 			}
 			else res.sendStatus(404);
 		});
@@ -92,7 +92,7 @@ var Routes = function (app) {
 			else if (req.originalMethod === 'DELETE') method = controller.delete(params, req.body);
 
 			method.then(function (data) { res.send(data); })
-				.catch(function (err) { res.send(err); });
+				.catch(function (err) { res.status(err.htmlCode).res.send(err); });
 		}
 		else res.sendStatus(404);
 	};
