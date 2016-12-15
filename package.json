@@ -1,7 +1,7 @@
 {
-  "name": "domoti-anp",
+  "name": "domoti-stamp",
   "version": "0.0.1",
-  "description": "El back de anp",
+  "description": "El back del sello de excelencia",
   "engines": {
     "node": "5.9.1"
   },
@@ -40,7 +40,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://bitbucket.org/domoti/anp-backend"
+    "url": "https://bitbucket.org/domoti/stamp-backend"
   },
   "keywords": [
     "node",
