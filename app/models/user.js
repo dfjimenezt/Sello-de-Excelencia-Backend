@@ -15,7 +15,7 @@ var User = function () {
 		"LEFT JOIN permission p ON p.id = p_r.id_permission "+
 		"WHERE u.email = '"+email+"'";
 		return this.customQuery(query).then(function(data){
-			if(data.length == 0){
+			if(data.length === 0){
 				return null;
 			}
 			var	permissions=[];
@@ -27,7 +27,7 @@ var User = function () {
 			user.permissions = permissions;
 			return user;
 		});
-	}
+	};
 
 	return this;
 };

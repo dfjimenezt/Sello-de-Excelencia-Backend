@@ -30,19 +30,19 @@ var Auth = function () {
 			}
 			var user = jwt.decode(token,config.secret);
 			for(var i in user.permissions){
-				if(user.permissions[i] == permission){
+				if(user.permissions[i] === permission){
 					return true;
 				}
 			}
 			return false;
 		});
-	}
+	};
 	var login = function (token,body){
 		return user_model.getUser(body.email).then(function(user){
 			if(!user){//user doesnt exists
 				throw {error:Errors[12]};
 			}else{
-				if(user.password == body.password){
+				if(user.password === body.password){
 					delete user.password;
 					//encode
 					var now = new Date();
@@ -58,7 +58,7 @@ var Auth = function () {
 				}
 			}
 		});
-	}
+	};
 	var register = function(token,body){
 		return user_model.getByParams({email:body.email}).then(function(user){
 			if(user.length>0){//user exists then cant be registered again
@@ -73,8 +73,8 @@ var Auth = function () {
 					verified:false,
 					password:body.password,
 					tmp_pwd:true,
-					terms:body.terms == "true",
-					newsletter:body.newsletter == "true"
+					terms:body.terms === "true",
+					newsletter:body.newsletter === "true"
 				}).then(function(user){
 					if(user){ // if the user was created sucessfully
 						user_role_model.create({ //create the role assignment
@@ -86,21 +86,21 @@ var Auth = function () {
 					}else{ //if there was an error on creating the user
 						throw {error:Errors[7]};
 					}
-				})
+				});
 			}
-		})
-	}
+		});
+	};
 
 	var recover = function(token,body){
 		return user_model.getByParams({email:body.email}).then(function(user){
-			if(user.length == 0){ //if the user doesnt exists then send error
+			if(user.length === 0){ //if the user doesnt exists then send error
 				return {error:Errors[12]};
 			}else{ //send email and confirm
 				//TODO: //send email and reset password
 				return {error:Errors[0]}; 
 			}
-		})
-	}
+		});
+	};
 
 	postMap.set("login", login);
 	postMap.set("register", register);

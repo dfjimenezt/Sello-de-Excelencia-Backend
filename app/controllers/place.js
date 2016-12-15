@@ -25,7 +25,7 @@ var Place = function(){
 		}else{
 			return city.getAll();
 		}
-	}
+	};
 
 	/**
 	 * Regions
@@ -36,7 +36,7 @@ var Place = function(){
 		}else{
 			return region.getAll();
 		}
-	}
+	};
 
 	/**
 	 * Institutions
@@ -47,7 +47,7 @@ var Place = function(){
 		}else{
 			return institution.getAll();
 		}
-	}
+	};
 	getMap.set("city",cities);
 	getMap.set("region",regions);
 	getMap.set("institution",institutions);
@@ -67,8 +67,7 @@ var Place = function(){
 				return {error:Errors[7]};
 			});
 		});
-		
-	}
+	};
 
 	postMap.set("institution",create_institution);
 	

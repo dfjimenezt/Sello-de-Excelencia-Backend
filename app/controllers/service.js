@@ -19,9 +19,9 @@ var Service = function(){
 	 */
 	var hall_fame = function(){
 		return service.getByParams({status:4}).then(function(services){
-			return services.sort(function(a,b){return b.rate - a.rate});
+			return services.sort(function(a,b){return b.rate - a.rate;});
 		});
-	}
+	};
 
 	getMap.set("hall_fame",hall_fame);
 
@@ -56,7 +56,7 @@ var Service = function(){
 				}
 			});
 		});
-	}
+	};
 
 	postMap.set("postulate",postulate);
 	
