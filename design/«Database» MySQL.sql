@@ -457,7 +457,7 @@ CREATE TABLE `user_answer`
 	`datetime` TIMESTAMP NOT NULL,
 	`id_media` INT 	 NULL,
 	`text` TEXT 	 NULL,
-	`timestamp` TIMESTAMP NOT NULL,
+	`timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
 	CONSTRAINT `PK_user_answer` PRIMARY KEY (`id` ASC)
 )
 COMMENT='Guarda la respuesta de un usuario a una pregunta.  Puede ser de opción múltiple, selección única, o múltiple pregunta abierta, y contener un adjunto.'
@@ -469,7 +469,7 @@ CREATE TABLE `user_answer_evaluation`
 	`id_user_answer` INT 	 NULL,
 	`rate` TINYINT 	 NULL,
 	`id_user` INT 	 NULL,
-	`timestamp` TIMESTAMP NOT NULL
+	`timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP()
 )
 COMMENT='Evaluación de una respuesta'
 

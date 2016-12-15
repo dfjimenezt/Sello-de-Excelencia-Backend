@@ -1,6 +1,5 @@
 service: backend
 runtime: nodejs
-vm: true
 env: flex
 instance_class: B1
 manual_scaling:
