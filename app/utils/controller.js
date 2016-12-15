@@ -17,13 +17,13 @@ var Controller = function (getMap, postMap, putMap, deleteMap) {
 		else return rta(queryParams);
 	};
 
-	this.post = function (params, body, files) {
+	this.post = function (params, authorization, body, files) {
 		if (!postMap) return utiles.informError(1);
 		var option = params[0].split("/")[0];
 
 		var rta = postMap.get(option);
 		if (!rta) return utiles.informError(5);
-		else return rta(body);
+		else return rta(authorization,body);
 	};
 
 	this.put = function (params, body) {

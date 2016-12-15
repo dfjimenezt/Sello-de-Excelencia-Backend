@@ -12,6 +12,7 @@ var Routes = function (app) {
 	var controllers = [
 		{ type: "test", file: "./controllers/tests.js" },
 		{ type: "service", file: "./controllers/service.js" },
+		{ type: "place", file: "./controllers/place.js" },
 		{ type: "auth", file: "./controllers/auth.js" }
 	];
 
@@ -57,7 +58,7 @@ var Routes = function (app) {
 
 			if (controller) {
 				var params = req.params;
-				controller.post(params, fields, files)
+				controller.post(params, req.headers.authorization, fields, files)
 					.then(function (data) { res.send(data); })
 					.catch(function (err) { res.send(err); });
 			}
