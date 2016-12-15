@@ -1,6 +1,6 @@
 {
-  "name": "domoti-anp",
-  "description": "El back de anp",
+  "name": "domoti-stamp",
+  "description": "El back de sello de excelencia",
   "repository": "",
   "logo": "http://node-js-sample.herokuapp.com/node.svg",
   "keywords": ["node", "express", "static"],

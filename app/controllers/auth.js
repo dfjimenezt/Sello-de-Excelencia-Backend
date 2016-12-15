@@ -1,21 +1,23 @@
 var BaseController = require('../utils/controller.js');
 var util = require('util');
 var utiles = require('../utils/utiles.js');
+
 var user = require('../models/user.js');
 var user_role = require("../models/user_role.js");
+var permission_role = require("../models/permission_role.js");
 var jwt = require('jsonwebtoken');
 var config = require("../../config.json");
 
 var Auth = function () {
 	var user_model = new user();
 	var user_role_model = new user_role();
-	var permission_role = new permission_role();
+	var permission_role_model = new permission_role();
 
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map();
 
 	var login = function (body){
-		return user_model.getByParams({email:body.email}).then(function(user){
+		return user_model.getUser({email:body.email}).then(function(user){
 			if(!user){//user doesnt exists
 				throw {error:Errors[12]}
 			}else{
@@ -52,7 +54,7 @@ var Auth = function () {
 						user.role = body.role; // add the role manually reduce time
 						return user; // return user
 					}else{ //if there was an error on creating the user
-						throw {error:Errors[7]}
+						throw {error:Errors[7]};
 					}
 				})
 			}
@@ -60,7 +62,7 @@ var Auth = function () {
 	}
 
 	var recover = function(body){
-		user_model.getUserByEmail(body.email).then(function(user){
+		user_model.getByParams({email:body.email}).then(function(user){
 			if(!user){ //if the user doesnt exists then send error
 				return {error:Errors[12]};
 			}else{ //send email and confirm
