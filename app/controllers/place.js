@@ -1,12 +1,15 @@
 var BaseController = require('../utils/controller.js');
 var util = require('util');
 var utiles = require('../utils/utiles.js');
+var Errors = require('../utils/errors.js');
+var auth_ctrl = require("./auth.js");
 
 var city_model = require("../models/city.js");
 var region_model = require("../models/region.js");
 var institution_model = require("../models/institution.js");
 
 var Place = function(){
+	var auth = new auth_ctrl();
 	var city = new city_model();
 	var region = new region_model();
 	var institution = new institution_model();
@@ -52,8 +55,19 @@ var Place = function(){
 	/**
 	 * Create Institution
 	 */
-	var create_institution = function(body){
-		return institution.create(body);
+	var create_institution = function(token,body){
+		return auth.authorize(token,"platform").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors[4]};
+			}
+			return institution.create(body).then(function(i){
+				if(i.insertId){
+					return {error:Errors[0]};
+				}
+				return {error:Errors[7]};
+			});
+		});
+		
 	}
 
 	postMap.set("institution",create_institution);
