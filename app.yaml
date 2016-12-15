@@ -1,4 +1,4 @@
-service: preview
+service: backend
 runtime: nodejs
 vm: true
 instance_class: B1
