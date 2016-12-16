@@ -69,7 +69,7 @@ var Forum = function(){
 	var vote_message = function(token,body){
 		return auth.authorize(token,"platform").then(function(authorization){
 			return message_votes.getByParams({id_message:body.id_message,id_user:body.id_user}).then(function(votes){
-				if(votes.length == 0){
+				if(votes.length === 0){
 					return message_votes.create({
 						id_message:body.id_message,id_user:body.id_user
 					});

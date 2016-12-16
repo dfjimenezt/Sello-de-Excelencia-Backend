@@ -9,7 +9,7 @@ var category_model = require("../models/region.js");
 var form_model = require("../models/institution.js");
 var form_question = require("../models/form_question.js");
 var type_model = require("../models/type.js");
-var question_answer = require("../models/question_answer.js");
+var question_answer_model = require("../models/question_answer.js");
 var anwser_model = require("../models/answer.js");
 var user_answer_model = require("../models/user_answer.js");
 var user_answer_evaluation_model = require("../models/user_answer_evaluation");
@@ -22,7 +22,7 @@ var Questions = function(){
 	var form = new form_model();
 	var form_question = new form_question();
 	var type = new type_model();
-	var question = new question_model();
+	var question_answer = new question_answer_model();
 	var answer = new answer_model();
 	var user_answer = new user_answer_model();
 	var user_answer_evaluation = new user_answer_evaluation_model();
@@ -37,7 +37,7 @@ var Questions = function(){
 		if(queryParams.id){
 			return form.getByUid(queryParams.id);
 		}else if(queryParams.category){
-			return form.getByParams({id_category:queryParams.category})
+			return form.getByParams({id_category:queryParams.category});
 		}else{
 			return form.getAll();
 		}
@@ -127,7 +127,8 @@ var Questions = function(){
 			form_question.create({
 				id_form:body.id_form,
 				id_question:id_question
-			})
+			});
+			return {error:Errors[0]};
 		});
 	};
 	/**
