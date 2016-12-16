@@ -35,8 +35,12 @@ var Service = function(){
 			}
 			return service.create({
 				name:body.name,
+				address:body.address,
+				email:body.email,
+				second_email:body.second_email,
+				head_sector: body.head_sector === "true",
 				id_institution:parseInt(body.id_institution),
-				id_user:parseInt(body.id_user),
+				id_user_creator:parseInt(body.id_user_creator),
 				hash:utiles.createUid(),
 				rate:0,
 				id_category:parseInt(body.id_category)

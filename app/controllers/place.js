@@ -69,7 +69,56 @@ var Place = function(){
 		});
 	};
 
+	/**
+	 * Bind a user to an institution
+	 */
+	var bind_user_institution = function(token,body){
+		return auth.authorize(token,"platform").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors[4]};
+			}
+			return institution_user.create({
+				id_institution: parseInt(body.id_institution),
+				id_user : parseInt(body.id_user),
+				role: body.role,
+				admin: body.admin === "true"
+			}).then(function(i_u){
+				if(i_u.insertId){
+					return {error:Errors[0]};
+				}else{
+					return {error:Errors[7]};
+				}
+			});
+		});
+	};
+
+	/**
+	 * Import data from divipola file
+	 * Divipola is the official code for cities and regions in Colombia
+	 * requires admin access
+	 */
+	var import_divipola = function(token,body,files){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors[4]};
+			}
+			var xlsx = require("xlsx");
+			//TODO: check file 
+			var workbook = XLSX.readFile(files.divipola.name);
+			var sheet_name_list = workbook.SheetNames;
+			sheet_name_list.forEach(function(y) { /* iterate through sheets */
+				var worksheet = workbook.Sheets[y];
+				for (z in worksheet) { /* all keys that do not begin with "!" correspond to cell addresses */
+					if(z[0] === '!') continue;
+					console.log(y + "!" + z + "=" + JSON.stringify(worksheet[z].v));
+				};
+			});
+		});
+	};
+
 	postMap.set("institution",create_institution);
+	postMap.set("bind_user_institution",bind_user_institution);
+	postMap.set("import_divipola",import_divipola);
 	
 	var params = [getMap, postMap, putMap, deleteMap];
 	BaseController.apply(this, params);
