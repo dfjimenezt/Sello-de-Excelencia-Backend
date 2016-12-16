@@ -23,6 +23,18 @@ var Service = function(){
 		});
 	};
 
+	/**
+	 * Get services by @param id
+	 */
+	var get_services = function(queryParams){
+		if(queryParams.id){
+			return service.getByUid(queryParams.id);
+		}else{
+			return service.getAll();
+		}
+	};
+	
+	getMap.set("get_services",get_services);
 	getMap.set("hall_fame",hall_fame);
 
 	/**

@@ -31,7 +31,7 @@ var Auth = function () {
 			var user = jwt.decode(token,config.secret);
 			for(var i in user.permissions){
 				if(user.permissions[i] === permission){
-					return true;
+					return user;
 				}
 			}
 			return false;
