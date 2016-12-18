@@ -1,7 +1,7 @@
 {
-  "name": "expositor",
+  "name": "backend",
   "authors": [
-    "Juan Manuel <jmgonzalezgarzon@gmail.com>"
+    "Daniel <daniel@domoti.rocks>"
   ],
   "description": "Expone los servicios que se crean en back",
   "main": "app/index.html",
@@ -15,11 +15,9 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "^1.5.8",
-    "sweetalert": "^1.1.3",
+    "angular": "^1.6.0",
     "angular-loading-bar": "^0.9.0",
-    "angular-bootstrap-lightbox": "^0.12.0",
-    "angular-bootstrap": "^2.2.0",
+    "angular-material":"^1.1.1",
     "angular-material-data-table": "^0.10.9"
   }
 }

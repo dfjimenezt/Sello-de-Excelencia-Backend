@@ -1,4 +1,4 @@
-var app = angular.module('anpApp', ['angular-loading-bar', 'ngMaterial', 'md.data.table']);
+var app = angular.module('dmt-back', ['angular-loading-bar', 'ngMaterial']);
 
 app.config(function($httpProvider, $mdThemingProvider) {
     $httpProvider.defaults.useXDomain = true;
@@ -8,8 +8,8 @@ app.config(function($httpProvider, $mdThemingProvider) {
     $httpProvider.defaults.headers.common['Content-Type'] = 'application/json';
 
     $mdThemingProvider.theme('default')
-        .primaryPalette('green')
-        .accentPalette('orange');
+        .primaryPalette('blue')
+        .accentPalette('grey');
 });
 
 app.controller('loginController', function($scope, $httpParamSerializerJQLike, $http) {
@@ -34,7 +34,7 @@ app.controller('loginController', function($scope, $httpParamSerializerJQLike, $
     };
 
     $scope.login = function() {
-        request("../auth/login", "POST", $scope.user).then(function(answer) {
+        request("../api/auth/login", "POST", $scope.user).then(function(answer) {
             console.log(answer);
         }).catch(function(problem) {
             console.log(problem);
