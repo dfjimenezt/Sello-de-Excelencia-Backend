@@ -14,7 +14,7 @@
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
   </head>
-  <body ng-app="dmt-back" ng-cloak>
+  <body ng-app="dmt-back" ng-cloak ng-controller="backCtrl">
     <md-toolbar>
     Sello de Excelencia
     </md-toolbar>
@@ -23,19 +23,26 @@
     Sello de Excelencia
     </md-toolbar>
       <md-content layout-padding>
-        
-        <form>
-          <md-input-container>
-            <label for="testInput">Test input</label>
-            <input type="text" id="testInput"
-                   ng-model="data" md-autofocus>
-          </md-input-container>
-        </form>
-        <md-button ng-click="close()" class="md-primary">
-          Close Sidenav
-        </md-button>
+        <div ng-repeat="x in leftMenu" layout="column">
+          <b>{{x.section}}</b>
+          <md-button ng-repeat="i in x.items" class="md-primary" ng-click="selectItem(i);">
+            {{i.item}}
+          </md-button>
+        </div>
       </md-content>
     </md-sidenav>
+    <md-content>
+      <form ng-submit="saveData(currentItem.table);">
+        <md-input-container ng-repeat="f in currentItem.fields">
+          <input type="number" ng-if="f.type=='int'" value="{{f.name}}" ng-disabled="!f.disabled"/>
+          <input type="text" ng-if="f.type=='string'" value="{{f.name}}" ng-disabled="!f.disabled"/>
+          <input type="file" ng-if="f.type=='file'" value="{{f.name}}" ng-disabled="!f.disabled"/>
+          <select ng-if="f.type=='link'" ng-disabled="!f.disabled">
+            <option> - </option>
+          </select>
+        </md-input-container>
+      </form>
+    </md-content>
 
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
