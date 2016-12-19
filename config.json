@@ -23,9 +23,5 @@
 		}
 	},
 	"secret": "1234567890",
-	"gcloud": {
-		"GCLOUD_PROJECT": "domoti-suscripcion",
-		"CLOUD_BUCKET": "domoti-suscripcion.appspot.com"
-	},
 	"autorizedHosts": ["http://localhost:3000","https://anp-domoti.herokuapp.com/"]
 }

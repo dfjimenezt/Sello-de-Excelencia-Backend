@@ -20,7 +20,7 @@ var Place = function(){
 	 * Cities
 	 */
 	var cities = function(params){
-		if(params){
+		if(params.id){
 			return city.getByUid(params);
 		}else{
 			return city.getAll();
@@ -31,7 +31,7 @@ var Place = function(){
 	 * Regions
 	 */
 	var regions = function(params){
-		if(params){
+		if(params.id){
 			return region.getByUid(params);
 		}else{
 			return region.getAll();
