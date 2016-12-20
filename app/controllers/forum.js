@@ -14,6 +14,8 @@ var Forum = function(){
 	var message = new message_model();
 	var message_media = new message_media_model();
 	var message_votes = new message_votes_model();
+	//---------------------------------------------------------------
+	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map();
 
 	/**
 	 * Returns a topic by @param id, or by @param topic parent or just get all.
@@ -41,8 +43,8 @@ var Forum = function(){
 		}
 	};
 
-	getMap.set("get_messages",get_messages);
-	getMap.set("get_topics", get_topics);
+	getMap.set("message",get_messages);
+	getMap.set("topic", get_topics);
 	/**
 	 * Creates a message in the topic @param id_topic
 	 */
@@ -68,6 +70,9 @@ var Forum = function(){
 	 */
 	var vote_message = function(token,body){
 		return auth.authorize(token,"platform").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors[3]};
+			}
 			return message_votes.getByParams({id_message:body.id_message,id_user:body.id_user}).then(function(votes){
 				if(votes.length === 0){
 					return message_votes.create({
@@ -81,8 +86,26 @@ var Forum = function(){
 			});
 		});
 	};
+	/**
+	 * Create a topic
+	 */
+	var create_topic = function(token,body){
+		return auth.authorize("platform").then(function(authorization){
+			if(!authorization){
+				//throw {error:Errors[3]};
+			}
+			return topic.create(body).then(function(t){
+				if(t.insertId){
+					return {error:Errors[0]};
+				}else{
+					throw {error:Errors[4]};
+				}
+			});
+		});
+	};
 	postMap.set("vote_message",vote_message);
-	postMap.set("create_message",create_message);
+	postMap.set("message",create_message);
+	postMap.set("topic",create_topic);
 	
 	var params = [getMap, postMap, putMap, deleteMap];
 	BaseController.apply(this, params);

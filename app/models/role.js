@@ -1,12 +1,12 @@
 var BaseModel = require('../utils/model.js');
 var util = require('util');
 
-var Message = function () {
-	var params = ["message", "mysql"];
+var Role = function () {
+	var params = ["role", "mysql"];
 	BaseModel.apply(this, params);
 
 	return this;
 };
-util.inherits(Message, BaseModel);
+util.inherits(Role, BaseModel);
 
-module.exports = Message;
+module.exports = Role;

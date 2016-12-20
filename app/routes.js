@@ -13,6 +13,8 @@ var Routes = function (app) {
 		{ type: "test", file: "./controllers/tests.js" },
 		{ type: "service", file: "./controllers/service.js" },
 		{ type: "place", file: "./controllers/place.js" },
+		{ type: "configuration", file: "./controllers/configuration.js" },
+		{ type: "forum", file: "./controllers/forum.js" },
 		{ type: "auth", file: "./controllers/auth.js" }
 	];
 

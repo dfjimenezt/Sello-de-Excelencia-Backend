@@ -42,7 +42,7 @@ var Place = function(){
 	 * Institutions
 	 */
 	var institutions = function(params){
-		if(params){
+		if(params.id){
 			return institution.getByUid(params);
 		}else{
 			return institution.getAll();
@@ -58,7 +58,7 @@ var Place = function(){
 	var create_institution = function(token,body){
 		return auth.authorize(token,"platform").then(function(authorization){
 			if(!authorization){
-				throw {error:Errors[4]};
+				throw {error:Errors[3]};
 			}
 			return institution.create(body).then(function(i){
 				if(i.insertId){
@@ -75,7 +75,7 @@ var Place = function(){
 	var bind_user_institution = function(token,body){
 		return auth.authorize(token,"platform").then(function(authorization){
 			if(!authorization){
-				throw {error:Errors[4]};
+				throw {error:Errors[3]};
 			}
 			return institution_user.create({
 				id_institution: parseInt(body.id_institution),
@@ -100,7 +100,7 @@ var Place = function(){
 	var import_divipola = function(token,body,files){
 		return auth.authorize(token,"admin").then(function(authorization){
 			if(!authorization){
-				throw {error:Errors[4]};
+				throw {error:Errors[3]};
 			}
 			var xlsx = require("xlsx");
 			//TODO: check file 
@@ -116,6 +116,42 @@ var Place = function(){
 		});
 	};
 
+	/**
+	 * Create city
+	 */
+	var create_city = function(token,body){
+		return auth.authorize("admin").then(function(authorization){
+			if(!authorization){
+				//throw {error:Errors[3]};
+			}
+			return city.create(body).then(function(c){
+				if(c.insertId){
+					return {error:Errors[0]};
+				}else{
+					return {error:Errors[7]};
+				}
+			});
+		});
+	};
+	/**
+	 * Create region
+	 */
+	var create_region = function(token,body){
+		return auth.authorize("admin").then(function(authorization){
+			if(!authorization){
+				//throw {error:Errors[3]};
+			}
+			return region.create(body).then(function(r){
+				if(r.insertId){
+					return {error:Errors[0]};
+				}else{
+					return {error:Errors[7]};
+				}
+			});
+		});
+	};
+	postMap.set("city",create_city);
+	postMap.set("region",create_region);
 	postMap.set("institution",create_institution);
 	postMap.set("bind_user_institution",bind_user_institution);
 	postMap.set("import_divipola",import_divipola);
