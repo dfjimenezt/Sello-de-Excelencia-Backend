@@ -298,17 +298,19 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 	ctrl.data = {};
 	ctrl.options = {};
 	ctrl.currentPage = page;
-	function addOptions(results){
-		ctrl.options[f.name]=results.data; 
+	function addOptions(item,index){
+		$http.get(page.endpoint+item.table).then(function(results){
+			ctrl.options[item.name]=results.data;
+		});
 	}
+	var opts = [];
 	for(var i in this.currentPage.fields){
 		var f = this.currentPage.fields[i];
 		if(f.type === 'link'){
-			$http.get(page.endpoint+f.table).then(addOptions);
+			opts.push(f);
 		}
 	}
-
-	
+	opts.forEach(addOptions);
 
   this.cancel = $mdDialog.cancel;
   
@@ -346,7 +348,7 @@ angular.module('dmt-back').controller('deleteController', function ($mdDialog,$s
   
   this.cancel = $mdDialog.cancel;
   
-  function removeItems(dessert, index) {
+  function removeItems(item, index) {
     var promise = $http.delete();
     promise.then(function () {
       items.splice(index, 1);
