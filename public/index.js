@@ -176,6 +176,31 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 							disabled:"false"
 						},
 						{
+							name:"address",
+							type:"string",
+							disabled:"false"
+						},
+						{
+							name:"email",
+							type:"string",
+							disabled:"false"
+						},
+						{
+							name:"second_email",
+							type:"string",
+							disabled:"false"
+						},
+						{
+							name:"phone",
+							type:"string",
+							disabled:"false"
+						},
+						{
+							name:"head_sector",
+							type:"boolean",
+							disabled:"false"
+						},
+						{
 							name:"id_city",
 							type:"link",
 							disabled:"false",
@@ -184,13 +209,18 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 							foreign_name:"name"
 						},
 						{
-							name:"id_user",
+							name:"id_user_creator",
 							type:"link",
 							disabled:"false",
 							endpoint:"/api/configuration/",
 							table:"user",
 							foreign_key:"id",
 							foreign_name:"name"
+						},
+						{
+							name:"timestamp",
+							type:"string",
+							disabled:"true"
 						}
 					]
 				},
