@@ -8,7 +8,7 @@ var user_model = require("../models/user.js");
 var role_model = require("../models/role.js");
 var user_role_model = require("../models/user_role.js");
 var permission_model = require("../models/permission.js");
-var permission_role_model = require("../models/institution.js");
+var permission_role_model = require("../models/permission_role.js");
 
 var Configuration = function(){
 	var auth = new auth_ctrl();

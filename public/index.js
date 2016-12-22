@@ -204,6 +204,102 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 			]
 		},
 		{
+			section:"Sello de Excelencia",
+			pages:[
+				{
+					name:"Servicios",
+					table:"service",
+					endpoint:"/api/service/",
+					fields:[
+						{
+							name:"id",
+							type:"int",
+							disabled:"true"
+						},
+						{
+							name:"name",
+							type:"string",
+							disabled:"false"
+						},
+						{
+							name:"address",
+							type:"string",
+							disabled:"false"
+						},
+						{
+							name:"email",
+							type:"email",
+							disabled:"false"
+						},
+						{
+							name:"second_email",
+							type:"email",
+							disabled:"false"
+						},
+						{
+							name:"second_email",
+							type:"email",
+							disabled:"false"
+						},
+						{
+							name:"id_institution",
+							type:"link",
+							disabled:"false",
+							table:"institution",
+							endpoint:"/api/place/",
+							foreign_key:"id",
+							foreign_name:"name"
+						},
+						{
+							name:"id_user_creator",
+							type:"link",
+							disabled:"false",
+							table:"user",
+							endpoint:"/api/configuration/",
+							foreign_key:"id",
+							foreign_name:"name"
+						},
+						{
+							name:"hash",
+							type:"string",
+							disabled:"false"
+						},
+						{
+							name:"rate",
+							type:"int",
+							disabled:"true"
+						},
+						{
+							name:"id_category",
+							type:"link",
+							disabled:"false",
+							table:"category",
+							endpoint:"/api/service/",
+							foreign_key:"id",
+							foreign_name:"name"
+						}
+					]
+				},
+				{
+					name:"Categorías",
+					table:"category",
+					endpoint:"/api/service/",
+					fields:[
+						{
+							name:"id",
+							type:"int",
+							disabled:"true"
+						},
+						{
+							name:"name",
+							type:"string",
+							disabled:"false"
+						}
+					]
+				}
+			]
+		},
+		{
 			section:"Foro",
 			pages:[{
 				name:"Temas",
@@ -293,13 +389,16 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 });
 
 angular.module('dmt-back').controller('addItemController', function ($mdDialog, page, $http) {
-  
-	var ctrl = this;
+  var ctrl = this;
 	ctrl.data = {};
 	ctrl.options = {};
 	ctrl.currentPage = page;
 	function addOptions(item,index){
-		$http.get(page.endpoint+item.table).then(function(results){
+		var base = item.endpoint;
+		if(!base){
+			base = ctrl.currentPage.endpoint;
+		} 
+		$http.get(base+item.table).then(function(results){
 			ctrl.options[item.name]=results.data;
 		});
 	}
@@ -323,10 +422,7 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
   this.addItem = function () {
     ctrl.form.$setSubmitted();
     if(ctrl.form.$valid) {
-			var base = f.endpoint;
-			if(!base){
-				base = ctrl.currentPage.endpoint;
-			} 
+			var base = ctrl.currentPage.endpoint;
 			$http({
 				method:"POST",
 				url:base+ctrl.currentPage.table,

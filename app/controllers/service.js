@@ -6,11 +6,15 @@ var auth_ctrl = require("./auth.js");
 
 var service_model = require("../models/service.js");
 var service_status_model = require("../models/service_status.js");
+var category_model = require("../models/category.js");
 
 var Service = function(){
+	var auth = new auth_ctrl();
+
 	var service = new service_model();
 	var service_status = new service_status_model();
-	var auth = new auth_ctrl();
+	var category = new category_model();
+
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map();
 
@@ -34,7 +38,19 @@ var Service = function(){
 		}
 	};
 	
-	getMap.set("get_services",get_services);
+	/**
+	 * Get categories by @param id
+	 */
+	var get_categories = function(queryParams){
+		if(queryParams.id){
+			return category.getByUid(queryParams.id);
+		}else{
+			return category.getAll();
+		}
+	};
+	getMap.set("service",get_services);
+	getMap.set("category",get_categories);
+
 	getMap.set("hall_fame",hall_fame);
 
 	/**
@@ -74,7 +90,23 @@ var Service = function(){
 		});
 	};
 
-	postMap.set("postulate",postulate);
+	var create_category = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				//throw {error:Errors[3]};
+			}
+			return category.create(body).then(function(c){
+				if(c.insertId){
+					return {error:Errors[0]};
+				}else{
+					throw {error:Errors[7]};
+				}
+			});
+		});
+	};
+
+	postMap.set("category",create_category);
+	postMap.set("service",postulate);
 	
 	var params = [getMap, postMap, putMap, deleteMap];
 	BaseController.apply(this, params);

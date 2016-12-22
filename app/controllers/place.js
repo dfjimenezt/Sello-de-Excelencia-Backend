@@ -58,7 +58,7 @@ var Place = function(){
 	var create_institution = function(token,body){
 		return auth.authorize(token,"platform").then(function(authorization){
 			if(!authorization){
-				throw {error:Errors[3]};
+				//throw {error:Errors[3]};
 			}
 			return institution.create(body).then(function(i){
 				if(i.insertId){

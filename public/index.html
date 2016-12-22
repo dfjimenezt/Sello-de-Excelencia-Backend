@@ -22,6 +22,17 @@
       <span flex></span>
     </md-toolbar>
     <md-content flex layout="row">
+      <div   md-is-locked-open="$mdMedia('min-width: 480px')" md-component-id="menu">
+        <md-content layout-padding>
+          <div ng-repeat="x in leftMenu" layout="column">
+            <b>{{x.section}}</b>
+            <md-button ng-repeat="p in x.pages" class="md-primary md-raised" ng-click="selectPage(p);">
+              {{p.name}}
+            </md-button>
+          </div>
+        </md-content>
+      </div>
+      
       <div layout="column">
         <md-input-container ng-if="currentPage">
           <md-button class="md-raised md-primary" ng-click="create($event)">CREAR</md-button>
@@ -43,17 +54,6 @@
           </table>
         </md-table-container>
         <md-table-pagination md-limit="query.limit" md-limit-options="[5, 10, 15]" md-page="query.page" md-total="{{items.count}}" md-on-paginate="getData" md-page-select></md-table-pagination>
-      </div>
-
-      <div   md-is-locked-open="$mdMedia('min-width: 480px')" md-component-id="menu">
-        <md-content layout-padding>
-          <div ng-repeat="x in leftMenu" layout="column">
-            <b>{{x.section}}</b>
-            <md-button ng-repeat="p in x.pages" class="md-primary md-raised" ng-click="selectPage(p);">
-              {{p.name}}
-            </md-button>
-          </div>
-        </md-content>
       </div>
 
     </md-content>
