@@ -42,6 +42,56 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 						name:"name",
 						type:"string",
 						disabled:"false"
+					},
+					{
+						name:"lastname",
+						type:"string",
+						disabled:"false"
+					},
+					{
+						name:"email",
+						type:"email",
+						disabled:"false"
+					},
+					{
+						name:"phone",
+						type:"string",
+						disabled:"false"
+					},
+					{
+						name:"extension",
+						type:"string",
+						disabled:"false"
+					},
+					{
+						name:"mobile",
+						type:"string",
+						disabled:"false"
+					},
+					{
+						name:"active",
+						type:"boolean",
+						disabled:"false"
+					},
+					{
+						name:"verified",
+						type:"boolean",
+						disabled:"true"
+					},
+					{
+						name:"tmp_pwd",
+						type:"boolean",
+						disabled:"false"
+					},
+					{
+						name:"terms",
+						type:"boolean",
+						disabled:"false"
+					},
+					{
+						name:"timestamp",
+						type:"string",
+						disabled:"true"
 					}
 				]
 			},{
