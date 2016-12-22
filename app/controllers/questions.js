@@ -2,6 +2,7 @@ var BaseController = require('../utils/controller.js');
 var util = require('util');
 var utiles = require('../utils/utiles.js');
 var Errors = require('../utils/errors.js');
+var Permissions = require('../utils/permissions.js');
 var auth_ctrl = require("./auth.js");
 
 var question_model = require("../models/city.js");
@@ -33,7 +34,7 @@ var Questions = function(){
 	/**
 	 * get Forms by @param id or @param category
 	 */
-	var get_forms = function(queryParams){
+	var get_forms = function(token,queryParams){
 		if(queryParams.id){
 			return form.getByUid(queryParams.id);
 		}else if(queryParams.category){
@@ -46,7 +47,7 @@ var Questions = function(){
 	/**
 	 * get Questions by @param form
 	 */
-	var get_questions = function(queryParams){
+	var get_questions = function(token,queryParams){
 		if(queryParams.form){
 			return form.getByForm(queryParams.form);
 		}else{
@@ -61,7 +62,7 @@ var Questions = function(){
 	 * create an user answer to a question.
 	 */
 	var create_user_answer = function(token,body,files){
-		return auth.authorize(token,"platform").then(function(authorization){
+		return auth.authorize(token,Permissions.PLATFORM).then(function(authorization){
 			if(!authorization){
 				return {error:Errors[4]};
 			}
@@ -74,7 +75,7 @@ var Questions = function(){
 					id_question:body.id_question,
 					text:body.text
 				});
-				return {error:Errors[0]};
+				return {error:Errors.NO_ERROR};
 			}
 		});
 	};
@@ -83,7 +84,7 @@ var Questions = function(){
 	 * Evaluate an answer given by an user, it requires evaluator access
 	 */
 	var evaluate_answer = function(token,body){
-		return auth.authorize(token,"evaluate").then(function(authorization){
+		return auth.authorize(token,Permissions.EVALUATE).then(function(authorization){
 			if(!authorization){
 				return {error:Errors[4]};
 			}
@@ -99,48 +100,48 @@ var Questions = function(){
 	 * create a possible answer
 	 */
 	var create_answer = function(token,body,files){
-		return auth.authorize(tooken,"admin").then(function(authorization){
+		return auth.authorize(token,Permissions.EVALUATE).then(function(authorization){
 			answer.create({
 				text:body.text,
 				value:body.value
 			});
-			return {error:Errors[0]};
+			return {error:Errors.NO_ERROR};
 		});
 	};
 	/**
 	 * create a question
 	 */
 	var create_question = function(token,body,files){
-		return auth.authorize(tooken,"admin").then(function(authorization){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			question.create({
 				text:body.text,
 				id_type:body.id_type
 			});
-			return {error:Errors[0]};
+			return {error:Errors.NO_ERROR};
 		});
 	};
 	/**
 	 * bind question_form
 	 */
 	var bind_question_form = function(token,body){
-		return auth.authorization(token,"admin").then(function(authorization){
+		return auth.authorization(token,Permissions.ADMIN).then(function(authorization){
 			form_question.create({
 				id_form:body.id_form,
 				id_question:id_question
 			});
-			return {error:Errors[0]};
+			return {error:Errors.NO_ERROR};
 		});
 	};
 	/**
 	 * bind question_answer
 	 */
 	var bind_question_answer = function(token,body){
-		return auth.authorize(token,"admin").then(function(authorization){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			question_answer.create({
 				id_question:body.id_question,
 				id_answer:body.id_answer
 			});
-			return {error:Errors[0]};
+			return {error:Errors.NO_ERROR};
 		});
 	};
 

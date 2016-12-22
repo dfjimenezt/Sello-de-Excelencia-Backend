@@ -2,6 +2,7 @@ var BaseController = require('../utils/controller.js');
 var util = require('util');
 var utiles = require('../utils/utiles.js');
 var Errors = require('../utils/errors.js');
+var Permissions = require('../utils/permissions.js');
 var auth_ctrl = require("./auth.js");
 
 var topic_model = require("../models/topic.js");
@@ -20,7 +21,7 @@ var Forum = function(){
 	/**
 	 * Returns a topic by @param id, or by @param topic parent or just get all.
 	 */
-	var get_topics = function(params){
+	var get_topics = function(token,params){
 		if(params.id){
 			return topic.getByUid(params.id);
 		}else if(params.topic){
@@ -33,7 +34,7 @@ var Forum = function(){
 	/**
 	 * Returns all mesages, or a message by @param topic or by @param id
 	 */
-	var get_messages = function(params){
+	var get_messages = function(token,params){
 		if(params.id){
 			return message.getByUid(params.id);
 		}else if(params.topic){
@@ -49,7 +50,7 @@ var Forum = function(){
 	 * Creates a message in the topic @param id_topic
 	 */
 	var create_message = function(token,body,files){
-		return auth.authorize(token,"platform").then(function(authorization){
+		return auth.authorize(token,Permissions.PLATFORM).then(function(authorization){
 			return message.create({
 				text:body.text,
 				id_user:authorization.id,
@@ -69,9 +70,9 @@ var Forum = function(){
 	 * Vote or De-vote a message
 	 */
 	var vote_message = function(token,body){
-		return auth.authorize(token,"platform").then(function(authorization){
+		return auth.authorize(token,Permissions.PLATFORM).then(function(authorization){
 			if(!authorization){
-				throw {error:Errors[3]};
+				throw {error:Errors.NOT_AUTHORIZED};
 			}
 			return message_votes.getByParams({id_message:body.id_message,id_user:body.id_user}).then(function(votes){
 				if(votes.length === 0){
@@ -90,13 +91,13 @@ var Forum = function(){
 	 * Create a topic
 	 */
 	var create_topic = function(token,body){
-		return auth.authorize("platform").then(function(authorization){
+		return auth.authorize(token,Permissions.PLATFORM).then(function(authorization){
 			if(!authorization){
-				//throw {error:Errors[3]};
+				throw {error:Errors.NOT_AUTHORIZED};
 			}
 			return topic.create(body).then(function(t){
 				if(t.insertId){
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				}else{
 					throw {error:Errors[4]};
 				}

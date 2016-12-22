@@ -2,6 +2,7 @@ var BaseController = require('../utils/controller.js');
 var util = require('util');
 var utiles = require('../utils/utiles.js');
 var Errors = require('../utils/errors.js');
+var Permissions = require('../utils/permissions.js');
 var auth_ctrl = require("./auth.js");
 
 var city_model = require("../models/city.js");
@@ -19,7 +20,7 @@ var Place = function(){
 	/**
 	 * Cities
 	 */
-	var cities = function(params){
+	var cities = function(token,params){
 		if(params.id){
 			return city.getByUid(params);
 		}else{
@@ -30,7 +31,7 @@ var Place = function(){
 	/**
 	 * Regions
 	 */
-	var regions = function(params){
+	var regions = function(token,params){
 		if(params.id){
 			return region.getByUid(params);
 		}else{
@@ -41,7 +42,7 @@ var Place = function(){
 	/**
 	 * Institutions
 	 */
-	var institutions = function(params){
+	var institutions = function(token,params){
 		if(params.id){
 			return institution.getByUid(params);
 		}else{
@@ -56,13 +57,13 @@ var Place = function(){
 	 * Create Institution
 	 */
 	var create_institution = function(token,body){
-		return auth.authorize(token,"platform").then(function(authorization){
+		return auth.authorize(token,Permissions.PLATFORM).then(function(authorization){
 			if(!authorization){
-				//throw {error:Errors[3]};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return institution.create(body).then(function(i){
 				if(i.insertId){
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				}
 				return {error:Errors[7]};
 			});
@@ -73,9 +74,9 @@ var Place = function(){
 	 * Bind a user to an institution
 	 */
 	var bind_user_institution = function(token,body){
-		return auth.authorize(token,"platform").then(function(authorization){
+		return auth.authorize(token,Permissions.PLATFORM).then(function(authorization){
 			if(!authorization){
-				throw {error:Errors[3]};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return institution_user.create({
 				id_institution: parseInt(body.id_institution),
@@ -84,7 +85,7 @@ var Place = function(){
 				admin: body.admin === "true"
 			}).then(function(i_u){
 				if(i_u.insertId){
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				}else{
 					return {error:Errors[7]};
 				}
@@ -100,7 +101,7 @@ var Place = function(){
 	var import_divipola = function(token,body,files){
 		return auth.authorize(token,"admin").then(function(authorization){
 			if(!authorization){
-				throw {error:Errors[3]};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			var xlsx = require("xlsx");
 			//TODO: check file 
@@ -120,13 +121,13 @@ var Place = function(){
 	 * Create city
 	 */
 	var create_city = function(token,body){
-		return auth.authorize("admin").then(function(authorization){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				//throw {error:Errors[3]};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return city.create(body).then(function(c){
 				if(c.insertId){
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				}else{
 					return {error:Errors[7]};
 				}
@@ -137,13 +138,13 @@ var Place = function(){
 	 * Create region
 	 */
 	var create_region = function(token,body){
-		return auth.authorize("admin").then(function(authorization){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				//throw {error:Errors[3]};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return region.create(body).then(function(r){
 				if(r.insertId){
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				}else{
 					return {error:Errors[7]};
 				}

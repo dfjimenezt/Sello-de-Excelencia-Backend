@@ -57,7 +57,7 @@ var Service = function(){
 	 * Postulate a service
 	 */
 	var postulate = function(token,body){
-		return auth.authorize(token,"platform").then(function(authorization){ //check for authorization to postulate a service
+		return auth.authorize(token,Permissions.PLATFORM).then(function(authorization){ //check for authorization to postulate a service
 			if(!authorization){
 				throw {error:Errors[4]};
 			}
@@ -84,7 +84,7 @@ var Service = function(){
 						id_status:1,
 						valid_to:valid
 					});
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				}
 			});
 		});
@@ -93,11 +93,11 @@ var Service = function(){
 	var create_category = function(token,body){
 		return auth.authorize(token,"admin").then(function(authorization){
 			if(!authorization){
-				//throw {error:Errors[3]};
+				throw {error:Errors.NOT_AUTHORIZED};
 			}
 			return category.create(body).then(function(c){
 				if(c.insertId){
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				}else{
 					throw {error:Errors[7]};
 				}

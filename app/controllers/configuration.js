@@ -2,6 +2,7 @@ var BaseController = require('../utils/controller.js');
 var util = require('util');
 var utiles = require('../utils/utiles.js');
 var Errors = require('../utils/errors.js');
+var Permissions = require('../utils/permissions.js');
 var auth_ctrl = require("./auth.js");
 
 var user_model = require("../models/user.js");
@@ -25,9 +26,9 @@ var Configuration = function(){
 	 * Users
 	 */
 	var users = function(token,params){
-		return auth.authorize("admin").then(function(authorization){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				return {error:Errors[3]};
+				return {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			if(params.id){
 				return user.getByUid(params);
@@ -40,43 +41,63 @@ var Configuration = function(){
 	/**
 	 * Roles disponibles
 	 */
-	var roles = function(params){
-		if(params.id){
-			return role.getByUid(params);
-		}else{
-			return role.getAll();
-		}
+	var roles = function(token,params){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
+			if(!authorization){
+				return {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(params.id){
+				return role.getByUid(params);
+			}else{
+				return role.getAll();
+			}
+		});
 	};
 
 	/**
 	 * Permisos disponibles
 	 */
-	var permissions = function(params){
-		if(params.id){
-			return permission.getByUid(params);
-		}else{
-			return permission.getAll();
-		}
+	var permissions = function(token,params){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
+			if(!authorization){
+				return {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(params.id){
+				return permission.getByUid(params);
+			}else{
+				return permission.getAll();
+			}
+		});
 	};
 	/**
 	 * Usuario _ Role
 	 */
-	var user_roles = function(params){
-		if(params.id_user){
-			return user_role.getByParams({id_user:id_user});
-		}else{
-			return user_role.getAll();
-		}
+	var user_roles = function(token,params){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
+			if(!authorization){
+				return {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(params.id_user){
+				return user_role.getByParams({id_user:id_user});
+			}else{
+				return user_role.getAll();
+			}
+		});
 	};
 	/**
 	 * Permission _ Role
 	 */
-	var permission_roles = function(params){
-		if(params.id_user){
-			return permission_role.getByParams({id_permission:id_permission});
-		}else{
-			return permission_role.getAll();
-		}
+	var permission_roles = function(token,params){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
+			if(!authorization){
+				return {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(params.id_user){
+				return permission_role.getByParams({id_permission:id_permission});
+			}else{
+				return permission_role.getAll();
+			}
+		});
 	};
 	getMap.set("user",users);
 	getMap.set("role",roles);
@@ -88,13 +109,13 @@ var Configuration = function(){
 	 * Crear usuario
 	 */
 	var create_user = function(token,body){
-		return auth.authorize(token,"admin").then(function(authorization){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				//throw {error:Errors[3]};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return user.create(body).then(function(u){
 				if(u.insertId){
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				}
 				return {error:Errors[7]};
 			});
@@ -104,13 +125,13 @@ var Configuration = function(){
 	 * Crear Rol
 	 */
 	var create_role = function(token,body){
-		return auth.authorize(token,"admin").then(function(authorization){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				//throw {error:Errors[3]};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return role.create(body).then(function(u){
 				if(u.insertId){
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				}
 				return {error:Errors[7]};
 			});
@@ -120,13 +141,13 @@ var Configuration = function(){
 	 * Crear Permiso
 	 */
 	var create_permission = function(token,body){
-		return auth.authorize(token,"admin").then(function(authorization){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				//throw {error:Errors[3]};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return permission.create(body).then(function(u){
 				if(u.insertId){
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				}
 				return {error:Errors[7]};
 			});
@@ -136,13 +157,13 @@ var Configuration = function(){
 	 * Crear Usuario Role
 	 */
 	var bind_user_role = function(token,body){
-		return auth.authorize(token,"admin").then(function(authorization){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				//throw {error:Errors[3]};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return user_roles.create(body).then(function(u){
 				//if(u.insertId){
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				//}
 				//throw {error:Errors[7]};
 			});
@@ -153,13 +174,13 @@ var Configuration = function(){
 	 * Crear Usuario Role
 	 */
 	var bind_permission_role = function(token,body){
-		return auth.authorize(token,"admin").then(function(authorization){
+		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				//throw {error:Errors[3]};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return permission_role.create(body).then(function(u){
 				//if(u.insertId){
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				//}
 				//throw {error:Errors[7]};
 			});

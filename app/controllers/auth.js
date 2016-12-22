@@ -40,7 +40,7 @@ var Auth = function () {
 	var login = function (token,body){
 		return user_model.getUser(body.email).then(function(user){
 			if(!user){//user doesnt exists
-				throw {error:Errors[12]};
+				throw {error:Errors.LOGIN.USER_NOT_EXISTS};
 			}else{
 				if(user.password === body.password){
 					delete user.password;
@@ -62,7 +62,7 @@ var Auth = function () {
 	var register = function(token,body){
 		return user_model.getByParams({email:body.email}).then(function(user){
 			if(user.length>0){//user exists then cant be registered again
-				throw {error:Errors[11]};
+				throw {error:Errors.LOGIN.USER_EXISTS};
 			}else{//user doesnt exists will proceed to create one
 				return user_model.create({
 					name:body.name,
@@ -85,9 +85,9 @@ var Auth = function () {
 							id_role:parseInt(body.role)
 						});
 						user.role = body.role; // add the role manually reduce time
-						return {error:Errors[0]}; // return user
+						return {error:Errors.NO_ERROR}; // return user
 					}else{ //if there was an error on creating the user
-						throw {error:Errors[7]};
+						throw {error:Errors.DATABASE_ERROR};
 					}
 				});
 			}
@@ -97,10 +97,10 @@ var Auth = function () {
 	var recover = function(token,body){
 		return user_model.getByParams({email:body.email}).then(function(user){
 			if(user.length === 0){ //if the user doesnt exists then send error
-				return {error:Errors[12]};
+				return {error:Errors.LOGIN.USER_NOT_EXISTS};
 			}else{ //send email and confirm
 				//TODO: //send email and reset password
-				return {error:Errors[0]}; 
+				return {error:Errors.NO_ERROR}; 
 			}
 		});
 	};
