@@ -77,6 +77,9 @@ var Auth = function () {
 					newsletter:body.newsletter === "true"
 				}).then(function(user){
 					if(user){ // if the user was created sucessfully
+						if(!body.role){
+							body.role = "1";
+						}
 						user_role_model.create({ //create the role assignment
 							id_user:user.insertId,
 							id_role:parseInt(body.role)
