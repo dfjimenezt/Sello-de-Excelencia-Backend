@@ -72,7 +72,7 @@ var Forum = function(){
 	var vote_message = function(token,body){
 		return auth.authorize(token,Permissions.PLATFORM).then(function(authorization){
 			if(!authorization){
-				throw {error:Errors.NOT_AUTHORIZED};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return message_votes.getByParams({id_message:body.id_message,id_user:body.id_user}).then(function(votes){
 				if(votes.length === 0){
@@ -93,7 +93,7 @@ var Forum = function(){
 	var create_topic = function(token,body){
 		return auth.authorize(token,Permissions.PLATFORM).then(function(authorization){
 			if(!authorization){
-				throw {error:Errors.NOT_AUTHORIZED};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return topic.create(body).then(function(t){
 				if(t.insertId){

@@ -5,4 +5,4 @@ module.exports = {
 	ADMIN:"admin",
 	PLATFORM:"platform",
 	EVALUATE:"evaluate"
-}
+};
