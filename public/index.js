@@ -455,7 +455,9 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 		 * Webservices composed by endpoint + table
 		 */
 		$scope.promise = $http.get($scope.currentPage.endpoint+$scope.currentPage.table);
-		$scope.promise.then($scope.getSuccess);
+		$scope.promise.then($scope.getSuccess).catch(function(response){
+				window.location.href="/login";
+		});
 	};
 	$scope.currentItem = [];
 	$scope.selectPage = function(p){
@@ -494,7 +496,7 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
   this.cancel = $mdDialog.cancel;
   
 	function error(err){
-		console.log(err);
+		window.location.href = "/login";
 	}
   function success() {
     $mdDialog.hide();
@@ -535,8 +537,11 @@ angular.module('dmt-back').controller('deleteController', function ($mdDialog,$s
   function onComplete() {
     $mdDialog.hide();
   }
+	function error(err){
+		window.location.href = "/login";
+	}
   
   function deleteItems() {
-    $q.all(items.forEach(removeItems)).then(onComplete);
+    $q.all(items.forEach(removeItems)).then(onComplete).catch(error);
   }
 });

@@ -28,7 +28,7 @@ var Configuration = function(){
 	var users = function(token,params){
 		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				return {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			if(params.id){
 				return user.getByUid(params);
@@ -44,7 +44,7 @@ var Configuration = function(){
 	var roles = function(token,params){
 		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				return {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			if(params.id){
 				return role.getByUid(params);
@@ -60,7 +60,7 @@ var Configuration = function(){
 	var permissions = function(token,params){
 		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				return {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			if(params.id){
 				return permission.getByUid(params);
@@ -75,7 +75,7 @@ var Configuration = function(){
 	var user_roles = function(token,params){
 		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				return {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			if(params.id_user){
 				return user_role.getByParams({id_user:id_user});
@@ -90,7 +90,7 @@ var Configuration = function(){
 	var permission_roles = function(token,params){
 		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
 			if(!authorization){
-				return {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			if(params.id_user){
 				return permission_role.getByParams({id_permission:id_permission});
