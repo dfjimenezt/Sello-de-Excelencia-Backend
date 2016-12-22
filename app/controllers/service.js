@@ -93,7 +93,7 @@ var Service = function(){
 	var create_category = function(token,body){
 		return auth.authorize(token,"admin").then(function(authorization){
 			if(!authorization){
-				throw {error:Errors.NOT_AUTHORIZED};
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			return category.create(body).then(function(c){
 				if(c.insertId){
