@@ -24,12 +24,17 @@ var Configuration = function(){
 	/**
 	 * Users
 	 */
-	var users = function(params){
-		if(params.id){
-			return user.getByUid(params);
-		}else{
-			return user.getAll();
-		}
+	var users = function(token,params){
+		return auth.authorize("admin").then(function(authorization){
+			if(!authorization){
+				return {error:Errors[3]};
+			}
+			if(params.id){
+				return user.getByUid(params);
+			}else{
+				return user.getAll();
+			}
+		});
 	};
 
 	/**

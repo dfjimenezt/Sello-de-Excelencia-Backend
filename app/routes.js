@@ -89,9 +89,9 @@ var Routes = function (app) {
 		if (controller) {
 			var params = req.params;
 			var method;
-			if (req.originalMethod === 'GET') method = controller.get(params, req.query);
-			else if (req.originalMethod === 'PUT') method = controller.put(params, req.body);
-			else if (req.originalMethod === 'DELETE') method = controller.delete(params, req.body);
+			if (req.originalMethod === 'GET') method = controller.get(params, req.headers.authorization, req.query);
+			else if (req.originalMethod === 'PUT') method = controller.put(params, req.headers.authorization, req.body);
+			else if (req.originalMethod === 'DELETE') method = controller.delete(params, req.headers.authorization, req.body);
 
 			method.then(function (data) { res.send(data); })
 				.catch(function (err) { res.status(err.htmlCode).res.send(err); });
