@@ -10,7 +10,7 @@
     "start": "node index.js",
     "pretest": "npm run style",
     "test": "./node_modules/.bin/mocha app/tests/dev*",
-    "style": " jshint index.js app/* public/index.js public/admin/*.js public/login/*.js public/info/*.json",
+    "style": " jshint index.js app/* public/index.js public/login/*.js",
     "script1": "node ./app/scripts/changeCoordinates.js"
   },
   "dependencies": {
