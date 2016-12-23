@@ -1,4 +1,4 @@
-var app = angular.module('dmt-back', ['angular-loading-bar', 'ngMaterial']);
+var app = angular.module('dmt-back', ['ngMaterial']);
 
 app.config(function($httpProvider, $mdThemingProvider) {
     $httpProvider.defaults.useXDomain = true;
@@ -26,7 +26,6 @@ app.controller('loginController', function($scope, $httpParamSerializerJQLike, $
             else if (method === "POST" || method === "DELETE" || method === "PUT") {
                 options.data = $httpParamSerializerJQLike(params);
             }
-
             $http(options)
                 .success(function(data) { resolve(data); })
                 .error(function(err) { reject(err); });
@@ -34,10 +33,13 @@ app.controller('loginController', function($scope, $httpParamSerializerJQLike, $
     };
 
     $scope.login = function() {
-        request("../api/auth/login", "POST", $scope.user).then(function(answer) {
-            console.log(answer);
+        request("/api/auth/login", "POST", $scope.user).then(function(answer) {
+            if(answer.token){
+                localStorage.setItem("token", answer.token);
+                window.location.href="/";
+            }
         }).catch(function(problem) {
-            console.log(problem);
+            
         });
     };
 

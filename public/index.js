@@ -24,6 +24,11 @@ app.config(function ($mdThemingProvider) {
 });
 
 app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
+	if(!localStorage.getItem("token")){
+		window.location.href="/login";
+		return;
+	}
+	$http.defaults.headers.common.Authorization = localStorage.getItem("token");
 	var leftMenu=[
 		{
 			section:"Configuración",

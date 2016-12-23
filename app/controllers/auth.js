@@ -53,8 +53,7 @@ var Auth = function () {
 						expires:now
 					};
 					session_model.create(session);
-					return {token:session.token,
-						valid_to:session.expires};
+					return {token:session.token};
 				}
 			}
 		});
