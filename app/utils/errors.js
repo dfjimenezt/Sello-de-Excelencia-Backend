@@ -12,7 +12,7 @@ module.exports = {
 	},
 	//USER AUTHENTICATION ERRORS
 	LOGIN:{
-		LOGIN_FAILED:{ code: 200, message: "LOGIN FAILED", htmlCode:200 },
+		LOGIN_FAILED:{ code: 200, message: "LOGIN FAILED", htmlCode:401 },
 		USER_EXISTS:{ code: 201, message: "USER ALREADY EXISTS" , htmlCode:401 },
 		USER_NOT_EXISTS:{ code: 202, message: "USER DOESNT EXISTS" , htmlCode:404 },
 	},

@@ -30,7 +30,8 @@ var Service = function(){
 	/**
 	 * Get services by @param id
 	 */
-	var get_services = function(params){
+	var get_services = function(token,params){
+		console.log(params);
 		if(params.id){
 			return service.getByUid(params.id);
 		}else if(params.filter || params.limit || params.page || params.page){
@@ -48,7 +49,7 @@ var Service = function(){
 	/**
 	 * Get categories by @param id
 	 */
-	var get_categories = function(params){
+	var get_categories = function(token,params){
 		if(params.id){
 			return category.getByUid(params.id);
 		}else if(params.filter || params.limit || params.page || params.page){

@@ -433,7 +433,7 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
       targetEvent: event,
       templateUrl: 'add-dialog.html',
 			locals: { page: $scope.currentPage },
-    }).then($scope.getDesserts);
+    }).then($scope.getData);
   };
   
   $scope.delete = function (event) {
@@ -446,7 +446,7 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
       locals: { page: $scope.currentPage,
 				items: $scope.selected },
       templateUrl: 'delete-dialog.html',
-    }).then($scope.getDesserts);
+    }).then($scope.getData);
   };
 	$scope.results = [];
 	$scope.filter = {
@@ -475,7 +475,7 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
       $scope.filter.form.$setPristine();
     }
 	};
-	
+
 	$scope.query = {
 		filter:'',
 		order: $scope.currentPage ? $scope.currentPage.defaultSort : "name",
