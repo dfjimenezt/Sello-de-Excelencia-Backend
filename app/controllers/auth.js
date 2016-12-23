@@ -54,6 +54,8 @@ var Auth = function () {
 					};
 					session_model.create(session);
 					return {token:session.token};
+				}else{
+					throw {error:Errors.LOGIN.LOGIN_FAILED};
 				}
 			}
 		});

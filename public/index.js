@@ -474,7 +474,8 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
     if($scope.filter.form.$dirty) {
       $scope.filter.form.$setPristine();
     }
-	}
+	};
+	
 	$scope.query = {
 		filter:'',
 		order: $scope.currentPage ? $scope.currentPage.defaultSort : "name",
