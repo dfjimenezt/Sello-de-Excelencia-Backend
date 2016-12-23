@@ -30,6 +30,10 @@ var Model = function (table, typeModel) {
 		return selectedModel.getByParams(params);
 	};
 
+	this.getFiltered = function(params){
+		return selectedModel.getFiltered(params);
+	};
+
 	this.create = function (body) {
 		return selectedModel.create(body);
 	};

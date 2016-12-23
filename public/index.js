@@ -138,7 +138,7 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 			{
 				name:"Asignación de Permisos a Roles",
 				table:"permission_role",
-				defaultSort:"id",
+				defaultSort:"id_role",
 				endpoint:"/api/configuration/",//get service
 				fields:[
 					{
@@ -167,7 +167,7 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 				{
 					name:"Instituciones",
 					table:"institution",
-					defaultSort:"id",
+					defaultSort:"name",
 					endpoint:"/api/place/",//get service
 					fields:[
 						{
@@ -264,6 +264,7 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 					section:"Foro",
 					name:"Regiones",
 					table:"region",
+					defaultSort:"id",
 					endpoint:"/api/place/",//get service
 					fields:[
 						{
@@ -294,6 +295,7 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 				{
 					name:"Servicios",
 					table:"service",
+					defaultSort:"name",
 					endpoint:"/api/service/",
 					fields:[
 						{
@@ -389,6 +391,7 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 			pages:[{
 				name:"Temas",
 				table:"topic",
+				defaultSort:"name",
 				endpoint:"/api/forum/",
 				fields:[
 					{
@@ -441,37 +444,77 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
       focusOnOpen: false,
       targetEvent: event,
       locals: { page: $scope.currentPage,
-				items: $scope.currentItem },
+				items: $scope.selected },
       templateUrl: 'delete-dialog.html',
     }).then($scope.getDesserts);
   };
 	$scope.results = [];
+	$scope.filter = {
+    options: {
+      debounce: 500
+    }
+  };
+	var bookmark;
+	$scope.$watch('query.filter', function (newValue, oldValue) {
+    if(!oldValue) {
+      bookmark = $scope.query.page;
+    }
+    if(newValue !== oldValue) {
+      $scope.query.page = 1;
+    }
+    if(!newValue) {
+      $scope.query.page = bookmark;
+    }
+    $scope.getData();
+  });
+	$scope.removeFilter = function(){
+		$scope.filter.show = false;
+    $scope.query.filter = '';
+    
+    if($scope.filter.form.$dirty) {
+      $scope.filter.form.$setPristine();
+    }
+	}
 	$scope.query = {
+		filter:'',
 		order: $scope.currentPage ? $scope.currentPage.defaultSort : "name",
 		limit: 5,
 		page: 1
 	};
+	
 	$scope.getSuccess = function(results){
-		$scope.items = results;
+		$scope.items = results.data[0];
+		$scope.total_results = results.data[1][0].total_results;
 	};
 
 	$scope.getData = function(){
 		/**
 		 * Webservices composed by endpoint + table
 		 */
-		$scope.promise = $http.get($scope.currentPage.endpoint+$scope.currentPage.table);
+		if(!$scope.currentPage){
+			return;
+		}
+		var str = [];
+		for(var p in $scope.query)
+		str.push(encodeURIComponent(p) + "=" + encodeURIComponent($scope.query[p]));
+		var filter = str.join("&");
+				
+		$scope.promise = $http.get($scope.currentPage.endpoint+$scope.currentPage.table+"?"+filter);
 		$scope.promise.then($scope.getSuccess).catch(function(response){
 				window.location.href="/login";
 		});
 	};
-	$scope.currentItem = [];
+	$scope.selected = [];
 	$scope.selectPage = function(p){
 		$scope.currentPage = p;
-		$scope.currentItem = [];
+		$scope.query = {
+			filter:'',
+			order: $scope.currentPage.defaultSort || "name",
+			limit: 5,
+			page: 1
+		};
+		$scope.selected = [];
 		$scope.getData();
-	};
-	$scope.selectItem = function(i){
-		$scope.currentItem = i;
 	};
 });
 

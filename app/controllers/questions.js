@@ -34,12 +34,19 @@ var Questions = function(){
 	/**
 	 * get Forms by @param id or @param category
 	 */
-	var get_forms = function(token,queryParams){
-		if(queryParams.id){
-			return form.getByUid(queryParams.id);
-		}else if(queryParams.category){
-			return form.getByParams({id_category:queryParams.category});
-		}else{
+	var get_forms = function(token,params){
+		if(params.id){
+			return form.getByUid(params.id);
+		}else if(params.category){
+			return form.getByParams({id_category:params.category});
+		}else if(params.filter || params.limit || params.page || params.page){
+				return form.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
+			}else{
 			return form.getAll();
 		}
 	};
@@ -47,11 +54,18 @@ var Questions = function(){
 	/**
 	 * get Questions by @param form
 	 */
-	var get_questions = function(token,queryParams){
-		if(queryParams.form){
-			return form.getByForm(queryParams.form);
-		}else{
-			return form.getAll();
+	var get_questions = function(token,params){
+		if(params.form){
+			return question.getByForm(params.form);
+		}else if(question.filter || params.limit || params.page || params.page){
+				return from.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
+			}else{
+			return question.getAll();
 		}
 	};
 	

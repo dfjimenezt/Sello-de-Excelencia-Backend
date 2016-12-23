@@ -31,7 +31,14 @@ var Configuration = function(){
 				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
 			}
 			if(params.id){
-				return user.getByUid(params);
+				return user.getByUid(params.id);
+			}else if(params.filter || params.limit || params.page || params.page){
+				return user.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name","email"]});
 			}else{
 				return user.getAll();
 			}
@@ -48,6 +55,13 @@ var Configuration = function(){
 			}
 			if(params.id){
 				return role.getByUid(params);
+			}else if(params.filter || params.limit || params.page || params.page){
+				return role.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
 			}else{
 				return role.getAll();
 			}
@@ -64,6 +78,13 @@ var Configuration = function(){
 			}
 			if(params.id){
 				return permission.getByUid(params);
+			}else if(params.filter || params.limit || params.page || params.page){
+				return permission.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
 			}else{
 				return permission.getAll();
 			}
@@ -79,6 +100,13 @@ var Configuration = function(){
 			}
 			if(params.id_user){
 				return user_role.getByParams({id_user:id_user});
+			}else if(params.filter || params.limit || params.page || params.page){
+				return user_role.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["id_user","id_role"]});
 			}else{
 				return user_role.getAll();
 			}
@@ -94,6 +122,13 @@ var Configuration = function(){
 			}
 			if(params.id_user){
 				return permission_role.getByParams({id_permission:id_permission});
+			}else if(params.filter || params.limit || params.page || params.page){
+				return permission_role.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["id_permission","id_role"]});
 			}else{
 				return permission_role.getAll();
 			}

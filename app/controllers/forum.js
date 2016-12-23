@@ -26,7 +26,14 @@ var Forum = function(){
 			return topic.getByUid(params.id);
 		}else if(params.topic){
 			return topic.getByParams({id_parent:params.topic});
-		}else{
+		}else if(params.filter || params.limit || params.page || params.page){
+				return topic.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
+			}else{
 			return topic.getAll();
 		}
 		
@@ -39,7 +46,14 @@ var Forum = function(){
 			return message.getByUid(params.id);
 		}else if(params.topic){
 			return message.getByParams({id_topic:params.topic});
-		}else{
+		}else if(params.filter || params.limit || params.page || params.page){
+				return message.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
+			}else{
 			return message.getAll();
 		}
 	};

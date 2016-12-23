@@ -30,10 +30,17 @@ var Service = function(){
 	/**
 	 * Get services by @param id
 	 */
-	var get_services = function(queryParams){
-		if(queryParams.id){
-			return service.getByUid(queryParams.id);
-		}else{
+	var get_services = function(params){
+		if(params.id){
+			return service.getByUid(params.id);
+		}else if(params.filter || params.limit || params.page || params.page){
+				return service.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
+			}else{
 			return service.getAll();
 		}
 	};
@@ -41,10 +48,17 @@ var Service = function(){
 	/**
 	 * Get categories by @param id
 	 */
-	var get_categories = function(queryParams){
-		if(queryParams.id){
-			return category.getByUid(queryParams.id);
-		}else{
+	var get_categories = function(params){
+		if(params.id){
+			return category.getByUid(params.id);
+		}else if(params.filter || params.limit || params.page || params.page){
+				return category.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
+			}else{
 			return category.getAll();
 		}
 	};

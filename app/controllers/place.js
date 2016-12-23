@@ -23,7 +23,14 @@ var Place = function(){
 	var cities = function(token,params){
 		if(params.id){
 			return city.getByUid(params);
-		}else{
+		}else if(params.filter || params.limit || params.page || params.page){
+				return city.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
+			}else{
 			return city.getAll();
 		}
 	};
@@ -34,7 +41,14 @@ var Place = function(){
 	var regions = function(token,params){
 		if(params.id){
 			return region.getByUid(params);
-		}else{
+		}else if(params.filter || params.limit || params.page || params.page){
+				return region.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
+			}else{
 			return region.getAll();
 		}
 	};
@@ -45,7 +59,14 @@ var Place = function(){
 	var institutions = function(token,params){
 		if(params.id){
 			return institution.getByUid(params);
-		}else{
+		}else if(params.filter || params.limit || params.page || params.page){
+				return institution.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
+			}else{
 			return institution.getAll();
 		}
 	};
