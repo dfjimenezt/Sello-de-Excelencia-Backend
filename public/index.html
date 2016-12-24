@@ -76,7 +76,7 @@
               <tr md-row md-select="item" md-select-id="name" md-auto-select ng-repeat="item in items">
                 <td md-cell ng-repeat="f in currentPage.fields" ng-click="editField($event,item,f)">
                   <span ng-if="f.type!=='link'">{{item[f.name]}}</span>
-                  <md-select ng-if="f.type=='link'" ng-model="item[f.name]" placeholder="Other">
+                  <md-select ng-if="f.type=='link'" ng-model="item[f.name]" placeholder="Other" ng-change="updateItem(item,f);" >
                     <md-option ng-repeat="o in options[f.name]" value="{{o[f.foreign_key]}}">{{o[f.foreign_name]}}</md-option>
                   </md-select>
                 </td>

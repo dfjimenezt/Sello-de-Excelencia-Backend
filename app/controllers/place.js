@@ -189,7 +189,7 @@ var Place = function(){
 			if(!body.id){
 				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
 			}
-			user.update(city,{id:body.id});
+			city.update(body,{id:body.id});
 		});
 	};
 
@@ -204,7 +204,7 @@ var Place = function(){
 			if(!body.id){
 				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
 			}
-			user.update(region,{id:body.id});
+			region.update(body,{id:body.id});
 		});
 	};
 
@@ -219,7 +219,7 @@ var Place = function(){
 			if(!body.id){
 				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
 			}
-			user.update(institution,{id:body.id});
+			institution.update(body,{id:body.id});
 		});
 	};
 

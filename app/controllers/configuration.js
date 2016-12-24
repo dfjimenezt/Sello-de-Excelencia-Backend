@@ -265,7 +265,7 @@ var Configuration = function(){
 			if(!body.id){
 				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
 			}
-			user.update(role,{id:body.id});
+			role.update(body,{id:body.id});
 		});
 	};
 
@@ -280,7 +280,7 @@ var Configuration = function(){
 			if(!body.id){
 				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
 			}
-			user.update(permission,{id:body.id});
+			permission.update(body,{id:body.id});
 		});
 	};
 
@@ -295,7 +295,7 @@ var Configuration = function(){
 			if(!body.id){
 				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
 			}
-			user.update(user_role,{id_user:body.id_user,id_role:body.id_role});
+			user_role.update(body,{id_user:body.id_user,id_role:body.id_role});
 		});
 	};
 	
@@ -310,7 +310,7 @@ var Configuration = function(){
 			if(!body.id){
 				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
 			}
-			user.update(permission_role,{id_user:body.id_user,id_permission:body.id_permission});
+			psermission_role.update(body,{id_user:body.id_user,id_permission:body.id_permission});
 		});
 	};
 

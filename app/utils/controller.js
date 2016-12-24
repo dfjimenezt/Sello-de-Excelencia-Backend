@@ -26,22 +26,22 @@ var Controller = function (getMap, postMap, putMap, deleteMap) {
 		else return rta(authorization,body);
 	};
 
-	this.put = function (params, body) {
+	this.put = function (params, authorization, body) {
 		if (!putMap) return utiles.informError(1);
 		var option = params[0].split("/")[0];
 
 		var rta = putMap.get(option);
 		if (!rta) return utiles.informError(5);
-		else return rta(body);
+		else return rta(authorization,body);
 	};
 
-	this.delete = function (params, body) {
+	this.delete = function (params,authorization, body) {
 		if (!deleteMap) return utiles.informError(1);
 		var option = params[0].split("/")[0];
 
 		var rta = deleteMap.get(option);
 		if (!rta) return utiles.informError(5);
-		else return rta(body);
+		else return rta(authorization,body);
 	};
 
 	return this;

@@ -436,6 +436,13 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$mdEditDialog,$
     }).then($scope.getData);
   };
   
+	$scope.updateItem = function(item,field){
+		if(item.timestamp){
+			delete item.timestamp;
+		}
+		$http.put($scope.currentPage.endpoint+ $scope.currentPage.table, item).then($scope.getData);
+		
+	};
 	$scope.editField = function (event, item, field) {
 		if(field.type === "link"){return;}
 		if(field.disabled === "true"){return;}
@@ -449,7 +456,7 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$mdEditDialog,$
 			title:"Editar "+field.name,
 			save: function (input) {
 				item[field.name] = input.$modelValue;
-				$http.put($scope.currentPage.endpoint+ $scope.currentPage.table, item);
+				$scope.updateItem(item,field);
 			},
 			type:	field.type === "int"? "number": 
 						field.type === "boolean"? "checkbox" :"text",

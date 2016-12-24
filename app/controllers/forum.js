@@ -133,7 +133,7 @@ var Forum = function(){
 			if(!body.id){
 				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
 			}
-			user.update(topic,{id:body.id});
+			topic.update(body,{id:body.id});
 		});
 	};
 
@@ -148,7 +148,7 @@ var Forum = function(){
 			if(!body.id){
 				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
 			}
-			user.update(message,{id:body.id});
+			message.update(body,{id:body.id});
 		});
 	};
 

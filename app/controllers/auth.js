@@ -46,7 +46,7 @@ var Auth = function () {
 				var pass = crypto.createHmac("sha256",config.secret);
 				pass.update(body.password);
 				pass = pass.digest("hex");
-				if(user.password === body.password){
+				if(user.password === pass){
 					delete user.password;
 					//encode
 					var now = new Date();
