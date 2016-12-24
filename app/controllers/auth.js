@@ -9,6 +9,7 @@ var permission_role = require("../models/permission_role.js");
 var session = require("../models/session.js");
 var jwt = require('jsonwebtoken');
 var config = require("../../config.json");
+var crypto = require("crypto");
 
 var Auth = function () {
 	var user_model = new user();
@@ -42,6 +43,9 @@ var Auth = function () {
 			if(!user){//user doesnt exists
 				throw {error:Errors.LOGIN.USER_NOT_EXISTS};
 			}else{
+				var pass = crypto.createHmac("sha256",config.secret);
+				pass.update(body.password);
+				pass = pass.digest("hex");
 				if(user.password === body.password){
 					delete user.password;
 					//encode
@@ -65,6 +69,9 @@ var Auth = function () {
 			if(user.length>0){//user exists then cant be registered again
 				throw {error:Errors.LOGIN.USER_EXISTS};
 			}else{//user doesnt exists will proceed to create one
+				var pass = crypto.createHmac("sha256",config.secret);
+				pass.update(body.password);
+				pass = pass.digest("hex");
 				return user_model.create({
 					name:body.name,
 					lastname:body.lastname,
@@ -72,7 +79,7 @@ var Auth = function () {
 					phone:body.phone,
 					active:false,
 					verified:false,
-					password:body.password,
+					password:pass,
 					tmp_pwd:true,
 					terms:body.terms === "true",
 					newsletter:body.newsletter === "true"
