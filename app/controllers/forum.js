@@ -121,6 +121,39 @@ var Forum = function(){
 	postMap.set("vote_message",vote_message);
 	postMap.set("message",create_message);
 	postMap.set("topic",create_topic);
+
+	/**
+	 * Updates an Topic
+	 */
+	var update_topic = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			user.update(topic,{id:body.id});
+		});
+	};
+
+	/**
+	 * Updates an Message
+	 */
+	var update_message = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			user.update(message,{id:body.id});
+		});
+	};
+
+	putMap.set("topic",update_topic);
+	putMap.set("message",update_message);
 	
 	var params = [getMap, postMap, putMap, deleteMap];
 	BaseController.apply(this, params);

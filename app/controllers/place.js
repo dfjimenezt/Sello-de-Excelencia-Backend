@@ -177,6 +177,55 @@ var Place = function(){
 	postMap.set("institution",create_institution);
 	postMap.set("bind_user_institution",bind_user_institution);
 	postMap.set("import_divipola",import_divipola);
+
+	/**
+	 * Updates a City
+	 */
+	var update_city = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			user.update(city,{id:body.id});
+		});
+	};
+
+	/**
+	 * Updates an Region
+	 */
+	var update_region = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			user.update(region,{id:body.id});
+		});
+	};
+
+	/**
+	 * Updates an Institution
+	 */
+	var update_institution = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			user.update(institution,{id:body.id});
+		});
+	};
+
+	putMap.set("city",update_city);
+	putMap.set("region",update_region);
+	putMap.set("institution",update_institution);
 	
 	var params = [getMap, postMap, putMap, deleteMap];
 	BaseController.apply(this, params);

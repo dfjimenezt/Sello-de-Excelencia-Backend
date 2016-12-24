@@ -123,6 +123,39 @@ var Service = function(){
 	postMap.set("category",create_category);
 	postMap.set("service",postulate);
 	
+	/**
+	 * Updates a category
+	 */
+	var update_category = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			category.update(body,{id:body.id});
+		});
+	};
+
+	/**
+	 * Updates a Service
+	 */
+	var update_service = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			service.update(body,{id:body.id});
+		});
+	};
+
+	putMap.set("category",update_category);
+	putMap.set("service",update_service);
+
 	var params = [getMap, postMap, putMap, deleteMap];
 	BaseController.apply(this, params);
 	//---------------------------------------------------------------

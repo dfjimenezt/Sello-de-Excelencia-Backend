@@ -449,6 +449,7 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$mdEditDialog,$
 			title:"Editar "+field.name,
 			save: function (input) {
 				item[field.name] = input.$modelValue;
+				$http.put($scope.currentPage.endpoint+ $scope.currentPage.table, item);
 			},
 			type:	field.type === "int"? "number": 
 						field.type === "boolean"? "checkbox" :"text",

@@ -69,7 +69,7 @@ var Backend = function(configJSON)
 			var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
 			callback(null, originIsWhitelisted);
 		},
-		methods: "GET,HEAD,PUT,POST,DELETE"
+		methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
 	};
 	app.use(cors(corsOptions)); // Sign with default (HMAC SHA256)
 	app.options('*', cors());//Enabling CORS Pre-Flight, for DELETE

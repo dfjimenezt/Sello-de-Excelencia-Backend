@@ -227,7 +227,88 @@ var Configuration = function(){
 	postMap.set("permission",create_permission);
 	postMap.set("user_role",bind_user_role);
 	postMap.set("permission_role",bind_permission_role);
+
+	/**
+	 * Updates an User
+	 */
+	var update_user = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			user.update(body,{id:body.id});
+		});
+	};
+
+	/**
+	 * Updates an Role
+	 */
+	var update_role = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			user.update(role,{id:body.id});
+		});
+	};
+
+	/**
+	 * Updates a Permission
+	 */
+	var update_permission = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			user.update(permission,{id:body.id});
+		});
+	};
+
+	/**
+	 * Updates an User_Role
+	 */
+	var update_user_role = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			user.update(user_role,{id_user:body.id_user,id_role:body.id_role});
+		});
+	};
 	
+	/**
+	 * Updates an permission_role
+	 */
+	var update_permission_role = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			user.update(permission_role,{id_user:body.id_user,id_permission:body.id_permission});
+		});
+	};
+
+	putMap.set("user",update_user);
+	putMap.set("role",update_role);
+	putMap.set("permission",update_permission);
+	putMap.set("user_role",update_user_role);
+	putMap.set("permission_role",update_permission_role);
+
 	var params = [getMap, postMap, putMap, deleteMap];
 	BaseController.apply(this, params);
 	//---------------------------------------------------------------

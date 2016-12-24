@@ -23,5 +23,5 @@
 		}
 	},
 	"secret": "1234567890",
-	"autorizedHosts": ["http://localhost:3000","https://anp-domoti.herokuapp.com/"]
+	"autorizedHosts": ["http://sellodeexcelencia.gov.co","https://sellodeexcelencia.gov.co/","*"]
 }
