@@ -23,7 +23,7 @@ app.config(function ($mdThemingProvider) {
 		.accentPalette('grey');
 });
 
-app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
+app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$mdEditDialog,$http) {
 	if(!localStorage.getItem("token")){
 		window.location.href="/login";
 		return;
@@ -436,6 +436,32 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
     }).then($scope.getData);
   };
   
+	$scope.editField = function (event, item, field) {
+		if(field.type === "link"){return;}
+		if(field.disabled === "true"){return;}
+		event.stopPropagation();
+		
+		var promise = $mdEditDialog.large({
+			modelValue: item[field.name],
+			placeholder: field.name,
+			cancel: "Cancelar",
+			ok: "Guardar",
+			title:"Editar "+field.name,
+			save: function (input) {
+				item[field.name] = input.$modelValue;
+			},
+			type:	field.type === "int"? "number": 
+						field.type === "boolean"? "checkbox" :"text",
+			targetEvent: event
+		});
+		promise.then(function (ctrl) {
+			var input = ctrl.getInput();
+			input.$viewChangeListeners.push(function () {
+				input.$setValidity('test', input.$modelValue !== 'test');
+			});
+		});
+	};
+
   $scope.delete = function (event) {
     $mdDialog.show({
       clickOutsideToClose: true,
@@ -506,6 +532,15 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 		});
 	};
 	$scope.selected = [];
+	function addOptions(item,index){
+		var base = item.endpoint;
+		if(!base){
+			base = $scope.currentPage.endpoint;
+		} 
+		$http.get(base+item.table).then(function(results){
+			$scope.options[item.name]=results.data;
+		});
+	}
 	$scope.selectPage = function(p){
 		$scope.currentPage = p;
 		$scope.query = {
@@ -516,6 +551,16 @@ app.controller('backCtrl', function ($scope,$mdSidenav,$mdDialog,$http) {
 		};
 		$scope.selected = [];
 		$scope.getData();
+		$scope.options = {};
+		
+		var opts = [];
+		for(var i in $scope.currentPage.fields){
+			var f = $scope.currentPage.fields[i];
+			if(f.type === 'link'){
+				opts.push(f);
+			}
+		}
+		opts.forEach(addOptions);
 	};
 });
 
