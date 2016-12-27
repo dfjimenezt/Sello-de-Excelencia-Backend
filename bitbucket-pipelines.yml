@@ -10,6 +10,7 @@ pipelines:
           script:
             - echo "This script runs only on commit to the master branch."            
             # Configuration new version
+            - chmod +x deploy/new_version.sh
             - ./deploy/new_version.sh
             - export VERSION=$(cat deploy/VERSION)
             - export VERSION_UNDERSCORE=$(cat deploy/VERSION_UNDERSCORE)
