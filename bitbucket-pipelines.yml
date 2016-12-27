@@ -18,8 +18,17 @@ pipelines:
             - git config --global user.name "DOMOTI S.A.S."
             - git add deploy/VERSION
             - git commit -am "Update to new version ${VERSION}"
-            - git push origin master
+            # Install Google Cloud SDK is pinned for build reliability. Bump if the SDK complains about deprecation.
+            - SDK_VERSION=138.0.0
+            - SDK_FILENAME=google-cloud-sdk-${SDK_VERSION}-linux-x86_64.tar.gz
+            - curl -O -J https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${SDK_FILENAME}
+            - tar -zxvf ${SDK_FILENAME} --directory ${HOME}
+            - export PATH=${PATH}:${HOME}/google-cloud-sdk/bin          
+            # Configure Google Cloud SDK
+            - gcloud auth activate-service-account --key-file gcp/GOOGLE_CLIENT_SECRET.json      
             # Finish deploy (--log-http --verbosity=debug) 
+            - gcloud config set project ${CLOUDSDK_CORE_PROJECT}        
+            - gcloud --quiet --verbosity=error app deploy app.yaml --promote --stop-previous-version -v ${VERSION_UNDERSCORE}            
             - ./deploy/slack/slack.sh
     feature/*:
       - step:
