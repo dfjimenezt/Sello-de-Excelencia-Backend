@@ -19,6 +19,7 @@ pipelines:
             - git add deploy/VERSION
             - git commit -am "Update to new version ${VERSION}"
             # Install Google Cloud SDK is pinned for build reliability. Bump if the SDK complains about deprecation.
+            - export CLOUDSDK_CORE_PROJECT=$(cat deploy/gcp/CLOUDSDK_CORE_PROJECT)
             - SDK_VERSION=138.0.0
             - SDK_FILENAME=google-cloud-sdk-${SDK_VERSION}-linux-x86_64.tar.gz
             - curl -O -J https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${SDK_FILENAME}
