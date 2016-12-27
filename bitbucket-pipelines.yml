@@ -1,22 +1,18 @@
-# This is a sample build configuration for Javascript.
-# Check our guides at https://confluence.atlassian.com/x/VYk8Lw for more examples.
-# Only use spaces to indent your .yml configuration.
-# -----
-# You can specify a custom docker image from Docker Hub as your build environment.
-image: node:4.6.0
-
+image: node:7.1.0
 pipelines:
   default:
     - step:
-        script: # Modify the commands below to build your repository.
+        script:
+          - echo "This script runs on all branches that don't have any specific pipeline assigned in 'branches'."
           # Install app requirements
           - npm install
           # Testing app
-          - npm test         
+          - npm test  
   branches:
     master:
       - step:
           script:
+            - echo "This script runs only on commit to the master branch."
             # Install app requirements
             - npm install
             # Testing app
@@ -59,42 +55,4 @@ pipelines:
     development:
       - step:
           script:
-            # Install app requirements
-            - npm install
-            # Testing app
-            - npm test
-            # Configuration new version
-            - export VERSION=$(cat deploy/VERSION)
-            - ARRAY_VERSION=(${VERSION//./ })
-            - VERSION_MAJOR=${ARRAY_VERSION[0]}
-            - VERSION_MINOR=${ARRAY_VERSION[1]}
-            - VERSION_CONSECUTIVE=${ARRAY_VERSION[2]}
-            - VERSION_NEW_CONSECUTIVE=VERSION_CONSECUTIVE
-            - VERSION_NEW_MINOR=VERSION_MINOR
-            - let VERSION_NEW_CONSECUTIVE+=1            
-            #- [ $((VERSION_MINOR%2)) -eq 1 ] && echo "Archivo VERSION contiene errores" && exit # cambiar en development
-            - echo "Se subirá de version ${VERSION} a ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_NEW_CONSECUTIVE}"
-            - echo ${VERSION_MAJOR}.${VERSION_NEW_MINOR}.${VERSION_NEW_CONSECUTIVE} > deploy/VERSION
-            - git add deploy/VERSION
-            - git commit -am "Update to new version ${VERSION_MAJOR}.${VERSION_NEW_MINOR}.${VERSION_NEW_CONSECUTIVE}"
-            - git push
-            # Configuration environment variables for Google Cloud
-            - export CLOUDSDK_CORE_PROJECT=$(cat deploy/gcp/CLOUDSDK_CORE_PROJECT)          
-            - export GOOGLE_CLIENT_SECRET=$(cat deploy/gcp/GOOGLE_CLIENT_SECRET.json)
-            - export CLOUDSDK_CORE_DISABLE_PROMPTS=1
-            - export SLACK_CHANNEL=$(cat deploy/slack/CHANNEL)
-            - export SLACK_WEBHOOKS=$(cat deploy/slack/WEB_HOOKS)
-            # Install Google Cloud SDK is pinned for build reliability. Bump if the SDK complains about deprecation.
-            - SDK_VERSION=138.0.0
-            - SDK_FILENAME=google-cloud-sdk-${SDK_VERSION}-linux-x86_64.tar.gz
-            - curl -O -J https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${SDK_FILENAME}
-            - tar -zxvf ${SDK_FILENAME} --directory ${HOME}
-            - export PATH=${PATH}:${HOME}/google-cloud-sdk/bin          
-            # Configure Google Cloud SDK
-            - gcloud auth activate-service-account --key-file gcp/GOOGLE_CLIENT_SECRET.json      
-            # Finish deploy (--log-http --verbosity=debug) 
-            - gcloud config set project ${CLOUDSDK_CORE_PROJECT}        
-            - gcloud --quiet --verbosity=error app deploy app.yaml --promote --stop-previous-version -v ${VERSION_MAJOR}-${VERSION_MINOR}-${VERSION_NEW_CONSECUTIVE}
-            - export URL_DEPLOY=https://${VERSION_MAJOR}-${VERSION_MINOR}-${VERSION_NEW_CONSECUTIVE}-dot-${CLOUDSDK_CORE_PROJECT}.appspot-preview.com
-            - echo "curl -X POST --data-urlencode 'payload={\"channel\": \"#${SLACK_CHANNEL}\", \"username\": \"DOMOTI\", \"text\": \"Se ha desplegado una nueva version de ${BRANCH} en: ${URL_DEPLOY}\"}' ${SLACK_WEBHOOKS}" > slack.sh
-            - chmod +x slack.sh && ./slack.sh
+            - echo "This script runs only on commit to branches with names that match the feature/* pattern."
