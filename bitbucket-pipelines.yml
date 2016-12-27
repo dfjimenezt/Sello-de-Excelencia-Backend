@@ -18,7 +18,7 @@ pipelines:
             - git config --global user.name "DOMOTI S.A.S."
             - git add deploy/VERSION
             - git commit -am "Update to new version ${VERSION}"
-            - git push
+            - git push origin master
             # Finish deploy (--log-http --verbosity=debug) 
             - ./deploy/slack/slack.sh
     feature/*:
