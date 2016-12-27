@@ -1,4 +1,4 @@
-image: node:5.11.0
+image: node:7.1.0
 pipelines:
   default:
     - step:
@@ -14,9 +14,9 @@ pipelines:
           script:
             - echo "This script runs only on commit to the master branch."            
             # Install app requirements
-            - npm install
+            # - npm install
             # Testing app
-            - npm test            
+            # - npm test            
             # Configuration new version
             - chmod +x deploy/new_version.sh
             - ./deploy/new_version.sh
