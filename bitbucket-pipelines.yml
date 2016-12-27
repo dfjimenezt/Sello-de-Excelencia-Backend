@@ -10,10 +10,6 @@ pipelines:
           script:
             - echo "This script runs only on commit to the master branch."
             - echo "This script runs only on commit to the master branch."
-            # Install app requirements
-            - npm install
-            # Testing app
-            - npm test
             # Configuration new version
             - export VERSION=$(cat deploy/VERSION)
             - ARRAY_VERSION=(${VERSION//./ })
@@ -23,11 +19,15 @@ pipelines:
             - VERSION_NEW_CONSECUTIVE=VERSION_CONSECUTIVE
             - VERSION_NEW_MINOR=VERSION_MINOR
             - let VERSION_NEW_CONSECUTIVE+=1                        
-            - echo "Se subirÃ¡ de version ${VERSION} a ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_NEW_CONSECUTIVE}"
+            - echo "Se subirá de version ${VERSION} a ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_NEW_CONSECUTIVE}"
             - echo ${VERSION_MAJOR}.${VERSION_NEW_MINOR}.${VERSION_NEW_CONSECUTIVE} > deploy/VERSION
             - git add deploy/VERSION
             - git commit -am "Update to new version ${VERSION_MAJOR}.${VERSION_NEW_MINOR}.${VERSION_NEW_CONSECUTIVE}"
             - git push
+            # Finish deploy (--log-http --verbosity=debug) 
+            - export URL_DEPLOY=https://${VERSION_MAJOR}-${VERSION_MINOR}-${VERSION_NEW_CONSECUTIVE}-dot-${CLOUDSDK_CORE_PROJECT}.appspot-preview.com
+            - echo "curl -X POST --data-urlencode 'payload={\"channel\": \"#${SLACK_CHANNEL}\", \"username\": \"DOMOTI\", \"text\": \"Se ha desplegado una nueva version de ${BRANCH} en ${URL_DEPLOY}\"}' ${SLACK_WEBHOOKS}" > slack.sh
+            - chmod +x slack.sh && ./slack.sh  
     feature/*:
       - step:
           image: java:openjdk-9 # This step uses its own image
