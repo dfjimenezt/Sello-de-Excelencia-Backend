@@ -9,6 +9,25 @@ pipelines:
       - step:
           script:
             - echo "This script runs only on commit to the master branch."
+            - echo "This script runs only on commit to the master branch."
+            # Install app requirements
+            - npm install
+            # Testing app
+            - npm test
+            # Configuration new version
+            - export VERSION=$(cat deploy/VERSION)
+            - ARRAY_VERSION=(${VERSION//./ })
+            - VERSION_MAJOR=${ARRAY_VERSION[0]}
+            - VERSION_MINOR=${ARRAY_VERSION[1]}
+            - VERSION_CONSECUTIVE=${ARRAY_VERSION[2]}
+            - VERSION_NEW_CONSECUTIVE=VERSION_CONSECUTIVE
+            - VERSION_NEW_MINOR=VERSION_MINOR
+            - let VERSION_NEW_CONSECUTIVE+=1                        
+            - echo "Se subirá de version ${VERSION} a ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_NEW_CONSECUTIVE}"
+            - echo ${VERSION_MAJOR}.${VERSION_NEW_MINOR}.${VERSION_NEW_CONSECUTIVE} > deploy/VERSION
+            - git add deploy/VERSION
+            - git commit -am "Update to new version ${VERSION_MAJOR}.${VERSION_NEW_MINOR}.${VERSION_NEW_CONSECUTIVE}"
+            - git push
     feature/*:
       - step:
           image: java:openjdk-9 # This step uses its own image
