@@ -59,6 +59,22 @@ var MysqlModel = function (table) {
 		return resolveQuery(query, connection);
 	};
 
+	this.getFiltered = function(params){
+		var connection = mysql.createConnection(dbConf);
+		var queryGet = "";
+		for (var i in params.fields) {
+			//TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
+			queryGet += "list." + params.fields[i] + " like " + connection.escape("%"+params.filter+"%") + " OR ";
+		}
+		queryGet = queryGet.slice(0, -4);
+		var query = "SELECT SQL_CALC_FOUND_ROWS * FROM `" + table + 
+		"` AS list WHERE (" + queryGet + 
+		") ORDER BY list."+ params.order + 
+		" LIMIT "+( (parseInt(params.page)-1) * params.limit) +","+ params.limit + ";";
+		query += "SELECT FOUND_ROWS() as total_results;";
+		return resolveQuery(query,connection);
+	};
+
 	this.create = function (body) {
 		var connection = mysql.createConnection(dbConf);
 		var queryFields = "(";

@@ -8,13 +8,13 @@ var Controller = function (getMap, postMap, putMap, deleteMap) {
 	That function must always return a Promise
 	*/
 
-	this.get = function (params, queryParams) {
+	this.get = function (params, authorization, queryParams) {
 		if (!getMap) return utiles.informError(1);
 		var option = params[0].split("/")[0];
 
 		var rta = getMap.get(option);
 		if (!rta) return utiles.informError(5);
-		else return rta(queryParams);
+		else return rta(authorization,queryParams);
 	};
 
 	this.post = function (params, authorization, body, files) {
@@ -26,22 +26,22 @@ var Controller = function (getMap, postMap, putMap, deleteMap) {
 		else return rta(authorization,body);
 	};
 
-	this.put = function (params, body) {
+	this.put = function (params, authorization, body) {
 		if (!putMap) return utiles.informError(1);
 		var option = params[0].split("/")[0];
 
 		var rta = putMap.get(option);
 		if (!rta) return utiles.informError(5);
-		else return rta(body);
+		else return rta(authorization,body);
 	};
 
-	this.delete = function (params, body) {
+	this.delete = function (params,authorization, body) {
 		if (!deleteMap) return utiles.informError(1);
 		var option = params[0].split("/")[0];
 
 		var rta = deleteMap.get(option);
 		if (!rta) return utiles.informError(5);
-		else return rta(body);
+		else return rta(authorization,body);
 	};
 
 	return this;

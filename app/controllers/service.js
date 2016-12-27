@@ -6,11 +6,15 @@ var auth_ctrl = require("./auth.js");
 
 var service_model = require("../models/service.js");
 var service_status_model = require("../models/service_status.js");
+var category_model = require("../models/category.js");
 
 var Service = function(){
+	var auth = new auth_ctrl();
+
 	var service = new service_model();
 	var service_status = new service_status_model();
-	var auth = new auth_ctrl();
+	var category = new category_model();
+
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map();
 
@@ -26,22 +30,49 @@ var Service = function(){
 	/**
 	 * Get services by @param id
 	 */
-	var get_services = function(queryParams){
-		if(queryParams.id){
-			return service.getByUid(queryParams.id);
-		}else{
+	var get_services = function(token,params){
+		console.log(params);
+		if(params.id){
+			return service.getByUid(params.id);
+		}else if(params.filter || params.limit || params.page || params.page){
+				return service.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
+			}else{
 			return service.getAll();
 		}
 	};
 	
-	getMap.set("get_services",get_services);
+	/**
+	 * Get categories by @param id
+	 */
+	var get_categories = function(token,params){
+		if(params.id){
+			return category.getByUid(params.id);
+		}else if(params.filter || params.limit || params.page || params.page){
+				return category.getFiltered({
+					filter:params.filter,
+					limit:params.limit,
+					page:params.page,
+					order:params.order,
+					fields:["name"]});
+			}else{
+			return category.getAll();
+		}
+	};
+	getMap.set("service",get_services);
+	getMap.set("category",get_categories);
+
 	getMap.set("hall_fame",hall_fame);
 
 	/**
 	 * Postulate a service
 	 */
 	var postulate = function(token,body){
-		return auth.authorize(token,"platform").then(function(authorization){ //check for authorization to postulate a service
+		return auth.authorize(token,Permissions.PLATFORM).then(function(authorization){ //check for authorization to postulate a service
 			if(!authorization){
 				throw {error:Errors[4]};
 			}
@@ -68,14 +99,63 @@ var Service = function(){
 						id_status:1,
 						valid_to:valid
 					});
-					return {error:Errors[0]};
+					return {error:Errors.NO_ERROR};
 				}
 			});
 		});
 	};
 
-	postMap.set("postulate",postulate);
+	var create_category = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			return category.create(body).then(function(c){
+				if(c.insertId){
+					return {error:Errors.NO_ERROR};
+				}else{
+					throw {error:Errors[7]};
+				}
+			});
+		});
+	};
+
+	postMap.set("category",create_category);
+	postMap.set("service",postulate);
 	
+	/**
+	 * Updates a category
+	 */
+	var update_category = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			category.update(body,{id:body.id});
+		});
+	};
+
+	/**
+	 * Updates a Service
+	 */
+	var update_service = function(token,body){
+		return auth.authorize(token,"admin").then(function(authorization){
+			if(!authorization){
+				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+			}
+			if(!body.id){
+				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			}
+			service.update(body,{id:body.id});
+		});
+	};
+
+	putMap.set("category",update_category);
+	putMap.set("service",update_service);
+
 	var params = [getMap, postMap, putMap, deleteMap];
 	BaseController.apply(this, params);
 	//---------------------------------------------------------------

@@ -50,13 +50,19 @@ var Backend = function(configJSON)
 	//We create an Express app and enable Cross-origin resource sharing (CORS)
 	var express = require('express');
 	var morgan = require('morgan');
-	var methodOverride = require('method-override');
+//	var methodOverride = require('method-override');
 	var cors = require('cors');
 
 	var app = express();
 	app.use(morgan('dev')); // Log every request to the console
 	app.use(express.static(__dirname + '/public'));
-	app.use(methodOverride('X-HTTP-Method-Override')); // Override with the X-HTTP-Method-Override header in the request
+	
+	var bodyParser = require('body-parser');
+	// parse application/x-www-form-urlencoded 
+	app.use(bodyParser.urlencoded({ extended: false }));
+	// parse application/json 
+	app.use(bodyParser.json());
+	
 	var whitelist = config.autorizedHosts;
 	var corsOptions = {
 		origin: function(origin, callback){

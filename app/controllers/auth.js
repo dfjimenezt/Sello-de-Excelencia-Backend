@@ -9,6 +9,7 @@ var permission_role = require("../models/permission_role.js");
 var session = require("../models/session.js");
 var jwt = require('jsonwebtoken');
 var config = require("../../config.json");
+var crypto = require("crypto");
 
 var Auth = function () {
 	var user_model = new user();
@@ -40,9 +41,12 @@ var Auth = function () {
 	var login = function (token,body){
 		return user_model.getUser(body.email).then(function(user){
 			if(!user){//user doesnt exists
-				throw {error:Errors[12]};
+				throw {error:Errors.LOGIN.USER_NOT_EXISTS};
 			}else{
-				if(user.password === body.password){
+				var pass = crypto.createHmac("sha256",config.secret);
+				pass.update(body.password);
+				pass = pass.digest("hex");
+				if(user.password === pass){
 					delete user.password;
 					//encode
 					var now = new Date();
@@ -53,8 +57,9 @@ var Auth = function () {
 						expires:now
 					};
 					session_model.create(session);
-					return {token:session.token,
-						valid_to:session.expires};
+					return {token:session.token};
+				}else{
+					throw {error:Errors.LOGIN.LOGIN_FAILED};
 				}
 			}
 		});
@@ -62,8 +67,11 @@ var Auth = function () {
 	var register = function(token,body){
 		return user_model.getByParams({email:body.email}).then(function(user){
 			if(user.length>0){//user exists then cant be registered again
-				throw {error:Errors[11]};
+				throw {error:Errors.LOGIN.USER_EXISTS};
 			}else{//user doesnt exists will proceed to create one
+				var pass = crypto.createHmac("sha256",config.secret);
+				pass.update(body.password);
+				pass = pass.digest("hex");
 				return user_model.create({
 					name:body.name,
 					lastname:body.lastname,
@@ -71,20 +79,23 @@ var Auth = function () {
 					phone:body.phone,
 					active:false,
 					verified:false,
-					password:body.password,
+					password:pass,
 					tmp_pwd:true,
 					terms:body.terms === "true",
 					newsletter:body.newsletter === "true"
 				}).then(function(user){
 					if(user){ // if the user was created sucessfully
+						if(!body.role){
+							body.role = "1";
+						}
 						user_role_model.create({ //create the role assignment
 							id_user:user.insertId,
 							id_role:parseInt(body.role)
 						});
 						user.role = body.role; // add the role manually reduce time
-						return {error:Errors[0]}; // return user
+						return {error:Errors.NO_ERROR}; // return user
 					}else{ //if there was an error on creating the user
-						throw {error:Errors[7]};
+						throw {error:Errors.DATABASE_ERROR};
 					}
 				});
 			}
@@ -94,10 +105,10 @@ var Auth = function () {
 	var recover = function(token,body){
 		return user_model.getByParams({email:body.email}).then(function(user){
 			if(user.length === 0){ //if the user doesnt exists then send error
-				return {error:Errors[12]};
+				return {error:Errors.LOGIN.USER_NOT_EXISTS};
 			}else{ //send email and confirm
 				//TODO: //send email and reset password
-				return {error:Errors[0]}; 
+				return {error:Errors.NO_ERROR}; 
 			}
 		});
 	};

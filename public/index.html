@@ -5,7 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Sello de Excelencia Administrador</title>
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <link href="bower_components/angular-material-data-table/dist/md-data-table.min.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="./index.css" type="text/css"/>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -15,42 +16,89 @@
         <![endif]-->
   </head>
   <body ng-app="dmt-back" ng-cloak ng-controller="backCtrl">
-    <md-toolbar>
-    Sello de Excelencia
+    <md-toolbar layout="row" flex>
+      
+      <h2>Sello de Excelencia</h2>
+      <span flex></span>
     </md-toolbar>
-    <md-sidenav  md-is-locked-open="$mdMedia('min-width: 480px')">
-      <md-toolbar>
-    Sello de Excelencia
-    </md-toolbar>
-      <md-content layout-padding>
-        <div ng-repeat="x in leftMenu" layout="column">
-          <b>{{x.section}}</b>
-          <md-button ng-repeat="i in x.items" class="md-primary" ng-click="selectItem(i);">
-            {{i.item}}
-          </md-button>
-        </div>
-      </md-content>
-    </md-sidenav>
-    <md-content>
-      <form ng-submit="saveData(currentItem.table);">
-        <md-input-container ng-repeat="f in currentItem.fields">
-          <input type="number" ng-if="f.type=='int'" value="{{f.name}}" ng-disabled="!f.disabled"/>
-          <input type="text" ng-if="f.type=='string'" value="{{f.name}}" ng-disabled="!f.disabled"/>
-          <input type="file" ng-if="f.type=='file'" value="{{f.name}}" ng-disabled="!f.disabled"/>
-          <select ng-if="f.type=='link'" ng-disabled="!f.disabled">
-            <option> - </option>
-          </select>
-        </md-input-container>
-      </form>
+    <md-content flex layout="row">
+      <div   md-is-locked-open="$mdMedia('min-width: 480px')" md-component-id="menu">
+        <md-content layout-padding>
+          <div ng-repeat="x in leftMenu" layout="column">
+            <b>{{x.section}}</b>
+            <md-button ng-repeat="p in x.pages" class="md-primary md-raised" ng-click="selectPage(p);">
+              {{p.name}}
+            </md-button>
+          </div>
+        </md-content>
+      </div>
+      
+      <div layout="column">
+        <md-toolbar class="md-table-toolbar md-default" ng-hide="selected.length || filter.show">
+          <div class="md-toolbar-tools">
+            <h2 class="md-title">{{currentPage.name}}</h2>
+            <div flex></div>
+            <md-button class="md-icon-button" ng-click="filter.show = true">
+              <md-icon>filter_list</md-icon>
+            </md-button>
+            <md-button class="md-raised md-primary" ng-click="create($event)">CREAR</md-button>
+          </div>
+        </md-toolbar>
+        <md-toolbar class="md-table-toolbar md-default" ng-show="filter.show && !selected.length">
+          <div class="md-toolbar-tools">
+            <md-icon>Buscar</md-icon>
+            <form flex name="filter.form">
+              <input type="text" ng-model="query.filter" ng-model-options="filter.options" placeholder="Buscar">
+            </form>
+            <md-button class="md-icon-button" ng-click="removeFilter()">
+              <md-icon>Cerrar</md-icon>
+            </md-button>
+          </div>
+        </md-toolbar>
+        <md-toolbar class="md-table-toolbar alternate" ng-show="selected.length">
+          <div class="md-toolbar-tools" layout-align="space-between">
+            <div>{{selected.length}} {{selected.length > 1 ? 'items seleccionados' : 'item seleccionado'}}</div>
+            <md-button class="md-icon-button" ng-click="delete($event)">
+              <md-icon>Borrar</md-icon>
+            </md-button>
+          </div>
+        </md-toolbar>
+        <md-table-container>
+          <table md-table md-row-select multiple ng-model="selected" md-progress="promise">
+            <thead md-head md-order="query.order" md-on-reorder="getData">
+              <tr md-row>
+                <th md-column ng-repeat="f in currentPage.fields" ng-if="f.type!=='li nk'">
+                  <span>{{f.name}}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody md-body>
+              <tr md-row md-select="item" md-select-id="name" md-auto-select ng-repeat="item in items">
+                <td md-cell ng-repeat="f in currentPage.fields" ng-click="editField($event,item,f)">
+                  <span ng-if="f.type!=='link'">{{item[f.name]}}</span>
+                  <md-select ng-if="f.type=='link'" ng-model="item[f.name]" placeholder="Other" ng-change="updateItem(item,f);" >
+                    <md-option ng-repeat="o in options[f.name]" value="{{o[f.foreign_key]}}">{{o[f.foreign_name]}}</md-option>
+                  </md-select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </md-table-container>
+        <md-table-pagination md-limit="query.limit" md-limit-options="[5, 10, 15]" md-page="query.page" md-total="{{total_results}}" md-on-paginate="getData" md-page-select></md-table-pagination>
+      </div>
+
     </md-content>
 
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
 
     <!-- Angular Material Library -->
-    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+    <!-- Angular Data Tables -->
+    <script src="bower_components/angular-material-data-table/dist/md-data-table.min.js"></script>
     <script src="./index.js"></script>
   </body>
 </html>
