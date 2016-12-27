@@ -4,11 +4,19 @@ pipelines:
     - step:
         script:
           - echo "This script runs on all branches that don't have any specific pipeline assigned in 'branches'."
+          # Install app requirements
+          - npm install
+          # Testing app
+          - npm test          
   branches:
     master:
       - step:
           script:
             - echo "This script runs only on commit to the master branch."            
+            # Install app requirements
+            - npm install
+            # Testing app
+            - npm test            
             # Configuration new version
             - chmod +x deploy/new_version.sh
             - ./deploy/new_version.sh
