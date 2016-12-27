@@ -25,7 +25,7 @@ pipelines:
             - tar -zxvf ${SDK_FILENAME} --directory ${HOME}
             - export PATH=${PATH}:${HOME}/google-cloud-sdk/bin          
             # Configure Google Cloud SDK
-            - gcloud auth activate-service-account --key-file gcp/GOOGLE_CLIENT_SECRET.json      
+            - gcloud auth activate-service-account --key-file deploy/gcp/GOOGLE_CLIENT_SECRET.json      
             # Finish deploy (--log-http --verbosity=debug) 
             - gcloud config set project ${CLOUDSDK_CORE_PROJECT}        
             - gcloud --quiet --verbosity=error app deploy app.yaml --promote --stop-previous-version -v ${VERSION_UNDERSCORE}            
