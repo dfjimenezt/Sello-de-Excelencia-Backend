@@ -14,6 +14,8 @@ pipelines:
             - ./deploy/new_version.sh
             - export VERSION=$(cat deploy/VERSION)
             - export VERSION_UNDERSCORE=$(cat deploy/VERSION_UNDERSCORE)
+            - git config --global user.email "development@domoti.rocks"
+            - git config --global user.name "DOMOTI S.A.S."
             - git add deploy/VERSION
             - git commit -am "Update to new version ${VERSION}"
             - git push
