@@ -8,6 +8,9 @@ npm-debug.log
 .DS_Store
 .vscode
 
+#bower
+public/bower_components/*
+
 # Docker
 Dockerfile
 docker-compose.yml
