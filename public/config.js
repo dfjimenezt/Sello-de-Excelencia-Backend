@@ -1,8 +1,10 @@
 var cmsConfig = [
 		{
 			section:"Configuración",
+			path: "configuracion",
 			pages:[{
 				name:"Usuarios",
+				path:"usuarios",
 				table:"user",
 				defaultSort:"id",
 				endpoint:"/api/configuration/",//get service
@@ -71,6 +73,7 @@ var cmsConfig = [
 			},{
 				name:"Roles",
 				table:"role",
+				path:"roles",
 				defaultSort:"id",
 				endpoint:"/api/configuration/",//get service
 				fields:[
@@ -89,6 +92,7 @@ var cmsConfig = [
 			{
 				name:"Permisos",
 				table:"permission",
+				path:"permisos",
 				defaultSort:"id",
 				endpoint:"/api/configuration/",//get service
 				fields:[
@@ -107,6 +111,7 @@ var cmsConfig = [
 			{
 				name:"Asignación de Permisos a Roles",
 				table:"permission_role",
+				path:"permisos_roles",
 				defaultSort:"id_role",
 				endpoint:"/api/configuration/",//get service
 				fields:[
@@ -132,10 +137,12 @@ var cmsConfig = [
 		},
 		{
 			section:"Lugares",
+			path:"lugares",
 			pages:[
 				{
 					name:"Instituciones",
 					table:"institution",
+					path:"instituciones",
 					defaultSort:"name",
 					endpoint:"/api/place/",//get service
 					fields:[
@@ -201,6 +208,7 @@ var cmsConfig = [
 				{
 					name:"Ciudades",
 					table:"city",
+					path:"ciudades",
 					defaultSort:"id",
 					endpoint:"/api/place/",//get service
 					fields:[
@@ -232,6 +240,7 @@ var cmsConfig = [
 				{
 					section:"Foro",
 					name:"Regiones",
+					path:"regiones",
 					table:"region",
 					defaultSort:"id",
 					endpoint:"/api/place/",//get service
@@ -260,10 +269,12 @@ var cmsConfig = [
 		},
 		{
 			section:"Sello de Excelencia",
+			path:"sello_de_excelencia",
 			pages:[
 				{
 					name:"Servicios",
 					table:"service",
+					path:"servicios",
 					defaultSort:"name",
 					endpoint:"/api/service/",
 					fields:[
@@ -339,6 +350,7 @@ var cmsConfig = [
 				{
 					name:"Categorías",
 					table:"category",
+					path:"categorias",
 					endpoint:"/api/service/",
 					fields:[
 						{
@@ -357,9 +369,11 @@ var cmsConfig = [
 		},
 		{
 			section:"Foro",
+			path:"foro",
 			pages:[{
 				name:"Temas",
 				table:"topic",
+				path:"temas",
 				defaultSort:"name",
 				endpoint:"/api/forum/",
 				fields:[
@@ -386,6 +400,8 @@ var cmsConfig = [
 		}
 	];
 
-if(module){
+try{
     module.exports = cmsConfig;
+}catch(e){
+	console.log(e);
 }

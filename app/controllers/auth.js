@@ -1,11 +1,12 @@
 var BaseController = require('../utils/controller.js')
 var util = require('util')
 var utiles = require('../utils/utiles.js')
-var permissions = require('../utils/permissions.js')
+var Permissions = require('../utils/permissions.js')
 
 var User = require('../models/user.js')
 var Session = require('../models/session.js')
 var User_role_model = require('../models/user_role.js')
+var config = require("../../config.json");
 
 var Auth = function () {
   var userModel = new User()
@@ -13,7 +14,90 @@ var Auth = function () {
   var user_role = new User_role_model()
 
   // ---------------------------------------------------------------
+
+  var getMap = new Map()
+  /**
+   * @api {get} /auth/activate
+   * @apiVersion 0.0.1
+   * @apiName activate
+   * @apiGroup Auth
+   * @apiPermission none
+   */
+  var activate = function (token, params) {
+    return userModel.getUser(params.email).then((user) => {
+      if (!user) throw utiles.informError(202) // user doesnt exists
+      user.active = 1;
+      user.verified = 1;
+      return userModel.update(user, { id: user.id });
+    });
+  }
+
+  getMap.set("activate", { method: activate, permits: Permissions.NONE })
+
+
+
   var postMap = new Map()
+  /**
+   * @api {post} /auth/login_fb
+   */
+  var login_fb = function (token, body) {
+    return userModel.getUser(body.email).then((user) => {
+      if (!user) {
+        var password = Math.random().toString(36).substring(2, 8);
+        var pass = utiles.createHmac('sha256')
+        pass.update(password);
+        pass = pass.digest('hex')
+        return userModel.create({
+          name: body.name,
+          lastname: body.lastname,
+          email: body.email,
+          phone: body.phone || "",
+          active: true,
+          verified: true,
+          password: pass,
+          tmp_pwd: true,
+          terms: body.terms === "true",
+          newsletter: body.newsletter === "true"
+        }).then((user) => {
+          user_role.create({
+            id_user: user.insertId,
+            id_role: 1
+          }).then((br)=>{
+            return userModel.getUser(body.email).then((user)=>{
+              delete user.password;
+              // encode
+              var now = new Date()
+              now.setDate(now.getDate() + 15) // the token expires in 15 days
+              var session = {
+                token: utiles.sign(user),
+                id_user: user.id,
+                expires: now
+              }
+              sessionModel.create(session)
+              var answer = utiles.informError(0)
+              answer.token = session.token
+              return answer;
+            });
+          });
+        });
+      } else {
+        delete user.password;
+        // encode
+        var now = new Date()
+        now.setDate(now.getDate() + 15) // the token expires in 15 days
+        var session = {
+          token: utiles.sign(user),
+          id_user: user.id,
+          expires: now
+        }
+        sessionModel.create(session)
+        var answer = utiles.informError(0)
+        answer.token = session.token
+        return answer;
+      }
+    });
+  }
+
 
   /**
   * @api {post} /auth/login Login as a user
@@ -40,6 +124,9 @@ var Auth = function () {
         pass.update(body.password)
         pass = pass.digest('hex')
         if (user.password === pass) {
+          if (user.active === 0) {
+            throw utiles.informError(203) //user inactive
+          }
           delete user.password
           // encode
           var now = new Date()
@@ -86,17 +173,20 @@ var Auth = function () {
         pass = pass.digest('hex')
         return userModel.create({
           name: body.name,
+          secondname: body.secondname || "",
           lastname: body.lastname,
-          document: body.document,
-          office_address: body.office_address,
+          secondlastname: body.secondlastname || "",
           email: body.email,
           phone: body.phone,
-          played: 0,
-          won: 0,
-          active: true,
-          verified: true,
-          tmp_pwd: false,
-          password: pass
+          extension: body.extension || "",
+          mobile: body.mobile || "",
+          
+          active: false,
+          verified: false,
+          password: pass,
+          tmp_pwd: true,
+          terms: body.terms === "true",
+          newsletter: body.newsletter === "true"
         }).then(function (user) {
           // if the user was created sucessfully
           if (user) {
@@ -110,6 +200,14 @@ var Auth = function () {
             });
             // add the role manually reduce time
             user.role = body.role;
+
+            // send an email to the user
+            let template = "Hola " + body.name + "<p>Te has registrado con exito en la plataforma del Sello de Excelencia</p>"
+              + "<p>Tu contraseña para acceder es: " + body.pass + "</p>" +
+              + "<a href='http://localhost:3000/activate/?email=" + body.email + "'>Haz click aquí para activar tu cuenta</a>" +
+              "</p>Nuestros mejores deseos,<p>El equipo del Sello de Excelencia";
+
+            utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template);
             // return user
             return { error: Errors.NO_ERROR }
           } else {
@@ -143,17 +241,28 @@ var Auth = function () {
       if (user.length === 0) { // if the user doesnt exists then send error
         return utiles.informError(202)
       } else { // send email and confirm
-        // TODO: //send email and reset password
-        return utiles.informError(0)
+        var password = Math.random().toString(36).substring(2, 8);
+        var pass = utiles.createHmac('sha256')
+        pass.update(password);
+        pass = pass.digest('hex')
+        user.password = pass;
+        return userModel.update(user, { id: user.id }).then(() => {
+          let template = "Hola " + user.name + "<p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia</p>"
+            + "<p>Tu nueva contraseña para acceder es: " + password + "</p>" +
+            "</p>Nuestros mejores deseos,<p>El equipo del Sello de Excelencia";
+
+          utiles.sendEmail(user.email, null, null, "Recuperación de Contraseña", template)
+          return utiles.informError(0);
+        });
       }
     })
   }
 
-  postMap.set('login', { method: login, permits: permissions.NONE })
-  postMap.set('register', { method: register, permits: permissions.NONE })
-  postMap.set('recover', { method: recover, permits: permissions.NONE })
+  postMap.set('login', { method: login, permits: Permissions.NONE })
+  postMap.set('register', { method: register, permits: Permissions.NONE })
+  postMap.set('recover', { method: recover, permits: Permissions.NONE })
 
-  var params = [null, postMap, null, null]
+  var params = [getMap, postMap, null, null]
   BaseController.apply(this, params)
   // ---------------------------------------------------------------
 

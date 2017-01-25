@@ -77,6 +77,27 @@ module.exports = {
       }).catch((err) => { reject(err) })
     })
   },
+  sendEmail: function (to, cc, bcc, subject, body, attachment) {
+    return new Promise((resolve, reject) => {
+      var transporter = nodemailer.createTransport(config.smtp.protocol + '://' + config.smtp.sender + ':' + config.smtp.password + '@' + config.smtp.server);
+      var mailOptions = {
+        from: config.smtp.from, // sender address
+        to: to, // list of receivers
+        cc: cc,
+        bcc: bcc,
+        subject: subject, // Subject line
+        html: template // plaintext body
+      };
+      //send Mail;
+      // send mail with defined transport object
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          reject(error);
+        }
+        resolve();
+      });
+    });
+  },
   /* This one is used to group information after some MySQL Query.
   Its intended to be used when the query contains a join betwen tables. In the
   answer the left part will be common for some tuples, so to destroy that redundant information

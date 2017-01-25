@@ -12,6 +12,7 @@ module.exports = {
   200: { code: 200, message: 'LOGIN FAILED', htmlCode: 401 },
   201: { code: 201, message: 'USER ALREADY EXISTS', htmlCode: 401 },
   202: { code: 202, message: 'USER DOESNT EXISTS', htmlCode: 404 },
+  203: { code: 203, message: 'USER NOT ACTIVE', htmlCode: 401 },
   // DATABASE ERRORS
   300: { code: 300, message: 'DATABASE PROBLEM', htmlCode: 500 },
   301: { code: 301, message: 'FAIL IN AN EXTERNAL SERVICE', htmlCode: 500 },

@@ -5,7 +5,7 @@
     <base href="/">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>BUPRE</title>
+    <title>Sello de Excelencia</title>
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
     <link href="bower_components/angular-material-data-table/dist/md-data-table.min.css" rel="stylesheet" type="text/css"/>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -15,13 +15,13 @@
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
   </head>
-  <body ng-app="dmt-back" ng-cloak ng-controller="backCtrl">
+  <body ng-app="dmt-back" ng-cloak ng-controller="backCtrl as ctrl">
     <md-toolbar layout="row" flex layout-align="start center">
       <md-button ng-click="ctrl.menu()">MENU</md-button>
-      <h2>BUPRE</h2>
+      <h2>Sello de Excelencia</h2>
     </md-toolbar>
     <md-content flex layout="row">
-      <nd-sidenav  md-is-locked-open="$mdMedia('min-width: 480px')" md-component-id="menu">
+      <md-sidenav  md-is-locked-open="$mdMedia('min-width: 480px')" md-component-id="menu">
         <md-content layout-padding>
           <div ng-repeat="x in ctrl.leftMenu" layout="column">
             <b>{{x.section}}</b>
@@ -31,7 +31,7 @@
           </div>
         </md-content>
       </md-sidenav>
-      <md-content ng-view>
+      <md-content ng-view flex>
       </md-content>
 
     </md-content>
