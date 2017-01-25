@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 //
 //                       _oo0oo_
@@ -36,69 +36,77 @@ Or it coul be started by the cli and it will search the config file in this path
 
 The structure of a config JSON must be:
 */
-var Backend = function(configJSON)
-{
-	var config = configJSON || require('./config.json');
-	var verbose = config.verbose.toLowerCase() === 'true';
+var Backend = function (configJSON) {   
+   var Generator = require("./app/generator/mysql-parser.js");
+   var generator = new Generator();
+   generator.parse();
+   
+  
+  var config = configJSON || require('./config.json')
+  var verbose = config.verbose === true
 
-	//If we are using Google app engine to deploy the app
-	if(config.googleDebug.toLowerCase() === 'true'){
-	  require('@google/cloud-trace').start();
-	  require('@google/cloud-debug');
-	}
+  // If we are using Google app engine to deploy the app
+  if (config.googleDebug === true) {
+    require('@google/cloud-trace').start()
+    require('@google/cloud-debug')
+  }
 
-	//We create an Express app and enable Cross-origin resource sharing (CORS)
-	var express = require('express');
-	var morgan = require('morgan');
-//	var methodOverride = require('method-override');
-	var cors = require('cors');
+  // We create an Express app and enable Cross-origin resource sharing (CORS)
+  var express = require('express')
+  var methodOverride = require('method-override')
+  var cors = require('cors')
+  var path = require('path')
 
-	var app = express();
-	app.use(morgan('dev')); // Log every request to the console
-	app.use(express.static(__dirname + '/public'));
-	
-	var bodyParser = require('body-parser');
-	// parse application/x-www-form-urlencoded 
-	app.use(bodyParser.urlencoded({ extended: false }));
-	// parse application/json 
-	app.use(bodyParser.json());
-	
-	var whitelist = config.autorizedHosts;
-	var corsOptions = {
-		origin: function(origin, callback){
-			var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-			callback(null, originIsWhitelisted);
-		},
-		methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
-	};
-	app.use(cors(corsOptions)); // Sign with default (HMAC SHA256)
-	app.options('*', cors());//Enabling CORS Pre-Flight, for DELETE
+  var app = express()
+  if (verbose) {
+    var morgan = require('morgan')
+    app.use(morgan('dev')) // Log every request to the console
+  }
+  app.use(express.static(path.join(__dirname, 'public')))
+  app.use(methodOverride('X-HTTP-Method-Override')) // Override with the X-HTTP-Method-Override header in the request
+  var whitelist = config.autorizedHosts
+  var corsOptions = {
+    origin: function (origin, callback) {
+      var originIsWhitelisted = whitelist.indexOf(origin) !== -1
+      callback(null, originIsWhitelisted)
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
+  }
 
-	//The routing logic of the app will be on this file.
-	require('./app/routes.js')(app);
+  // Sign with default (HMAC SHA256)
+  app.use(cors(corsOptions))
+  
+  // Enabling CORS Pre-Flight, for DELETE
+  app.options('*', cors())
 
-	//This turns on the app
-	app.set('port', (process.env.PORT || config.port || 5000));
+  // The routing logic of the app will be on this file.
+  require('./app/routes.js')(app)
+  
+  // This turns on the app
+  app.set('port', (process.env.PORT || config.port || 5000))
 
-	var server;
+  var server
 
-	this.start = function(){
-		server = app.listen(app.get('port'), () => {
-			if(verbose){
-				console.log('Node app is running on port', app.get('port'));
-				console.log("Using profile: "+config.enviroment);
-			}
-		});
-	};
+  this.start = function () {
+    return new Promise((resolve, reject) => {
+      server = app.listen(app.get('port'), () => {
+        if (verbose) {
+          console.log('Node app is running on port', app.get('port'))
+          console.log('Using profile: ' + config.enviroment)
+        }
+        resolve(true)
+      })
+    })
+  }
 
-	this.close = function(){
-		server.close();
-	};
-};
+  this.close = function () {
+    server.close()
+  }
+}
 
-module.exports = Backend;
+module.exports = Backend
 
-if(module === require.main){
-	var instance = new Backend();
-	instance.start();
+if (module === require.main) {
+  var instance = new Backend()
+  instance.start()
 }

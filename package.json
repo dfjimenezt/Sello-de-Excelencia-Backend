@@ -1,53 +1,77 @@
 {
-  "name": "domoti-stamp",
+  "name": "dmt-bupre-backend-nodejs",
   "version": "0.0.1",
-  "description": "El back del sello de excelencia",
+  "description": "El back de Bupre",
   "engines": {
-    "node": "5.9.1"
+    "node": "6.9.2"
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
     "pretest": "npm run style",
-    "deploy": "gcloud app deploy app.yaml",
-    "monitor": "nodemon app.js",
     "test": "./node_modules/.bin/mocha app/tests/dev*",
-    "style": "node_modules/.bin/eslint app"    
+    "start": "npm run apidoc && node index.js",
+    "style": "eslint index.js app/routes.js app/controllers/ app/models/ app/utils/",
+    "apidoc": "apidoc -i app/ -o public/apidoc/"
   },
   "dependencies": {
     "@google/cloud-debug": "^0.8.5",
     "@google/cloud-trace": "^0.5.8",
-    "@google-cloud/storage": "^0.1.1",
-    "@google-cloud/datastore": "^0.1.1",
+    "apidoc": "^0.16.1",
     "body-parser": "^1.15.2",
     "connect-form2": "^0.1.2",
     "cors": "^2.8.1",
-    "express": "4.13.3",
-    "geolib": "^2.0.22",
-    "get-image-urls": "^1.0.4",
-    "jquery": "^3.1.1",
+    "crypto": "0.0.3",
+    "express": "4.14.0",
     "jsdom": "^9.8.3",
+    "jsonwebtoken": "^7.2.1",
     "method-override": "^2.3.6",
     "mocha": "^3.1.2",
     "morgan": "^1.7.0",
     "mysql": "^2.11.1",
+    "path": "^0.12.7",
     "request": "^2.79.0",
-    "jsonwebtoken": "7.2.1",    
-    "xlsx": "0.8.0"
-  },  
+    "xlsx":"0.8.1",
+    "nodemailer": "2.2.1"
+  },
+  "eslintConfig": {
+    "ecmaVersion": 6,
+    "env": {
+      "browser": true,
+      "node": true
+    }
+  },
+  "apidoc": {
+    "title": "Bupre apiDoc",
+    "url": "https://backend-dot-domoti-bupre.appspot-preview.com/",
+    "sampleUrl": "https://backend-dot-domoti-bupre.appspot-preview.com/",
+    "header": {
+      "title": "My own header title",
+      "filename": "apidoc/header.md"
+    },
+    "footer": {
+      "title": "My own footer title",
+      "filename": "apidoc/footer.md"
+    },
+    "template": {
+      "withCompare": true,
+      "withGenerator": true
+    }
+  },
   "repository": {
     "type": "git",
-    "url": "https://bitbucket.org/domoti/stamp-backend"
+    "url": "https://bitbucket.org/domoti/dmt-bupre-backend-nodejs"
   },
   "keywords": [
     "node",
     "heroku",
-    "express"
+    "express",
+    "gcd"
   ],
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^3.12.0",
-    "eslint-loader": "^1.6.1",
-    "mocha": "^3.0.2"
+    "eslint": "^3.11.1",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-promise": "^3.4.0",
+    "eslint-plugin-standard": "^2.0.1"
   }
 }

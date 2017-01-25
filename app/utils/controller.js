@@ -1,50 +1,74 @@
-var utiles = require('./utiles.js');
+var utiles = require('./utiles.js')
 
-//This is the generic Controller, all controllers inherits from this one.
+// This is the generic Controller, all controllers inherits from this one.
 var Controller = function (getMap, postMap, putMap, deleteMap) {
-	/*
-	The main idea of a controller is a component where we can map a url with a function.
-	there are some minor differences depending on the method in the request.
-	That function must always return a Promise
-	*/
+  /*
+  The main idea of a controller is a component where we can map a url with a function.
+  there are some minor differences depending on the method in the request.
+  That function must always return a Promise
+  */
 
-	this.get = function (params, authorization, queryParams) {
-		if (!getMap) return utiles.informError(1);
-		var option = params[0].split("/")[0];
+  this.get = function (params, token, queryParams) {
+    if (!getMap) return utiles.informError(405)
+    var option = params[0].split('/')[0]
 
-		var rta = getMap.get(option);
-		if (!rta) return utiles.informError(5);
-		else return rta(authorization,queryParams);
-	};
+    var rta = getMap.get(option)
+    if (!rta) return utiles.informError(404)
+    else {
+      var method = rta.method
+      var permitsNeeded = rta.permits
+      return utiles.authorize(token, permitsNeeded).then((user) => {
+        return method(user, queryParams)
+      })
+    }
+  }
 
-	this.post = function (params, authorization, body, files) {
-		if (!postMap) return utiles.informError(1);
-		var option = params[0].split("/")[0];
+  this.post = function (params, token, body, files) {
+    if (!postMap) return utiles.informError(405)
+    var option = params[0].split('/')[0]
 
-		var rta = postMap.get(option);
-		if (!rta) return utiles.informError(5);
-		else return rta(authorization,body);
-	};
+    var rta = postMap.get(option)
+    if (!rta) return utiles.informError(404)
+    else {
+      var method = rta.method
+      var permitsNeeded = rta.permits
+      return utiles.authorize(token, permitsNeeded).then((user) => {
+        return method(user, body, files)
+      })
+    }
+  }
 
-	this.put = function (params, authorization, body) {
-		if (!putMap) return utiles.informError(1);
-		var option = params[0].split("/")[0];
+  this.put = function (params, token, body) {
+    if (!putMap) return utiles.informError(405)
+    var option = params[0].split('/')[0]
 
-		var rta = putMap.get(option);
-		if (!rta) return utiles.informError(5);
-		else return rta(authorization,body);
-	};
+    var rta = putMap.get(option)
+    if (!rta) return utiles.informError(404)
+    else {
+      var method = rta.method
+      var permitsNeeded = rta.permits
+      return utiles.authorize(token, permitsNeeded).then((user) => {
+        return method(user, body)
+      })
+    }
+  }
 
-	this.delete = function (params,authorization, body) {
-		if (!deleteMap) return utiles.informError(1);
-		var option = params[0].split("/")[0];
+  this.delete = function (params, token, body) {
+    if (!deleteMap) return utiles.informError(405)
+    var option = params[0].split('/')[0]
 
-		var rta = deleteMap.get(option);
-		if (!rta) return utiles.informError(5);
-		else return rta(authorization,body);
-	};
+    var rta = deleteMap.get(option)
+    if (!rta) return utiles.informError(404)
+    else {
+      var method = rta.method
+      var permitsNeeded = rta.permits
+      return utiles.authorize(token, permitsNeeded).then((user) => {
+        return method(user, body)
+      })
+    }
+  }
 
-	return this;
-};
+  return this
+}
 
-module.exports = Controller;
+module.exports = Controller

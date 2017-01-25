@@ -11,9 +11,9 @@ var user_role_model = require("../models/user_role.js");
 var permission_model = require("../models/permission.js");
 var permission_role_model = require("../models/permission_role.js");
 
-var Configuration = function(){
+var Configuration = function () {
 	var auth = new auth_ctrl();
-	var user = new user_model();
+	var _user = new user_model();
 	var role = new role_model();
 	var user_role = new user_role_model();
 	var permission = new permission_model();
@@ -22,303 +22,185 @@ var Configuration = function(){
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map();
 
+	var _get = function(model,user,params){
+		if (params.id) {
+			return model.getByUid(params.id);
+		} else {
+			return model.getAll({
+				filter: params.filter,
+				limit: params.limit,
+				page: params.page,
+				order: params.order,
+				fields: params.field
+			});
+		}
+	}
 	/**
 	 * Users
 	 */
-	var users = function(token,params){
-		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			if(params.id){
-				return user.getByUid(params.id);
-			}else if(params.filter || params.limit || params.page || params.page){
-				return user.getFiltered({
-					filter:params.filter,
-					limit:params.limit,
-					page:params.page,
-					order:params.order,
-					fields:["name","email"]});
-			}else{
-				return user.getAll();
-			}
-		});
+	var users = function (user, params) {
+		if(params.line){
+			return _user.getByLine(params.line);
+		}else{
+			return _get(_user,user,params);
+		}
+		
 	};
 
 	/**
 	 * Roles disponibles
 	 */
-	var roles = function(token,params){
-		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			if(params.id){
-				return role.getByUid(params);
-			}else if(params.filter || params.limit || params.page || params.page){
-				return role.getFiltered({
-					filter:params.filter,
-					limit:params.limit,
-					page:params.page,
-					order:params.order,
-					fields:["name"]});
-			}else{
-				return role.getAll();
-			}
-		});
+	var roles = function (user, params) {
+		return _get(role,user,params);
 	};
 
 	/**
 	 * Permisos disponibles
 	 */
-	var permissions = function(token,params){
-		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			if(params.id){
-				return permission.getByUid(params);
-			}else if(params.filter || params.limit || params.page || params.page){
-				return permission.getFiltered({
-					filter:params.filter,
-					limit:params.limit,
-					page:params.page,
-					order:params.order,
-					fields:["name"]});
-			}else{
-				return permission.getAll();
-			}
-		});
+	var permissions = function (user, params) {
+		return _get(permission,user,params);
 	};
 	/**
 	 * Usuario _ Role
 	 */
-	var user_roles = function(token,params){
-		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			if(params.id_user){
-				return user_role.getByParams({id_user:id_user});
-			}else if(params.filter || params.limit || params.page || params.page){
-				return user_role.getFiltered({
-					filter:params.filter,
-					limit:params.limit,
-					page:params.page,
-					order:params.order,
-					fields:["id_user","id_role"]});
-			}else{
-				return user_role.getAll();
-			}
-		});
+	var user_roles = function (user, params) {
+		return _get(user_role,user,params);
 	};
 	/**
 	 * Permission _ Role
 	 */
-	var permission_roles = function(token,params){
-		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			if(params.id_user){
-				return permission_role.getByParams({id_permission:id_permission});
-			}else if(params.filter || params.limit || params.page || params.page){
-				return permission_role.getFiltered({
-					filter:params.filter,
-					limit:params.limit,
-					page:params.page,
-					order:params.order,
-					fields:["id_permission","id_role"]});
-			}else{
-				return permission_role.getAll();
-			}
-		});
+	var permission_roles = function (user, params) {
+		return _get(permission_role,user,params);
 	};
-	getMap.set("user",users);
-	getMap.set("role",roles);
-	getMap.set("user_role",user_roles);
-	getMap.set("permission",permissions);
-	getMap.set("permission_role",permission_roles);
 
+	getMap.set("user", { method: users, permits: Permissions.PLATFORM });
+	getMap.set("role", { method: roles, permits: Permissions.ADMIN });
+	getMap.set("user_role", { method: user_roles, permits: Permissions.ADMIN });
+	getMap.set("permission", { method: permissions, permits: Permissions.ADMIN });
+	getMap.set("permission_role", { method: permission_roles, permits: Permissions.ADMIN });
+
+	var _create = function(model,body){
+		return model.create(body).then((u) => {
+			if (u.insertId) {
+				return { error: Errors.NO_ERROR };
+			}
+			return { error: Errors[7] };
+		});
+	}
 	/**
 	 * Crear usuario
 	 */
-	var create_user = function(token,body){
-		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			return user.create(body).then(function(u){
-				if(u.insertId){
-					return {error:Errors.NO_ERROR};
-				}
-				return {error:Errors[7]};
-			});
-		});
+	var create_user = function (user, body) {
+		return _create(_user,body)
 	};
 	/**
 	 * Crear Rol
 	 */
-	var create_role = function(token,body){
-		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			return role.create(body).then(function(u){
-				if(u.insertId){
-					return {error:Errors.NO_ERROR};
-				}
-				return {error:Errors[7]};
-			});
-		});
+	var create_role = function (user, body) {
+		return _create(role,body);
 	};
 	/**
 	 * Crear Permiso
 	 */
-	var create_permission = function(token,body){
-		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			return permission.create(body).then(function(u){
-				if(u.insertId){
-					return {error:Errors.NO_ERROR};
-				}
-				return {error:Errors[7]};
-			});
-		});
+	var create_permission = function (token, body) {
+		return _create(permission,body);
 	};
+
 	/**
 	 * Crear Usuario Role
 	 */
-	var bind_user_role = function(token,body){
-		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			return user_roles.create(body).then(function(u){
-				//if(u.insertId){
-					return {error:Errors.NO_ERROR};
-				//}
-				//throw {error:Errors[7]};
-			});
+	var bind_user_role = function (token, body) {
+		return user_roles.create(body).then((u) => {
+			return { error: Errors.NO_ERROR };
 		});
 	};
 
 	/**
 	 * Crear Usuario Role
 	 */
-	var bind_permission_role = function(token,body){
-		return auth.authorize(token,Permissions.ADMIN).then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			return permission_role.create(body).then(function(u){
-				//if(u.insertId){
-					return {error:Errors.NO_ERROR};
-				//}
-				//throw {error:Errors[7]};
-			});
+	var bind_permission_role = function (token, body) {
+		return permission_role.create(body).then((u) => {
+			return { error: Errors.NO_ERROR };
 		});
 	};
 
-	postMap.set("user",create_user);
-	postMap.set("role",create_role);
-	postMap.set("permission",create_permission);
-	postMap.set("user_role",bind_user_role);
-	postMap.set("permission_role",bind_permission_role);
+	postMap.set("user", { method: create_user, permits: Permissions.ADMIN });
+	postMap.set("role", { method: create_role, permits: Permissions.ADMIN });
+	postMap.set("permission", { method: create_permission, permits: Permissions.ADMIN });
+	postMap.set("user_role", { method: bind_user_role, permits: Permissions.ADMIN });
+	postMap.set("permission_role", { method: bind_permission_role, permits: Permissions.ADMIN });
 
 	/**
 	 * Updates an User
 	 */
-	var update_user = function(token,body){
-		return auth.authorize(token,"admin").then(function(authorization){
-			if(!authorization){ //admin for every user
-				return auth.authorize(token,"platform").then(function(authorization){ //if user can change if and only if it's own user
-					if(!authorization){
-						throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+	var update_user = function (token, body) {
+		return auth.authorize(token, "admin").then(function (authorization) {
+			if (!authorization) { //admin for every user
+				return auth.authorize(token, "platform").then(function (authorization) { //if user can change if and only if it's own user
+					if (!authorization) {
+						throw { error: Errors.AUTHORIZATION.NOT_AUTHORIZED };
 					}
-					if(!body.id){
-						throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+					if (!body.id) {
+						throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
 					}
-					if(authorization.id !== body.id){
-						throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
+					if (authorization.id !== body.id) {
+						throw { error: Errors.AUTHORIZATION.NOT_AUTHORIZED };
 					}
-					user.update(body,{id:body.id});
+					user.update(body, { id: body.id });
 				});
 			}
-			if(!body.id){
-				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
+			if (!body.id) {
+				throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
 			}
-			user.update(body,{id:body.id});
+			user.update(body, { id: body.id });
 		});
 	};
 
 	/**
 	 * Updates an Role
 	 */
-	var update_role = function(token,body){
-		return auth.authorize(token,"admin").then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			if(!body.id){
-				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
-			}
-			role.update(body,{id:body.id});
-		});
+	var update_role = function (token, body) {
+		if (!body.id) {
+			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+		}
+		role.update(body, { id: body.id });
 	};
 
 	/**
 	 * Updates a Permission
 	 */
-	var update_permission = function(token,body){
-		return auth.authorize(token,"admin").then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			if(!body.id){
-				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
-			}
-			permission.update(body,{id:body.id});
-		});
+	var update_permission = function (token, body) {
+		if (!body.id) {
+			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+		}
+		permission.update(body, { id: body.id });
 	};
 
 	/**
 	 * Updates an User_Role
 	 */
-	var update_user_role = function(token,body){
-		return auth.authorize(token,"admin").then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			if(!body.id){
-				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
-			}
-			user_role.update(body,{id_user:body.id_user,id_role:body.id_role});
-		});
+	var update_user_role = function (token, body) {
+		if (!body.id) {
+			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+		}
+		user_role.update(body, { id_user: body.id_user, id_role: body.id_role });
 	};
-	
+
 	/**
 	 * Updates an permission_role
 	 */
-	var update_permission_role = function(token,body){
-		return auth.authorize(token,"admin").then(function(authorization){
-			if(!authorization){
-				throw {error:Errors.AUTHORIZATION.NOT_AUTHORIZED};
-			}
-			if(!body.id){
-				throw {error:Errors.BAD_REQUEST.MALFORMED_REQUEST};
-			}
-			psermission_role.update(body,{id_user:body.id_user,id_permission:body.id_permission});
-		});
+	var update_permission_role = function (token, body) {
+		if (!body.id) {
+			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+		}
+		psermission_role.update(body, { id_user: body.id_user, id_permission: body.id_permission });
 	};
 
-	putMap.set("user",update_user);
-	putMap.set("role",update_role);
-	putMap.set("permission",update_permission);
-	putMap.set("user_role",update_user_role);
-	putMap.set("permission_role",update_permission_role);
+	putMap.set("user", { method: update_user, permits: Permissions.ADMIN });
+	putMap.set("role", { method: update_role, permits: Permissions.ADMIN });
+	putMap.set("permission", { method: update_permission, permits: Permissions.ADMIN });
+	putMap.set("user_role", { method: update_user_role, permits: Permissions.ADMIN });
+	putMap.set("permission_role", { method: update_permission_role, permits: Permissions.ADMIN });
 
 	var params = [getMap, postMap, putMap, deleteMap];
 	BaseController.apply(this, params);

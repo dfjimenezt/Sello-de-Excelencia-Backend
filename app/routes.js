@@ -1,96 +1,112 @@
-var form = require('connect-form2');
-var bodyParser = require('body-parser');
+var form = require('connect-form2')
+var bodyParser = require('body-parser')
 
 var Routes = function (app) {
-	/*
-	This are the controllers
-	- test is for development an debug porpusoses
-	- anp store all the mobile app services
-	- auth allows authentication 
-	- admin is used by the CMS web app (by authenticated users)
-	*/
-	var controllers = [
-		{ type: "test", file: "./controllers/tests.js" },
-		{ type: "service", file: "./controllers/service.js" },
-		{ type: "place", file: "./controllers/place.js" },
-		{ type: "configuration", file: "./controllers/configuration.js" },
-		{ type: "forum", file: "./controllers/forum.js" },
-		{ type: "auth", file: "./controllers/auth.js" }
-	];
+  /*
+  This are the controllers
+  - test is for development an debug porpusoses
+  - anp store all the mobile app services
+  - auth allows authentication
+  - admin is used by the CMS web app (by authenticated users)
+  */
+  var controllers = [
+    { type: 'auth', file: './controllers/auth.js' },
+    { type: 'test', file: './controllers/tests.js' },
+    { type: 'configuration', file: './controllers/configuration.js' },
+    { type: 'line', file: './controllers/line.js' },
+    { type: 'campaign', file: './controllers/campaign.js' },
+    { type: 'challenge', file: './controllers/challenge.js' }
+  ]
+  var formParser = form({ keepExtensions: true }) // POST
+  var urlencodedParser = bodyParser.urlencoded({ extended: true }) // PUT, DELETE
+  var jsonParser = bodyParser.json();//POST
+  
+  app.use(urlencodedParser);
+  app.use(jsonParser);
+  app.use(formParser);
 
-	//This is middleware that allows to retrive parameters from the POST, PUT & DELETE request
-	var formParser = form({ keepExtensions: true, multiples: true }); //POST
-	var urlencodedParser = bodyParser.urlencoded({ extended: false }); //PUT, DELETE
+  // This is middleware that allows to retrive parameters from the POST, PUT & DELETE request
+  /*
+  This are the routing functions. They separate the request to the diferents controllers.
+  There is a special considerations when usig POST, to allow file uploads
+  */
+  var finishPost = function (req, res, body, files) {
+    var i, controller
+    for (i in controllers) {
+      if (controllers[i].type === req.params.type) {
+        controller = require(controllers[i].file)()
+        break;
+      }
+    }
 
-	var authMiddleware = function (req, res, next) {
-		var token = req.headers.authorization;
-		if (!token) res.sendStatus(403);
-		else {
-			console.log('Request URL:', req.originalUrl);
-		}
-		next();
-	};
+    if (controller) {
+      controller.post(req.params, req.headers.authorization, body, files)
+        .then((data) => {
+          if (data.error && data.error.htmlCode) res.status(data.error.htmlCode).send(data)
+          else res.send(data)
+        }).catch((err2) => {
+          if (err2.error && err2.error.htmlCode) res.status(err2.error.htmlCode).send(err2)
+          else res.send(err2)
+        })
+    } else res.sendStatus(404)
+  };
+  var postFunction = function (req, res) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
+    if (req.form) {
+      req.form.complete((err, fields, files) => {
+        if (err) res.sendStatus(500);
+        finishPost(req, res, fields, files);
+      });
+    } else {
+      finishPost(req, res, req.body, null);
+    }
+  }
 
-	/*
-	This are the routing functions. They separate the request to the diferents controllers.
-	There is a special considerations when usig POST, to allow file uploads
-	*/
-	var postFunction = function (req, res) {
-		var i, controller;
-		for (i in controllers) {
-			if (controllers[i].type === req.params.type) {
-				controller = new require(controllers[i].file)();
-				break;
-			}
-		}
+  var getPutDeleteFunction = function (req, res) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
+    var i, controller
+    for (i in controllers) {
+      if (controllers[i].type === req.params.type) {
+        controller = require(controllers[i].file)()
+        break
+      }
+    }
 
-		if (controller) {
-			var params = req.params;
-			controller.post(params, req.headers.authorization, req.body, req.file)
-				.then(function (data) { res.send(data); })
-				.catch(function (err) { if(err.error && err.error.htmlCode ){res.status(err.error.htmlCode).send(err);}else{res.sed(err);}});
-		}
-		else res.sendStatus(404);
-	};
+    if (controller) {
+      var method
+      if (req.originalMethod === 'GET') method = controller.get(req.params, req.headers.authorization, req.query)
+      else if (req.originalMethod === 'PUT') method = controller.put(req.params, req.headers.authorization, req.body)
+      else if (req.originalMethod === 'DELETE') method = controller.delete(req.params, req.headers.authorization, req.body)
 
-	var getPutDeleteFunction = function (req, res) {
-		var i, controller;
-		for (i in controllers) {
-			if (controllers[i].type === req.params.type) {
-				controller = new require(controllers[i].file)();
-				break;
-			}
-		}
-		
-		if (controller) {
-			var params = req.params;
-			var method;
-			if (req.method === 'GET') method = controller.get(params, req.headers.authorization, req.query);
-			else if (req.method === 'PUT') method = controller.put(params, req.headers.authorization, req.body);
-			else if (req.method === 'DELETE') method = controller.delete(params, req.headers.authorization, req.body);
+      method.then((data) => {
+        if (data.error && data.error.htmlCode) res.status(data.error.htmlCode).send(data)
+        else res.send(data)
+      }).catch((err2) => {
+        if (err2.error && err2.error.htmlCode) res.status(err2.error.htmlCode).send(err2)
+        else res.send(err2)
+      })
+    } else res.sendStatus(404)
+  }
 
-			method.then(function (data) { res.send(data); })
-			.catch(function (err) { if(err.error && err.error.htmlCode ){res.status(err.error.htmlCode).send(err);}else{res.sed(err);}});
-		}
-		else res.sendStatus(404);
-	};
+  
+  /* ---------------- CREATE ---------------- */
+  app.post('/api/:type/*', postFunction)  
 
-	/* ---------------- CREATE ---------------- */
-	app.post('/api/:type/*', formParser, postFunction);
+  /* ----------------  READ  ---------------- */
+  // This is some heartbeat to monitor that the app is working
+  app.get('/health', (req, res) => { res.sendStatus(200) })
+  app.get('/api/:type/*', getPutDeleteFunction)
 
-	/* ----------------  READ  ---------------- */
-	//This is some heartbeat to monitor that the app is working
-	app.get('/health', (req, res) => {
-		res.sendStatus(200);
-	});
+  /* ---------------- UPDATE ---------------- */
+  app.put('/api/:type/*', getPutDeleteFunction)
 
-	app.get('/api/:type/*', getPutDeleteFunction);
+  /* ---------------- DELETE ---------------- */
+  app.delete('/api/:type/*', getPutDeleteFunction)
 
-	/* ---------------- UPDATE ---------------- */
-	app.put('/api/:type/*', urlencodedParser, getPutDeleteFunction);
+}
 
-	/* ---------------- DELETE ---------------- */
-	app.delete('/api/:type/*', urlencodedParser, getPutDeleteFunction);
-};
-
-module.exports = Routes;
+module.exports = Routes
