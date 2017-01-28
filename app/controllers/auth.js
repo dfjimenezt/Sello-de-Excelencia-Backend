@@ -208,9 +208,10 @@ var Auth = function () {
               + "<a href='http://www.sellodeexcelencia.gov.co/activar-email/?email=" + body.email + "'>Haz click aquí para activar tu cuenta</a>" +
               "</p>Nuestros mejores deseos,<p>El equipo del Sello de Excelencia";
 
-            utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template);
-            // return user
-            return { error: Errors.NO_ERROR, message: "Registro Exitoso." }
+            return utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template).then(()=>{
+              // return user
+              return { error: Errors.NO_ERROR, message: "Registro Exitoso." }
+            });
           } else {
             //if there was an error on creating the user
             throw { error: Errors.DATABASE_ERROR }
