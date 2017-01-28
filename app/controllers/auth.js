@@ -166,23 +166,26 @@ var Auth = function () {
     return userModel.getUser(body.email).then((user) => {
       if (user) throw utiles.informError(201) // user already exists
       else {
+        if(body.password === undefined || body.email === undefined){
+          throw utiles.informError(400);
+        }
         var pass = utiles.createHmac('sha256')
         pass.update(body.password)
         pass = pass.digest('hex')
         return userModel.create({
-          name: body.name,
+          name: body.name || "",
           secondname: body.secondname || "",
-          lastname: body.lastname,
+          lastname: body.lastname || "",
           secondlastname: body.secondlastname || "",
           email: body.email,
-          phone: body.phone,
+          phone: body.phone || "",
           extension: body.extension || "",
           mobile: body.mobile || "",
           
           active: false,
           verified: false,
           password: pass,
-          tmp_pwd: true,
+          tmp_pwd: false,
           terms: body.terms === "true",
           newsletter: body.newsletter === "true"
         }).then(function (user) {
@@ -202,12 +205,12 @@ var Auth = function () {
             // send an email to the user
             let template = "Hola " + body.name + "<p>Te has registrado con exito en la plataforma del Sello de Excelencia</p>"
               + "<p>Tu contraseña para acceder es: " + body.pass + "</p>" +
-              + "<a href='http://localhost:3000/activate/?email=" + body.email + "'>Haz click aquí para activar tu cuenta</a>" +
+              + "<a href='http://www.sellodeexcelencia.gov.co/activar-email/?email=" + body.email + "'>Haz click aquí para activar tu cuenta</a>" +
               "</p>Nuestros mejores deseos,<p>El equipo del Sello de Excelencia";
 
             utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template);
             // return user
-            return { error: Errors.NO_ERROR }
+            return { error: Errors.NO_ERROR, message: "Registro Exitoso." }
           } else {
             //if there was an error on creating the user
             throw { error: Errors.DATABASE_ERROR }
