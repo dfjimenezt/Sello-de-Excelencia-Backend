@@ -190,6 +190,7 @@ var Auth = function () {
         }).then(function (user) {
           // if the user was created sucessfully
           if (user) {
+            let role = "";
             if (!body.role) {
               body.role = '1'
             }
@@ -201,10 +202,24 @@ var Auth = function () {
             // add the role manually reduce time
             user.role = body.role;
 
+            switch(body.role){
+              case 1:
+                role = "Ciudadano";
+              break;
+              case 2:
+                role = "Evaluador";
+              break;
+              case 3:
+                role = "Administrador";
+              break;
+              case 4:
+                role = "Entidad";
+              break;
+            }
             // send an email to the user
             let template = `
             <p>Hola </p>
-            <p>Te has registrado con exito en la plataforma del Sello de Excelencia </p>
+            <p>Te has registrado con exito como ${role} en la plataforma del Sello de Excelencia </p>
             <p>Tu contraseña para acceder es: ${body.password} </p>
             <p><a href='http://www.sellodeexcelencia.gov.co/activar-email/?email=${body.email}'>Haz click aquí para activar tu cuenta</a> </p>
             <p>Nuestros mejores deseos. </p>
