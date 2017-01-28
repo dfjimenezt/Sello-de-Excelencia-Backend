@@ -4,6 +4,7 @@ var permissions = require('./permissions.js')
 var jwt = require('jsonwebtoken')
 var crypto = require('crypto')
 var Session = require('../models/session.js')
+var nodemailer = require('nodemailer');
 var sessionModel = new Session()
 
 module.exports = {
@@ -86,7 +87,7 @@ module.exports = {
         cc: cc,
         bcc: bcc,
         subject: subject, // Subject line
-        html: template // plaintext body
+        html: body // plaintext body
       };
       //send Mail;
       // send mail with defined transport object
