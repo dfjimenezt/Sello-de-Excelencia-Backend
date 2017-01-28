@@ -22,6 +22,15 @@
 			"encrypt": true
 		}
 	},
+	"smtp":{
+  	"protocol"    : "smtps",
+    "sender"      : "no-reply%40domoti-sas.com",
+    "password"    : "E<mYm5<n",
+    "server"      : "smtp.gmail.com",
+    "from"        : "Sello de Excelencia <no-reply@domoti-sas.com>",
+    "bcc"         : "",
+    "admin"       : "jorge.contreras@domoti-sas.com"
+	},
 	"secret": "1234567890",
 	"autorizedHosts": ["http://sellodeexcelencia.gov.co","https://sellodeexcelencia.gov.co/","*"]
 }
