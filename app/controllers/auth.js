@@ -202,22 +202,21 @@ var Auth = function () {
             user.role = body.role;
 
             // send an email to the user
-            let template = "Hola ";
-            if(body.name){
-              template += body.name;
-
-            }
-            template += "<p>Te has registrado con exito en la plataforma del Sello de Excelencia</p>"
-              + "<p>Tu contraseña para acceder es: " + body.password + "</p>" +
-              + "<a href='http://www.sellodeexcelencia.gov.co/activar-email/?email=" + body.email + "'>Haz click aquí para activar tu cuenta</a>" +
-              "</p>Nuestros mejores deseos,<p>El equipo del Sello de Excelencia";
-
-            utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template);
-            // return user  
-            return { error: Errors.NO_ERROR, message: "Registro Exitoso." }
+            let template = `
+            <p>Hola </p>
+            <p>Te has registrado con exito en la plataforma del Sello de Excelencia </p>
+            <p>Tu contraseña para acceder es: ${body.password} </p>
+            <p><a href='http://www.sellodeexcelencia.gov.co/activar-email/?email=${body.email}'>Haz click aquí para activar tu cuenta</a> </p>
+            <p>Nuestros mejores deseos. </p>
+            
+            El equipo del Sello de Excelencia
+            `; 
+            return utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template).then(()=>{
+              return { message: "Registro Exitoso." }
+            })
           } else {
             //if there was an error on creating the user
-            throw { error: Errors.DATABASE_ERROR }
+            throw utiles.informError(300)
           }
         });
       }
