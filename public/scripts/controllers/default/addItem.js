@@ -1,13 +1,13 @@
-angular.module('dmt-back').controller('addItemController', function ($mdDialog, page, $http) {
+angular.module('dmt-back').controller('addItemController', function ($mdDialog, entity, $http) {
 	var ctrl = this;
 	ctrl.data = {};
 	ctrl.options = {};
 	ctrl.filters = {};
-	ctrl.currentPage = page;
+	ctrl.currentEntity = entity;
 	function addFilters(item,index){
         var base = item.endpoint;
 		if(!base){
-			base = page.endpoint;
+			base = entity.endpoint;
 		} 
 		$http.get(base+item.table).then(function(results){
 			$scope.filters[item.name]={
@@ -21,15 +21,15 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 	function addOptions(item, index) {
 		var base = item.endpoint;
 		if (!base) {
-			base = ctrl.currentPage.endpoint;
+			base = ctrl.currentEntity.endpoint;
 		}
 		$http.get(base + item.table).then(function (results) {
 			ctrl.options[item.name] = results.data;
 		});
 	}
 	var opts = [];
-	for (var i in this.currentPage.fields) {
-		var f = this.currentPage.fields[i];
+	for (var i in this.currentEntity.fields) {
+		var f = this.currentEntity.fields[i];
 		if (f.type === 'link') {
 			opts.push(f);
 		}
@@ -48,7 +48,7 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 	this.addItem = function () {
 		ctrl.form.$setSubmitted();
 		if (ctrl.form.$valid) {
-			var base = ctrl.currentPage.endpoint;
+			var base = ctrl.currentEntity.endpoint;
 			if(data.timestamp){
 				delete data.timestamp;
 			}
@@ -57,7 +57,7 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 				fd.append(i,ctrl.data[i]);
 			}*/
 			
-			$http.post(base + ctrl.currentPage.table, ctrl.data).then(success).catch(error);
+			$http.post(base + ctrl.currentEntity.table, ctrl.data).then(success).catch(error);
 		}
 	};
 });

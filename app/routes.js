@@ -13,9 +13,9 @@ var Routes = function (app) {
     { type: 'auth', file: './controllers/auth.js' },
     { type: 'test', file: './controllers/tests.js' },
     { type: 'configuration', file: './controllers/configuration.js' },
-    { type: 'line', file: './controllers/line.js' },
-    { type: 'campaign', file: './controllers/campaign.js' },
-    { type: 'challenge', file: './controllers/challenge.js' }
+    { type: "service", file: "./controllers/service.js" },
+		{ type: "place", file: "./controllers/place.js" },
+		{ type: "forum", file: "./controllers/forum.js" },	
   ]
   var formParser = form({ keepExtensions: true }) // POST
   var urlencodedParser = bodyParser.urlencoded({ extended: true }) // PUT, DELETE

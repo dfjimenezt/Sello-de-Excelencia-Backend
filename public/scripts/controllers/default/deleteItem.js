@@ -1,9 +1,11 @@
-angular.module('dmt-back').controller('deleteController', function ($mdDialog,$scope, items, page, $q, $http) {
-  
-  this.cancel = $mdDialog.cancel;
+angular.module('dmt-back').controller('deleteItemController', function ($mdDialog,$scope, items, entity, $q, $http) {
+  var ctrl = this;
+	ctrl.currentEntity = entity;
+	ctrl.cancel = $mdDialog.cancel;
   
   function removeItems(item, index) {
-    var promise = $http.delete();
+    var base = ctrl.currentEntity.endpoint;
+    var promise = $http.delete(base + ctrl.currentEntity.table,item);
     promise.then(function () {
       items.splice(index, 1);
     });
@@ -17,7 +19,7 @@ angular.module('dmt-back').controller('deleteController', function ($mdDialog,$s
 		window.location.href = "/login";
 	}
   
-  function deleteItems() {
+  this.deleteItems = function() {
     $q.all(items.forEach(removeItems)).then(onComplete).catch(error);
   }
 });

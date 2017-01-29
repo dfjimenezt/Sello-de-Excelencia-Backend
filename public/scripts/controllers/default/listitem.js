@@ -1,17 +1,29 @@
+angular.module('dmt-back').filter('linkvalue',function(){
+    return function(items,field,item){
+        for(i in items){
+            let it = items[i];
+            if(item[field.name] === it[field.foreign_key]){
+                return it[field.foreign_name];
+            }
+        }
+    }
+});
 angular.module('dmt-back').controller('listItemController', function ($scope,$mdDialog,$mdEditDialog, page, $http) {
-    this.page = page;
+    var ctrl = this;
+    ctrl.page = page;
+    ctrl.entity = page.entity;
     /**
      * Manipulate items
      */
     $scope.create = function (event) {
         $mdDialog.show({
             clickOutsideToClose: true,
-            controller: page.add ? page.add.controller || 'addItemController' : 'addItemController',
+            controller: page.entity.add ? page.entity.add.controller || 'addItemController' : 'addItemController',
             controllerAs: 'ctrl',
             focusOnOpen: false,
             targetEvent: event,
-            templateUrl: page.add ? page.add.template || 'views/default/add-dialog.html' : 'views/default/add-dialog.html',
-            locals: { page: page },
+            templateUrl: page.entity.add ? page.entity.add.template || 'views/default/add-dialog.html' : 'views/default/add-dialog.html',
+            locals: { entity: entity },
         }).then($scope.getData);
     };
 
@@ -19,12 +31,12 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
         if (item.timestamp) {
             delete item.timestamp;
         }
-        $http.put(page.endpoint + page.table, item).then($scope.getData);
+        $http.put(page.entity.endpoint + page.entity.table, item).then($scope.getData);
 
     };
     $scope.editField = function (event, item, field) {
         event.stopPropagation();
-        if(page.readOnly){return;}
+        if(page.entity.readOnly){return;}
         if (field.type === "link") { return; }
         if (field.disabled === "true") { return; }
 
@@ -53,15 +65,15 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
     $scope.delete = function (event) {
         $mdDialog.show({
             clickOutsideToClose: true,
-            controller: page.delete ? page.delete.controller || 'deleteController' : 'deleteController',
+            controller: page.entity.delete ? page.entity.delete.controller || 'deleteItemController' : 'deleteItemController',
             controllerAs: 'ctrl',
             focusOnOpen: false,
             targetEvent: event,
             locals: {
-                page: page,
+                entity: ctrl.entity,
                 items: $scope.selected
             },
-            templateUrl: page.delete? page.delete.templateUrl || 'views/default/delete-dialog.html' : 'views/default/delete-dialog.html',
+            templateUrl: page.entity.delete? page.entity.delete.templateUrl || 'views/default/delete-dialog.html' : 'views/default/delete-dialog.html',
         }).then($scope.getData);
     };
 
@@ -99,9 +111,10 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
 
     $scope.query = {
         filter: '',
-        order: page ? page.defaultSort : "name",
-        limit: 5,
-        page: 1
+        order: page ? page.entity.defaultSort : "name",
+        limit: 20,
+        page: 1,
+        filters:{}
     };
 
     $scope.getSuccess = function (results) {
@@ -113,23 +126,31 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
 		/**
 		 * Webservices composed by endpoint + table
 		 */
-        if (!page) {
+        if (!page.entity) {
             return;
         }
         let str = [];
         for (let p in $scope.query) {
-            str.push(encodeURIComponent(p) + "=" + encodeURIComponent($scope.query[p]));
+            if(p !== "filters"){
+                str.push(encodeURIComponent(p) + "=" + encodeURIComponent($scope.query[p]));
+            }
         }
-        for (let p in page.fields) {
-            if (page.fields[p].searchable) {
-                str.push("field=" + page.fields[p].name);
+        for (let p in page.entity.fields) {
+            if (page.entity.fields[p].searchable) {
+                str.push("field=" + page.entity.fields[p].name);
+            }
+        }
+        for(let p in $scope.query.filters){
+            if($scope.query.filters[p] !== "null"){
+                str.push("filter_field="+p);
+                str.push("filter_value="+$scope.query.filters[p]);
             }
         }
         let filter = str.join("&");
 
-        $scope.promise = $http.get(page.endpoint + page.table + "?" + filter);
+        $scope.promise = $http.get(page.entity.endpoint + page.entity.table + "?" + filter);
         $scope.promise.then($scope.getSuccess).catch(function (response) {
-            window.location.href = "/login";
+            //window.location.href = "/login";
         });
     };
 
@@ -140,19 +161,19 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
     function addOptions(item,index){
 		var base = item.endpoint;
 		if(!base){
-			base = page.endpoint;
+			base = page.entity.endpoint;
 		} 
 		$http.get(base+item.table).then(function(results){
-			$scope.options[item.name]=results.data;
+			ctrl.options[item.name]=results.data;
 		});
 	}
     function addFilters(item,index){
         var base = item.endpoint;
 		if(!base){
-			base = page.endpoint;
+			base = page.entity.endpoint;
 		}
 		$http.get(base+item.table).then(function(results){
-			$scope.filters[item.name]={
+			ctrl.filters[item.name]={
                 fields: item.fields,
                 filter_key: item.filter_key,
                 filter_name: item.filter_name,
@@ -171,19 +192,19 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
     }
 
 	$scope.getData();
-	$scope.options = {};
-    $scope.filters = {};
+	ctrl.options = {};
+    ctrl.filters = {};
     
     var opts = [];
-    for(var i in page.fields){
-        var f = page.fields[i];
+    for(var i in page.entity.fields){
+        var f = page.entity.fields[i];
         if(f.type === 'link'){
             opts.push(f);
         }
     }
     opts.forEach(addOptions);
-    if(page.filters){
-        page.filters.forEach(addFilters);
+    if(page.entity.filters){
+        page.entity.filters.forEach(addFilters);
     }
 
 });

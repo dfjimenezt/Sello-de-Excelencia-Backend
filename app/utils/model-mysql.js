@@ -26,7 +26,7 @@ var MysqlModel = function (table) {
   }
 
   this.getAll = function (params) {
-    if (params.filter || params.limit || params.page || params.page) {
+    if (params.filter || params.limit || params.page || params.page || params.filter_fields) {
       return this.getFiltered(params);
     }
     var connection = mysql.createConnection(dbConf)
@@ -64,16 +64,44 @@ var MysqlModel = function (table) {
 
   this.getFiltered = function (params) {
     var connection = mysql.createConnection(dbConf);
-    var queryGet = "";
+    var where = "(";
+    if(params.filter_fields !== undefined){
+      if(typeof params.filter_fields == "string"){
+        params.filter_fields = [params.filter_fields];
+        params.filter_values = [params.filter_values];
+      }
+    }else{
+      params.filter_fields = [];
+      params.filter_values = [];
+    }
+    if(params.fields !== undefined){
+      if(typeof params.fields == "string"){
+        params.fields = [params.fields];
+      }
+    }else{
+      params.fields = [];
+    }
     for (var i in params.fields) {
       // TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
-      queryGet += "list." + params.fields[i] + " like " + connection.escape("%" + params.filter + "%") + " OR ";
+      where += "list." + params.fields[i] + " like " + connection.escape("%" + params.filter + "%") + " OR ";
     }
-    queryGet = queryGet.slice(0, -4);
+    if(params.fields.length > 0){
+      where = where.slice(0, -4);
+    }
+    if(params.fields.length > 0 && params.filter_fields.length > 0){
+      where += ") AND (";
+    }
+    for (var i in params.filter_fields) {
+      where += "list." + params.filter_fields[i] + " = " + params.filter_values[i] + " AND ";
+    }
+    if(params.filter_fields.length > 0){
+      where = where.slice(0, -5) ;
+    }
+    where += ")";
     var query = "SELECT SQL_CALC_FOUND_ROWS * FROM `" + table +
       "` AS list ";
-    if (queryGet.length) {
-      query += "WHERE (" + queryGet + ")";
+    if (where.length > 2) {
+      query += "WHERE " + where ;
     }
     query += " ORDER BY list." + params.order +
       " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";";

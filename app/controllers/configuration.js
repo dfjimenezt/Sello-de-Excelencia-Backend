@@ -31,6 +31,8 @@ var Configuration = function () {
 				limit: params.limit,
 				page: params.page,
 				order: params.order,
+				filter_fields:params.filter_field,
+				filter_values:params.filter_value,
 				fields: params.field
 			});
 		}
@@ -202,6 +204,47 @@ var Configuration = function () {
 	putMap.set("user_role", { method: update_user_role, permits: Permissions.ADMIN });
 	putMap.set("permission_role", { method: update_permission_role, permits: Permissions.ADMIN });
 
+	/**
+	 * user
+	*/
+	var delete_user = function (user, body) {
+		if (!body.id) {
+			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+		}
+		return user.deleteUser(body,{id:body.id});
+	};
+	/**
+	 * role
+	*/
+	var delete_role = function (user, body) {
+		if (!body.id) {
+			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+		}
+		return role.delete(body,{id:body.id});
+	};
+	/**
+	 * permission
+	*/
+	var delete_permission = function (user, body) {
+		if (!body.id) {
+			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+		}
+		return permission.delete(body,{id:body.id});
+	};
+	/**
+	 * permission_role
+	*/
+	var delete_permission_role = function (user, body) {
+		if (!body.id) {
+			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+		}
+		return permission_role.delete(body,{id:body.id});
+	};
+	deleteMap.set('user', { method: delete_user, permits: Permissions.ADMIN });
+	deleteMap.set('role', { method: delete_role, permits: Permissions.ADMIN });
+	deleteMap.set('permission', { method: delete_permission, permits: Permissions.ADMIN });
+	deleteMap.set('permission_role', { method: delete_permission_role, permits: Permissions.ADMIN });
+	
 	var params = [getMap, postMap, putMap, deleteMap];
 	BaseController.apply(this, params);
 	//---------------------------------------------------------------

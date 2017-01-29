@@ -17,6 +17,9 @@
 */
 
 var app = angular.module('dmt-back', ['ngRoute', 'ngMaterial', 'md.data.table']);
+/**
+ * Configuration of the application from config.js
+ */
 app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 	$mdThemingProvider.theme('default')
 		.primaryPalette('blue')

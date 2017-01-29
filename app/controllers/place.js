@@ -20,60 +20,60 @@ var Place = function(){
 	/**
 	 * Cities
 	 */
-	var cities = function(token,params){
+	var get_city = function(token,params){
 		if(params.id){
 			return city.getByUid(params);
-		}else if(params.filter || params.limit || params.page || params.page){
-				return city.getFiltered({
+		}else {
+				return city.getAll({
 					filter:params.filter,
 					limit:params.limit,
 					page:params.page,
 					order:params.order,
+					filter_fields:params.filter_field,
+					filter_values:params.filter_value,
 					fields:["name"]});
-			}else{
-			return city.getAll();
-		}
+			}
 	};
 
 	/**
 	 * Regions
 	 */
-	var regions = function(token,params){
+	var get_region = function(token,params){
 		if(params.id){
 			return region.getByUid(params);
-		}else if(params.filter || params.limit || params.page || params.page){
-				return region.getFiltered({
+		}else {
+				return region.getAll({
 					filter:params.filter,
 					limit:params.limit,
 					page:params.page,
 					order:params.order,
+					filter_fields:params.filter_field,
+					filter_values:params.filter_value,
 					fields:["name"]});
-			}else{
-			return region.getAll();
-		}
+			}
 	};
 
 	/**
 	 * Institutions
 	 */
-	var institutions = function(token,params){
+	var get_institution = function(token,params){
 		if(params.id){
 			return institution.getByUid(params);
-		}else if(params.filter || params.limit || params.page || params.page){
-				return institution.getFiltered({
+		}else {
+				return institution.getAll({
 					filter:params.filter,
 					limit:params.limit,
 					page:params.page,
 					order:params.order,
+					filter_fields:params.filter_field,
+					filter_values:params.filter_value,
 					fields:["name"]});
-			}else{
-			return institution.getAll();
-		}
+			}
 	};
-	getMap.set("city",cities);
-	getMap.set("region",regions);
-	getMap.set("institution",institutions);
-
+	getMap.set('institution', { method: get_institution, permits: Permissions.NONE });
+	getMap.set('city', { method: get_city, permits: Permissions.NONE });
+	getMap.set('region', { method: get_region, permits: Permissions.NONE });
+	
 	/**
 	 * Create Institution
 	 */
