@@ -135,7 +135,7 @@ var MysqlModel = function (table) {
   this.createMultiple = function (data) {
     let rows = data.data;
     let col_names = data.col_names;
-    var query = "INSERT INTO question (" + col_names.join(",") + ") VALUES ";
+    var query = "INSERT INTO "+table+" (" + col_names.join(",") + ") VALUES ";
     for (let i in rows) {
       query += "("; //init
       for (let j in col_names) {

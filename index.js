@@ -36,13 +36,14 @@ Or it coul be started by the cli and it will search the config file in this path
 
 The structure of a config JSON must be:
 */
-var Backend = function (configJSON) {   
-   var Generator = require("./app/generator/mysql-parser.js");
-   var generator = new Generator();
-   generator.parse();
-   
-  
+var Backend = function (configJSON) {
   var config = configJSON || require('./config.json')
+  if (config.enviroment === "development") {
+    var Generator = require("./app/generator/mysql-parser.js");
+    var generator = new Generator();
+    generator.parse();
+  }
+
   var verbose = config.verbose === true
 
   // If we are using Google app engine to deploy the app
@@ -75,13 +76,13 @@ var Backend = function (configJSON) {
 
   // Sign with default (HMAC SHA256)
   app.use(cors(corsOptions))
-  
+
   // Enabling CORS Pre-Flight, for DELETE
   app.options('*', cors())
 
   // The routing logic of the app will be on this file.
   require('./app/routes.js')(app)
-  
+
   // This turns on the app
   app.set('port', (process.env.PORT || config.port || 5000))
 

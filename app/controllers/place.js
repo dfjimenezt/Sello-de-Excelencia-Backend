@@ -80,9 +80,9 @@ var Place = function () {
 	/**
 	 * Create Institution
 	 */
-	var create_institution = function (token, body) {
-		if (file) {
-			$data = utiles.parseExcelFile(file.filename);
+	var create_institution = function (token, body, file) {
+		if (file.data) {
+			let data = utiles.parseExcelFile(file.data.path);
 			return institution.createMultiple(data);
 		}
 		return institution.create(body)
@@ -110,9 +110,9 @@ var Place = function () {
 	/**
 	 * Create city
 	 */
-	var create_city = function (user, body) {
-		if (file) {
-			$data = utiles.parseExcelFile(file.filename);
+	var create_city = function (user, body, file) {
+		if (file.data) {
+			let data = utiles.parseExcelFile(file.data.path);
 			return city.createMultiple(data);
 		}
 		return city.create(body);
@@ -123,11 +123,11 @@ var Place = function () {
 	var create_region = function (user, body, file) {
 		if (file.data) {
 			let data = utiles.parseExcelFile(file.data.path);
-			return _user.createMultiple(data);
+			return region.createMultiple(data);
 		}
 		return region.create(body);
 	};
-	postMap.set("city", { method: create_city, permits: Permissions.ADMIN });
+	postMap.set("city", { method: create_city, permits: Permissions.NONE });
 	postMap.set("region", { method: create_region, permits: Permissions.NONE });
 	postMap.set("institution", { method: create_institution, permits: Permissions.ADMIN });
 	postMap.set("bind_user_institution", { method: bind_user_institution, permits: Permissions.ADMIN });

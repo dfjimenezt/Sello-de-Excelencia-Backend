@@ -166,6 +166,8 @@ module.exports = {
     var XLSX = require("xlsx");
     var workbook = XLSX.readFile(filename);
     var sheet_name_list = workbook.SheetNames;
+    let col_names = [];
+    let data = [];
     /* iterate through sheets */
     sheet_name_list.forEach(function (y) {
       var worksheet = workbook.Sheets[y];
@@ -173,8 +175,6 @@ module.exports = {
       var init = getRange(range[0]);
       var end = getRange(range[1]);
       var cols = charArray(init.c, end.c);
-      var col_names = [];
-      let data = [];
       for (let r = init.r; r <= end.r; r++) {
         if (r == 1) {
           for (let i in cols) {
@@ -193,7 +193,7 @@ module.exports = {
           data.push(d);
         }
       }
-      return {col_names:colnames,data:data}
     });
+    return {col_names:col_names,data:data}
   }
 }

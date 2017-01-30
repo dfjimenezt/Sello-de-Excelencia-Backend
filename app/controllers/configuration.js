@@ -88,8 +88,8 @@ var Configuration = function () {
 	 * Crear usuario
 	 */
 	var create_user = function (user, body ,file) {
-		if(file){
-			$data = utiles.parseExcelFile(file.filename);
+		if(file.data){
+			let data = utiles.parseExcelFile(file.data.path);
 			return _user.createMultiple(data);
 		}
 		return _create(_user,body)
