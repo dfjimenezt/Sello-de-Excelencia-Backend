@@ -17,6 +17,7 @@ var MysqlModel = function (table) {
     return new Promise((resolve, reject) => {
       if (verbose) console.log(query)
       connection.connect()
+      console.log(query)
       connection.query(query, (err, result, fields) => {
         if (err) reject(err)
         else resolve(result)
@@ -64,48 +65,68 @@ var MysqlModel = function (table) {
 
   this.getFiltered = function (params) {
     var connection = mysql.createConnection(dbConf);
-    var where = "(";
-    if(params.filter_fields !== undefined){
-      if(typeof params.filter_fields == "string"){
+    let filters = {};
+    var where = "";
+    if (params.filter_fields !== undefined) {
+      if (typeof params.filter_fields == "string") {
         params.filter_fields = [params.filter_fields];
         params.filter_values = [params.filter_values];
       }
-    }else{
+    } else {
       params.filter_fields = [];
       params.filter_values = [];
     }
-    if(params.fields !== undefined){
-      if(typeof params.fields == "string"){
+    //group fields by name
+    params.filter_fields.forEach((key, i) => {
+      if (!filters[key]) {
+        filters[key] = [];
+      }
+      filters[key].push(params.filter_values[i]);
+    });
+    if (params.fields !== undefined) {
+      if (typeof params.fields == "string") {
         params.fields = [params.fields];
       }
-    }else{
+    } else {
       params.fields = [];
     }
-    for (var i in params.fields) {
-      // TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
-      where += "list." + params.fields[i] + " like " + connection.escape("%" + params.filter + "%") + " OR ";
+
+    let search = "";
+    if (params.fields.length > 0) {
+      search = "(";
+      for (var i in params.fields) {
+        // TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
+        search += "list." + params.fields[i] + " like " + connection.escape("%" + params.filter + "%") + " OR ";
+      }
+      search = search.slice(0, -4);
+      search += ")";
     }
-    if(params.fields.length > 0){
-      where = where.slice(0, -4);
+    let conditions = "";
+    if (params.filter_fields.length > 0) {
+      for (var f in filters) {
+        conditions += "(";
+        for (var v in filters[f]) {
+          conditions += "list." + f + " = " + filters[f][v] + " OR ";
+        }
+        conditions = conditions.slice(0, -4);
+        conditions += ") AND ";
+      }
+      conditions = conditions.slice(0, -5);
     }
-    if(params.fields.length > 0 && params.filter_fields.length > 0){
-      where += ") AND (";
+    if(search.length >0 && conditions.length>0){
+      where = search + " AND "+conditions;
+    }else{ //just one of these
+      where = search + conditions;
     }
-    for (var i in params.filter_fields) {
-      where += "list." + params.filter_fields[i] + " = " + params.filter_values[i] + " AND ";
-    }
-    if(params.filter_fields.length > 0){
-      where = where.slice(0, -5) ;
-    }
-    where += ")";
     var query = "SELECT SQL_CALC_FOUND_ROWS * FROM `" + table +
       "` AS list ";
     if (where.length > 2) {
-      query += "WHERE " + where ;
+      query += "WHERE " + where;
     }
     query += " ORDER BY list." + params.order +
       " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";";
     query += "SELECT FOUND_ROWS() as total;";
+    console.log(query);
     return resolveQuery(query, connection).then((result) => {
       return { data: result[0], total_results: result[1][0].total };
     });

@@ -211,7 +211,7 @@ var Configuration = function () {
 		if (!body.id) {
 			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
 		}
-		return user.deleteUser(body,{id:body.id});
+		return _user.deleteUser(body,{id:body.id});
 	};
 	/**
 	 * role

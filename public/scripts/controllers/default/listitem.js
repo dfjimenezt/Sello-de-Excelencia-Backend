@@ -1,14 +1,14 @@
-angular.module('dmt-back').filter('linkvalue',function(){
-    return function(items,field,item){
-        for(i in items){
+angular.module('dmt-back').filter('linkvalue', function () {
+    return function (items, field, item) {
+        for (i in items) {
             let it = items[i];
-            if(item[field.name] === it[field.foreign_key]){
+            if (item[field.name] === it[field.foreign_key]) {
                 return it[field.foreign_name];
             }
         }
     }
 });
-angular.module('dmt-back').controller('listItemController', function ($scope,$mdDialog,$mdEditDialog, page, $http) {
+angular.module('dmt-back').controller('listItemController', function ($scope, $mdDialog, $mdEditDialog, page, $http) {
     var ctrl = this;
     ctrl.page = page;
     ctrl.entity = page.entity;
@@ -23,7 +23,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
             focusOnOpen: false,
             targetEvent: event,
             templateUrl: page.entity.add ? page.entity.add.template || 'views/default/add-dialog.html' : 'views/default/add-dialog.html',
-            locals: { entity: entity },
+            locals: { entity: ctrl.entity },
         }).then($scope.getData);
     };
 
@@ -36,7 +36,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
     };
     $scope.editField = function (event, item, field) {
         event.stopPropagation();
-        if(page.entity.readOnly){return;}
+        if (page.entity.readOnly) { return; }
         if (field.type === "link") { return; }
         if (field.disabled === "true") { return; }
 
@@ -73,7 +73,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
                 entity: ctrl.entity,
                 items: $scope.selected
             },
-            templateUrl: page.entity.delete? page.entity.delete.templateUrl || 'views/default/delete-dialog.html' : 'views/default/delete-dialog.html',
+            templateUrl: page.entity.delete ? page.entity.delete.templateUrl || 'views/default/delete-dialog.html' : 'views/default/delete-dialog.html',
         }).then($scope.getData);
     };
 
@@ -114,7 +114,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
         order: page ? page.entity.defaultSort : "name",
         limit: 20,
         page: 1,
-        filters:{}
+        filters: {}
     };
 
     $scope.getSuccess = function (results) {
@@ -131,7 +131,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
         }
         let str = [];
         for (let p in $scope.query) {
-            if(p !== "filters"){
+            if (p !== "filters") {
                 str.push(encodeURIComponent(p) + "=" + encodeURIComponent($scope.query[p]));
             }
         }
@@ -140,10 +140,12 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
                 str.push("field=" + page.entity.fields[p].name);
             }
         }
-        for(let p in $scope.query.filters){
-            if($scope.query.filters[p] !== "null"){
-                str.push("filter_field="+p);
-                str.push("filter_value="+$scope.query.filters[p]);
+        for (let key in $scope.query.filters) {
+            if ($scope.query.filters[key]) {
+                $scope.query.filters[key].forEach((value)=>{
+                    str.push("filter_field=" + key);
+                    str.push("filter_value=" + value);
+                })
             }
         }
         let filter = str.join("&");
@@ -158,52 +160,82 @@ angular.module('dmt-back').controller('listItemController', function ($scope,$md
      * Initialize data
      */
 
-    function addOptions(item,index){
-		var base = item.endpoint;
-		if(!base){
-			base = page.entity.endpoint;
-		} 
-		$http.get(base+item.table).then(function(results){
-			ctrl.options[item.name]=results.data;
-		});
-	}
-    function addFilters(item,index){
+    function addOptions(item, index) {
         var base = item.endpoint;
-		if(!base){
-			base = page.entity.endpoint;
-		}
-		$http.get(base+item.table).then(function(results){
-			ctrl.filters[item.name]={
-                fields: item.fields,
-                filter_key: item.filter_key,
-                filter_name: item.filter_name,
-                data: results.data
-            };
-            $scope.$watch("dmt_filter_"+item.name,(nv,ov)=>{
-                if(!nv){
-                    return;
+        if (!base) {
+            base = page.entity.endpoint;
+        }
+        $http.get(base + item.table).then(function (results) {
+            ctrl.options[item.name] = results.data;
+        });
+    }
+    function updateFilter(filter) {
+        if (filter.filter) { //affects another filter
+            page.entity.filters.forEach((item) => {
+                if (item.name === filter.filter) { //find the associated filter
+                    if (filter.selected === "null") { //cleaning the filter
+                        item.options = item.fulloptions || item.options;
+                        delete item.fulloptions;
+                    } else {
+                        if(!item.fulloptions){
+                            item.fulloptions = item.options; // store the options
+                        }
+                        item.options = item.fulloptions.filter((option) => { //filter the options
+                            let match = true;
+                            filter.fields.forEach((field) => { //iterate trough the values
+                                if (option[field] != filter.selected) { //AND relation
+                                    match = false;
+                                }
+                            })
+                            return match;
+                        });
+                    }
                 }
-                let filter = $scope.filters[item.name];
-                //change query ask again for getData
-                $scope.query.filter = nv;
-                $scope.query.field
             });
-		});
+        } else { //direct fields
+            if (filter.selected === "null") { //cleaning the filter
+                filter.fields.forEach((field) => { //iterate trough the values
+                    $scope.query.filters[field.name]= [];
+                })
+                $scope.getData();
+            } else {
+                filter.fields.forEach((field) => { //iterate trough the values
+                    ctrl.options[field.name].forEach((option)=>{
+                        $scope.query.filters[field.name] = [];
+                        if (option[field.foreign_key] == filter.selected) { //AND relation
+                            $scope.query.filters[field.name].push(option[filter.foreign_key]);
+                        }
+                    })
+                })
+                $scope.getData();
+            }
+        }
     }
 
-	$scope.getData();
-	ctrl.options = {};
-    ctrl.filters = {};
-    
+    function addFilters(item, index) {
+        var base = item.endpoint;
+        if (!base) {
+            base = page.entity.endpoint;
+        }
+        $http.get(base + item.table).then(function (results) {
+            item.options = results.data;
+        });
+    }
+
+    $scope.getData();
+    ctrl.fulloptions = {};
+    ctrl.options = {};
+    ctrl.updateFilter = updateFilter;
+
     var opts = [];
-    for(var i in page.entity.fields){
+    for (var i in page.entity.fields) {
         var f = page.entity.fields[i];
-        if(f.type === 'link'){
+        if (f.type === 'link') {
             opts.push(f);
         }
     }
     opts.forEach(addOptions);
-    if(page.entity.filters){
+    if (page.entity.filters) {
         page.entity.filters.forEach(addFilters);
     }
 

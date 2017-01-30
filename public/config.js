@@ -14,17 +14,20 @@ var cmsConfig = [
 						{
 							name: "id",
 							type: "int",
-							disabled: "true"
+							disabled: "true",
+							key:"true"
 						},
 						{
 							name: "name",
 							type: "string",
-							disabled: "false"
+							disabled: "false",
+							searchable: "true"
 						},
 						{
 							name: "lastname",
 							type: "string",
-							disabled: "false"
+							disabled: "false",
+							searchable: "true"
 						},
 						{
 							name: "email",
@@ -85,7 +88,8 @@ var cmsConfig = [
 						{
 							name: "id",
 							type: "int",
-							disabled: "true"
+							disabled: "true",
+							key:"true"
 						},
 						{
 							name: "name",
@@ -106,7 +110,8 @@ var cmsConfig = [
 						{
 							name: "id",
 							type: "int",
-							disabled: "true"
+							disabled: "true",
+							key:"true"
 						},
 						{
 							name: "name",
@@ -131,7 +136,8 @@ var cmsConfig = [
 							table: "role",
 							foreign_key: "id",
 							foreign_name: "name",
-							readOnly: true
+							readOnly: true,
+							key:"true"
 						},
 						{
 							name: "id_permission",
@@ -140,7 +146,8 @@ var cmsConfig = [
 							table: "permission",
 							foreign_key: "id",
 							foreign_name: "name",
-							readOnly: true
+							readOnly: true,
+							key:"true"
 						}
 					]
 				}
@@ -168,24 +175,23 @@ var cmsConfig = [
 					},
 					filters: [
 						{
-							name: "Ciudad",
-							table: "city",
-							endpoint: "/api/place/",
-							fields: "id_city",
-						},
-						{
 							name: "Region",
 							table: "region",
 							endpoint: "/api/place/",
-							filter: "Ciudad",//affects another filter
-							fields: "id_region",
+							foreign_key: "id",
+							foreign_name: "name",
+							fields: [{
+								name:"id_city",
+								foreign_key:"id_region"
+							}],
 						}
 					],
 					fields: [
 						{
 							name: "id",
 							type: "int",
-							disabled: "true"
+							disabled: "true",
+							key:"true"
 						},
 						{
 							name: "name",
@@ -224,7 +230,6 @@ var cmsConfig = [
 							table: "city",
 							foreign_key: "id",
 							foreign_name: "name",
-							
 						},
 						{
 							name: "id_user_creator",
@@ -254,7 +259,8 @@ var cmsConfig = [
 						{
 							name: "id",
 							type: "int",
-							disabled: "true"
+							disabled: "true",
+							key:"true"
 						},
 						{
 							name: "name",
@@ -288,7 +294,8 @@ var cmsConfig = [
 						{
 							name: "id",
 							type: "int",
-							disabled: "true"
+							disabled: "true",
+							key:"true"
 						},
 						{
 							name: "name",
@@ -323,7 +330,8 @@ var cmsConfig = [
 						{
 							name: "id",
 							type: "int",
-							disabled: "true"
+							disabled: "true",
+							key:"true"
 						},
 						{
 							name: "name",
@@ -400,7 +408,8 @@ var cmsConfig = [
 						{
 							name: "id",
 							type: "int",
-							disabled: "true"
+							disabled: "true",
+							key:"true"
 						},
 						{
 							name: "name",
@@ -426,7 +435,8 @@ var cmsConfig = [
 						{
 							name: "id",
 							type: "int",
-							disabled: "true"
+							disabled: "true",
+							key:"true"
 						},
 						{
 							name: "name",

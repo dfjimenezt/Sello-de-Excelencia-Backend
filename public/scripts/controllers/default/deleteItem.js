@@ -5,7 +5,14 @@ angular.module('dmt-back').controller('deleteItemController', function ($mdDialo
   
   function removeItems(item, index) {
     var base = ctrl.currentEntity.endpoint;
-    var promise = $http.delete(base + ctrl.currentEntity.table,item);
+    var fields = [];
+    ctrl.currentEntity.fields.forEach((field)=>{
+      if(field.key === "true" || field.key === true){
+        fields.push(field.name + "=" + item[field.name]);
+      }
+    })
+    var query = "?" + fields.join("&");
+    var promise = $http.delete(base + ctrl.currentEntity.table + query);
     promise.then(function () {
       items.splice(index, 1);
     });

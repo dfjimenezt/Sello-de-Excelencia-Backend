@@ -80,7 +80,7 @@ var Routes = function (app) {
       var method
       if (req.originalMethod === 'GET') method = controller.get(req.params, req.headers.authorization, req.query)
       else if (req.originalMethod === 'PUT') method = controller.put(req.params, req.headers.authorization, req.body)
-      else if (req.originalMethod === 'DELETE') method = controller.delete(req.params, req.headers.authorization, req.body)
+      else if (req.originalMethod === 'DELETE') method = controller.delete(req.params, req.headers.authorization, req.query)
 
       method.then((data) => {
         if (data.error && data.error.htmlCode) res.status(data.error.htmlCode).send(data)

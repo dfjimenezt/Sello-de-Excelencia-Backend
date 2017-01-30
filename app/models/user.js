@@ -6,10 +6,9 @@ var User = function () {
 	var params = ["user", "mysql"];
 	BaseModel.apply(this, params);
 
-	this.deleteUser = function(id){
-		var query = `DELETE FROM user_role.*,user.* 
-		FROM user_role,user 
-		WHERE user_role.id_user = user.id AND user.id = '${id}'`;
+	this.deleteUser = function(obj){
+		var query = `DELETE FROM user_role WHERE id_user= '${obj.id}';
+		DELETE FROM user WHERE id = '${obj.id}';`;
 		return this.customQuery(query);
 	}
 
