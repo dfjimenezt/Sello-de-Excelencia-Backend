@@ -339,17 +339,12 @@ var cmsConfig = [
 							disabled: "false"
 						},
 						{
-							name: "address",
+							name: "url",
 							type: "string",
 							disabled: "false"
 						},
 						{
 							name: "email",
-							type: "email",
-							disabled: "false"
-						},
-						{
-							name: "second_email",
 							type: "email",
 							disabled: "false"
 						},
