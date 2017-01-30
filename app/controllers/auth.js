@@ -26,7 +26,7 @@ var Auth = function () {
   var activate = function (token, params) {
     if(!params.email){ throw utiles.informError(400) }
     let email = utiles.decode(params.token);
-    return userModel.getUser(body.email).then((user) => {
+    return userModel.getUser(params.email).then((user) => {
       if (!user) throw utiles.informError(202) // user doesnt exists      
       return userModel.update({active:1,verified:1}, { id: user.id });
     });
