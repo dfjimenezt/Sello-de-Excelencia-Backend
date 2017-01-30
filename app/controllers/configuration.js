@@ -135,27 +135,11 @@ var Configuration = function () {
 	/**
 	 * Updates an User
 	 */
-	var update_user = function (token, body) {
-		return auth.authorize(token, "admin").then(function (authorization) {
-			if (!authorization) { //admin for every user
-				return auth.authorize(token, "platform").then(function (authorization) { //if user can change if and only if it's own user
-					if (!authorization) {
-						throw { error: Errors.AUTHORIZATION.NOT_AUTHORIZED };
-					}
-					if (!body.id) {
-						throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
-					}
-					if (authorization.id !== body.id) {
-						throw { error: Errors.AUTHORIZATION.NOT_AUTHORIZED };
-					}
-					user.update(body, { id: body.id });
-				});
-			}
-			if (!body.id) {
-				throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
-			}
-			user.update(body, { id: body.id });
-		});
+	var update_user = function (user, body) {
+		if(!body.id){
+			throw utiles.informError(400);
+		}
+		return _user.update(body,{id:body.id})
 	};
 
 	/**

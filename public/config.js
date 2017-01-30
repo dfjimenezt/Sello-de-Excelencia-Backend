@@ -163,7 +163,7 @@ var cmsConfig = [
 				path: "instituciones",
 				entity: {
 					table: "institution",
-					defaultSort: "name",
+					defaultSort: "id",
 					endpoint: "/api/place/",
 					add: { //Optional Default Values Below
 						controller: "addItemController",
@@ -404,6 +404,7 @@ var cmsConfig = [
 				entity: {
 					table: "category",
 					endpoint: "/api/service/",
+					defaultSort: "id",
 					fields: [
 						{
 							name: "id",
@@ -429,7 +430,7 @@ var cmsConfig = [
 				path: "temas",
 				entity: {
 					table: "topic",
-					defaultSort: "name",
+					defaultSort: "id",
 					endpoint: "/api/forum/",
 					fields: [
 						{

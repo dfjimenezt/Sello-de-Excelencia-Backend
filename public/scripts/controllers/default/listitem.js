@@ -142,7 +142,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
         }
         for (let key in $scope.query.filters) {
             if ($scope.query.filters[key]) {
-                $scope.query.filters[key].forEach((value)=>{
+                $scope.query.filters[key].forEach((value) => {
                     str.push("filter_field=" + key);
                     str.push("filter_value=" + value);
                 })
@@ -177,7 +177,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
                         item.options = item.fulloptions || item.options;
                         delete item.fulloptions;
                     } else {
-                        if(!item.fulloptions){
+                        if (!item.fulloptions) {
                             item.fulloptions = item.options; // store the options
                         }
                         item.options = item.fulloptions.filter((option) => { //filter the options
@@ -195,13 +195,13 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
         } else { //direct fields
             if (filter.selected === "null") { //cleaning the filter
                 filter.fields.forEach((field) => { //iterate trough the values
-                    $scope.query.filters[field.name]= [];
+                    $scope.query.filters[field.name] = [];
                 })
                 $scope.getData();
             } else {
                 filter.fields.forEach((field) => { //iterate trough the values
-                    ctrl.options[field.name].forEach((option)=>{
-                        $scope.query.filters[field.name] = [];
+                    $scope.query.filters[field.name] = [];
+                    ctrl.options[field.name].forEach((option) => {
                         if (option[field.foreign_key] == filter.selected) { //AND relation
                             $scope.query.filters[field.name].push(option[filter.foreign_key]);
                         }

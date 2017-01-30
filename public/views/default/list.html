@@ -28,7 +28,7 @@
             </md-button>
         </div>
     </md-toolbar>
-    <md-toolbar class="md-table-toolbar alternate" layout="row" ng-show="ctrl.page.entity.filters.length > 0">
+    <md-toolbar class="md-table-toolbar md-default" layout="row" ng-show="ctrl.page.entity.filters.length > 0">
         <span flex></span>
         <md-select flex ng-repeat="filter in ctrl.page.entity.filters" ng-model="filter.selected" placeholder="{{filter.name}}" ng-change="ctrl.updateFilter(filter)">
             <md-option value="null">{{filter.name}}</md-option>

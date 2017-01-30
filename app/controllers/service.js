@@ -2,8 +2,8 @@ var BaseController = require('../utils/controller.js');
 var util = require('util');
 var Errors = require('../utils/errors.js');
 var utiles = require('../utils/utiles.js');
+var Permissions = require('../utils/permissions.js');
 var auth_ctrl = require("./auth.js");
-
 var service_model = require("../models/service.js");
 var service_status_model = require("../models/service_status.js");
 var category_model = require("../models/category.js");
@@ -18,6 +18,7 @@ var Service = function(){
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map();
 
+
 	/**
 	 * Hall of fame, approved services sorted by rates
 	 */
@@ -27,46 +28,37 @@ var Service = function(){
 		});
 	};
 
-	/**
-	 * Get services by @param id
-	 */
-	var get_services = function(token,params){
-		console.log(params);
-		if(params.id){
-			return service.getByUid(params.id);
-		}else if(params.filter || params.limit || params.page || params.page){
-				return service.getFiltered({
-					filter:params.filter,
-					limit:params.limit,
-					page:params.page,
-					order:params.order,
-					fields:["name"]});
-			}else{
-			return service.getAll();
+	var _get = function(model,user,params){
+		if (params.id) {
+			return model.getByUid(params.id);
+		} else {
+			return model.getAll({
+				filter: params.filter,
+				limit: params.limit,
+				page: params.page,
+				order: params.order,
+				filter_fields:params.filter_field,
+				filter_values:params.filter_value,
+				fields: params.field
+			});
 		}
-	};
-	
+	}
 	/**
-	 * Get categories by @param id
-	 */
-	var get_categories = function(token,params){
-		if(params.id){
-			return category.getByUid(params.id);
-		}else if(params.filter || params.limit || params.page || params.page){
-				return category.getFiltered({
-					filter:params.filter,
-					limit:params.limit,
-					page:params.page,
-					order:params.order,
-					fields:["name"]});
-			}else{
-			return category.getAll();
-		}
+	 * service
+	*/
+	var get_service = function (user, params) {
+		return _get(service,user,params);
 	};
-	getMap.set("service",get_services);
-	getMap.set("category",get_categories);
+	/**
+	 * category
+	*/
+	var get_category = function (user, params) {
+		return _get(category,user,params);
+	};
+	getMap.set('service', { method: get_service, permits: Permissions.NONE });
+	getMap.set('category', { method: get_category, permits: Permissions.NONE });
 
-	getMap.set("hall_fame",hall_fame);
+	getMap.set("hall_fame",{method: hall_fame, permits: Permissions.NONE});
 
 	/**
 	 * Postulate a service
@@ -120,8 +112,8 @@ var Service = function(){
 		});
 	};
 
-	postMap.set("category",create_category);
-	postMap.set("service",postulate);
+	postMap.set("category",{method: create_category, permits: Permissions.NONE});
+	postMap.set("service",{method: postulate, permits: Permissions.NONE});
 	
 	/**
 	 * Updates a category
@@ -153,8 +145,8 @@ var Service = function(){
 		});
 	};
 
-	putMap.set("category",update_category);
-	putMap.set("service",update_service);
+	putMap.set("category",{method: update_category, permits: Permissions.NONE});
+	putMap.set("service",{method: update_service, permits: Permissions.NONE});
 
 	var params = [getMap, postMap, putMap, deleteMap];
 	BaseController.apply(this, params);
