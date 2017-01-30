@@ -41,12 +41,7 @@ var Configuration = function () {
 	 * Users
 	 */
 	var users = function (user, params) {
-		if(params.line){
-			return _user.getByLine(params.line);
-		}else{
-			return _get(_user,user,params);
-		}
-		
+		return _get(_user,user,params);
 	};
 
 	/**
@@ -84,15 +79,19 @@ var Configuration = function () {
 	var _create = function(model,body){
 		return model.create(body).then((u) => {
 			if (u.insertId) {
-				return { error: Errors.NO_ERROR };
+				return utiles.informError(0);
 			}
-			return { error: Errors[7] };
+			return utiles.informError(400);
 		});
 	}
 	/**
 	 * Crear usuario
 	 */
-	var create_user = function (user, body) {
+	var create_user = function (user, body ,file) {
+		if(file){
+			$data = utiles.parseExcelFile(file.filename);
+			return _user.createMultiple(data);
+		}
 		return _create(_user,body)
 	};
 	/**
@@ -113,7 +112,7 @@ var Configuration = function () {
 	 */
 	var bind_user_role = function (token, body) {
 		return user_roles.create(body).then((u) => {
-			return { error: Errors.NO_ERROR };
+			return utiles.informError(0);
 		});
 	};
 
@@ -122,8 +121,15 @@ var Configuration = function () {
 	 */
 	var bind_permission_role = function (token, body) {
 		return permission_role.create(body).then((u) => {
-			return { error: Errors.NO_ERROR };
+			return utiles.informError(0);
 		});
+	};
+
+	/**
+	 * Crear Usuario Role
+	 */
+	var import_data = function (token, body, files) {
+		
 	};
 
 	postMap.set("user", { method: create_user, permits: Permissions.ADMIN });
@@ -131,11 +137,17 @@ var Configuration = function () {
 	postMap.set("permission", { method: create_permission, permits: Permissions.ADMIN });
 	postMap.set("user_role", { method: bind_user_role, permits: Permissions.ADMIN });
 	postMap.set("permission_role", { method: bind_permission_role, permits: Permissions.ADMIN });
+	postMap.set("import_data", { method: import_data, permits: Permissions.ADMIN });
 
 	/**
 	 * Updates an User
 	 */
 	var update_user = function (user, body) {
+		if(user.id !== body.id){
+			if(user.permissions.indexOf("admin") == -1){
+				throw utiles.informError(401);	
+			}
+		}
 		if(!body.id){
 			throw utiles.informError(400);
 		}
@@ -147,7 +159,7 @@ var Configuration = function () {
 	 */
 	var update_role = function (token, body) {
 		if (!body.id) {
-			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+			throw utiles.informError(400);
 		}
 		role.update(body, { id: body.id });
 	};
@@ -157,7 +169,7 @@ var Configuration = function () {
 	 */
 	var update_permission = function (token, body) {
 		if (!body.id) {
-			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+			throw utiles.informError(400);
 		}
 		permission.update(body, { id: body.id });
 	};
@@ -167,7 +179,7 @@ var Configuration = function () {
 	 */
 	var update_user_role = function (token, body) {
 		if (!body.id) {
-			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+			throw utiles.informError(400);
 		}
 		user_role.update(body, { id_user: body.id_user, id_role: body.id_role });
 	};
@@ -177,12 +189,12 @@ var Configuration = function () {
 	 */
 	var update_permission_role = function (token, body) {
 		if (!body.id) {
-			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+			throw utiles.informError(400);
 		}
 		psermission_role.update(body, { id_user: body.id_user, id_permission: body.id_permission });
 	};
 
-	putMap.set("user", { method: update_user, permits: Permissions.ADMIN });
+	putMap.set("user", { method: update_user, permits: Permissions.PLATFORM });
 	putMap.set("role", { method: update_role, permits: Permissions.ADMIN });
 	putMap.set("permission", { method: update_permission, permits: Permissions.ADMIN });
 	putMap.set("user_role", { method: update_user_role, permits: Permissions.ADMIN });
@@ -193,7 +205,7 @@ var Configuration = function () {
 	*/
 	var delete_user = function (user, body) {
 		if (!body.id) {
-			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+			throw utiles.informError(400);
 		}
 		return _user.deleteUser(body,{id:body.id});
 	};
@@ -202,7 +214,7 @@ var Configuration = function () {
 	*/
 	var delete_role = function (user, body) {
 		if (!body.id) {
-			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+			throw utiles.informError(400);
 		}
 		return role.delete(body,{id:body.id});
 	};
@@ -211,7 +223,7 @@ var Configuration = function () {
 	*/
 	var delete_permission = function (user, body) {
 		if (!body.id) {
-			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+			throw utiles.informError(400);
 		}
 		return permission.delete(body,{id:body.id});
 	};
@@ -220,7 +232,7 @@ var Configuration = function () {
 	*/
 	var delete_permission_role = function (user, body) {
 		if (!body.id) {
-			throw { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };
+			throw utiles.informError(400);
 		}
 		return permission_role.delete(body,{id:body.id});
 	};

@@ -81,27 +81,17 @@ var Place = function () {
 	 * Create Institution
 	 */
 	var create_institution = function (token, body) {
-		return auth.authorize(token, Permissions.PLATFORM).then(function (authorization) {
-			if (!authorization) {
-				throw { error: Errors.AUTHORIZATION.NOT_AUTHORIZED };
-			}
-			return institution.create(body).then(function (i) {
-				if (i.insertId) {
-					return { error: Errors.NO_ERROR };
-				}
-				return { error: Errors[7] };
-			});
-		});
+		if (file) {
+			$data = utiles.parseExcelFile(file.filename);
+			return institution.createMultiple(data);
+		}
+		return institution.create(body)
 	};
 
 	/**
 	 * Bind a user to an institution
 	 */
 	var bind_user_institution = function (token, body) {
-		return auth.authorize(token, Permissions.PLATFORM).then(function (authorization) {
-			if (!authorization) {
-				throw { error: Errors.AUTHORIZATION.NOT_AUTHORIZED };
-			}
 			return institution_user.create({
 				id_institution: parseInt(body.id_institution),
 				id_user: parseInt(body.id_user),
@@ -109,55 +99,38 @@ var Place = function () {
 				admin: body.admin === "true"
 			}).then(function (i_u) {
 				if (i_u.insertId) {
-					return { error: Errors.NO_ERROR };
+					return utiles.informError(0);
 				} else {
-					return { error: Errors[7] };
+					return utiles.informError(400);
 				}
 			});
-		});
-	};
-
-	/**
-	 * Import data from divipola file
-	 * Divipola is the official code for cities and regions in Colombia
-	 * requires admin access
-	 */
-	var import_divipola = function (token, body, files) {
-		return auth.authorize(token, "admin").then(function (authorization) {
-			if (!authorization) {
-				throw { error: Errors.AUTHORIZATION.NOT_AUTHORIZED };
-			}
-			var xlsx = require("xlsx");
-			//TODO: check file 
-			var workbook = XLSX.readFile(files.divipola.name);
-			var sheet_name_list = workbook.SheetNames;
-			sheet_name_list.forEach(function (y) { /* iterate through sheets */
-				var worksheet = workbook.Sheets[y];
-				for (var z in worksheet) { /* all keys that do not begin with "!" correspond to cell addresses */
-					if (z[0] === '!') continue;
-					console.log(y + "!" + z + "=" + JSON.stringify(worksheet[z].v));
-				}
-			});
-		});
+		
 	};
 
 	/**
 	 * Create city
 	 */
 	var create_city = function (user, body) {
+		if (file) {
+			$data = utiles.parseExcelFile(file.filename);
+			return city.createMultiple(data);
+		}
 		return city.create(body);
 	};
 	/**
 	 * Create region
 	 */
-	var create_region = function (user, body) {
+	var create_region = function (user, body, file) {
+		if (file.data) {
+			let data = utiles.parseExcelFile(file.data.path);
+			return _user.createMultiple(data);
+		}
 		return region.create(body);
 	};
 	postMap.set("city", { method: create_city, permits: Permissions.ADMIN });
-	postMap.set("region", { method: create_region, permits: Permissions.ADMIN });
+	postMap.set("region", { method: create_region, permits: Permissions.NONE });
 	postMap.set("institution", { method: create_institution, permits: Permissions.ADMIN });
 	postMap.set("bind_user_institution", { method: bind_user_institution, permits: Permissions.ADMIN });
-	postMap.set("import_divipola", { method: import_divipola, permits: Permissions.ADMIN });
 
 	/**
 	 * Updates a City

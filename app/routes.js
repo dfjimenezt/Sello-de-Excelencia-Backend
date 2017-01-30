@@ -21,9 +21,10 @@ var Routes = function (app) {
   var urlencodedParser = bodyParser.urlencoded({ extended: true }) // PUT, DELETE
   var jsonParser = bodyParser.json();//POST
   
+  
+  app.use(formParser);
   app.use(urlencodedParser);
   app.use(jsonParser);
-  app.use(formParser);
 
   // This is middleware that allows to retrive parameters from the POST, PUT & DELETE request
   /*

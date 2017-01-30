@@ -152,7 +152,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
 
         $scope.promise = $http.get(page.entity.endpoint + page.entity.table + "?" + filter);
         $scope.promise.then($scope.getSuccess).catch(function (response) {
-            //window.location.href = "/login";
+            window.location.href = "/login";
         });
     };
 

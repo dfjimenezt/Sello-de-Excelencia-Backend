@@ -113,9 +113,9 @@ var MysqlModel = function (table) {
       }
       conditions = conditions.slice(0, -5);
     }
-    if(search.length >0 && conditions.length>0){
-      where = search + " AND "+conditions;
-    }else{ //just one of these
+    if (search.length > 0 && conditions.length > 0) {
+      where = search + " AND " + conditions;
+    } else { //just one of these
       where = search + conditions;
     }
     var query = "SELECT SQL_CALC_FOUND_ROWS * FROM `" + table +
@@ -131,6 +131,26 @@ var MysqlModel = function (table) {
       return { data: result[0], total_results: result[1][0].total };
     });
   };
+
+  this.createMultiple = function (data) {
+    let rows = data.data;
+    let col_names = data.col_names;
+    var query = "INSERT INTO question (" + col_names.join(",") + ") VALUES ";
+    for (let i in rows) {
+      query += "("; //init
+      for (let j in col_names) {
+        if (rows[i][col_names[j]] === undefined) {
+          query += "NULL,";
+        } else {
+          query += "'" + rows[i][col_names[j]] + "',";
+        }
+      }
+      query = query.slice(0, -1);
+      query += "),";
+    }
+    query = query.slice(0, -1);
+    return this.customQuery(query);
+  }
 
   this.create = function (body) {
     var connection = mysql.createConnection(dbConf)

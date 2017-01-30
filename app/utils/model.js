@@ -30,6 +30,10 @@ var Model = function (table, typeModel) {
     return selectedModel.getByParams(params)
   }
 
+  this.createMultiple = function (body) {
+    return selectedModel.createMultiple(body)
+  }
+  
   this.create = function (body) {
     return selectedModel.create(body)
   }

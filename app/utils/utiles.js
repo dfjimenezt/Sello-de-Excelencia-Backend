@@ -141,5 +141,59 @@ module.exports = {
     var rta = []
     for (var value of map.values()) rta.push(value)
     return rta
+  },
+  parseExcelFile : function (filename) {
+    function charArray(charA, charZ) {
+      var a = [], i = charA.charCodeAt(0), j = charZ.charCodeAt(0);
+      for (; i <= j; ++i) {
+        a.push(String.fromCharCode(i));
+      }
+      return a;
+    }
+    function getRange(position) {
+      var c = "";
+      var r = "";
+      for (let i = 0; i < position.length; i++) {
+        if (isNaN(Number.parseInt(position.charAt(i)))) {
+          c += position.charAt(i);
+        } else {
+          r = Number.parseInt(position.substring(i));
+          break;
+        }
+      }
+      return { c: c, r: r };
+    }
+    var XLSX = require("xlsx");
+    var workbook = XLSX.readFile(filename);
+    var sheet_name_list = workbook.SheetNames;
+    /* iterate through sheets */
+    sheet_name_list.forEach(function (y) {
+      var worksheet = workbook.Sheets[y];
+      var range = worksheet["!ref"].split(":");
+      var init = getRange(range[0]);
+      var end = getRange(range[1]);
+      var cols = charArray(init.c, end.c);
+      var col_names = [];
+      let data = [];
+      for (let r = init.r; r <= end.r; r++) {
+        if (r == 1) {
+          for (let i in cols) {
+            let c = cols[i]
+            col_names.push(worksheet[c + r].w)
+          }
+        } else {
+          let d = {};
+          for (let i in cols) {
+            let c = cols[i]
+            if (worksheet[c + r] === undefined) {
+              continue;
+            }
+            d[col_names[i]] = worksheet[c + r].w
+          }
+          data.push(d);
+        }
+      }
+      return {col_names:colnames,data:data}
+    });
   }
 }
