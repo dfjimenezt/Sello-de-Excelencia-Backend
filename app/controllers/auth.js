@@ -25,7 +25,7 @@ var Auth = function () {
    */
   var activate = function (token, params) {
     if(!params.email){ throw utiles.informError(400) }
-    //let email = utiles.decode(params.email);
+    let email = utiles.decode(params.token);
     return userModel.getUser(body.email).then((user) => {
       if (!user) throw utiles.informError(202) // user doesnt exists      
       return userModel.update({active:1,verified:1}, { id: user.id });
@@ -224,7 +224,7 @@ var Auth = function () {
             <p>Hola </p>
             <p>Te has registrado con exito como ${role} en la plataforma del Sello de Excelencia </p>
             <p>Tu contraseña para acceder es: ${body.password} </p>
-            <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-email/?email=${token}'>Haz click aquí para activar tu cuenta</a> </p>
+            <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-email/?token=${token}&email=${body.email}'>Haz click aquí para activar tu cuenta</a> </p>
             <p>Nuestros mejores deseos. </p>
             
             El equipo del Sello de Excelencia
