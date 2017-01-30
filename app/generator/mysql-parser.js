@@ -78,13 +78,13 @@ var controller_template = "" +
     "};\n" +
     "util.inherits({{CONTROLLER_NAME}}, BaseController);\n" +
     "module.exports = {{CONTROLLER_NAME}};";
-var individual_import_model = "var model_{{MODEL_NAME}} = require('../models/{{MODEL_NAME}}.js')();";
+var individual_import_model = "var model_{{MODEL_NAME}} = new require('../models/{{MODEL_NAME}}.js')();";
 var individiual_get_method_template = "" +
     "\t/**\n" +
     "\t * {{MODEL_NAME}}\n" +
     "\t*/\n" +
     "\tvar get_{{MODEL_NAME}} = function (user, params) {\n" +
-    "\t\treturn _get({{MODEL_NAME}},user,params);\n" +
+    "\t\treturn _get(model_{{MODEL_NAME}},user,params);\n" +
     "\t};";
 var individiual_get_map_template = "\tgetMap.set('{{MODEL_NAME}}', { method: get_{{MODEL_NAME}}, permits: Permissions.ADMIN });";
 var individiual_create_method_template = "" +
@@ -92,7 +92,7 @@ var individiual_create_method_template = "" +
     "\t * {{MODEL_NAME}}\n" +
     "\t*/\n" +
     "\tvar create_{{MODEL_NAME}} = function (user, body) {\n" +
-    "\t\treturn {{MODEL_NAME}}.create(body);\n" +
+    "\t\treturn model_{{MODEL_NAME}}.create(body);\n" +
     "\t};";
 var individiual_create_map_template = "\tpostMap.set('{{MODEL_NAME}}', { method: create_{{MODEL_NAME}}, permits: Permissions.ADMIN });";
 var individiual_update_method_template = "" +
@@ -101,9 +101,9 @@ var individiual_update_method_template = "" +
     "\t*/\n" +
     "\tvar update_{{MODEL_NAME}} = function (user, body) {\n" +
     "\t\tif (!body.{{PRIMARY_KEY}}) {\n" +
-    "\t\t\tthrow { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };\n" +
+    "\t\t\tthrow utiles.informError(400);\n" +
     "\t\t}\n" +
-    "\t\treturn {{MODEL_NAME}}.update(body,{{{PRIMARY_KEY}}:body.{{PRIMARY_KEY}}});\n" +
+    "\t\treturn model_{{MODEL_NAME}}.update(body,{{{PRIMARY_KEY}}:body.{{PRIMARY_KEY}}});\n" +
     "\t};";
 var individiual_update_map_template = "\tputMap.set('{{MODEL_NAME}}', { method: update_{{MODEL_NAME}}, permits: Permissions.ADMIN });";
 var individiual_delete_method_template = "" +
@@ -112,9 +112,9 @@ var individiual_delete_method_template = "" +
     "\t*/\n" +
     "\tvar delete_{{MODEL_NAME}} = function (user, body) {\n" +
     "\t\tif (!body.{{PRIMARY_KEY}}) {\n" +
-    "\t\t\tthrow { error: Errors.BAD_REQUEST.MALFORMED_REQUEST };\n" +
+    "\t\t\tthrow utiles.informError(400);\n" +
     "\t\t}\n" +
-    "\t\treturn {{MODEL_NAME}}.delete(body,{{{PRIMARY_KEY}}:body.{{PRIMARY_KEY}}});\n" +
+    "\t\treturn model_{{MODEL_NAME}}.delete(body,{{{PRIMARY_KEY}}:body.{{PRIMARY_KEY}}});\n" +
     "\t};";
 var individiual_delete_map_template = "\tdeleteMap.set('{{MODEL_NAME}}', { method: delete_{{MODEL_NAME}}, permits: Permissions.ADMIN });";
 
