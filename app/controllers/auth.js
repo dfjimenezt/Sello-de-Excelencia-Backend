@@ -224,7 +224,7 @@ var Auth = function () {
             <p>Hola </p>
             <p>Te has registrado con exito como ${role} en la plataforma del Sello de Excelencia </p>
             <p>Tu contraseña para acceder es: ${body.password} </p>
-            <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta/?token=${token}&email=${body.email}'>Haz click aquí para activar tu cuenta</a> </p>
+            <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}'>Haz click aquí para activar tu cuenta</a> </p>
             <p>Nuestros mejores deseos. </p>
             
             El equipo del Sello de Excelencia
