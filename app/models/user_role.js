@@ -11,6 +11,6 @@ var User_role = function () {
 	var params = ['user_role', 'mysql']
 	BaseModel.apply(this, params)
 	return this
-};
+}
 util.inherits(User_role, BaseModel)
 module.exports = User_role

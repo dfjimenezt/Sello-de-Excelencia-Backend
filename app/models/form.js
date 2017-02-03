@@ -1,12 +1,12 @@
-var BaseModel = require('../utils/model.js');
-var util = require('util');
+var BaseModel = require('../utils/model.js')
+var util = require('util')
 
 var Form = function () {
-	var params = ["form", "mysql"];
-	BaseModel.apply(this, params);
+	var params = ["form", "mysql"]
+	BaseModel.apply(this, params)
 
-	return this;
-};
-util.inherits(Form, BaseModel);
+	return this
+}
+util.inherits(Form, BaseModel)
 
-module.exports = Form;
+module.exports = Form

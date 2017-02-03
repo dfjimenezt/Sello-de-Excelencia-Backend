@@ -1,12 +1,12 @@
-var BaseModel = require('../utils/model.js');
-var util = require('util');
+var BaseModel = require('../utils/model.js')
+var util = require('util')
 
 var Region = function () {
-	var params = ["region", "mysql"];
-	BaseModel.apply(this, params);
+	var params = ["region", "mysql"]
+	BaseModel.apply(this, params)
 
-	return this;
-};
-util.inherits(Region, BaseModel);
+	return this
+}
+util.inherits(Region, BaseModel)
 
-module.exports = Region;
+module.exports = Region

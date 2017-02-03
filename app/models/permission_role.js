@@ -11,6 +11,6 @@ var Permission_role = function () {
 	var params = ['permission_role', 'mysql']
 	BaseModel.apply(this, params)
 	return this
-};
+}
 util.inherits(Permission_role, BaseModel)
 module.exports = Permission_role

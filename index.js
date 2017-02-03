@@ -38,11 +38,10 @@ The structure of a config JSON must be:
 */
 var Backend = function (configJSON) {
   var config = configJSON || require('./config.json')
-  if (config.enviroment === "development") {
-    var Generator = require("./app/generator/mysql-parser.js");
-    var generator = new Generator();
-    generator.parse();
-  }
+  var Generator = require('./app/generator/mysql-parser.js')
+  var generator = new Generator()
+  generator.parse()
+
 
   var verbose = config.verbose === true
 

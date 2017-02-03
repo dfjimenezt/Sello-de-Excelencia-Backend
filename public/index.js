@@ -16,7 +16,7 @@
 *
 */
 
-var app = angular.module('dmt-back', ['ngRoute', 'ngMaterial', 'md.data.table']);
+var app = angular.module('dmt-back', ['ngRoute', 'ngMaterial','ngSanitize','md.data.table']);
 /**
  * Configuration of the application from config.js
  */
@@ -26,20 +26,31 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 		.accentPalette('grey');
 
 	let config = cmsConfig;
-	config.forEach((section) => {
-		section.pages.forEach((page) => {
-			let route = {
+	function addPage(path,page,parent){
+		page.parent = parent;
+		let route = {
 				controller: page.controller || "listItemController",
 				controllerAs: page.controllerAs || "ctrl",
 				templateUrl: page.templateUrl || "views/default/list.html",
 				resolve: {
-					page: function(){return page;}
+					page: function () { return page; }
 				}
 			};
-			let path = "/" + section.path + "/" + page.path;
-			$routeProvider.when(path, route);
+			var _path = path + "/" + page.path;
+			$routeProvider.when(_path, route);
+			if(page.pages){
+				page.pages.forEach((child)=>{
+					addPage(_path,child,page);
+				})
+			}
+	}
+
+	config.forEach((section) => {
+		section.pages.forEach((page) => {
+			addPage("/"+section.path,page,section);
 		});
 	});
+	
 	$routeProvider.otherwise({
 		redirectTo: '/'
 	});

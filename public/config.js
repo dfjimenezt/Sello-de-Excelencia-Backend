@@ -6,7 +6,24 @@ var cmsConfig = [
 			{
 				name: "Usuarios",
 				path: "usuarios",
+				controller: "listItemExtendedController",
+				templateUrl: "/views/extended/list.html",
+				pages: [
+					{
+						name: "Agregar",
+						path: "add",
+						controller: "addItemExtendedController",
+						templateUrl: "/views/extended/add.html"
+					},
+					{
+						name: "Detail",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "/views/extended/detail.html"
+					},
+				],
 				entity: {
+					name: "Usuario",
 					table: "user",
 					defaultSort: "id",
 					endpoint: "/api/configuration/",//get service
@@ -15,7 +32,7 @@ var cmsConfig = [
 							name: "id",
 							type: "int",
 							disabled: "true",
-							key:"true"
+							key: "true"
 						},
 						{
 							name: "name",
@@ -89,7 +106,7 @@ var cmsConfig = [
 							name: "id",
 							type: "int",
 							disabled: "true",
-							key:"true"
+							key: "true"
 						},
 						{
 							name: "name",
@@ -111,7 +128,7 @@ var cmsConfig = [
 							name: "id",
 							type: "int",
 							disabled: "true",
-							key:"true"
+							key: "true"
 						},
 						{
 							name: "name",
@@ -137,7 +154,7 @@ var cmsConfig = [
 							foreign_key: "id",
 							foreign_name: "name",
 							readOnly: true,
-							key:"true"
+							key: "true"
 						},
 						{
 							name: "id_permission",
@@ -147,7 +164,7 @@ var cmsConfig = [
 							foreign_key: "id",
 							foreign_name: "name",
 							readOnly: true,
-							key:"true"
+							key: "true"
 						}
 					]
 				}
@@ -161,18 +178,26 @@ var cmsConfig = [
 			{
 				name: "Instituciones",
 				path: "instituciones",
+				controller: "listItemExtendedController",
+				templateUrl: "/views/extended/list.html",
+				pages:[
+					{
+						name: "Agregar",
+						path: "add",
+						controller: "detailItemExtendedController",
+						templateUrl: "/views/extended/detail.html"
+					},
+					{
+						name: "Detalle",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "/views/extended/detail.html"
+					},
+				],
 				entity: {
 					table: "institution",
 					defaultSort: "id",
 					endpoint: "/api/place/",
-					add: { //Optional Default Values Below
-						controller: "addItemController",
-						template: "views/default/add-dialog.html"
-					},
-					delete: { //Optional Default Values Below
-						controller: "deleteItemController",
-						template: "views/default/delete-dialog.html"
-					},
 					filters: [
 						{
 							name: "Region",
@@ -181,8 +206,8 @@ var cmsConfig = [
 							foreign_key: "id",
 							foreign_name: "name",
 							fields: [{
-								name:"id_city",
-								foreign_key:"id_region"
+								name: "id_city",
+								foreign_key: "id_region"
 							}],
 						}
 					],
@@ -191,7 +216,7 @@ var cmsConfig = [
 							name: "id",
 							type: "int",
 							disabled: "true",
-							key:"true"
+							key: "true"
 						},
 						{
 							name: "name",
@@ -260,7 +285,7 @@ var cmsConfig = [
 							name: "id",
 							type: "int",
 							disabled: "true",
-							key:"true"
+							key: "true"
 						},
 						{
 							name: "name",
@@ -275,7 +300,7 @@ var cmsConfig = [
 						{
 							name: "id_region",
 							type: "link",
-							disabled: "false",
+							readOnly: "true",
 							table: "region",
 							foreign_key: "id",
 							foreign_name: "name"
@@ -295,7 +320,7 @@ var cmsConfig = [
 							name: "id",
 							type: "int",
 							disabled: "true",
-							key:"true"
+							key: "true"
 						},
 						{
 							name: "name",
@@ -305,7 +330,7 @@ var cmsConfig = [
 						{
 							name: "id_capital",
 							type: "link",
-							disabled: "false",
+							readOnly: "true",
 							table: "city",
 							foreign_key: "id",
 							foreign_name: "name"
@@ -331,7 +356,7 @@ var cmsConfig = [
 							name: "id",
 							type: "int",
 							disabled: "true",
-							key:"true"
+							key: "true"
 						},
 						{
 							name: "name",
@@ -405,7 +430,7 @@ var cmsConfig = [
 							name: "id",
 							type: "int",
 							disabled: "true",
-							key:"true"
+							key: "true"
 						},
 						{
 							name: "name",
@@ -432,7 +457,7 @@ var cmsConfig = [
 							name: "id",
 							type: "int",
 							disabled: "true",
-							key:"true"
+							key: "true"
 						},
 						{
 							name: "name",
@@ -441,6 +466,36 @@ var cmsConfig = [
 						},
 						{
 							name: "id_parent",
+							type: "link",
+							disabled: "false",
+							table: "topic",
+							foreign_key: "id",
+							foreign_name: "name"
+						}
+					]
+				}
+			},
+			{
+				name: "Sesiones",
+				path: "sessions",
+				entity: {
+					table: "message",
+					defaultSort: "id",
+					endpoint: "/api/forum/",
+					fields: [
+						{
+							name: "id",
+							type: "int",
+							disabled: "true",
+							key: "true"
+						},
+						{
+							name: "text",
+							type: "string",
+							disabled: "false"
+						},
+						{
+							name: "id_topic",
 							type: "link",
 							disabled: "false",
 							table: "topic",

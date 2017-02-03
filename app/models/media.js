@@ -11,6 +11,6 @@ var Media = function () {
 	var params = ['media', 'mysql']
 	BaseModel.apply(this, params)
 	return this
-};
+}
 util.inherits(Media, BaseModel)
 module.exports = Media

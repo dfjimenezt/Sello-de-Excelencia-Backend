@@ -46,6 +46,7 @@ var controller_template = "" +
     "var Auth_ctrl = require('./auth.js');\n" +
     "{{IMPORT_MODELS}}\n" +
     "var {{CONTROLLER_NAME}} = function () {\n" +
+    "{{MODELS}}\n"+
     "\t//---------------------------------------------------------------\n" +
     "\tvar getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map();\n" +
     "\tvar _get = function(model,user,params){\n" +
@@ -78,7 +79,8 @@ var controller_template = "" +
     "};\n" +
     "util.inherits({{CONTROLLER_NAME}}, BaseController);\n" +
     "module.exports = {{CONTROLLER_NAME}};";
-var individual_import_model = "var model_{{MODEL_NAME}} = new require('../models/{{MODEL_NAME}}.js')();";
+var individual_import_model = "var {{MODEL_NAME}} = require('../models/{{MODEL_NAME}}.js');";
+var individual_model = "\tvar model_{{MODEL_NAME}} = new {{MODEL_NAME}}()";
 var individiual_get_method_template = "" +
     "\t/**\n" +
     "\t * {{MODEL_NAME}}\n" +
@@ -199,6 +201,7 @@ var mySqlGen = function () {
                 console.log(file_name + " already exists")
             }
             let import_models = [];
+            let models = [];
             let get_models = [];
             let get_maps = [];
             let post_models = [];
@@ -214,6 +217,7 @@ var mySqlGen = function () {
                 }
 
                 import_models.push(individual_import_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
+                models.push(individual_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
 
                 get_models.push(individiual_get_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
                 get_maps.push(individiual_get_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
@@ -246,6 +250,7 @@ var mySqlGen = function () {
             });
             let controller = controller_template.replace(new RegExp('{{CONTROLLER_NAME}}', 'g'), controller_name);
             controller = controller.replace(new RegExp('{{IMPORT_MODELS}}', 'g'), import_models.join('\n'));
+            controller = controller.replace(new RegExp('{{MODELS}}', 'g'), models.join('\n'));
             controller = controller.replace(new RegExp('{{GET_METHODS}}', 'g'), get_models.join('\n'));
             controller = controller.replace(new RegExp('{{GET_MAP}}', 'g'), get_maps.join('\n'));
             controller = controller.replace(new RegExp('{{POST_METHODS}}', 'g'), post_models.join('\n'));

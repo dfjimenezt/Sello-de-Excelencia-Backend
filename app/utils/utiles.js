@@ -4,7 +4,7 @@ var permissions = require('./permissions.js')
 var jwt = require('jsonwebtoken')
 var crypto = require('crypto')
 var Session = require('../models/session.js')
-var nodemailer = require('nodemailer');
+var nodemailer = require('nodemailer')
 var sessionModel = new Session()
 
 module.exports = {
@@ -80,7 +80,7 @@ module.exports = {
   },
   sendEmail: function (to, cc, bcc, subject, body, attachment) {
     return new Promise((resolve, reject) => {
-      var transporter = nodemailer.createTransport(config.smtp.protocol + '://' + config.smtp.sender + ':' + config.smtp.password + '@' + config.smtp.server);
+      var transporter = nodemailer.createTransport(config.smtp.protocol + '://' + config.smtp.sender + ':' + config.smtp.password + '@' + config.smtp.server)
       var mailOptions = {
         from: config.smtp.from, // sender address
         to: to, // list of receivers
@@ -88,16 +88,16 @@ module.exports = {
         bcc: bcc,
         subject: subject, // Subject line
         html: body // plaintext body
-      };
-      //send Mail;
+      }
+      //send Mail
       // send mail with defined transport object
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-          reject(error);
+          reject(error)
         }
-        resolve();
-      });
-    });
+        resolve()
+      })
+    })
   },
   /* This one is used to group information after some MySQL Query.
   Its intended to be used when the query contains a join betwen tables. In the
@@ -142,58 +142,58 @@ module.exports = {
     for (var value of map.values()) rta.push(value)
     return rta
   },
-  parseExcelFile : function (filename) {
+  parseExcelFile: function (filename) {
     function charArray(charA, charZ) {
-      var a = [], i = charA.charCodeAt(0), j = charZ.charCodeAt(0);
-      for (; i <= j; ++i) {
-        a.push(String.fromCharCode(i));
+      var a = [], i = charA.charCodeAt(0), j = charZ.charCodeAt(0)
+      for (i <= j++i) {
+        a.push(String.fromCharCode(i))
       }
-      return a;
+      return a
     }
     function getRange(position) {
-      var c = "";
-      var r = "";
-      for (let i = 0; i < position.length; i++) {
+      var c = ""
+      var r = ""
+      for (let i = 0 i < position.length i++) {
         if (isNaN(Number.parseInt(position.charAt(i)))) {
-          c += position.charAt(i);
+          c += position.charAt(i)
         } else {
-          r = Number.parseInt(position.substring(i));
-          break;
+          r = Number.parseInt(position.substring(i))
+          break
         }
       }
-      return { c: c, r: r };
+      return { c: c, r: r }
     }
-    var XLSX = require("xlsx");
-    var workbook = XLSX.readFile(filename);
-    var sheet_name_list = workbook.SheetNames;
-    let col_names = [];
-    let data = [];
+    var XLSX = require("xlsx")
+    var workbook = XLSX.readFile(filename)
+    var sheet_name_list = workbook.SheetNames
+    let col_names = []
+    let data = []
     /* iterate through sheets */
     sheet_name_list.forEach(function (y) {
-      var worksheet = workbook.Sheets[y];
-      var range = worksheet["!ref"].split(":");
-      var init = getRange(range[0]);
-      var end = getRange(range[1]);
-      var cols = charArray(init.c, end.c);
-      for (let r = init.r; r <= end.r; r++) {
+      var worksheet = workbook.Sheets[y]
+      var range = worksheet["!ref"].split(":")
+      var init = getRange(range[0])
+      var end = getRange(range[1])
+      var cols = charArray(init.c, end.c)
+      for (let r = init.r r <= end.r r++) {
         if (r == 1) {
           for (let i in cols) {
             let c = cols[i]
             col_names.push(worksheet[c + r].w)
           }
         } else {
-          let d = {};
+          let d = {}
           for (let i in cols) {
             let c = cols[i]
             if (worksheet[c + r] === undefined) {
-              continue;
+              continue
             }
             d[col_names[i]] = worksheet[c + r].w
           }
-          data.push(d);
+          data.push(d)
         }
       }
-    });
-    return {col_names:col_names,data:data}
+    })
+    return { col_names: col_names, data: data }
   }
 }

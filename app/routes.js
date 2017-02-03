@@ -19,13 +19,8 @@ var Routes = function (app) {
   ]
   var formParser = form({ keepExtensions: true }) // POST
   var urlencodedParser = bodyParser.urlencoded({ extended: true }) // PUT, DELETE
-  var jsonParser = bodyParser.json();//POST
+  var jsonParser = bodyParser.json()//POST
   
-  
-  
-  app.use(urlencodedParser);
-  app.use(jsonParser);
-  app.use(formParser);
   // This is middleware that allows to retrive parameters from the POST, PUT & DELETE request
   /*
   This are the routing functions. They separate the request to the diferents controllers.
@@ -36,7 +31,7 @@ var Routes = function (app) {
     for (i in controllers) {
       if (controllers[i].type === req.params.type) {
         controller = require(controllers[i].file)()
-        break;
+        break
       }
     }
 
@@ -50,25 +45,29 @@ var Routes = function (app) {
           else res.send(err2)
         })
     } else res.sendStatus(404)
-  };
+  }
   var postFunction = function (req, res) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
+    res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token')
     if (req.form) {
-      req.form.complete((err, fields, files) => {
-        if (err) res.sendStatus(500);
-        finishPost(req, res, fields, files);
-      });
+      if(req.headers['content-type'].indexOf("multipart")!=-1){
+        req.form.complete((err, fields, files) => {
+          if (err) res.sendStatus(500)
+          finishPost(req, res, fields, files)
+        })
+      } else {
+        finishPost(req, res, req.body, null)
+      }
     } else {
-      finishPost(req, res, req.body, null);
+      finishPost(req, res, req.body, null)
     }
   }
 
   var getPutDeleteFunction = function (req, res) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
+    res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token')
     var i, controller
     for (i in controllers) {
       if (controllers[i].type === req.params.type) {
@@ -95,7 +94,7 @@ var Routes = function (app) {
 
   
   /* ---------------- CREATE ---------------- */
-  app.post('/api/:type/*', postFunction)  
+  app.post('/api/:type/*', formParser, urlencodedParser, jsonParser, postFunction)  
 
   /* ----------------  READ  ---------------- */
   // This is some heartbeat to monitor that the app is working

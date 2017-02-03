@@ -28,16 +28,16 @@ var MysqlModel = function (table) {
 
   this.getAll = function (params) {
     if (params.filter || params.limit || params.page || params.page || params.filter_fields) {
-      return this.getFiltered(params);
+      return this.getFiltered(params)
     }
     var connection = mysql.createConnection(dbConf)
-    var query = 'SELECT * FROM ' + table + ';'
+    var query = 'SELECT * FROM ' + table + ''
     return resolveQuery(query, connection)
   }
 
   this.getByUid = function (uid) {
     var connection = mysql.createConnection(dbConf)
-    var query = 'SELECT * FROM ' + table + ' AS list WHERE list.id = ' + connection.escape(uid) + ';'
+    var query = 'SELECT * FROM ' + table + ' AS list WHERE list.id = ' + connection.escape(uid) + ''
     return resolveQuery(query, connection)
   }
 
@@ -48,7 +48,7 @@ var MysqlModel = function (table) {
       queryGet += 'list.Uid = ' + connection.escape(uids[i]) + ' AND '
     }
     queryGet = queryGet.slice(0, -4)
-    var query = 'SELECT * FROM `' + table + '` AS list WHERE ' + queryGet + ';'
+    var query = 'SELECT * FROM `' + table + '` AS list WHERE ' + queryGet + ''
     return resolveQuery(query, connection)
   }
 
@@ -59,97 +59,97 @@ var MysqlModel = function (table) {
       queryGet += 'list.' + i + ' = ' + connection.escape(params[i]) + ' AND '
     }
     queryGet = queryGet.slice(0, -4)
-    var query = 'SELECT * FROM `' + table + '` AS list WHERE ' + queryGet + ';'
+    var query = 'SELECT * FROM `' + table + '` AS list WHERE ' + queryGet + ''
     return resolveQuery(query, connection)
   }
 
   this.getFiltered = function (params) {
-    var connection = mysql.createConnection(dbConf);
-    let filters = {};
-    var where = "";
+    var connection = mysql.createConnection(dbConf)
+    let filters = {}
+    var where = ""
     if (params.filter_fields !== undefined) {
       if (typeof params.filter_fields == "string") {
-        params.filter_fields = [params.filter_fields];
-        params.filter_values = [params.filter_values];
+        params.filter_fields = [params.filter_fields]
+        params.filter_values = [params.filter_values]
       }
     } else {
-      params.filter_fields = [];
-      params.filter_values = [];
+      params.filter_fields = []
+      params.filter_values = []
     }
     //group fields by name
     params.filter_fields.forEach((key, i) => {
       if (!filters[key]) {
-        filters[key] = [];
+        filters[key] = []
       }
-      filters[key].push(params.filter_values[i]);
-    });
+      filters[key].push(params.filter_values[i])
+    })
     if (params.fields !== undefined) {
       if (typeof params.fields == "string") {
-        params.fields = [params.fields];
+        params.fields = [params.fields]
       }
     } else {
-      params.fields = [];
+      params.fields = []
     }
 
-    let search = "";
+    let search = ""
     if (params.fields.length > 0) {
-      search = "(";
+      search = "("
       for (var i in params.fields) {
         // TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
-        search += "list." + params.fields[i] + " like " + connection.escape("%" + params.filter + "%") + " OR ";
+        search += "list." + params.fields[i] + " like " + connection.escape("%" + params.filter + "%") + " OR "
       }
-      search = search.slice(0, -4);
-      search += ")";
+      search = search.slice(0, -4)
+      search += ")"
     }
-    let conditions = "";
+    let conditions = ""
     if (params.filter_fields.length > 0) {
       for (var f in filters) {
-        conditions += "(";
+        conditions += "("
         for (var v in filters[f]) {
-          conditions += "list." + f + " = " + filters[f][v] + " OR ";
+          conditions += "list." + f + " = " + filters[f][v] + " OR "
         }
-        conditions = conditions.slice(0, -4);
-        conditions += ") AND ";
+        conditions = conditions.slice(0, -4)
+        conditions += ") AND "
       }
-      conditions = conditions.slice(0, -5);
+      conditions = conditions.slice(0, -5)
     }
     if (search.length > 0 && conditions.length > 0) {
-      where = search + " AND " + conditions;
+      where = search + " AND " + conditions
     } else { //just one of these
-      where = search + conditions;
+      where = search + conditions
     }
     var query = "SELECT SQL_CALC_FOUND_ROWS * FROM `" + table +
-      "` AS list ";
+      "` AS list "
     if (where.length > 2) {
-      query += "WHERE " + where;
+      query += "WHERE " + where
     }
     query += " ORDER BY list." + params.order +
-      " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";";
-    query += "SELECT FOUND_ROWS() as total;";
-    console.log(query);
+      " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ""
+    query += "SELECT FOUND_ROWS() as total"
+    console.log(query)
     return resolveQuery(query, connection).then((result) => {
-      return { data: result[0], total_results: result[1][0].total };
-    });
-  };
+      return { data: result[0], total_results: result[1][0].total }
+    })
+  }
 
   this.createMultiple = function (data) {
-    let rows = data.data;
-    let col_names = data.col_names;
-    var query = "INSERT INTO "+table+" (" + col_names.join(",") + ") VALUES ";
+    let rows = data.data
+    let col_names = data.col_names
+    var query = "INSERT INTO "+table+" (" + col_names.join(",") + ") VALUES "
     for (let i in rows) {
-      query += "("; //init
+      query += "(" //init
       for (let j in col_names) {
         if (rows[i][col_names[j]] === undefined) {
-          query += "NULL,";
+          query += "NULL,"
         } else {
-          query += "'" + rows[i][col_names[j]] + "',";
+          query += "'" + rows[i][col_names[j]] + "',"
         }
       }
-      query = query.slice(0, -1);
-      query += "),";
+      query = query.slice(0, -1)
+      query += "),"
     }
-    query = query.slice(0, -1);
-    return this.customQuery(query);
+    query = query.slice(0, -1)
+    return this.customQuery(query)
   }
 
   this.create = function (body) {
@@ -162,7 +162,7 @@ var MysqlModel = function (table) {
     }
     queryFields = queryFields.slice(0, -1) + ')'
     queryValues = queryValues.slice(0, -1) + ')'
-    var query = 'INSERT INTO ' + table + ' ' + queryFields + ' VALUES ' + queryValues + ';'
+    var query = 'INSERT INTO ' + table + ' ' + queryFields + ' VALUES ' + queryValues + ''
     return resolveQuery(query, connection)
   }
 
@@ -178,8 +178,8 @@ var MysqlModel = function (table) {
     }
     queryUpdate = queryUpdate.slice(0, -1)
     queryCondition = queryCondition.slice(0, -4)
-    var query1 = 'UPDATE ' + table + ' SET ' + queryUpdate + ' WHERE ' + queryCondition + ';'
-    var query2 = 'SELECT * FROM ' + table + ' AS list WHERE ' + queryCondition + ';'
+    var query1 = 'UPDATE ' + table + ' SET ' + queryUpdate + ' WHERE ' + queryCondition + ''
+    var query2 = 'SELECT * FROM ' + table + ' AS list WHERE ' + queryCondition + ''
     return resolveQuery(query1, connection).then(() => {
       connection = mysql.createConnection(dbConf)
       return resolveQuery(query2, connection)
@@ -193,7 +193,7 @@ var MysqlModel = function (table) {
       queryCondition += i + ' = ' + connection.escape(condition[i]) + ' AND '
     }
     queryCondition = queryCondition.slice(0, -4)
-    var query = 'DELETE FROM ' + table + ' WHERE ' + queryCondition + ';'
+    var query = 'DELETE FROM ' + table + ' WHERE ' + queryCondition + ''
     return resolveQuery(query, connection)
   }
 

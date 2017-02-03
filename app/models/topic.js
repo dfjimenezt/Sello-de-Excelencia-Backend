@@ -1,12 +1,12 @@
-var BaseModel = require('../utils/model.js');
-var util = require('util');
+var BaseModel = require('../utils/model.js')
+var util = require('util')
 
 var Topic = function () {
-	var params = ["topic", "mysql"];
-	BaseModel.apply(this, params);
+	var params = ["topic", "mysql"]
+	BaseModel.apply(this, params)
 
-	return this;
-};
-util.inherits(Topic, BaseModel);
+	return this
+}
+util.inherits(Topic, BaseModel)
 
-module.exports = Topic;
+module.exports = Topic

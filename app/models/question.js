@@ -9,23 +9,22 @@ var util = require('util')
 var Question = function () {
 
     this.createMultiple = function (data, col_names) {
-        var query = "INSERT INTO question (" + col_names.join(",") + ") VALUES ";
+        var query = "INSERT INTO question (" + col_names.join(",") + ") VALUES "
         for (let i in data) {
-            query += "("; //init
+            query += "(" //init
             for (let j in col_names) {
                 if (data[i][col_names[j]] === undefined) {
-                    query += "NULL,";
+                    query += "NULL,"
                 } else {
-                    query += "'" + data[i][col_names[j]] + "',";
+                    query += "'" + data[i][col_names[j]] + "',"
                 }
 
             }
-            query = query.slice(0, -1);
-            query += "),";
+            query = query.slice(0, -1)
+            query += "),"
         }
-        query = query.slice(0, -1);
-        console.log(query);
-        return this.customQuery(query);
+        query = query.slice(0, -1)
+        return this.customQuery(query)
     }
 
     var params = ['question', 'mysql']
