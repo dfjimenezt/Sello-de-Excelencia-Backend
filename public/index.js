@@ -25,7 +25,6 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 		.primaryPalette('blue')
 		.accentPalette('grey');
 
-	let config = cmsConfig;
 	function addPage(path,page,parent){
 		page.parent = parent;
 		let route = {
@@ -45,7 +44,7 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 			}
 	}
 
-	config.forEach((section) => {
+	dmt.config.forEach((section) => {
 		section.pages.forEach((page) => {
 			addPage("/"+section.path,page,section);
 		});
@@ -67,7 +66,7 @@ app.controller('backCtrl', function ($mdSidenav, $location, $http) {
 	this.menu = function () {
 		$mdSidenav("menu").toggle();
 	};
-	this.leftMenu = cmsConfig;
+	this.leftMenu = dmt.config;
 
 	this.selectPage = function (section, page) {
 		$location.path("/" + section.path + "/" + page.path);

@@ -145,7 +145,7 @@ module.exports = {
   parseExcelFile: function (filename) {
     function charArray(charA, charZ) {
       var a = [], i = charA.charCodeAt(0), j = charZ.charCodeAt(0)
-      for (i <= j++i) {
+      for (; i <= j; ++i) {
         a.push(String.fromCharCode(i))
       }
       return a
@@ -153,7 +153,7 @@ module.exports = {
     function getRange(position) {
       var c = ""
       var r = ""
-      for (let i = 0 i < position.length i++) {
+      for (let i = 0; i < position.length; i++) {
         if (isNaN(Number.parseInt(position.charAt(i)))) {
           c += position.charAt(i)
         } else {
@@ -175,7 +175,7 @@ module.exports = {
       var init = getRange(range[0])
       var end = getRange(range[1])
       var cols = charArray(init.c, end.c)
-      for (let r = init.r r <= end.r r++) {
+      for (let r = init.r; r <= end.r; r++) {
         if (r == 1) {
           for (let i in cols) {
             let c = cols[i]

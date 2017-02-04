@@ -46,7 +46,7 @@ var controller_template = "" +
     "var Auth_ctrl = require('./auth.js');\n" +
     "{{IMPORT_MODELS}}\n" +
     "var {{CONTROLLER_NAME}} = function () {\n" +
-    "{{MODELS}}\n"+
+    "{{MODELS}}\n" +
     "\t//---------------------------------------------------------------\n" +
     "\tvar getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map();\n" +
     "\tvar _get = function(model,user,params){\n" +
@@ -124,54 +124,78 @@ var mySqlGen = function () {
 
     this.parse = function () {
         //Load file into database
-        getTables()
-        //check permissions
-        getControllers();
-    };
-    function getTables() {
-        return new Promise((resolve, reject) => {
-            var connection = mysql.createConnection(dbConf);
-            var query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + dbConf.database + "';";
-            return execQuery(query, connection).then((tables) => {
-                if (tables.length === 0) {
-                    throw utiles.informError(300);
-                }
-                for (let i = 0; i < tables.length; i++) {
-                    let table = tables[i];
-                    let table_name = table.TABLE_NAME;
-                    let file_name = "./app/models/" + table_name + ".js";
-                    if (fs.existsSync(file_name)) {
-                        console.log(file_name + " already exists")
-                        continue;
-                    }
-                    let module_name = table_name.charAt(0).toUpperCase() + table_name.slice(1);
-                    let info = model_template.replace(new RegExp("{{TABLE_NAME}}", 'g'), table_name);
-                    info = info.replace(new RegExp("{{MODULE_NAME}}", 'g'), module_name);
-                    describeTable(table, info).then((info) => {
-                        //write to disk
-                        fs.writeFile("./app/models/" + table_name + ".js", info, (error) => {
-                            if (error) {
-                                console.log(error);
-                            }
-                        });
-                    }).catch((info) => {
-                        //write to disk
-                        fs.writeFile("./app/models/" + table_name + ".js", info, (error) => {
-                            if (error) {
-                                console.log(error);
-                            }
-                        });
-                    });
-                }
-            });
+        var entities = {};
+        getTables(entities).then((promises) => {
+            return Promise.all(promises)
+        }).then((info) => {
+            fs.writeFileSync("../../public/auto_entities.js", entities);
+            //check permissions
+            getControllers(entities);
+        }).catch((e) => {
+            console.log(e);
+        })
 
+
+    };
+    function getTables(entities) {
+        var connection = mysql.createConnection(dbConf);
+        var query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + dbConf.database + "';";
+        
+        return execQuery(query, connection).then((tables) => {
+            if (tables.length === 0) {
+                throw utiles.informError(300);
+            }
+            let promises = [];
+            for (let i = 0; i < tables.length; i++) {
+                let table = tables[i];
+                let table_name = table.TABLE_NAME;
+                let file_name = "./app/models/" + table_name + ".js";
+                if (fs.existsSync(file_name)) {
+                    console.log(file_name + " already exists")
+                    continue;
+                }
+                let module_name = table_name.charAt(0).toUpperCase() + table_name.slice(1);
+                let info = model_template.replace(new RegExp("{{TABLE_NAME}}", 'g'), table_name);
+                info = info.replace(new RegExp("{{MODULE_NAME}}", 'g'), module_name);
+                let promise = describeTable(table, info, entities)
+                promises.push(promise);
+                promise.then((info) => {
+                    fs.writeFileSync("./app/models/" + table_name + ".js", info);
+                    return true;
+                })
+            }
+            return promises;
         });
-
     };
-    function describeTable(table, str) {
+    function describeTable(table, str, entities) {
         var connection = mysql.createConnection(dbConf);
         var query = "DESCRIBE " + table.TABLE_NAME;
         return execQuery(query, connection).then((info) => {
+            let entity = {
+                fields: []
+            };
+            function TypeTotype(Type) {
+                return Type.indexOf("int") != -1 ? "int" :
+                    Type.indexOf("varchar") != -1 ? "string" :
+                        Type.indexOf("text") != -1 ? "text" :
+                            Type.indexOf("tinyint") != -1 ? "boolean" :
+                                Type.indexOf("date") != -1 ? "date" :
+                                    Type.indexOf("datetime") != -1 ? "datetime" :
+                                        ""
+            }
+            info.forEach((f) => {
+                if (f.Key === "PRI") {
+                    entity.defaultSort = entity.defaultSort || f.Field; //take the first Key
+                }
+                //{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+                entity.fields.push({
+                    name: f.Field,
+                    type: TypeTotype(f.Type),
+                    disabled: f.Key === "PRI" || f.Type.indexOf("timestamp") != -1,
+                    key: f.Key === "PRI"
+                });
+            })
+            entities[table.TABLE_NAME] = entity;
             str = str.replace(new RegExp('{{FIELDS}}', 'g'), JSON.stringify(info));
             return str;
         });
@@ -188,13 +212,12 @@ var mySqlGen = function () {
         })
     }
 
-
     /**
      * Controllers
      */
-    function getControllers() {
-        let config = require('../../public/config.js');
-        config.forEach((section) => {
+    function getControllers(entities) {
+        let dmt = require('../../public/config.js');
+        dmt.config.forEach((section) => {
             let controller_name = section.section;
             let file_name = "./app/controllers/auto_" + section.path + ".js";
             if (fs.existsSync(file_name)) {
@@ -216,16 +239,16 @@ var mySqlGen = function () {
                     return;
                 }
 
-                import_models.push(individual_import_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
-                models.push(individual_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
+                import_models.push(individual_import_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity));
+                models.push(individual_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity));
 
-                get_models.push(individiual_get_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
-                get_maps.push(individiual_get_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
+                get_models.push(individiual_get_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity));
+                get_maps.push(individiual_get_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity));
 
-                post_models.push(individiual_create_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
-                post_maps.push(individiual_create_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
+                post_models.push(individiual_create_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity));
+                post_maps.push(individiual_create_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity));
 
-                let path = "../models/" + page.entity.table + ".js";
+                let path = "../models/" + page.entity + ".js";
                 let model = new (require(path))();
                 let primary_key = "id";
                 try {
@@ -238,15 +261,15 @@ var mySqlGen = function () {
                     primary_key = "id";
                 }
 
-                let update = individiual_update_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table);
+                let update = individiual_update_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity);
                 update = update.replace(new RegExp('{{PRIMARY_KEY}}', 'g'), primary_key)
                 put_models.push(update);
-                put_maps.push(individiual_update_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
+                put_maps.push(individiual_update_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity));
 
-                let _delete = individiual_delete_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table);
+                let _delete = individiual_delete_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity);
                 _delete = _delete.replace(new RegExp('{{PRIMARY_KEY}}', 'g'), primary_key)
                 delete_models.push(_delete);
-                delete_maps.push(individiual_delete_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity.table));
+                delete_maps.push(individiual_delete_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), page.entity));
             });
             let controller = controller_template.replace(new RegExp('{{CONTROLLER_NAME}}', 'g'), controller_name);
             controller = controller.replace(new RegExp('{{IMPORT_MODELS}}', 'g'), import_models.join('\n'));
