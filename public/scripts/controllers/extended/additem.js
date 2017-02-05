@@ -3,7 +3,7 @@ angular.module('dmt-back').controller('addItemExtendedController', function ($md
 	ctrl.data = {};
 	ctrl.breadcrum = buildBreadcrum($location.path(), page);
 	ctrl.options = {};
-	ctrl.currentEntity = page.parent.entity;
+	ctrl.currentEntity = dmt.entities[page.parent.entity];
 	/**
 	 * Initialize data
 	 */

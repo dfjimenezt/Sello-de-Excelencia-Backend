@@ -124,7 +124,7 @@ var MysqlModel = function (table) {
       query += "WHERE " + where
     }
     query += " ORDER BY list." + params.order +
-      " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ""
+      " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
     query += "SELECT FOUND_ROWS() as total"
     console.log(query)
     return resolveQuery(query, connection).then((result) => {

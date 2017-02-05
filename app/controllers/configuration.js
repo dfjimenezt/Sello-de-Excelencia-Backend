@@ -10,7 +10,7 @@ var role_model = require("../models/role.js")
 var user_role_model = require("../models/user_role.js")
 var permission_model = require("../models/permission.js")
 var permission_role_model = require("../models/permission_role.js")
-
+var config = require('../models/config.js')
 var Configuration = function () {
 	var auth = new auth_ctrl()
 	var _user = new user_model()
@@ -18,7 +18,7 @@ var Configuration = function () {
 	var user_role = new user_role_model()
 	var permission = new permission_model()
 	var permission_role = new permission_role_model()
-
+	var model_config = new config()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 
@@ -70,11 +70,19 @@ var Configuration = function () {
 		return _get(permission_role,user,params)
 	}
 
+	/**
+	 * config
+	*/
+	var get_config = function (user, params) {
+		return _get(model_config,user,params);
+	}
+
 	getMap.set("user", { method: users, permits: Permissions.PLATFORM })
 	getMap.set("role", { method: roles, permits: Permissions.ADMIN })
 	getMap.set("user_role", { method: user_roles, permits: Permissions.ADMIN })
 	getMap.set("permission", { method: permissions, permits: Permissions.ADMIN })
 	getMap.set("permission_role", { method: permission_roles, permits: Permissions.ADMIN })
+	getMap.set('config', { method: get_config, permits: Permissions.ADMIN })
 
 	var _create = function(model,body){
 		return model.create(body).then((u) => {
@@ -126,6 +134,13 @@ var Configuration = function () {
 	}
 
 	/**
+	 * config
+	*/
+	var create_config = function (user, body) {
+		return model_config.create(body)
+	}
+
+	/**
 	 * Crear Usuario Role
 	 */
 	var import_data = function (token, body, files) {
@@ -138,6 +153,7 @@ var Configuration = function () {
 	postMap.set("user_role", { method: bind_user_role, permits: Permissions.ADMIN })
 	postMap.set("permission_role", { method: bind_permission_role, permits: Permissions.ADMIN })
 	postMap.set("import_data", { method: import_data, permits: Permissions.ADMIN })
+	postMap.set('config', { method: create_config, permits: Permissions.ADMIN })
 
 	/**
 	 * Updates an User
@@ -191,7 +207,17 @@ var Configuration = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		psermission_role.update(body, { id_user: body.id_user, id_permission: body.id_permission })
+		permission_role.update(body, { id_user: body.id_user, id_permission: body.id_permission })
+	}
+
+	/**
+	 * config
+	*/
+	var update_config = function (user, body) {
+		if (!body.id) {
+			throw utiles.informError(400)
+		}
+		return model_config.update(body,{id:body.id});
 	}
 
 	putMap.set("user", { method: update_user, permits: Permissions.PLATFORM })
@@ -199,6 +225,7 @@ var Configuration = function () {
 	putMap.set("permission", { method: update_permission, permits: Permissions.ADMIN })
 	putMap.set("user_role", { method: update_user_role, permits: Permissions.ADMIN })
 	putMap.set("permission_role", { method: update_permission_role, permits: Permissions.ADMIN })
+	putMap.set('config', { method: update_config, permits: Permissions.ADMIN })
 
 	/**
 	 * user
@@ -236,10 +263,22 @@ var Configuration = function () {
 		}
 		return permission_role.delete(body,{id:body.id})
 	}
+
+	/**
+	 * config
+	*/
+	var delete_config = function (user, body) {
+		if (!body.id) {
+			throw utiles.informError(400);
+		}
+		return model_config.delete(body,{id:body.id});
+	}
+
 	deleteMap.set('user', { method: delete_user, permits: Permissions.ADMIN })
 	deleteMap.set('role', { method: delete_role, permits: Permissions.ADMIN })
 	deleteMap.set('permission', { method: delete_permission, permits: Permissions.ADMIN })
 	deleteMap.set('permission_role', { method: delete_permission_role, permits: Permissions.ADMIN })
+	deleteMap.set('config', { method: delete_config, permits: Permissions.ADMIN })
 	
 	var params = [getMap, postMap, putMap, deleteMap]
 	BaseController.apply(this, params)

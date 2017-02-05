@@ -2,10 +2,10 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 	var ctrl = this;
 	ctrl.data = {};
 	ctrl.options = {};
-	ctrl.currentEntity = entity;
+	ctrl.currentEntity = dmt.entities[entity];
 	function updateFilter(filter) {
 		if (filter.filter) { //affects another filter
-			entity.filters.forEach((item) => {
+			ctrl.currentEntity.filters.forEach((item) => {
 				if (item.name === filter.filter) { //find the associated filter
 					if (filter.selected === "null") { //cleaning the filter
 						item.options = item.fulloptions || item.options;
@@ -48,7 +48,7 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 	function addFilters(item, index) {
 		var base = item.endpoint;
 		if (!base) {
-			base = entity.endpoint;
+			base = ctrl.currentEntity.endpoint;
 		}
 		$http.get(base + item.table).then(function (results) {
 			item.options = results.data;
@@ -72,8 +72,8 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 		}
 	}
 	opts.forEach(addOptions);
-	if (entity.filters) {
-		entity.filters.forEach(addFilters);
+	if (ctrl.currentEntity.filters) {
+		ctrl.currentEntity.filters.forEach(addFilters);
 	}
 
 	this.cancel = $mdDialog.cancel;
@@ -96,7 +96,7 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 				fd.append(i,ctrl.data[i]);
 			}*/
 
-			$http.post(base + ctrl.currentEntity.table, ctrl.data).then(success).catch(error);
+			$http.post(base + entity, ctrl.data).then(success).catch(error);
 		}
 	};
 });

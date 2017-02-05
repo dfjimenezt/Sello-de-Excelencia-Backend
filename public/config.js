@@ -40,6 +40,11 @@ config : [
 				path: "permisos_roles",
 				entity: "permission_role"
 			},
+			{
+				name: "Parametros Plataforma",
+				path: "parametros",
+				entity: "config"
+			},
 		]
 		},
 		{

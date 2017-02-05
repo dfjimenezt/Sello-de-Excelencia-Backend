@@ -128,7 +128,7 @@ var mySqlGen = function () {
         getTables(entities).then((promises) => {
             return Promise.all(promises)
         }).then((info) => {
-            fs.writeFileSync("../../public/auto_entities.js", entities);
+            fs.writeFileSync("./public/auto_entities.js", JSON.stringify(entities));
             //check permissions
             getControllers(entities);
         }).catch((e) => {

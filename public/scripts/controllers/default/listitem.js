@@ -11,7 +11,7 @@ angular.module('dmt-back').filter('linkvalue', function () {
 angular.module('dmt-back').controller('listItemController', function ($scope, $mdDialog, $mdEditDialog, page, $http) {
     var ctrl = this;
     ctrl.page = page;
-    ctrl.entity = dmt.entites[page.entity];
+    ctrl.entity = dmt.entities[page.entity];
     /**
      * Manipulate items
      */
@@ -23,7 +23,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
             focusOnOpen: false,
             targetEvent: event,
             templateUrl: ctrl.entity.add ? ctrl.entity.add.template || 'views/default/add-dialog.html' : 'views/default/add-dialog.html',
-            locals: { entity: ctrl.entity },
+            locals: { entity: page.entity },
         }).then($scope.getData);
     };
 
@@ -31,7 +31,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
         if (item.timestamp) {
             delete item.timestamp;
         }
-        
+
         $http.put(ctrl.entity.endpoint + page.entity, item).then($scope.getData);
 
     };
@@ -39,7 +39,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
         event.stopPropagation();
         if (ctrl.entity.readOnly) { return; }
         if (field.type === "link") { return; }
-        if (field.disabled === "true") { return; }
+        if (field.disabled) { return; }
 
         var promise = $mdEditDialog.large({
             modelValue: item[field.name],
@@ -54,12 +54,6 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
             type: field.type === "int" ? "number" :
                 field.type === "boolean" ? "checkbox" : "text",
             targetEvent: event
-        });
-        promise.then(function (ctrl) {
-            var input = ctrl.getInput();
-            input.$viewChangeListeners.push(function () {
-                input.$setValidity('test', input.$modelValue !== 'test');
-            });
         });
     };
 
@@ -121,6 +115,17 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
     $scope.getSuccess = function (results) {
         $scope.items = results.data.data;
         $scope.total_results = results.data.total_results;
+        var booleans = [];
+        for (let p in ctrl.entity.fields) { //mysql boolean 1 / 0 to true / false            
+            if (ctrl.entity.fields[p].type === "boolean") {
+                booleans.push(ctrl.entity.fields[p].name)
+            }
+        }
+        $scope.items.forEach(function (item) {
+            for (let i in booleans) { //mysql boolean 1 / 0 to true / false            
+                item[booleans[i]] = item[booleans[i]] === 1;
+            }
+        });
     };
 
     $scope.getData = function () {

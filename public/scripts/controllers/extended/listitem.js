@@ -11,7 +11,7 @@ angular.module('dmt-back').filter('linkvalue', function () {
 angular.module('dmt-back').controller('listItemExtendedController', function ($scope, $mdDialog, $location, page, $http) {
     var ctrl = this;
     ctrl.page = page;
-    ctrl.entity = page.entity;
+    ctrl.entity = dmt.entities[page.entity];
     ctrl.breadcrum = buildBreadcrum($location.path(),page);
     /**
      * Manipulate items
@@ -31,7 +31,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
     $scope.delete = function (event) {
         $mdDialog.show({
             clickOutsideToClose: true,
-            controller: page.entity.delete ? page.entity.delete.controller || 'deleteItemController' : 'deleteItemController',
+            controller: ctrl.entity.delete ? ctrl.entity.delete.controller || 'deleteItemController' : 'deleteItemController',
             controllerAs: 'ctrl',
             focusOnOpen: false,
             targetEvent: event,
@@ -39,7 +39,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
                 entity: ctrl.entity,
                 items: $scope.selected
             },
-            templateUrl: page.entity.delete ? page.entity.delete.templateUrl || 'views/default/delete-dialog.html' : 'views/default/delete-dialog.html',
+            templateUrl: ctrl.entity.delete ? ctrl.entity.delete.templateUrl || 'views/default/delete-dialog.html' : 'views/default/delete-dialog.html',
         }).then($scope.getData);
     };
 
@@ -77,7 +77,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
 
     $scope.query = {
         filter: '',
-        order: page ? page.entity.defaultSort : "name",
+        order: page ? ctrl.entity.defaultSort : "name",
         limit: 20,
         page: 1,
         filters: {}
@@ -92,7 +92,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
 		/**
 		 * Webservices composed by endpoint + table
 		 */
-        if (!page.entity) {
+        if (!ctrl.entity) {
             return;
         }
         let str = [];
@@ -101,9 +101,9 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
                 str.push(encodeURIComponent(p) + "=" + encodeURIComponent($scope.query[p]));
             }
         }
-        for (let p in page.entity.fields) {
-            if (page.entity.fields[p].searchable) {
-                str.push("field=" + page.entity.fields[p].name);
+        for (let p in ctrl.entity.fields) {
+            if (ctrl.entity.fields[p].searchable) {
+                str.push("field=" + ctrl.entity.fields[p].name);
             }
         }
         for (let key in $scope.query.filters) {
@@ -116,7 +116,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
         }
         let filter = str.join("&");
 
-        $scope.promise = $http.get(page.entity.endpoint + page.entity.table + "?" + filter);
+        $scope.promise = $http.get(ctrl.entity.endpoint + page.entity + "?" + filter);
         $scope.promise.then($scope.getSuccess).catch(function (response) {
             window.location.href = "/login";
         });
@@ -129,7 +129,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
     function addOptions(item, index) {
         var base = item.endpoint;
         if (!base) {
-            base = page.entity.endpoint;
+            base = ctrl.entity.endpoint;
         }
         $http.get(base + item.table).then(function (results) {
             ctrl.options[item.name] = results.data;
@@ -137,7 +137,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
     }
     function updateFilter(filter) {
         if (filter.filter) { //affects another filter
-            page.entity.filters.forEach((item) => {
+            ctrl.entity.filters.forEach((item) => {
                 if (item.name === filter.filter) { //find the associated filter
                     if (filter.selected === "null") { //cleaning the filter
                         item.options = item.fulloptions || item.options;
@@ -181,7 +181,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
     function addFilters(item, index) {
         var base = item.endpoint;
         if (!base) {
-            base = page.entity.endpoint;
+            base = ctrl.entity.endpoint;
         }
         $http.get(base + item.table).then(function (results) {
             item.options = results.data;
@@ -194,15 +194,15 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
     ctrl.updateFilter = updateFilter;
 
     var opts = [];
-    for (var i in page.entity.fields) {
-        var f = page.entity.fields[i];
+    for (var i in ctrl.entity.fields) {
+        var f = ctrl.entity.fields[i];
         if (f.type === 'link') {
             opts.push(f);
         }
     }
     opts.forEach(addOptions);
-    if (page.entity.filters) {
-        page.entity.filters.forEach(addFilters);
+    if (ctrl.entity.filters) {
+        ctrl.entity.filters.forEach(addFilters);
     }
 
 });

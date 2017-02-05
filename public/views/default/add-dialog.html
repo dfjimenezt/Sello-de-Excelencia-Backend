@@ -10,7 +10,6 @@
     
     <form name="ctrl.form" ng-submit="ctrl.addItem()">
       <div layout="column" class="input-row">
-        <form flex>
           <md-input-container ng-repeat="f in ctrl.currentEntity.fields" flex>
             <label ng-if="f.type!=='boolean'">{{f.name}}</label>
             <input type="number" ng-if="f.type=='int'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled === 'true'"/>
@@ -23,7 +22,6 @@
             </md-select>
             <textarea ng-if="f.type=='text'" ng-model="ctrl.data[f.name]"></textarea>
           </md-input-container>
-        </form>
       </div>
     </form>
     
