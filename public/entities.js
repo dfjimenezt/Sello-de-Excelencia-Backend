@@ -154,7 +154,7 @@ dmt.entities = {
 			{ "name": "second_email", "type": "string", "disabled": false, "key": false },
 			{ "name": "phone", "type": "string", "disabled": false, "key": false },
 			{ "name": "head_sector", "type": "int", "disabled": false, "key": false },
-			{ "name": "designation_act", "type": "string", "disabled": false, "key": false },
+			{ "name": "designation_act", "type": "file", "disabled": false, "key": false },
 			{ "name": "legalrep_name", "type": "string", "disabled": false, "key": false },
 			{ "name": "legalrep_secondname", "type": "string", "disabled": false, "key": false },
 			{ "name": "legalrep_lastname", "type": "string", "disabled": false, "key": false },
@@ -386,6 +386,7 @@ dmt.entities = {
 		"fields": [{ "name": "id", "type": "int", "disabled": true, "key": true }, { "name": "key", "type": "string", "disabled": false, "key": false }, { "name": "value", "type": "string", "disabled": false, "key": false }], "defaultSort": "id"
 	},
 	"user_category": {
+		endpoint: "/api/configuration/",
 		"fields": [
 			{
 				name: "id_user",
@@ -412,6 +413,7 @@ dmt.entities = {
 		"defaultSort": "id_user"
 	},
 	"user_questiontopic": {
+		endpoint: "/api/configuration/",
 		"fields": [
 			{
 				name: "id_user",
@@ -437,10 +439,46 @@ dmt.entities = {
 		],
 		"defaultSort": "id_user"
 	},
-	"category": {
+	"questiontopic": {
+		endpoint: "/api/service/",
 		"fields": [{ "name": "id", "type": "int", "disabled": true, "key": true }, { "name": "name", "type": "string", "disabled": false, "key": false }], "defaultSort": "id"
 	},
-	"questiontopic": {
-		"fields": [{ "name": "id", "type": "int", "disabled": true, "key": true }, { "name": "name", "type": "string", "disabled": false, "key": false }], "defaultSort": "id"
-	}
+	"form_question":{
+		endpoint: "/api/service/",
+		"defaultSort" : "id_form",
+		"fields":[
+			{"name":"id_form","type":"int","disabled":false,"key":false},
+			{"name":"id_question","type":"int","disabled":false,"key":false},
+			{"name":"order","type":"int","disabled":false,"key":false}
+			]
+		},
+	"question":{
+		endpoint: "/api/service/",
+		"fields":[
+			{"name":"id","type":"int","disabled":true,"key":true},
+			{"name":"text","type":"text","disabled":false,"key":false},
+			{"name":"id_type","type":"int","disabled":false,"key":false},
+			{"name":"id_topic","type":"int","disabled":false,"key":false}
+			],
+			"defaultSort":"id"
+		},
+	"form":{
+		endpoint: "/api/service/",
+		"fields":[
+			{"name":"id","type":"int","disabled":true,"key":true},
+			{"name":"name","type":"string","disabled":false,"key":false},
+			{"name":"id_category","type":"link","table":"category","foreign_key":"id","foreign_name":"name","disabled":false,"key":false},
+			{"name":"id_topic","type":"link","table":"questiontopic","foreign_key":"id","foreign_name":"name","disabled":false,"key":false},
+			{"name":"timestamp","type":"","disabled":true,"key":false}
+			],
+			"defaultSort":"id"
+		},
+	"type":{
+		endpoint: "/api/service/",
+		"fields":[
+			{"name":"id","type":"int","disabled":true,"key":true},
+			{"name":"name","type":"string","disabled":false,"key":false}
+			],
+			"defaultSort":"id"
+		}
 }

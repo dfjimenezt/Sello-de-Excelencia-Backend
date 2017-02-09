@@ -43,10 +43,12 @@ INSERT INTO permission_role (`id_role`,`id_permission`) VALUES ('3','3');
 INSERT INTO category (`id`,`name`) VALUES ('1','Datos Abiertos');
 INSERT INTO category (`id`,`name`) VALUES ('2','Servicios al ciudadano');
 INSERT INTO category (`id`,`name`) VALUES ('3','Capacidad de Gestión de TI');
+
 INSERT INTO status (`id`,`name`) VALUES ('1','Postulado');
 INSERT INTO status (`id`,`name`) VALUES ('2','En Evaluación');
 INSERT INTO status (`id`,`name`) VALUES ('3','Rechazado');
 INSERT INTO status (`id`,`name`) VALUES ('4','Certificado');
+
 INSERT INTO questiontopic (`id`,`name`) VALUES ('1','Usabilidad');
 INSERT INTO questiontopic (`id`,`name`) VALUES ('2','Accesibilidad');
 INSERT INTO questiontopic (`id`,`name`) VALUES ('3','Interoperabilidad');
@@ -54,5 +56,8 @@ INSERT INTO questiontopic (`id`,`name`) VALUES ('4','Multicanalidad');
 INSERT INTO questiontopic (`id`,`name`) VALUES ('5','Seguridad');
 INSERT INTO type (`id`,`name`) VALUES ('1','Abierta');
 INSERT INTO type (`id`,`name`) VALUES ('2','Opción Multiple');
+INSERT INTO availability (`id`,`name`) VALUES ('1','Baja');
+INSERT INTO availability (`id`,`name`) VALUES ('2','Media');
+INSERT INTO availability (`id`,`name`) VALUES ('3','Alta');
 
 SET FOREIGN_KEY_CHECKS=1;

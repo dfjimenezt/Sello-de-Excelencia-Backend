@@ -38,17 +38,17 @@ var controller_template = "" +
     " * GENERATED: " + now.getDate() + " / " + (now.getMonth() + 1) + " / " + now.getFullYear() +
     " - " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds() + "\n" +
     " **/\n" +
-    "var BaseController = require('../utils/controller.js');\n" +
+    "var BaseController = require('../utils/controller.js')\n" +
     "var util = require('util');\n" +
-    "var utiles = require('../utils/utiles.js');\n" +
-    "var Errors = require('../utils/errors.js');\n" +
-    "var Permissions = require('../utils/permissions.js');\n" +
-    "var Auth_ctrl = require('./auth.js');\n" +
+    "var utiles = require('../utils/utiles.js')\n" +
+    "var Errors = require('../utils/errors.js')\n" +
+    "var Permissions = require('../utils/permissions.js')\n" +
+    "var Auth_ctrl = require('./auth.js')\n" +
     "{{IMPORT_MODELS}}\n" +
     "var {{CONTROLLER_NAME}} = function () {\n" +
     "{{MODELS}}\n" +
     "\t//---------------------------------------------------------------\n" +
-    "\tvar getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map();\n" +
+    "\tvar getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()\n" +
     "\tvar _get = function(model,user,params){\n" +
     "\t\tif (params.id) {\n" +
     "\t\t\treturn model.getByUid(params.id);\n" +
@@ -72,53 +72,53 @@ var controller_template = "" +
     "{{PUT_MAP}}\n" +
     "{{DELETE_METHODS}}\n" +
     "{{DELETE_MAP}}\n" +
-    "\tvar params = [getMap, postMap, putMap, deleteMap];\n" +
-    "\tBaseController.apply(this, params);\n" +
+    "\tvar params = [getMap, postMap, putMap, deleteMap]\n" +
+    "\tBaseController.apply(this, params)\n" +
     "\t//---------------------------------------------------------------\n" +
     "\treturn this;\n" +
-    "};\n" +
-    "util.inherits({{CONTROLLER_NAME}}, BaseController);\n" +
-    "module.exports = {{CONTROLLER_NAME}};";
-var individual_import_model = "var {{MODEL_NAME}} = require('../models/{{MODEL_NAME}}.js');";
+    "}\n" +
+    "util.inherits({{CONTROLLER_NAME}}, BaseController)\n" +
+    "module.exports = {{CONTROLLER_NAME}}";
+var individual_import_model = "var {{MODEL_NAME}} = require('../models/{{MODEL_NAME}}.js')";
 var individual_model = "\tvar model_{{MODEL_NAME}} = new {{MODEL_NAME}}()";
 var individiual_get_method_template = "" +
     "\t/**\n" +
     "\t * {{MODEL_NAME}}\n" +
     "\t*/\n" +
     "\tvar get_{{MODEL_NAME}} = function (user, params) {\n" +
-    "\t\treturn _get(model_{{MODEL_NAME}},user,params);\n" +
-    "\t};";
-var individiual_get_map_template = "\tgetMap.set('{{MODEL_NAME}}', { method: get_{{MODEL_NAME}}, permits: Permissions.ADMIN });";
+    "\t\treturn _get(model_{{MODEL_NAME}},user,params)\n" +
+    "\t}";
+var individiual_get_map_template = "\tgetMap.set('{{MODEL_NAME}}', { method: get_{{MODEL_NAME}}, permits: Permissions.ADMIN })";
 var individiual_create_method_template = "" +
     "\t/**\n" +
     "\t * {{MODEL_NAME}}\n" +
     "\t*/\n" +
     "\tvar create_{{MODEL_NAME}} = function (user, body) {\n" +
-    "\t\treturn model_{{MODEL_NAME}}.create(body);\n" +
-    "\t};";
-var individiual_create_map_template = "\tpostMap.set('{{MODEL_NAME}}', { method: create_{{MODEL_NAME}}, permits: Permissions.ADMIN });";
+    "\t\treturn model_{{MODEL_NAME}}.create(body)\n" +
+    "\t}";
+var individiual_create_map_template = "\tpostMap.set('{{MODEL_NAME}}', { method: create_{{MODEL_NAME}}, permits: Permissions.ADMIN })";
 var individiual_update_method_template = "" +
     "\t/**\n" +
     "\t * {{MODEL_NAME}}\n" +
     "\t*/\n" +
     "\tvar update_{{MODEL_NAME}} = function (user, body) {\n" +
     "\t\tif (!body.{{PRIMARY_KEY}}) {\n" +
-    "\t\t\tthrow utiles.informError(400);\n" +
+    "\t\t\tthrow utiles.informError(400)\n" +
     "\t\t}\n" +
-    "\t\treturn model_{{MODEL_NAME}}.update(body,{{{PRIMARY_KEY}}:body.{{PRIMARY_KEY}}});\n" +
-    "\t};";
-var individiual_update_map_template = "\tputMap.set('{{MODEL_NAME}}', { method: update_{{MODEL_NAME}}, permits: Permissions.ADMIN });";
+    "\t\treturn model_{{MODEL_NAME}}.update(body,{{{PRIMARY_KEY}}:body.{{PRIMARY_KEY}}})\n" +
+    "\t}";
+var individiual_update_map_template = "\tputMap.set('{{MODEL_NAME}}', { method: update_{{MODEL_NAME}}, permits: Permissions.ADMIN })";
 var individiual_delete_method_template = "" +
     "\t/**\n" +
     "\t * {{MODEL_NAME}}\n" +
     "\t*/\n" +
     "\tvar delete_{{MODEL_NAME}} = function (user, body) {\n" +
     "\t\tif (!body.{{PRIMARY_KEY}}) {\n" +
-    "\t\t\tthrow utiles.informError(400);\n" +
+    "\t\t\tthrow utiles.informError(400)\n" +
     "\t\t}\n" +
-    "\t\treturn model_{{MODEL_NAME}}.delete(body,{{{PRIMARY_KEY}}:body.{{PRIMARY_KEY}}});\n" +
-    "\t};";
-var individiual_delete_map_template = "\tdeleteMap.set('{{MODEL_NAME}}', { method: delete_{{MODEL_NAME}}, permits: Permissions.ADMIN });";
+    "\t\treturn model_{{MODEL_NAME}}.delete(body,{{{PRIMARY_KEY}}:body.{{PRIMARY_KEY}}})\n" +
+    "\t}";
+var individiual_delete_map_template = "\tdeleteMap.set('{{MODEL_NAME}}', { method: delete_{{MODEL_NAME}}, permits: Permissions.ADMIN })";
 
 var mySqlGen = function () {
 
