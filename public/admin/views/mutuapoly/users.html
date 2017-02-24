@@ -1,0 +1,22 @@
+<md-toolbar layout="row" layout-spacing="space-around">
+    <md-button>RANKING GENERAL</md-button>
+    <span flex></span>
+    <md-button>TOP MEJORES PUNTAJES</md-button>
+</md-toolbar>
+<md-content>
+    <md-toolbar layout="row" layout-spacing="space-around">
+        <md-button>POSICIÓN</md-button>
+        <span flex></span>
+        <md-button>USUARIO</md-button>
+        <span flex></span>
+        <md-button>PUNTUACIÓN</md-button>  
+    </md-toolbar>
+    <div class="row" layout="row" ng-repeat="user in ctrl.users">
+        <div class="icon-{{$index}}">
+        </div>
+        <span flex></span>
+        <span>{{user.email}}</span>
+        <span flex></span>
+        <span>{{user.ranking[0].points}}</span>
+    </div>
+</md-content>

@@ -99,13 +99,13 @@ var Routes = function (app) {
   /* ----------------  READ  ---------------- */
   // This is some heartbeat to monitor that the app is working
   app.get('/health', (req, res) => { res.sendStatus(200) })
-  app.get('/api/:type/*', urlencodedParser, getPutDeleteFunction)
+  app.get('/api/:type/*', getPutDeleteFunction)
 
   /* ---------------- UPDATE ---------------- */
-  app.put('/api/:type/*', urlencodedParser, jsonParser, getPutDeleteFunction)
+  app.put('/api/:type/*', formParser, urlencodedParser, jsonParser, getPutDeleteFunction)
 
   /* ---------------- DELETE ---------------- */
-  app.delete('/api/:type/*', urlencodedParser, getPutDeleteFunction)
+  app.delete('/api/:type/*', getPutDeleteFunction)
 
 }
 

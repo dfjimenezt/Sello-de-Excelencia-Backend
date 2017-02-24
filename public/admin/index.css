@@ -1,0 +1,106 @@
+@font-face{
+    font-family: 'Avenir Next LT Pro Condensed';
+    font-size: normal;
+    font-weight: normal;
+    src: local('Avenir Next LT Pro Condensed'), url("../fonts/AvenirNextLTPro-Cn.woff") format("woff")
+}
+@font-face{
+    font-family: 'Avenir Next LT Pro Demi';
+    font-size: normal;
+    font-weight: normal;
+    src: local('Avenir Next LT Pro Demi'), url("../fonts/AvenirNextLTPro-Demi.woff") format("woff")
+}
+@-webkit-keyframes fade-in { 0% {opacity: 0;}50%{opacity:0;}100%{opacity:1;}}
+
+*{
+  padding: 0px;
+  margin: 0px;
+}
+
+body{
+  font-family: 'Avenir Next LT Pro Condensed', 'Avenir Next LT Pro Demi', sans-serif !important;
+  font-weight: 300;
+  font-size: 16px;
+  background: #ffffff;
+  overflow-x:hidden;
+}
+
+#principal{background: #ffffff;}
+
+h1,h2,h3,h4,h5,h6 {font-family: 'Avenir Next LT Pro Condensed', sans-serif !important;}
+h1{
+  color: green;
+  font-weight: 500;
+}
+
+th{font-weight: 300;}
+a{cursor: pointer;}
+
+.cuadrado{
+  background-color: #F8F8F8;
+  border-style: solid;
+  border-color: #cfcfcf;
+  border-width: 1px;
+  border-radius: 3px;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-bottom: 25px;
+  margin-bottom: 40px;
+  padding-top: 15px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+ul{text-align: left;}
+.numerada {list-style-type: decimal;}
+
+.right{
+    position: absolute;
+    right: 40px;
+}
+
+.left{
+    position: absolute;
+    left: 40px;
+}
+
+.green{color: green;}
+.red{color: red;}
+.blue{color: blue;}
+.bluelink { color: #0066CC; }
+.gray{color: gray;}
+.orange{color: orange;}
+
+.lol{
+  display: flex;
+  flex-wrap: wrap;
+  padding-right: 20px;
+  padding-left: 20px;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+.separados{margin: 5px;}
+
+.bordeImagen{border: 3px solid #ddd;}
+
+md-sidenav,
+md-sidenav.md-locked-open,
+md-sidenav.md-closed.md-locked-open-add-active {
+    min-width: 300px !important;
+    width: 100vw !important;
+    max-width: 450px !important;
+}
+
+md-sidenav, md-backdrop {
+position: fixed !important;
+}
+
+.lola{
+  max-width:100%;
+  max-height:100%;
+}
+
+.descripcion{
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
