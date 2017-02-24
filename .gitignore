@@ -9,7 +9,7 @@ npm-debug.log
 .vscode
 
 #bower
-public/bower_components/*
+public/admin/bower_components/*
 
 # Docker
 Dockerfile
