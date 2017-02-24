@@ -1,11 +1,9 @@
-var config = require('../../config.json')
-var errores = require('./errors.js')
-var permissions = require('./permissions.js')
-var jwt = require('jsonwebtoken')
-var crypto = require('crypto')
-var Session = require('../models/session.js')
-var nodemailer = require('nodemailer')
-var sessionModel = new Session()
+var Config = require('../../config.json')
+var Errores = require('./errors.js')
+var Permissions = require('./permissions.js')
+var Jwt = require('jsonwebtoken')
+var Crypto = require('crypto')
+var Nodemailer = require('nodemailer')
 
 module.exports = {
   // This one is used in development.
@@ -14,7 +12,7 @@ module.exports = {
   },
   //
   informError: function (num) {
-    return { error: errores[num] }
+    return { error: Errores[num] }
   },
   // This one is used to validate input arguments.
   isPositiveInteger: function (num) {
@@ -41,26 +39,28 @@ module.exports = {
   },
   // This one is used in the authorization controller.
   decode: function (token) {
-    return jwt.decode(token, config.secret)
+    return Jwt.decode(token, Config.secret)
   },
   // This one is used in the authorization controller.
   sign: function (user) {
-    return jwt.sign(user, config.secret)
+    return Jwt.sign(user, Config.secret)
   },
   // This one is used in the authorization controller.
   createHmac: function (algorithm) {
-    return crypto.createHmac(algorithm, config.secret)
+    return Crypto.createHmac(algorithm, Config.secret)
   },
   authorize: function (token, permit) {
     return new Promise((resolve, reject) => {
+      var Session = require('../models/session.js')
+      var SessionModel = new Session()
       // Remove Bearer Basic or any other attribute
       if (token) {
         token = token.split(' ')
         token = token[token.length - 1]
       }
-      sessionModel.getByParams({ token: token }).then((session) => {
+      SessionModel.getByParams({ token: token }).then((session) => {
         if (session.length !== 1) {
-          if (permit === permissions.NONE) resolve(true)
+          if (permit === Permissions.NONE) resolve(true)
           throw this.informError(100)
         }
 
@@ -73,16 +73,16 @@ module.exports = {
             resolve(user)
           }
         }
-        if (permit === permissions.NONE) resolve(user)
+        if (permit === Permissions.NONE) resolve(user)
         else throw this.informError(100)
       }).catch((err) => { reject(err) })
     })
   },
   sendEmail: function (to, cc, bcc, subject, body, attachment) {
     return new Promise((resolve, reject) => {
-      var transporter = nodemailer.createTransport(config.smtp.protocol + '://' + config.smtp.sender + ':' + config.smtp.password + '@' + config.smtp.server)
+      var transporter = Nodemailer.createTransport(Config.smtp.protocol + '://' + Config.smtp.sender + ':' + Config.smtp.password + '@' + Config.smtp.server)
       var mailOptions = {
-        from: config.smtp.from, // sender address
+        from: Config.smtp.from, // sender address
         to: to, // list of receivers
         cc: cc,
         bcc: bcc,
@@ -98,49 +98,6 @@ module.exports = {
         resolve()
       })
     })
-  },
-  /* This one is used to group information after some MySQL Query.
-  Its intended to be used when the query contains a join betwen tables. In the
-  answer the left part will be common for some tuples, so to destroy that redundant information
-  this function group the info using some primary key and saved using the nameGroup chosen by the dev.
-  */
-  groupTuples: function (array, divisorIndex, primaryKey, nameGroup) {
-    if (array.length === 0) return []
-
-    var size = Object.keys(array[0]).length
-    var breakPoint = divisorIndex
-    if (divisorIndex < 0 && (breakPoint = size + divisorIndex) < 0 || divisorIndex > size) {
-      throw this.informError(406)
-    }
-
-    var map = new Map()
-    for (var i in array) {
-      var index = 0
-      var objectCommon = {}
-      var objectParticular = {}
-      var indexKey = ''
-      for (var property in array[i]) {
-        if (array[i].hasOwnProperty(property)) {
-          if (property === primaryKey) indexKey = array[i][property]
-          if (index < breakPoint) objectCommon[property] = array[i][property]
-          else objectParticular[property] = array[i][property]
-          index++
-        }
-      }
-
-      if (!map.get(indexKey)) {
-        objectCommon[nameGroup] = [objectParticular]
-        map.set(indexKey, objectCommon)
-      } else {
-        var savedObject = map.get(indexKey)
-        savedObject[nameGroup].push(objectParticular)
-        map.set(indexKey, savedObject)
-      }
-    }
-
-    var rta = []
-    for (var value of map.values()) rta.push(value)
-    return rta
   },
   parseExcelFile: function (filename) {
     function charArray(charA, charZ) {
