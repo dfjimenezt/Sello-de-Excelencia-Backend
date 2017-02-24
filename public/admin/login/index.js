@@ -36,7 +36,7 @@ app.controller('loginController', function($scope, $httpParamSerializerJQLike, $
         request("/api/auth/login", "POST", $scope.user).then(function(answer) {
             if(answer.token){
                 localStorage.setItem("token", answer.token);
-                window.location.href="/admin";
+                window.location.href="/admin/";
             }
         }).catch(function(problem) {
             

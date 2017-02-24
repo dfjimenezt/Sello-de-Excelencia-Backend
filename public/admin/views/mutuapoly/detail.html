@@ -56,13 +56,13 @@
         </md-toolbar>
         <md-toolbar class="md-table-toolbar md-default" ng-show="ctrl.entities[relation.entity].filter.show && (!ctrl.entities[relation.entity].selected.length || relation.type !== '1-n')">
           <div class="md-toolbar-tools">
-            <md-icon>Buscar</md-icon>
-            <form flex name="ctrl.entities[relation.entity].filter.form">
-              <input type="text" ng-model="ctrl.entities[relation.entity].query.filter" ng-model-options="ctrl.entities[relation.entity].filter.options"
+            <md-icon  class="material-icons">search</md-icon>
+            <form flex name="ctrl.entities[relation.entity].filter.form" layout="row">
+              <input type="text" flex="100"  ng-model="ctrl.entities[relation.entity].query.filter" ng-model-options="ctrl.entities[relation.entity].filter.options"
                 placeholder="Buscar" ng-change="ctrl.entities[relation.entity].search()">
             </form>
             <md-button class="md-icon-button" ng-click="ctrl.removeFilter(relation)">
-              <md-icon>Cerrar</md-icon>
+              <md-icon  class="material-icons">close</md-icon>
             </md-button>
           </div>
         </md-toolbar>
@@ -71,7 +71,7 @@
             <div>{{ctrl.entities[relation.entity].selected.length}} {{ctrl.entities[relation.entity].selected.length > 1 ? 'items
               seleccionados' : 'item seleccionado'}}</div>
             <md-button class="md-icon-button" ng-click="ctrl.delete($event,relation)">
-              <md-icon>Borrar</md-icon>
+              <md-icon class="material-icons">delete</md-icon>
             </md-button>
           </div>
         </md-toolbar>
