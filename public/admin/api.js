@@ -5,7 +5,7 @@ dmt.api= {
     version:"1.0",
     endpoints:[
         {
-            controller:"configuracion",
+            controller:"configuration",
             entities:[
                 {
                     entity:"user",
@@ -53,52 +53,7 @@ dmt.api= {
                     }
                 },
                 {
-                    entity:"history",
-                    permissions:{
-                        read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
-                    }
-                },
-                {
-                    entity:"userHistoryPlays",
-                    permissions:{
-                        read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
-                    }
-                },
-                {
-                    entity:"userRanking",
-                    permissions:{
-                        read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
-                    }
-                },
-                {
-                    entity:"user_prize",
-                    permissions:{
-                        read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
-                    }
-                },
-                {
-                    entity:"userStats",
-                    permissions:{
-                        read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
-                    }
-                },
-                {
-                    entity:"rankingGlobal",
+                    entity:"config",
                     permissions:{
                         read:"none",
                         write:"admin",
@@ -109,10 +64,10 @@ dmt.api= {
             ]
         },
         {
-            controller:"mutuapoly",
+            controller:"forum",
             entities:[
                 {
-                    entity:"companyConfig",
+                    entity:"topic",
                     permissions:{
                         read:"none",
                         write:"admin",
@@ -121,7 +76,21 @@ dmt.api= {
                     }
                 },
                 {
-                    entity:"cardConfig",
+                    entity:"message",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                }
+            ]
+        },
+        {
+            controller:"place",
+            entities:[
+                {
+                    entity:"institution",
                     permissions:{
                         read:"none",
                         write:"admin",
@@ -130,7 +99,7 @@ dmt.api= {
                     }
                 },
                 {
-                    entity:"plansConfig",
+                    entity:"city",
                     permissions:{
                         read:"none",
                         write:"admin",
@@ -139,7 +108,21 @@ dmt.api= {
                     }
                 },
                 {
-                    entity:"globalPrize",
+                    entity:"region",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                }
+            ]
+        },
+        {
+            controller:"service",
+            entities:[
+                {
+                    entity:"service",
                     permissions:{
                         read:"none",
                         write:"admin",
@@ -148,7 +131,52 @@ dmt.api= {
                     }
                 },
                 {
-                    entity:"statisticsGlobal",
+                    entity:"category",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                },
+                {
+                    entity:"hall_fame",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                },
+                {
+                    entity:"questiontopic",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                },
+                {
+                    entity:"form",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                },
+                {
+                    entity:"type",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                },
+                {
+                    entity:"question",
                     permissions:{
                         read:"none",
                         write:"admin",

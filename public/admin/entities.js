@@ -19,36 +19,7 @@ dmt.entities = {
         leftKey: "id_user",
         rightKey: "id_role"
       }
-    },
-    {
-      type:"1-n",
-      name: "ranking",
-      entity:"userRanking",
-      rightKey:"id_user"
-    },
-    {
-      type:"1-n",
-      name: "history",
-      entity:"history",
-      rightKey:"id_user"
-    },
-    {
-      type:"1-n",
-      name: "prizes",
-      entity:"user_prize",
-      rightKey:"id_user"
-    },
-    ]
-  },
-  "history": {
-    table: "history",
-    relations: [
-      {
-        type: "1-n",
-        name: "plays",
-        entity: "userHistoryPlays",
-        rightKey: "id_play"
-      }
+    }
     ]
   },
   "user_role":{
