@@ -1,6 +1,6 @@
 {
   "name": "dmt-sellodeexcelencia-backend-nodejs",
-  "version": "0.1.1",
+  "version": "1.0.1",
   "description": "El back de Sello de Excelencia",
   "engines": {
     "node": "6.9.2"
@@ -45,11 +45,11 @@
     "url": "http://sellodeexcelencia.gov.co/api",
     "sampleUrl": "http://localhost:3000/",
     "header": {
-      "title": "My own header title",
+      "title": "Sello de Excelencia",
       "filename": "apidoc/header.md"
     },
     "footer": {
-      "title": "My own footer title",
+      "title": "Creditos",
       "filename": "apidoc/footer.md"
     },
     "template": {

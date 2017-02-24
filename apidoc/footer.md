@@ -1,4 +1,4 @@
-# Example text from footer.md
-This text is from file "footer.md".
-## HowTo include
-Watch header.md for further information.
+# Sello de Excelencia
+Desarrollado por Domoti S.A.S.
+Cliente: Pidamos Marketing Total
+Desarrollado para: MINTIC

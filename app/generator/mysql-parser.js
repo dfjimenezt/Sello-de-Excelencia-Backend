@@ -118,6 +118,7 @@ var individiual_get_method_template = "" +
     "\t * @api {get} api/{{CONTROLLER_NAME}}/{{PUBLIC_NAME}} Request {{PUBLIC_NAME}} information\n" +
     "\t * @apiName Get{{PUBLIC_NAME}}\n" +
     "\t * @apiGroup {{CONTROLLER_NAME}}\n" +
+    "\t * @apiVersion {{API_VERSION}}\n" +
     "\t * \n" +
     "{{PRIMARY_PARAMS}}" +
     "\t * @apiParam {String} filter Texto to search into DB.\n" +
@@ -144,26 +145,28 @@ var individiual_get_method_template = "" +
 var individiual_get_map_template = "\tgetMap.set('{{PUBLIC_NAME}}', { method: get_{{MODEL_NAME}}, permits: Permissions.{{GET_PERMISSION}} })";
 var individiual_create_method_template = "" +
     "\t/**\n" +
-	"\t * @api {post} api/{{CONTROLLER_NAME}}/{{PUBLIC_NAME}} Create {{PUBLIC_NAME}} information\n" +
-	"\t * @apiName Post{{PUBLIC_NAME}}\n" +
-	"\t * @apiGroup {{CONTROLLER_NAME}}\n" +
-	"\t * \n" +
-	"{{PARAMS}} "+
-	"\t * \n" +
-	"\t */\n" +
+    "\t * @api {post} api/{{CONTROLLER_NAME}}/{{PUBLIC_NAME}} Create {{PUBLIC_NAME}} information\n" +
+    "\t * @apiName Post{{PUBLIC_NAME}}\n" +
+    "\t * @apiGroup {{CONTROLLER_NAME}}\n" +
+    "\t * @apiVersion {{API_VERSION}}\n" +
+    "\t * \n" +
+    "{{PARAMS}} " +
+    "\t * \n" +
+    "\t */\n" +
     "\tvar create_{{MODEL_NAME}} = function (user, body) {\n" +
     "\t\treturn model_{{MODEL_NAME}}.create(body)\n" +
     "\t}";
 var individiual_create_map_template = "\tpostMap.set('{{PUBLIC_NAME}}', { method: create_{{MODEL_NAME}}, permits: Permissions.{{POST_PERMISSION}} })";
 var individiual_update_method_template = "" +
     "\t/**\n" +
-	"\t * @api {put} api/{{CONTROLLER_NAME}}/{{PUBLIC_NAME}} Update {{PUBLIC_NAME}} information\n" +
-	"\t * @apiName Put{{PUBLIC_NAME}}\n" +
-	"\t * @apiGroup {{CONTROLLER_NAME}}\n" +
-	"\t * \n" +
-	"{{PARAMS}} "+
-	"\t * \n" +
-	"\t */\n" +
+    "\t * @api {put} api/{{CONTROLLER_NAME}}/{{PUBLIC_NAME}} Update {{PUBLIC_NAME}} information\n" +
+    "\t * @apiName Put{{PUBLIC_NAME}}\n" +
+    "\t * @apiGroup {{CONTROLLER_NAME}}\n" +
+    "\t * @apiVersion {{API_VERSION}}\n" +
+    "\t * \n" +
+    "{{PARAMS}} " +
+    "\t * \n" +
+    "\t */\n" +
     "\tvar update_{{MODEL_NAME}} = function (user, body) {\n" +
     "\t\tif (!body.{{PRIMARY_KEY}}) {\n" +
     "\t\t\tthrow utiles.informError(400)\n" +
@@ -173,13 +176,14 @@ var individiual_update_method_template = "" +
 var individiual_update_map_template = "\tputMap.set('{{PUBLIC_NAME}}', { method: update_{{MODEL_NAME}}, permits: Permissions.{{PUT_PERMISSION}} })";
 var individiual_delete_method_template = "" +
     "\t/**\n" +
-	"\t * @api {delete} api/{{CONTROLLER_NAME}}/{{PUBLIC_NAME}} Delete {{PUBLIC_NAME}} information\n" +
-	"\t * @apiName Delete{{PUBLIC_NAME}}\n" +
-	"\t * @apiGroup {{CONTROLLER_NAME}}\n" +
-	"\t * \n" +
-	"{{PARAMS}} "+
-	"\t * \n" +
-	"\t */\n" +
+    "\t * @api {delete} api/{{CONTROLLER_NAME}}/{{PUBLIC_NAME}} Delete {{PUBLIC_NAME}} information\n" +
+    "\t * @apiName Delete{{PUBLIC_NAME}}\n" +
+    "\t * @apiGroup {{CONTROLLER_NAME}}\n" +
+    "\t * @apiVersion {{API_VERSION}}\n" +
+    "\t * \n" +
+    "{{PARAMS}} " +
+    "\t * \n" +
+    "\t */\n" +
     "\tvar delete_{{MODEL_NAME}} = function (user, body) {\n" +
     "\t\tif (!body.{{PRIMARY_KEY}}) {\n" +
     "\t\t\tthrow utiles.informError(400)\n" +
@@ -260,7 +264,7 @@ var mySqlGen = function () {
                                 Type.indexOf("date") != -1 ? "date" :
                                     Type.indexOf("datetime") != -1 ? "datetime" :
                                         Type.indexOf("timestamp") != -1 ? "datetime" :
-                                            Type.indexOf("double") != -1 ? "number" : 
+                                            Type.indexOf("double") != -1 ? "number" :
                                                 Type.indexOf("float") != -1 ? "number" : Type
             }
             info.forEach((f) => {
@@ -343,25 +347,25 @@ var mySqlGen = function () {
 
                 import_models.push(individual_import_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity))
                 models.push(individual_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity))
-                function decodeType(){
+                function decodeType(f) {
                     return f.type.indexOf("int") != -1 ? "Number" :
-                            f.type.indexOf("string") != -1 ? "String" :
-                                f.type.indexOf("text") != -1 ? "Text" :
-                                    f.type.indexOf("boolean") != -1 ? "Boolean" :
-                                        f.type.indexOf("date") != -1 ? "Date" :
-                                            f.type.indexOf("datetime") != -1 ? "DateTime" :
-                                                f.type.indexOf("timestamp") != -1 ? "Number" : 
-                                                    f.type.indexOf("number") != -1 ? "Number" : ''
+                        f.type.indexOf("string") != -1 ? "String" :
+                            f.type.indexOf("text") != -1 ? "Text" :
+                                f.type.indexOf("boolean") != -1 ? "Boolean" :
+                                    f.type.indexOf("date") != -1 ? "Date" :
+                                        f.type.indexOf("datetime") != -1 ? "DateTime" :
+                                            f.type.indexOf("timestamp") != -1 ? "Number" :
+                                                f.type.indexOf("number") != -1 ? "Number" : ''
                 }
-                function exampleType(){
+                function exampleType(f) {
                     return f.type.indexOf("int") != -1 ? Math.ceil(Math.random() * 100) :
-                            f.type.indexOf("string") != -1 ? "This is an example text" :
-                                f.type.indexOf("text") != -1 ? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sit amet tortor quis turpis cursus tristique." :
-                                    f.type.indexOf("boolean") != -1 ? "1" :
-                                        f.type.indexOf("date") != -1 ? "1969-05-20" :
-                                            f.type.indexOf("datetime") != -1 ? "1969-05-20 13:05:01" :
-                                                f.type.indexOf("timestamp") != -1 ? "946684800" : 
-                                                    f.type.indexOf("number") != -1 ? Math.ceil(Math.random() * 100) : ''
+                        f.type.indexOf("string") != -1 ? "This is an example text" :
+                            f.type.indexOf("text") != -1 ? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sit amet tortor quis turpis cursus tristique." :
+                                f.type.indexOf("boolean") != -1 ? "1" :
+                                    f.type.indexOf("date") != -1 ? "1969-05-20" :
+                                        f.type.indexOf("datetime") != -1 ? "1969-05-20 13:05:01" :
+                                            f.type.indexOf("timestamp") != -1 ? "946684800" :
+                                                f.type.indexOf("number") != -1 ? Math.ceil(Math.random() * 100) : ''
                 }
 
                 let pk = '';
@@ -369,39 +373,42 @@ var mySqlGen = function () {
                 let get_response = '';
                 let params = '';
                 table.fields.forEach((f) => {
-                    let t = decodeType()
-                    let example = exampleType()    
+                    let t = decodeType(f)
+                    let example = exampleType(f)
                     if (f.key) {
                         pk = f.name;
                         pk_type = t;
                     }
-                    get_response += '	 * 				'+f.name + ' : "' + example+'",\n'
+                    get_response += '	 * 				' + f.name + ' : "' + example + '",\n'
 
-                    params += '\t * @apiParam {'+t+'} '+f.name+'\n'
+                    params += '\t * @apiParam {' + t + '} ' + f.name + '\n'
                 })
-                if(ety.translate){
-                    let translate_table = dmt.tables[ety.translate_table]
-                    translate_table.fields.forEach((f) => {
-                        if(f.name === ety.translate.rightKey){
-                            return
-                        }
-                        let t = decodeType()
-                        params += '\t * @apiParam {'+t+'} '+f.name+'\n'
-                    })
+                if (ety) {
+                    if (ety.translate) {
+                        let translate_table = dmt.tables[ety.translate_table]
+                        translate_table.fields.forEach((f) => {
+                            if (f.name === ety.translate.rightKey) {
+                                return
+                            }
+                            let t = decodeType(f)
+                            params += '\t * @apiParam {' + t + '} ' + f.name + '\n'
+                        })
+                    }
                 }
                 get_response = get_response.slice(0, -1)
                 let get = individiual_get_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 get = get.replace(new RegExp('{{CONTROLLER_NAME}}', 'g'), controller_name)
-                if(pk_type === ''){
+                if (pk_type === '') {
                     console.log(pk);
                     get = get.replace(new RegExp('{{PRIMARY_PARAMS}}', 'g'), '')
-                }else{
-                    get = get.replace(new RegExp('{{PRIMARY_PARAMS}}','g'),'\t * @apiParam {'+pk_type+'} '+pk+' '+endpoint.entity+' unique ID.\n')
+                } else {
+                    get = get.replace(new RegExp('{{PRIMARY_PARAMS}}', 'g'), '\t * @apiParam {' + pk_type + '} ' + pk + ' ' + endpoint.entity + ' unique ID.\n')
                 }
                 get = get.replace(new RegExp('{{PRIMARY_KEY}}', 'g'), pk)
                 get = get.replace(new RegExp('{{PRIMARY_KEY_TYPE}}', 'g'), pk_type)
                 get = get.replace(new RegExp('{{RESPONSE_DATA}}', 'g'), get_response)
                 get = get.replace(new RegExp('{{PUBLIC_NAME}}', 'g'), endpoint.entity)
+                get = get.replace(new RegExp('{{API_VERSION}}', 'g'), config.version)
 
                 get_models.push(get);
                 str = individiual_get_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
@@ -410,8 +417,9 @@ var mySqlGen = function () {
 
                 let post = individiual_create_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 post = post.replace(new RegExp('{{CONTROLLER_NAME}}', 'g'), controller_name)
-                post = post.replace(new RegExp('{{PARAMS}}','g'),params)
+                post = post.replace(new RegExp('{{PARAMS}}', 'g'), params)
                 post = post.replace(new RegExp('{{PUBLIC_NAME}}', 'g'), endpoint.entity)
+                post = post.replace(new RegExp('{{API_VERSION}}', 'g'), config.version)
 
                 post_models.push(post)
                 str = individiual_create_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
@@ -421,8 +429,10 @@ var mySqlGen = function () {
                 let update = individiual_update_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 update = update.replace(new RegExp('{{CONTROLLER_NAME}}', 'g'), controller_name)
                 update = update.replace(new RegExp('{{PRIMARY_KEY}}', 'g'), table.defaultSort)
-                update = update.replace(new RegExp('{{PARAMS}}','g'),params)
+                update = update.replace(new RegExp('{{PARAMS}}', 'g'), params)
                 update = update.replace(new RegExp('{{PUBLIC_NAME}}', 'g'), endpoint.entity)
+                update = update.replace(new RegExp('{{API_VERSION}}', 'g'), config.version)
+
                 put_models.push(update);
                 str = individiual_update_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 str = str.replace(new RegExp('{{PUT_PERMISSION}}', 'g'), endpoint.permissions.update.toUpperCase())
@@ -431,8 +441,10 @@ var mySqlGen = function () {
                 let _delete = individiual_delete_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 _delete = _delete.replace(new RegExp('{{CONTROLLER_NAME}}', 'g'), controller_name)
                 _delete = _delete.replace(new RegExp('{{PRIMARY_KEY}}', 'g'), table.defaultSort)
-                _delete = _delete.replace(new RegExp('{{PARAMS}}','g'),params)
+                _delete = _delete.replace(new RegExp('{{PARAMS}}', 'g'), params)
                 _delete = _delete.replace(new RegExp('{{PUBLIC_NAME}}', 'g'), endpoint.entity)
+                _delete = _delete.replace(new RegExp('{{API_VERSION}}', 'g'), config.version)
+
                 delete_models.push(_delete);
                 str = individiual_delete_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 str = str.replace(new RegExp('{{DELETE_PERMISSION}}', 'g'), endpoint.permissions.delete.toUpperCase())
