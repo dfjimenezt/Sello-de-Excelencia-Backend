@@ -1,26 +1,26 @@
 if (!dmt) {
 	var dmt = {}
 }
-dmt.config= [
+dmt.config = [
 	{
 		section: "Usuarios",
-		path:"usuarios",
+		path: "usuarios",
 		pages: [
 			{
-				name:"Usuarios",
-				path:"administrar",
-				entity:"user",
+				name: "Usuarios",
+				path: "administrar",
+				entity: "user",
 				controller: "listItemExtendedController",
 				templateUrl: "views/mutuapoly/list.html",
-				pages:[
+				pages: [
 					{
-						name:"add",
-						path:"add",
+						name: "add",
+						path: "add",
 						controller: "detailItemExtendedController",
 						templateUrl: "views/mutuapoly/detail.html"
 					},
 					{
-						name:"detail",
+						name: "detail",
 						path: "detail/:id",
 						controller: "detailItemExtendedController",
 						templateUrl: "views/mutuapoly/detail.html"
@@ -30,143 +30,71 @@ dmt.config= [
 		]
 	},
 	{
-		section:"Contenido",
-		path:"contenido",
-		pages:[
+		section: "Lugares",
+		path: "lugares",
+		pages: [
 			{
-				name:"TARJETAS DE ENTORNO",
-				path:"tarjetas",
-				entity:"cardConfig",
+				name: "Instituciones",
+				path: "instituciones",
+				entity: "institution",
 				controller: "listItemExtendedController",
-				templateUrl: "views/mutuapoly/list.html",
-				pages:[
+				templateUrl: "views/extended/list.html",
+				pages: [
 					{
-						name:"add",
-						path:"add",
+						name: "add",
+						path: "add",
 						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
+						templateUrl: "views/extended/detail.html"
 					},
 					{
-						name:"detail",
+						name: "detail",
 						path: "detail/:id",
 						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
+						templateUrl: "views/extended/detail.html"
 					}
 				]
 			},
 			{
-				name:"PLANES",
-				path:"planes",
-				entity:"plansConfig",
-				controller: "listItemExtendedController",
-				templateUrl: "views/mutuapoly/list.html",
-				pages:[
-					{
-						name:"add",
-						path:"add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					},
-					{
-						name:"detail",
-						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					}
-				]
+				name: "Ciudades",
+				path: "ciudades",
+				entity: "city"
 			},
 			{
-				name:"CASILLAS DE EMPRESA",
-				path:"casillas",
-				entity:"companyConfig",
-				controller: "listItemExtendedController",
-				templateUrl: "views/mutuapoly/list.html",
-				pages:[
-					{
-						name:"add",
-						path:"add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					},
-					{
-						name:"detail",
-						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					}
-				]
+				name: "Regiones",
+				path: "regiones",
+				entity: "region"
 			}
 		]
 	},
 	{
-		section:"Estadísticas Individuales",
-		path:"estadisticas",
-		pages:[
+		section: "Sello de Excelencia",
+		path: "sello_de_excelencia",
+		pages: [
 			{
-				name:"INDIVIDUALES",
-				path:"individual",
-				entity:"userStats"
-			}
-		]
-	},
-	{
-		section:"Estadísticas Generales",
-		path:"estadisticas",
-		pages:[
-			{
-				name:"GENERALES",
-				path:"general",
-				entity:"statisticsGlobal"
-			}
-		]
-	},
-	{
-		section:"RANKING",
-		path:"ranking",
-		pages:[
-			{
-				name:"RANKING GENERAL",
-				path:"general",
-				entity:"rankingGlobal",
-				controller: "listItemExtendedController",
-				templateUrl: "views/mutuapoly/list.html",
-				pages:[
-					{
-						name:"add",
-						path:"add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					},
-					{
-						name:"detail",
-						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					}
-				]
+				name: "Servicios",
+				path: "servicios",
+				entity: "service"
 			},
 			{
-				name:"TOP MEJORES PARTIDAS",
-				path:"individual",
-				entity:"userRanking",
-				controller: "listItemExtendedController",
-				templateUrl: "views/mutuapoly/list.html",
-				pages:[
-					{
-						name:"add",
-						path:"add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					},
-					{
-						name:"detail",
-						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					}
-				]
-			}
-		]
+				name: "Categorías",
+				path: "categorias",
+				entity: "category"
+			}]
+	},
+	{
+		section: "Foro",
+		path: "foro",
+		pages: [
+			{
+				name: "Temas",
+				path: "temas",
+				entity: "topic"
+			},
+			{
+				name: "Sesiones",
+				path: "sessions",
+				entity: "message"
+			}]
 	}
 ]
 try {

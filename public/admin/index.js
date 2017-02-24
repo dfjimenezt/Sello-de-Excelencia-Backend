@@ -148,7 +148,7 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 
 app.controller('backCtrl', function ($mdSidenav, $location, $http) {
 	if (!localStorage.getItem("token")) {
-		window.location.href = "/admin/login";
+		window.location.href = "/login";
 		return;
 	}
 	var ctrl = this;
@@ -157,7 +157,7 @@ app.controller('backCtrl', function ($mdSidenav, $location, $http) {
 	this.logout = function () {
 		delete $http.defaults.headers.common.Authorization;
 		localStorage.removeItem("token");
-		window.location.href = "/admin/login";
+		window.location.href = "/login";
 	}
 	this.menu = function () {
 		$mdSidenav("menu").toggle();

@@ -18,29 +18,31 @@
         <![endif]-->
   </head>
   <body ng-app="dmt-back" ng-cloak ng-controller="backCtrl as ctrl">
-    <md-toolbar layout="row" flex layout-align="start center" md-theme="dark" class="md-accent">
-      <md-button ng-click="ctrl.logout()">
-        <md-icon class="material-icons">power_settings_new</md-icon>
+    <md-toolbar layout="row" flex layout-align="start center">
+      <md-button ng-click="ctrl.menu()">
+        <md-icon class="material-icons">menu</md-icon>
+        </md-icon>
       </md-button>
-      <img src="/images/Logo_Mutualia.svg" height="80"/>
+      <h2>Sello de Excelencia</h2>
       <span flex></span>
-      <md-button ng-click="ctrl.navigateTo('usuarios/administrar')">
-        USUARIOS
-      </md-button>
-      <md-button ng-click="ctrl.navigateTo('contenido/tarjetas')">
-        CONTENIDOS
-      </md-button>
-      <md-button ng-click="ctrl.navigateTo('estadisticas/individual')">
-        ESTADÍSTICAS INDIVIDUALES
-      </md-button>
-      <md-button ng-click="ctrl.navigateTo('estadisticas/general')">
-        ESTADÍSTICAS GENERALES
-      </md-button>
-      <md-button  ng-click="ctrl.navigateTo('ranking/general')">
-        RANKING
+      <md-button ng-click="ctrl.logout()">
+        <md-icon class="material-icons">exit</md-icon>
       </md-button>
     </md-toolbar>
-    <md-content flex layout="row" ng-view>
+    <md-content flex layout="row">
+      <!--md-sidenav  md-is-locked-open="$mdMedia('min-width: 480px')" md-component-id="menu"-->
+      <md-sidenav md-component-id="menu">
+        <md-content layout-padding>
+          <div ng-repeat="x in ctrl.leftMenu" layout="column">
+            <b>{{x.section}}</b>
+            <md-button ng-repeat="p in x.pages" class="md-primary md-raised" ng-click="ctrl.selectPage(x,p);">
+              {{p.name}}
+            </md-button>
+          </div>
+        </md-content>
+      </md-sidenav>
+      <md-content ng-view flex>
+      </md-content>
 
     </md-content>
 
