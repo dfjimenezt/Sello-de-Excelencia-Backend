@@ -38,19 +38,19 @@ dmt.config = [
 				path: "instituciones",
 				entity: "institution",
 				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
+				templateUrl: "views/mutuapoly/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						templateUrl: "views/mutuapoly/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						templateUrl: "views/mutuapoly/detail.html"
 					}
 				]
 			},
@@ -73,7 +73,23 @@ dmt.config = [
 			{
 				name: "Servicios",
 				path: "servicios",
-				entity: "service"
+				entity: "service",
+				controller: "listItemExtendedController",
+				templateUrl: "views/mutuapoly/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/mutuapoly/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/mutuapoly/detail.html"
+					}
+				]
 			},
 			{
 				name: "Categorías",

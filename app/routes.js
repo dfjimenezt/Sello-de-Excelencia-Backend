@@ -12,10 +12,10 @@ var Routes = function (app) {
   var controllers = [
     { type: 'auth', file: './controllers/auth.js' },
     { type: 'test', file: './controllers/tests.js' },
-    { type: 'configuration', file: './controllers/configuration.js' },
-    { type: "service", file: "./controllers/service.js" },
-		{ type: "place", file: "./controllers/place.js" },
-		{ type: "forum", file: "./controllers/forum.js" },	
+    { type: 'configuration', file: './controllers/auto_configuration.js' },
+    { type: "service", file: "./controllers/auto_service.js" },
+		{ type: "place", file: "./controllers/auto_place.js" },
+		{ type: "forum", file: "./controllers/auto_forum.js" },	
   ]
   var formParser = form({ keepExtensions: true }) // POST
   var urlencodedParser = bodyParser.urlencoded({ extended: true }) // PUT, DELETE

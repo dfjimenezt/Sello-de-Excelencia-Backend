@@ -4,7 +4,7 @@ var utiles = require('../utils/utiles.js');
 var fs = require('fs');
 var mysql = require('mysql');
 var dbConf = null;
-var env = "db_"+config.enviroment;
+var env = "db_" + config.enviroment;
 dbConf = config[env]
 dbConf.multipleStatements = true
 var now = new Date();
@@ -66,35 +66,35 @@ var controller_template = "" +
     "var Permissions = require('../utils/permissions.js')\n" +
     "var Auth_ctrl = require('./auth.js')\n" +
     "{{IMPORT_MODELS}}\n" +
-    "var {{CONTROLLER_NAME}} = function () {\n" +
+    "var {{CONTROLLER_NAME}}_controller = function () {\n" +
     "{{MODELS}}\n" +
     "\t//---------------------------------------------------------------\n" +
     "\tvar getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()\n" +
     "\tvar _get = function(model,user,params){\n" +
-	"\t\tlet key = model.getPrimaryKey()\n" +
-	"\t\tif (params.filter_field) {\n" +
-	"\t\t\tif (typeof params.filter_field == 'string') {\n" +
-	"\t\t\t\tparams.filter_field = [params.filter_field]\n" +
+    "\t\tlet key = model.getPrimaryKey()\n" +
+    "\t\tif (params.filter_field) {\n" +
+    "\t\t\tif (typeof params.filter_field == 'string') {\n" +
+    "\t\t\t\tparams.filter_field = [params.filter_field]\n" +
     "\t\t\t\tparams.filter_value = [params.filter_value]\n" +
     "\t\t\t}\n" +
     "\t\t} else {\n" +
-	"\t\t\tparams.filter_field = []\n" +
-	"\t\t\tparams.filter_value = []\n" +
-	"\t\t}\n" +
-	"\t\tif (params[key]) {\n" +
-	"\t\t\tparams.filter_field.push(key)\n" +
-	"\t\t\tparams.filter_value.push(params[key])\n" +
-	"\t\t}\n" +
-	"\t\treturn model.getAll({\n" +
-	"\t\t\tfilter: params.filter,\n" +
-	"\t\t\tlimit: params.limit,\n" +
-	"\t\t\tpage: params.page,\n" +
-	"\t\t\torder: params.order,\n" +
-	"\t\t\tfilter_fields: params.filter_field,\n" +
-	"\t\t\tfilter_values: params.filter_value,\n" +
-	"\t\t\tfields: params.field,\n" +
-	"\t\t\tlang: params.lang\n" +
-	"\t\t})\n" +
+    "\t\t\tparams.filter_field = []\n" +
+    "\t\t\tparams.filter_value = []\n" +
+    "\t\t}\n" +
+    "\t\tif (params[key]) {\n" +
+    "\t\t\tparams.filter_field.push(key)\n" +
+    "\t\t\tparams.filter_value.push(params[key])\n" +
+    "\t\t}\n" +
+    "\t\treturn model.getAll({\n" +
+    "\t\t\tfilter: params.filter,\n" +
+    "\t\t\tlimit: params.limit,\n" +
+    "\t\t\tpage: params.page,\n" +
+    "\t\t\torder: params.order,\n" +
+    "\t\t\tfilter_fields: params.filter_field,\n" +
+    "\t\t\tfilter_values: params.filter_value,\n" +
+    "\t\t\tfields: params.field,\n" +
+    "\t\t\tlang: params.lang\n" +
+    "\t\t})\n" +
     "\t}\n" +
     "{{GET_METHODS}}\n" +
     "{{GET_MAP}}\n" +
@@ -109,13 +109,34 @@ var controller_template = "" +
     "\t//---------------------------------------------------------------\n" +
     "\treturn this;\n" +
     "}\n" +
-    "util.inherits({{CONTROLLER_NAME}}, BaseController)\n" +
-    "module.exports = {{CONTROLLER_NAME}}";
+    "util.inherits({{CONTROLLER_NAME}}_controller, BaseController)\n" +
+    "module.exports = {{CONTROLLER_NAME}}_controller";
 var individual_import_model = "var {{MODEL_NAME}} = require('../models/{{MODEL_NAME}}.js')";
 var individual_model = "\tvar model_{{MODEL_NAME}} = new {{MODEL_NAME}}()";
 var individiual_get_method_template = "" +
     "\t/**\n" +
-    "\t * {{MODEL_NAME}}\n" +
+    "\t * @api {get} api/{{CONTROLLER_NAME}}/{{PUBLIC_NAME}} Request {{PUBLIC_NAME}} information\n" +
+    "\t * @apiName Get{{PUBLIC_NAME}}\n" +
+    "\t * @apiGroup {{CONTROLLER_NAME}}\n" +
+    "\t * \n" +
+    "{{PRIMARY_PARAMS}}" +
+    "\t * @apiParam {String} filter Texto to search into DB.\n" +
+    "\t * @apiParam {Array} fields Fields where the search have to be fetched.\n" +
+    "\t * @apiParam {Number} limit number of items per page.\n" +
+    "\t * @apiParam {Number} page number of the page to be fetched.\n" +
+    "\t * @apiParam {Number} field to order the results.\n" +
+    "\t * @apiParam {Array} filter_field used with filter_value to make specific filters into the data.\n" +
+    "\t * @apiParam {Array} filter_value used with filter_field to make specific filters into the data.\n" +
+    "\t * @apiParam {String} lang id of the language to get content if available.\n" +
+    "\t * \n" +
+    "\t * @apiSuccessExample Success-Response:\n" +
+    "\t *     HTTP/1.1 200 OK\n" +
+    "\t *     {\n" +
+    "\t * 			data:{\n" +
+    "{{RESPONSE_DATA}}\n" +
+    "\t * 			},\n" +
+    "\t * 			total_results:1\n" +
+    "\t *     }\n" +
     "\t*/\n" +
     "\tvar get_{{MODEL_NAME}} = function (user, params) {\n" +
     "\t\treturn _get(model_{{MODEL_NAME}},user,params)\n" +
@@ -224,7 +245,8 @@ var mySqlGen = function () {
                                 Type.indexOf("date") != -1 ? "date" :
                                     Type.indexOf("datetime") != -1 ? "datetime" :
                                         Type.indexOf("timestamp") != -1 ? "datetime" :
-                                            ""
+                                            Type.indexOf("double") != -1 ? "number" : 
+                                                Type.indexOf("float") != -1 ? "number" : Type
             }
             info.forEach((f) => {
                 if (f.Key === "PRI") {
@@ -299,35 +321,80 @@ var mySqlGen = function () {
                 } else {
                     table = dmt.tables[endpoint.entity]
                 }
-                if(!table){
+                if (!table) {
                     console.log(endpoint.entity)
                     return
                 }
 
-                import_models.push(individual_import_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix+endpoint.entity))
-                models.push(individual_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix+endpoint.entity))
+                import_models.push(individual_import_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity))
+                models.push(individual_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity))
 
-                get_models.push(individiual_get_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix+endpoint.entity))
-                str = individiual_get_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix+endpoint.entity)
+                let get = individiual_get_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
+                get = get.replace(new RegExp('{{CONTROLLER_NAME}}', 'g'), controller_name)
+                let pk = '';
+                let pk_type = '';
+                let response = '';
+                table.fields.forEach((f) => {
+                    let t =
+                        f.type.indexOf("int") != -1 ? "Number" :
+                            f.type.indexOf("string") != -1 ? "String" :
+                                f.type.indexOf("text") != -1 ? "Text" :
+                                    f.type.indexOf("boolean") != -1 ? "Boolean" :
+                                        f.type.indexOf("date") != -1 ? "Date" :
+                                            f.type.indexOf("datetime") != -1 ? "DateTime" :
+                                                f.type.indexOf("timestamp") != -1 ? "Number" : 
+                                                    f.type.indexOf("number") != -1 ? "Number" : '';
+                    let example =
+                        f.type.indexOf("int") != -1 ? Math.ceil(Math.random() * 100) :
+                            f.type.indexOf("string") != -1 ? "This is an example text" :
+                                f.type.indexOf("text") != -1 ? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sit amet tortor quis turpis cursus tristique." :
+                                    f.type.indexOf("boolean") != -1 ? "1" :
+                                        f.type.indexOf("date") != -1 ? "1969-05-20" :
+                                            f.type.indexOf("datetime") != -1 ? "1969-05-20 13:05:01" :
+                                                f.type.indexOf("timestamp") != -1 ? "946684800" : 
+                                                    f.type.indexOf("number") != -1 ? Math.ceil(Math.random() * 100) : '';                    
+                    if (f.key) {
+                        pk = f.name;
+                        pk_type = t;
+                    }
+                    response += '	 * 				'+f.name + ' : "' + example+'",\n'
+                })
+                response = response.slice(0, -1)
+                if(pk_type === ''){
+                    console.log(pk);
+                    get = get.replace(new RegExp('{{PRIMARY_PARAMS}}', 'g'), '')
+                }else{
+                    get = get.replace(new RegExp('{{PRIMARY_PARAMS}}','g'),'\t * @apiParam {'+pk_type+'} '+pk+' '+endpoint.entity+' unique ID.\n')
+                }
+                get = get.replace(new RegExp('{{PRIMARY_KEY}}', 'g'), pk)
+                get = get.replace(new RegExp('{{PRIMARY_KEY_TYPE}}', 'g'), pk_type)
+                get = get.replace(new RegExp('{{RESPONSE_DATA}}', 'g'), response)
+                get = get.replace(new RegExp('{{PUBLIC_NAME}}', 'g'), endpoint.entity)
+
+                get_models.push(get);
+                str = individiual_get_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 str = str.replace(new RegExp('{{GET_PERMISSION}}', 'g'), endpoint.permissions.read.toUpperCase())
+
+
+
                 get_maps.push(str.replace(new RegExp('{{PUBLIC_NAME}}', 'g'), endpoint.entity))
 
-                post_models.push(individiual_create_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix+endpoint.entity))
-                str = individiual_create_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix+endpoint.entity)
+                post_models.push(individiual_create_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity))
+                str = individiual_create_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 str = str.replace(new RegExp('{{POST_PERMISSION}}', 'g'), endpoint.permissions.write.toUpperCase())
                 post_maps.push(str.replace(new RegExp('{{PUBLIC_NAME}}', 'g'), endpoint.entity))
 
-                let update = individiual_update_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix+endpoint.entity)
+                let update = individiual_update_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 update = update.replace(new RegExp('{{PRIMARY_KEY}}', 'g'), table.defaultSort)
                 put_models.push(update);
-                str = individiual_update_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix+endpoint.entity)
+                str = individiual_update_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 str = str.replace(new RegExp('{{PUT_PERMISSION}}', 'g'), endpoint.permissions.update.toUpperCase())
                 put_maps.push(str.replace(new RegExp('{{PUBLIC_NAME}}', 'g'), endpoint.entity))
 
-                let _delete = individiual_delete_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix+endpoint.entity)
+                let _delete = individiual_delete_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 _delete = _delete.replace(new RegExp('{{PRIMARY_KEY}}', 'g'), table.defaultSort)
                 delete_models.push(_delete);
-                str = individiual_delete_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix+endpoint.entity)
+                str = individiual_delete_map_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 str = str.replace(new RegExp('{{DELETE_PERMISSION}}', 'g'), endpoint.permissions.delete.toUpperCase())
                 delete_maps.push(str.replace(new RegExp('{{PUBLIC_NAME}}', 'g'), endpoint.entity))
             });

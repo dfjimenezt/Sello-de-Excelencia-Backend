@@ -1,7 +1,7 @@
 {
-  "name": "dmt-bupre-backend-nodejs",
-  "version": "0.0.1",
-  "description": "El back de Bupre",
+  "name": "dmt-sellodeexcelencia-backend-nodejs",
+  "version": "0.1.1",
+  "description": "El back de Sello de Excelencia",
   "engines": {
     "node": "6.9.2"
   },
@@ -11,7 +11,7 @@
     "test": "./node_modules/.bin/mocha app/tests/dev*",
     "start": "npm run apidoc && node index.js",
     "style": "eslint index.js app/routes.js app/controllers/ app/models/ app/utils/",
-    "apidoc": "apidoc -i app/ -o public/apidoc/"
+    "apidoc": "apidoc -i app/controllers app/models -o public/apidoc/"
   },
   "dependencies": {
     "@google/cloud-debug": "^0.8.5",
@@ -41,9 +41,9 @@
     }
   },
   "apidoc": {
-    "title": "Bupre apiDoc",
-    "url": "https://backend-dot-domoti-bupre.appspot-preview.com/",
-    "sampleUrl": "https://backend-dot-domoti-bupre.appspot-preview.com/",
+    "title": "Sello de Excelencia apiDoc",
+    "url": "http://sellodeexcelencia.gov.co/api",
+    "sampleUrl": "http://localhost:3000/",
     "header": {
       "title": "My own header title",
       "filename": "apidoc/header.md"
@@ -59,7 +59,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://bitbucket.org/domoti/dmt-bupre-backend-nodejs"
+    "url": "https://bitbucket.org/domoti/dmt-sellodeexcelencia-backend-nodejs"
   },
   "keywords": [
     "node",
