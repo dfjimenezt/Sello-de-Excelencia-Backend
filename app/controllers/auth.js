@@ -113,10 +113,14 @@ var Auth = function () {
   * Define blocks with params that will be used in several functions, so you dont have to rewrite them.
   *
   * @apiParam {String} name Name of the User.
+  * @apiParam {String} password Password of the User.
   *
-  * @apiSuccess {Number} id The new Users-ID.
+  * @apiSuccessExample Success-Response:
+	*      HTTP/1.1 200 OK
+	*     {
+  *       token:"123456789abcdef"
+  *     }
   *
-  * @apiUse CreateUserError
   */
   // TODO: deben validarse que llegan todos los parametros
   var login = function (token, body) {

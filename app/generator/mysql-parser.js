@@ -131,13 +131,11 @@ var individiual_get_method_template = "" +
     "\t * @apiParam {String} lang id of the language to get content if available.\n" +
     "\t * \n" +
     "\t * @apiSuccessExample Success-Response:\n" +
-    "\t *     HTTP/1.1 200 OK\n" +
-    "\t *     {\n" +
-    "\t * 			data:{\n" +
-    "{{RESPONSE_DATA}}\n" +
-    "\t * 			},\n" +
-    "\t * 			total_results:1\n" +
-    "\t *     }\n" +
+    "\t * HTTP/1.1 200 OK\n" +
+    "\t * {\n" +
+    "\t * \tdata:{{RESPONSE_DATA}},\n" +
+    "\t * 	total_results:1\n" +
+    "\t * }\n" +
     "\t*/\n" +
     "\tvar get_{{MODEL_NAME}} = function (user, params) {\n" +
     "\t\treturn _get(model_{{MODEL_NAME}},user,params)\n" +
@@ -257,10 +255,10 @@ var mySqlGen = function () {
                 fields: []
             };
             function TypeTotype(Type) {
-                return Type.indexOf("int") != -1 ? "int" :
+                return Type.indexOf("tinyint") != -1 ? "boolean" :
                     Type.indexOf("varchar") != -1 ? "string" :
                         Type.indexOf("text") != -1 ? "text" :
-                            Type.indexOf("tinyint") != -1 ? "boolean" :
+                            Type.indexOf("int") != -1 ? "int" :
                                 Type.indexOf("date") != -1 ? "date" :
                                     Type.indexOf("datetime") != -1 ? "datetime" :
                                         Type.indexOf("timestamp") != -1 ? "datetime" :
@@ -326,86 +324,140 @@ var mySqlGen = function () {
             let delete_models = [];
             let delete_maps = [];
 
+
+
             controller.entities.forEach((endpoint) => {
                 if (!endpoint.entity) {
                     return;
                 }
-                let ety = dmt.entities[endpoint.entity]
-                let table = null
                 let prefix = ""
-                let str = null;
+                let ety = dmt.entities[endpoint.entity]
                 if (ety) {
                     prefix = "entity_"
-                    table = dmt.tables[ety.table]
-                } else {
-                    table = dmt.tables[endpoint.entity]
                 }
+
+                function getEntityTable(entity) {
+                    let table = null
+                    let ety = dmt.entities[entity]
+                    if (ety) {
+                        table = dmt.tables[ety.table]
+                    } else {
+                        table = dmt.tables[entity]
+                    }
+                    return table
+                }
+                let table = getEntityTable(endpoint.entity)
+                let str = null;
                 if (!table) {
                     console.log(endpoint.entity)
                     return
                 }
+                function getEntityExample(entity, recursive) {
+                    console.log("parsing : " + entity )
+                    recursive = recursive || false
+                    let example = {}
+                    let params = {}
+                    let ety = dmt.entities[entity]
+                    let table = getEntityTable(entity)
+                    if (!table) {
+                        console.log(ety)
+                        return
+                    }
+                    function decodeType(f) {
+                        return f.type.indexOf("int") != -1 ? "Number" :
+                            f.type.indexOf("string") != -1 ? "String" :
+                                f.type.indexOf("text") != -1 ? "Text" :
+                                    f.type.indexOf("boolean") != -1 ? "Boolean" :
+                                        f.type.indexOf("date") != -1 ? "Date" :
+                                            f.type.indexOf("datetime") != -1 ? "DateTime" :
+                                                f.type.indexOf("timestamp") != -1 ? "Number" :
+                                                    f.type.indexOf("number") != -1 ? "Number" : ''
+                    }
+                    function exampleType(f) {
+                        return f.type.indexOf("int") != -1 ? Math.ceil(Math.random() * 100) :
+                            f.type.indexOf("string") != -1 ? "This is an example text" :
+                                f.type.indexOf("text") != -1 ? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sit amet tortor quis turpis cursus tristique." :
+                                    f.type.indexOf("boolean") != -1 ? Math.random()>0.5 ? 1:0 :
+                                        f.type.indexOf("date") != -1 ? "1969-05-20" :
+                                            f.type.indexOf("datetime") != -1 ? "1969-05-20 13:05:01" :
+                                                f.type.indexOf("timestamp") != -1 ? "946684800" :
+                                                    f.type.indexOf("number") != -1 ? Math.ceil(Math.random() * 100) : ''
+                    }
+                    let pk = '';
+                    let pk_type = '';
+
+                    table.fields.forEach((f) => {
+                        if (f.name === "password") {
+                            return
+                        }
+                        let t = decodeType(f)
+                        if (f.key) {
+                            pk = f.name;
+                            pk_type = t;
+                        }
+                        example[f.name] = exampleType(f)
+                        params[f.name] = t
+                    })
+                    if (ety) {
+                        if (ety.translate) {
+                            let translate_table = dmt.tables[ety.translate_table]
+                            translate_table.fields.forEach((f) => {
+                                if (f.name === ety.translate.rightKey || f.name === "password") {
+                                    return
+                                }
+                                example[f.name] = exampleType(f)
+                                params[f.name] = t
+                            })
+                        }
+                        if (ety.relations) {
+                            ety.relations.forEach((relation) => {
+                                let data = getEntityExample(relation.entity, false)
+                                if (relation.type === "1-1") {
+                                    delete example[relation.leftKey]
+                                    example[relation.name] = data.example
+                                    params[relation.name] = 'Object'
+                                } else {
+                                    if (recursive) {
+                                        delete data.example[relation.rightKey]
+                                        example[relation.name] = [data.example]
+                                        params[relation.name] = 'Array'
+                                    }
+                                }
+                            })
+                        }
+                    }
+
+                    return {
+                        example: example,
+                        params: params,
+                        pk: {
+                            pk: pk,
+                            pk_type: pk_type
+                        }
+                    }
+                }
 
                 import_models.push(individual_import_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity))
                 models.push(individual_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity))
-                function decodeType(f) {
-                    return f.type.indexOf("int") != -1 ? "Number" :
-                        f.type.indexOf("string") != -1 ? "String" :
-                            f.type.indexOf("text") != -1 ? "Text" :
-                                f.type.indexOf("boolean") != -1 ? "Boolean" :
-                                    f.type.indexOf("date") != -1 ? "Date" :
-                                        f.type.indexOf("datetime") != -1 ? "DateTime" :
-                                            f.type.indexOf("timestamp") != -1 ? "Number" :
-                                                f.type.indexOf("number") != -1 ? "Number" : ''
-                }
-                function exampleType(f) {
-                    return f.type.indexOf("int") != -1 ? Math.ceil(Math.random() * 100) :
-                        f.type.indexOf("string") != -1 ? "This is an example text" :
-                            f.type.indexOf("text") != -1 ? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sit amet tortor quis turpis cursus tristique." :
-                                f.type.indexOf("boolean") != -1 ? "1" :
-                                    f.type.indexOf("date") != -1 ? "1969-05-20" :
-                                        f.type.indexOf("datetime") != -1 ? "1969-05-20 13:05:01" :
-                                            f.type.indexOf("timestamp") != -1 ? "946684800" :
-                                                f.type.indexOf("number") != -1 ? Math.ceil(Math.random() * 100) : ''
+
+                let doc_data = getEntityExample(endpoint.entity, true)
+
+                let get_response = JSON.stringify(doc_data.example, null, '\t')
+                get_response = get_response.split('\n').join('\n\t *\t')
+
+                let params = ''
+                for (let i in doc_data.params) {
+                    params += `\t * @apiParam {${doc_data.params[i]}} ${i} \n`
                 }
 
-                let pk = '';
-                let pk_type = '';
-                let get_response = '';
-                let params = '';
-                table.fields.forEach((f) => {
-                    let t = decodeType(f)
-                    let example = exampleType(f)
-                    if (f.key) {
-                        pk = f.name;
-                        pk_type = t;
-                    }
-                    get_response += '	 * 				' + f.name + ' : "' + example + '",\n'
-
-                    params += '\t * @apiParam {' + t + '} ' + f.name + '\n'
-                })
-                if (ety) {
-                    if (ety.translate) {
-                        let translate_table = dmt.tables[ety.translate_table]
-                        translate_table.fields.forEach((f) => {
-                            if (f.name === ety.translate.rightKey) {
-                                return
-                            }
-                            let t = decodeType(f)
-                            params += '\t * @apiParam {' + t + '} ' + f.name + '\n'
-                        })
-                    }
-                }
-                get_response = get_response.slice(0, -1)
                 let get = individiual_get_method_template.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity)
                 get = get.replace(new RegExp('{{CONTROLLER_NAME}}', 'g'), controller_name)
-                if (pk_type === '') {
-                    console.log(pk);
+                if (doc_data.pk.pk_type === '') {
+                    console.log(doc_data.pk.pk);
                     get = get.replace(new RegExp('{{PRIMARY_PARAMS}}', 'g'), '')
                 } else {
-                    get = get.replace(new RegExp('{{PRIMARY_PARAMS}}', 'g'), '\t * @apiParam {' + pk_type + '} ' + pk + ' ' + endpoint.entity + ' unique ID.\n')
+                    get = get.replace(new RegExp('{{PRIMARY_PARAMS}}', 'g'), '\t * @apiParam {' + doc_data.pk.pk_type + '} ' + doc_data.pk.pk + ' ' + endpoint.entity + ' unique ID.\n')
                 }
-                get = get.replace(new RegExp('{{PRIMARY_KEY}}', 'g'), pk)
-                get = get.replace(new RegExp('{{PRIMARY_KEY_TYPE}}', 'g'), pk_type)
                 get = get.replace(new RegExp('{{RESPONSE_DATA}}', 'g'), get_response)
                 get = get.replace(new RegExp('{{PUBLIC_NAME}}', 'g'), endpoint.entity)
                 get = get.replace(new RegExp('{{API_VERSION}}', 'g'), config.version)

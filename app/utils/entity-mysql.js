@@ -4,7 +4,7 @@ var verbose = config.verbose === true
 var mysql = require('mysql')
 
 var dbConf = null;
-var env = "db_"+config.enviroment;
+var env = "db_" + config.enviroment;
 dbConf = config[env]
 dbConf.multipleStatements = true
 
@@ -33,6 +33,9 @@ var EntityModel = function (info) {
 			return table
 		} else {
 			table = dmt.tables[name]
+			if(!table){
+				console.log(name)
+			}
 			table.name = name
 			return table
 		}
@@ -254,6 +257,7 @@ var EntityModel = function (info) {
 				let table = getTable(relation.entity)
 				let result = {}
 				table.fields.forEach((f) => {//base data
+					if (f.name === "password") { return } //wont return any password
 					result[f.name] = data[f.name]
 				})
 				if (!ety) {
@@ -273,6 +277,7 @@ var EntityModel = function (info) {
 							let object = {}
 							let relation_table = getTable(relation.entity || relation.table)
 							relation_table.fields.forEach((f) => {
+								if (f.name === "password") { return }
 								if (!object[f.name]) {
 									object[f.name] = data[relation_table.name + "_" + f.name]
 								}
@@ -291,6 +296,7 @@ var EntityModel = function (info) {
 				let data = null
 				if (count == 0) {
 					data = result;
+					delete data.password;
 				} else {
 					data = result[0];
 				}
@@ -414,19 +420,19 @@ var EntityModel = function (info) {
 			let key = table.defaultSort;
 			return this.update(body, { key: body[key] })
 		}*/
-		return resolveQuery(insertIntoTable(table, body, connection),connection).then((base) => {
+		return resolveQuery(insertIntoTable(table, body, connection), connection).then((base) => {
 			if (base.insertId) {
 				body[table.defaultSort] = base.insertId
 				connection = mysql.createConnection(dbConf)
-				return resolveQuery(updateTranslation(body,connection),connection)
-			}else{
+				return resolveQuery(updateTranslation(body, connection), connection)
+			} else {
 				throw utiles.informError(300)
 			}
 		}).then(() => {
 			return this.updateView()
 		})
 	}
-	function updateTranslation(body,connection){
+	function updateTranslation(body, connection) {
 		let lang = body.language
 		let entity = dmt.entities[info.entity]
 		let table = getTable(info.entity)
@@ -454,7 +460,7 @@ var EntityModel = function (info) {
 
 		return resolveQuery(updateTable(table, body, connection), connection).then(() => {
 			connection = mysql.createConnection(dbConf)
-			return resolveQuery(updateTranslation(body,connection),connection)
+			return resolveQuery(updateTranslation(body, connection), connection)
 		}).then(() => {
 			return
 			if (entity.relations) {
@@ -502,7 +508,7 @@ var EntityModel = function (info) {
 	this.delete = function (condition) {
 		let table = getTable(info.entity)
 		let data = {}
-		table.fields.forEach((f)=>{
+		table.fields.forEach((f) => {
 			data[f.name] = condition[f.name]
 		})
 		var connection = mysql.createConnection(dbConf)

@@ -26,6 +26,15 @@ dmt.api= {
                     }
                 },
                 {
+                    entity:"user_category",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                },
+                {
                     entity:"permission",
                     permissions:{
                         read:"none",
@@ -140,15 +149,6 @@ dmt.api= {
                     }
                 },
                 {
-                    entity:"hall_fame",
-                    permissions:{
-                        read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
-                    }
-                },
-                {
                     entity:"questiontopic",
                     permissions:{
                         read:"none",
@@ -177,6 +177,20 @@ dmt.api= {
                 },
                 {
                     entity:"question",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                }
+            ]
+        },
+        {
+            controller:"question",
+            entities:[
+                {
+                    entity:"evaluation_request",
                     permissions:{
                         read:"none",
                         write:"admin",
