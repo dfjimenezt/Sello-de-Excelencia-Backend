@@ -1,6 +1,6 @@
 {
 	"port": "3000",
-	"enviroment": "development",
+	"enviroment": "production",
 	"verbose": "true",
 	"googleDebug": "false",
 	"defaultModel": "mysql",
