@@ -1,15 +1,4 @@
-@font-face{
-    font-family: 'Avenir Next LT Pro Condensed';
-    font-size: normal;
-    font-weight: normal;
-    src: local('Avenir Next LT Pro Condensed'), url("../fonts/AvenirNextLTPro-Cn.woff") format("woff")
-}
-@font-face{
-    font-family: 'Avenir Next LT Pro Demi';
-    font-size: normal;
-    font-weight: normal;
-    src: local('Avenir Next LT Pro Demi'), url("../fonts/AvenirNextLTPro-Demi.woff") format("woff")
-}
+
 @-webkit-keyframes fade-in { 0% {opacity: 0;}50%{opacity:0;}100%{opacity:1;}}
 
 *{
@@ -18,7 +7,7 @@
 }
 
 body{
-  font-family: 'Avenir Next LT Pro Condensed', 'Avenir Next LT Pro Demi', sans-serif !important;
+  font-family: sans-serif !important;
   font-weight: 300;
   font-size: 16px;
   background: #ffffff;

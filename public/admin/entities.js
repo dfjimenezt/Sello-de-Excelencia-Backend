@@ -51,8 +51,7 @@ dmt.entities = {
         intermediate: {
           entity: "user_category",
           leftKey: "id_user",
-          rightKey: "id_category",
-
+          rightKey: "id_category"
         }
       },
       {

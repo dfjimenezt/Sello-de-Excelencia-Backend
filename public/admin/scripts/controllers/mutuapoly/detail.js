@@ -47,35 +47,35 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 
 	$http.get("api/configuracion/lang").then((response) => {
 		ctrl.languages = response.data.data;
-	}).catch((e)=>{
+	}).catch((e) => {
 		console.log("no languages available")
 	})
-	ctrl.select = function(selection){
+	ctrl.select = function (selection) {
 		var relation = ctrl.tab
-		if(!relation){
+		if (!relation) {
 			return
 		}
-		if(relation.type === 'n-n'){
+		if (relation.type === 'n-n') {
 			var entity = dmt.entities[relation.intermediate.entity]
-			var url = entity.endpoint+relation.intermediate.entity
+			var url = entity.endpoint + relation.intermediate.entity
 			var data = {}
 			data[relation.intermediate.rightKey] = selection
 			data[relation.intermediate.leftKey] = $routeParams.id
-			$http.post(url,data)
+			$http.post(url, data)
 		}
 	}
-	ctrl.unselect = function(selection){
+	ctrl.unselect = function (selection) {
 		var relation = ctrl.tab
-		if(!relation){
+		if (!relation) {
 			return
 		}
-		if(relation.type === 'n-n'){
+		if (relation.type === 'n-n') {
 			var entity = dmt.entities[relation.intermediate.entity]
-			var url = entity.endpoint+relation.intermediate.entity+'?'+relation.intermediate.rightKey+'='+selection+'&'+relation.intermediate.leftKey+'='+$routeParams.id
-			$http.delete(url)	
+			var url = entity.endpoint + relation.intermediate.entity + '?' + relation.intermediate.rightKey + '=' + selection + '&' + relation.intermediate.leftKey + '=' + $routeParams.id
+			$http.delete(url)
 		}
 	}
-	ctrl.selectTab = function(tab){
+	ctrl.selectTab = function (tab) {
 		ctrl.tab = tab
 	}
 
@@ -190,7 +190,11 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 			intermediate.push("filter_field=" + relation.intermediate.leftKey);
 			intermediate.push("filter_value=" + $routeParams.id);
 			intermediate.push("lang=" + ctrl.language)
-			$http.get(entity.endpoint + relation.intermediate.entity + "?" + intermediate.join("&")).then((response) => {
+			let ety_intermediate = dmt.entities[relation.intermediate.entity];
+			if (!ety_intermediate) {
+				ety_intermediate = dmt.tables[relation.intermediate.entity];
+			}
+			$http.get(ety_intermediate.endpoint + relation.intermediate.entity + "?" + intermediate.join("&")).then((response) => {
 				response.data.data.forEach(function (item) {
 					if (ctrl.entities[relation.entity].selected.indexOf(item[relation.intermediate.rightKey]) === -1) {
 						ctrl.entities[relation.entity].selected.push(item[relation.intermediate.rightKey])
@@ -244,7 +248,7 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 			window.location.href = "/admin/login";
 		});
 	};
-	if($routeParams.id){
+	if ($routeParams.id) {
 		ctrl.getData();
 	}
 
@@ -349,11 +353,11 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 			if (data[ctrl.currentEntity.defaultSort]) {
 				$http.put(base + page.parent.entity, data).then(ctrl.getData).catch(error);
 			} else {
-				$http.post(base + page.parent.entity, data).then(function(){
+				$http.post(base + page.parent.entity, data).then(function () {
 					//ctrl.getData
 					var p = page.parent
 					var url = p.path;
-					while(p.parent){
+					while (p.parent) {
 						p = p.parent;
 						url = p.path + '/' + url;
 					}

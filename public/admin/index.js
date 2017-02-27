@@ -16,7 +16,7 @@
 *
 */
 if (!localStorage.getItem("token")) {
-	window.location.href = "admin/login";
+	window.location.href = "/admin/login";
 }
 var app = angular.module('dmt-back', ['ngRoute', 'ngMaterial', 'ngSanitize', 'md.data.table']);
 /**
@@ -147,17 +147,13 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 });
 
 app.controller('backCtrl', function ($mdSidenav, $location, $http) {
-	if (!localStorage.getItem("token")) {
-		window.location.href = "/login";
-		return;
-	}
 	var ctrl = this;
 	$http.defaults.headers.common.Authorization = localStorage.getItem("token");
 
 	this.logout = function () {
 		delete $http.defaults.headers.common.Authorization;
 		localStorage.removeItem("token");
-		window.location.href = "/login";
+		$location.path("/login");
 	}
 	this.menu = function () {
 		$mdSidenav("menu").toggle();

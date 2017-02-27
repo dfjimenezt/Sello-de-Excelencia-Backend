@@ -15,6 +15,7 @@ var Routes = function (app) {
     { type: 'configuration', file: './controllers/auto_configuration.js' },
     { type: "service", file: "./controllers/auto_service.js" },
 		{ type: "place", file: "./controllers/auto_place.js" },
+    { type: "question", file: "./controllers/auto_question.js" },
 		{ type: "forum", file: "./controllers/auto_forum.js" },	
   ]
   var formParser = form({ keepExtensions: true }) // POST

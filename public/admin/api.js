@@ -26,9 +26,36 @@ dmt.api= {
                     }
                 },
                 {
+                    entity:"availability",
+                    permissions:{
+                        read:"admin",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                },
+                {
+                    entity:"level",
+                    permissions:{
+                        read:"admin",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                },
+                {
                     entity:"user_category",
                     permissions:{
-                        read:"none",
+                        read:"admin",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                },
+                {
+                    entity:"user_questiontopic",
+                    permissions:{
+                        read:"admin",
                         write:"admin",
                         update:"admin",
                         delete:"admin"
@@ -191,6 +218,24 @@ dmt.api= {
             entities:[
                 {
                     entity:"evaluation_request",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                },
+                {
+                    entity:"user_answer",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
+                },
+                {
+                    entity:"request_status",
                     permissions:{
                         read:"none",
                         write:"admin",

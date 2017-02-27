@@ -95,7 +95,23 @@ dmt.config = [
 				name: "Categorías",
 				path: "categorias",
 				entity: "category"
-			}]
+			},
+			{
+				name: "Temas",
+				path: "temas",
+				entity: "questiontopic"
+			},
+			{
+				name: "Etapas",
+				path: "etapas",
+				entity: "form"
+			},
+			{
+				name: "Evaluaciones",
+				path: "evaluaciones",
+				entity: "evaluation_request"
+			}
+		]
 	},
 	{
 		section: "Foro",
