@@ -73,7 +73,29 @@ var Place = function () {
 			})
 		}
 	}
+
+	/**
+	 * Institutions Hall
+	 */
+	var get_institution_hall = function (token, params) {
+        if (params.id) {
+            var result = institution.getTop(params)
+            console.log(result)
+			return result
+		} else {
+			return region.getAll({
+				filter: params.filter,
+				limit: params.limit,
+				page: params.page,
+				order: params.order,
+				filter_fields: params.filter_field,
+				filter_values: params.filter_value,
+				fields: ["name"]
+			})
+		}
+	}
 	getMap.set('institution', { method: get_institution, permits: Permissions.NONE })
+	getMap.set('institution_hall', { method: get_institution_hall, permits: Permissions.NONE })
 	getMap.set('city', { method: get_city, permits: Permissions.NONE })
 	getMap.set('region', { method: get_region, permits: Permissions.NONE })
 
