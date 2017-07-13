@@ -85,6 +85,13 @@ dmt.entities = {
         entity: "city",
         leftKey: "id_city",
         foreign_name: "name"
+      },
+      {
+        type: "1-n",
+        name: "type_document",
+        entity: "type_document",
+        rigthtKey: "id_type_document"
+        
       }
     ]
   },

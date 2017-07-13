@@ -96,7 +96,17 @@ dmt.api= {
                         update:"admin",
                         delete:"admin"
                     }
+                },
+                {
+                    entity:"type_document",
+                    permissions:{
+                        read:"none",
+                        write:"admin",
+                        update:"admin",
+                        delete:"admin"
+                    }
                 }
+
             ]
         },
         {
