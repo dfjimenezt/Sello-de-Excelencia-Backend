@@ -13,6 +13,20 @@ var User = function () {
 		model:'mysql'
 	}]
 	BaseModel.apply(this, params)
+	
+	this.getUser = function(email){
+		var query = `SELECT * FROM stamp.user WHERE email = "${email}" ;`
+		return this.customQuery(query).then(function(data){
+			if(data.length === 0){
+				return null
+			}else{
+				console.log("data out")
+				console.log(data[0])
+				return data[0]
+			}
+		})
+	}
+
 	return this
 };
 util.inherits(User, BaseModel)
