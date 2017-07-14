@@ -1,0 +1,42 @@
+
+--> Thu Jul 13 16:28:44 -05 2017 , {"message":"Registro Exitoso."}
+
+--> Thu Jul 13 17:05:05 -05 2017 , {"error":{"code":201,"message":"USER ALREADY EXISTS","htmlCode":401}}
+
+--> Thu Jul 13 17:10:16 -05 2017 , {"error":{"code":201,"message":"USER ALREADY EXISTS","htmlCode":401}}
+
+--> Thu Jul 13 17:11:17 -05 2017 , {"message":"Registro Exitoso."}
+
+--> Thu Jul 13 17:14:59 -05 2017 , {"error":{"code":400,"message":"MALFORMED REQUEST","htmlCode":400}}
+
+--> Fri Jul 14 10:20:03 -05 2017 , {"code":"ER_TRUNCATED_WRONG_VALUE_FOR_FIELD","errno":1366,"sqlState":"HY000","index":0}
+
+--> Fri Jul 14 10:20:42 -05 2017 , {"code":"ER_TRUNCATED_WRONG_VALUE_FOR_FIELD","errno":1366,"sqlState":"HY000","index":0}
+
+--> Fri Jul 14 10:26:57 -05 2017 , {"error":{"code":201,"message":"USER ALREADY EXISTS","htmlCode":401}}
+
+--> Fri Jul 14 10:27:45 -05 2017 , {"code":"ER_TRUNCATED_WRONG_VALUE_FOR_FIELD","errno":1366,"sqlState":"HY000","index":0}
+
+--> Fri Jul 14 10:28:32 -05 2017 , {"code":"ER_TRUNCATED_WRONG_VALUE_FOR_FIELD","errno":1366,"sqlState":"HY000","index":0}
+
+--> Fri Jul 14 10:28:49 -05 2017 , /home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/controllers/auth.js:228<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;case 1:<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;^^^^<br>SyntaxError: Unexpected token case<br> &nbsp; &nbsp;at Object.exports.runInThisContext (vm.js:76:16)<br> &nbsp; &nbsp;at Module._compile (module.js:542:28)<br> &nbsp; &nbsp;at Object.Module._extensions..js (module.js:579:10)<br> &nbsp; &nbsp;at Module.load (module.js:487:32)<br> &nbsp; &nbsp;at tryModuleLoad (module.js:446:12)<br> &nbsp; &nbsp;at Function.Module._load (module.js:438:3)<br> &nbsp; &nbsp;at Module.require (module.js:497:17)<br> &nbsp; &nbsp;at require (internal/module.js:20:19)<br> &nbsp; &nbsp;at finishPost (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/routes.js:35:22)<br> &nbsp; &nbsp;at postFunction (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/routes.js:65:7)
+
+--> Fri Jul 14 10:29:02 -05 2017 , /home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/controllers/auth.js:228<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;case 1:<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;^^^^<br>SyntaxError: Unexpected token case<br> &nbsp; &nbsp;at Object.exports.runInThisContext (vm.js:76:16)<br> &nbsp; &nbsp;at Module._compile (module.js:542:28)<br> &nbsp; &nbsp;at Object.Module._extensions..js (module.js:579:10)<br> &nbsp; &nbsp;at Module.load (module.js:487:32)<br> &nbsp; &nbsp;at tryModuleLoad (module.js:446:12)<br> &nbsp; &nbsp;at Function.Module._load (module.js:438:3)<br> &nbsp; &nbsp;at Module.require (module.js:497:17)<br> &nbsp; &nbsp;at require (internal/module.js:20:19)<br> &nbsp; &nbsp;at finishPost (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/routes.js:35:22)<br> &nbsp; &nbsp;at postFunction (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/routes.js:65:7)
+
+--> Fri Jul 14 10:29:54 -05 2017 , /home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/controllers/auth.js:228<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;case 1:<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;^^^^<br>SyntaxError: Unexpected token case<br> &nbsp; &nbsp;at Object.exports.runInThisContext (vm.js:76:16)<br> &nbsp; &nbsp;at Module._compile (module.js:542:28)<br> &nbsp; &nbsp;at Object.Module._extensions..js (module.js:579:10)<br> &nbsp; &nbsp;at Module.load (module.js:487:32)<br> &nbsp; &nbsp;at tryModuleLoad (module.js:446:12)<br> &nbsp; &nbsp;at Function.Module._load (module.js:438:3)<br> &nbsp; &nbsp;at Module.require (module.js:497:17)<br> &nbsp; &nbsp;at require (internal/module.js:20:19)<br> &nbsp; &nbsp;at finishPost (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/routes.js:35:22)<br> &nbsp; &nbsp;at postFunction (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/routes.js:65:7)
+
+--> Fri Jul 14 10:37:48 -05 2017 , {"code":"ER_TRUNCATED_WRONG_VALUE_FOR_FIELD","errno":1366,"sqlState":"HY000","index":0}
+
+--> Fri Jul 14 10:37:57 -05 2017 , {"code":"ER_TRUNCATED_WRONG_VALUE_FOR_FIELD","errno":1366,"sqlState":"HY000","index":0}
+
+--> Fri Jul 14 10:38:07 -05 2017 , {"code":"ER_TRUNCATED_WRONG_VALUE_FOR_FIELD","errno":1366,"sqlState":"HY000","index":0}
+
+--> Fri Jul 14 10:43:21 -05 2017 , {"message":"Registro Exitoso."}
+
+--> Fri Jul 14 10:52:16 -05 2017 , {"message":"Registro Exitoso."}
+
+--> Fri Jul 14 10:54:18 -05 2017 , {"message":"Registro Exitoso."}
+
+--> Fri Jul 14 11:00:44 -05 2017 , {"message":"Registro Exitoso."}
+
+--> Fri Jul 14 11:30:29 -05 2017 , {"message":"Registro Exitoso."}

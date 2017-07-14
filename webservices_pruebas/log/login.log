@@ -46,3 +46,13 @@
 --> Thu Jul 13 15:19:16 -05 2017, {"error":{"code":0,"message":"NO ERROR","htmlCode":200},"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwicGljdHVyZSI6bnVsbCwibmFtZSI6IkpvaG5ueSIsInNlY29uZG5hbWUiOm51bGwsImxhc3RuYW1lIjpudWxsLCJzZWNvbmRsYXN0bmFtZSI6bnVsbCwiZW1haWwiOiJqZ2NjQGdtYWlsLmNvbSIsInBob25lIjoiIiwiZXh0ZW5zaW9uIjpudWxsLCJtb2JpbGUiOm51bGwsImFjdGl2ZSI6MSwidmVyaWZpZWQiOjEsInRtcF9wd2QiOm51bGwsImZsYWdfaGFsbCI6MSwicmFua2luZ19oYWxsIjoyLCJ0ZXJtcyI6MSwibmV3c2xldHRlciI6MSwidGltZXN0YW1wIjoiMjAxNy0wNy0xM1QyMToyNjowMC4wMDBaIiwiaWRfYXZhaWxhYmlsaXR5IjpudWxsLCJpZF9sZXZlbCI6bnVsbCwiaWRfY2l0eSI6bnVsbCwiaWRfdHlwZV9kb2N1bWVudCI6bnVsbCwiaWF0IjoxNDk5OTc3MTU3fQ.2V6Gyv9JiGgyiQ6l-bc-WHCgxTTRh1_Ngt_nVL8RR3Q"}
 
 --> Thu Jul 13 15:21:02 -05 2017, {"error":{"code":0,"message":"NO ERROR","htmlCode":200},"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwicGljdHVyZSI6bnVsbCwibmFtZSI6IkpvaG5ueSIsInNlY29uZG5hbWUiOm51bGwsImxhc3RuYW1lIjpudWxsLCJzZWNvbmRsYXN0bmFtZSI6bnVsbCwiZW1haWwiOiJqZ2NjQGdtYWlsLmNvbSIsInBob25lIjoiIiwiZXh0ZW5zaW9uIjpudWxsLCJtb2JpbGUiOm51bGwsImFjdGl2ZSI6MSwidmVyaWZpZWQiOjEsInRtcF9wd2QiOm51bGwsImZsYWdfaGFsbCI6MSwicmFua2luZ19oYWxsIjoyLCJ0ZXJtcyI6MSwibmV3c2xldHRlciI6MSwidGltZXN0YW1wIjoiMjAxNy0wNy0xM1QyMToyNjowMC4wMDBaIiwiaWRfYXZhaWxhYmlsaXR5IjpudWxsLCJpZF9sZXZlbCI6bnVsbCwiaWRfY2l0eSI6bnVsbCwiaWRfdHlwZV9kb2N1bWVudCI6bnVsbCwiaWF0IjoxNDk5OTc3MjYzfQ.imYSwuFd16UanMtihDOz-PnyrKt_XT65yZHNyXyCnn8"}
+
+--> Fri Jul 14 10:43:55 -05 2017, {"error":{"code":203,"message":"USER NOT ACTIVE","htmlCode":401}}
+
+--> Fri Jul 14 10:45:55 -05 2017, {"error":{"code":202,"message":"USER DOESNT EXISTS","htmlCode":404}}
+
+--> Fri Jul 14 10:46:50 -05 2017, {"error":{"code":203,"message":"USER NOT ACTIVE","htmlCode":401}}
+
+--> Fri Jul 14 10:48:01 -05 2017, {"error":{"code":200,"message":"LOGIN FAILED","htmlCode":401}}
+
+--> Fri Jul 14 10:51:46 -05 2017, {"error":{"code":202,"message":"USER DOESNT EXISTS","htmlCode":404}}

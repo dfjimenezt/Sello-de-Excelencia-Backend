@@ -172,6 +172,7 @@ var MysqlModel = function (info) {
     queryFields = queryFields.slice(0, -1) + ')'
     queryValues = queryValues.slice(0, -1) + ')'
     var query = 'INSERT INTO ' + info.table + ' ' + queryFields + ' VALUES ' + queryValues + ''
+		console.log(query)
     return resolveQuery(query, connection)
   }
 
