@@ -20,4 +20,7 @@ fi
 if [ "$command" = "get_institution" ]; then
 	echo -e "\n--> "`date` ", "`curl ${host}place/institution` > log/institution.log
 	less log/institution.json
+elif [ "$command" = "register_institution" ]; then
+	echo -e "\n--> "`date`", "`curl -H "Content-Type: application/json" -X POST -d "@${file}" ${host}place/register_institution` >> log/institution.log
+	less log/institution.log
 fi

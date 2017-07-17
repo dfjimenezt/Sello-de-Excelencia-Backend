@@ -56,3 +56,5 @@
 --> Fri Jul 14 10:48:01 -05 2017, {"error":{"code":200,"message":"LOGIN FAILED","htmlCode":401}}
 
 --> Fri Jul 14 10:51:46 -05 2017, {"error":{"code":202,"message":"USER DOESNT EXISTS","htmlCode":404}}
+
+--> Mon Jul 17 10:10:30 -05 2017, {"error":{"code":0,"message":"NO ERROR","htmlCode":200},"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTQsInBpY3R1cmUiOm51bGwsIm5hbWUiOiJlbnRpZGFkMSIsInNlY29uZG5hbWUiOiIiLCJsYXN0bmFtZSI6ImFwZWxsaWRvMSIsInNlY29uZGxhc3RuYW1lIjoiIiwiZW1haWwiOiJlbnRpZGFkMUBnbWFpbC5jb20iLCJwaG9uZSI6IjMxMDExMTExMTEiLCJleHRlbnNpb24iOiIiLCJtb2JpbGUiOiIiLCJhY3RpdmUiOjEsInZlcmlmaWVkIjoxLCJ0bXBfcHdkIjowLCJmbGFnX2hhbGwiOjAsInJhbmtpbmdfaGFsbCI6MCwidGVybXMiOjAsIm5ld3NsZXR0ZXIiOjAsInRpbWVzdGFtcCI6IjIwMTctMDctMTdUMjA6MDg6MTEuMDAwWiIsImlkX2F2YWlsYWJpbGl0eSI6bnVsbCwiaWRfbGV2ZWwiOm51bGwsImlkX2NpdHkiOm51bGwsImlkX3R5cGVfZG9jdW1lbnQiOm51bGwsImlhdCI6MTUwMDMwNDIzMX0.m1vhcW5yRREoHQpQqZWtux_nGCBOPrwr04cA1avtW48"}
