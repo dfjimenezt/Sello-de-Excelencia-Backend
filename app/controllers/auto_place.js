@@ -220,15 +220,8 @@ var place_controller = function () {
 
 
 
-
-    
 	var get_entity_institution_hall = function (user, params) {
-        var query = `SELECT * FROM stamp.institution WHERE flag_hall = 1 ORDER BY ranking_hall LIMIT 10`
-<<<<<<< HEAD
-=======
-        console.log(query)
->>>>>>> 00c5565590b2f69cb9a845977a359f8e41b294a6
-        return my_sql.customQuery(query)
+		return _get(model_entity_institution,user,{filter_field: "flag_hall", filter_value: "1"})
 	}
 
 
