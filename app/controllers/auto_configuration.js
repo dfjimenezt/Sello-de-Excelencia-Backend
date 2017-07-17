@@ -35,7 +35,6 @@ var configuration_controller = function () {
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
 		let key = model.getPrimaryKey()
-		console.log(`KEY: ${key}`)
 		if (params.filter_field) {
 			if (typeof params.filter_field == 'string') {
 				params.filter_field = [params.filter_field]
@@ -153,6 +152,31 @@ var configuration_controller = function () {
 	var get_entity_user = function (user, params) {
 		return _get(model_entity_user,user,params)
 	}
+	
+	/**
+	 * @api {get} api/configuration/evaluator Request user information
+	 * @apiName Getuser
+	 * @apiGroup configuration
+	 * @apiVersion 1.0.1
+	*/
+	var get_entity_user_evaluator = function (user,params){
+		console.log(params)
+		return _get(model_entity_user,user,{filter_field: "id_role", filter_value: "2"})
+	}
+	
+	/**
+	 * @api {get} api/configuration/evaluator_hall Request user information
+	 * @apiName Getuser
+	 * @apiGroup configuration
+	 * @apiVersion 1.0.1
+	*/
+	var get_entity_user_evaluator_hall = function (user,params){
+        return _get(model_entity_user,user,{filter_field: ["id_role", "user_flag_hall"], filter_value: ["2", "1"]})
+	}
+
+	
+	
+	
 	/**
 	 * @api {get} api/configuration/role Request role information
 	 * @apiName Getrole
@@ -434,14 +458,13 @@ var configuration_controller = function () {
 	}
 	
 	
-	var get_entity_user_role_evaluator = function (user,params){
+	var get_entity_user_evaluator = function (user,params){
 		return _get(model_entity_user_role,user,{filter_field: "id_role", filter_value: "2"})
 	}
 	
 
-	var get_entity_user_role_evaluator_hall = function (user,params){
+	var get_entity_user_evaluator_hall = function (user,params){
         return _get(model_entity_user_role,user,{filter_field: ["id_role", "user_flag_hall"], filter_value: ["2", "1"]})
-		//return _get(model_entity_user_role,user,{filter_field: ["id_role"], filter_value: ["2"]})
 	}
 
 
@@ -514,10 +537,10 @@ var configuration_controller = function () {
 	getMap.set('permission', { method: get_permission, permits: Permissions.NONE })
 	getMap.set('permission_role', { method: get_entity_permission_role, permits: Permissions.NONE })
 	getMap.set('user_role', { method: get_entity_user_role, permits: Permissions.NONE })
-	getMap.set('evaluator', { method: get_entity_user_role_evaluator, permits: Permissions.NONE })
-	getMap.set('evaluator_hall', { method: get_entity_user_role_evaluator_hall, permits: Permissions.NONE })
 	getMap.set('config', { method: get_config, permits: Permissions.NONE })
 	getMap.set('type_document', { method: get_type_document, permits: Permissions.NONE })
+	getMap.set('evaluator', { method: get_entity_user_evaluator, permits: Permissions.NONE })
+	getMap.set('evaluator_hall', { method: get_entity_user_evaluator_hall, permits: Permissions.NONE })
 	/**
 	 * @api {post} api/configuration/user Create user information
 	 * @apiName Postuser

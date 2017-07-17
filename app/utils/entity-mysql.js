@@ -169,7 +169,7 @@ var EntityModel = function (info) {
 		if (typeof params.fields == "string") {
 			params.fields = [params.fields]
 		}
-
+		
 		//group fields by name
 		params.filter_fields.forEach((key, i) => {
 			if (!filters[key]) {
@@ -206,6 +206,7 @@ var EntityModel = function (info) {
 			where = search + conditions
 		}
 		let subtable = "";
+		console.log("*************************+")
 		if (info.translate && params.lang) {
 			subtable = "view_" + info.table + "_" + params.lang
 		} else {

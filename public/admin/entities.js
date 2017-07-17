@@ -87,11 +87,11 @@ dmt.entities = {
         foreign_name: "name"
       },
       {
-        type: "1-n",
+        type: "1-1",
         name: "type_document",
         entity: "type_document",
-        rigthtKey: "id_type_document"
-        
+        leftKey: "id_type_document",
+        foreign_name: "document"
       }
     ]
   },
