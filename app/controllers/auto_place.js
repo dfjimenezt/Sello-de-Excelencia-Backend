@@ -214,8 +214,8 @@ var place_controller = function () {
 
     
 	var get_entity_institution_hall = function (user, params) {
-        console.log("HOLA NODE Y SQL")
-        var query = `SELECT * FROM stamp.institution WHERE flag_hall = 1 ORDER BY ranking_hall LIMIT 2`
+        var query = `SELECT * FROM stamp.institution WHERE flag_hall = 1 ORDER BY ranking_hall LIMIT 10`
+        console.log(query)
         return my_sql.customQuery(query)
 	}
 
