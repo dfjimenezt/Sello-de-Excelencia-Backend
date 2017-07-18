@@ -261,6 +261,7 @@ var service_controller = function () {
 	var get_entity_service = function (user, params) {
 		return _get(model_entity_service,user,params)
 	}
+
 	/**
 	 * @api {get} api/service/category Request category information
 	 * @apiName Getcategory
@@ -426,12 +427,50 @@ var service_controller = function () {
 	var get_question = function (user, params) {
 		return _get(model_question,user,params)
 	}
+
+//-----------------------------------------------------------------------------------------
+	/**
+	 * @api {get} api/service/service_category Request service information
+	 * @apiName Getservice
+	 * @apiGroup service
+	 * @apiVersion 1.0.1
+	 */ 
+	var get_entity_service_category = function (user, params) {
+		return _get(model_entity_service,user,{filter_field: "id_category", filter_value: "1"})
+	}
+
+	/**
+	 * @api {get} api/service/service_institution_name Request service information
+	 * @apiName Getservice
+	 * @apiGroup service
+	 * @apiVersion 1.0.1
+	 */ 
+	var get_entity_service_institution_name = function (user, params) {
+		return _get(model_entity_service,user,{filter_field: "institution_name", filter_value: "Pepito"})
+	}
+
+	/**
+	 * @api {get} api/service/service_name Request service information
+	 * @apiName Getservice
+	 * @apiGroup service
+	 * @apiVersion 1.0.1
+	 */ 
+	var get_entity_service_name = function (user, params) {
+		return _get(model_entity_service,user,{filter_field: "institution_name", filter_value: "Pepito"})
+	}
+//-----------------------------------------------------------------------------------------
+
+
+
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
 	getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
 	getMap.set('form', { method: get_entity_form, permits: Permissions.NONE })
 	getMap.set('type', { method: get_type, permits: Permissions.NONE })
 	getMap.set('question', { method: get_question, permits: Permissions.NONE })
+	getMap.set('service_category', { method: get_entity_service_category, permits: Permissions.NONE })
+	getMap.set('service_institution_name', { method: get_entity_service_institution_name, permits: Permissions.NONE })
+	getMap.set('service_name', { method: get_entity_service_name, permits: Permissions.NONE })
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice

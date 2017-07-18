@@ -154,30 +154,6 @@ var configuration_controller = function () {
 	}
 	
 	/**
-	 * @api {get} api/configuration/evaluator Request user information
-	 * @apiName Getuser
-	 * @apiGroup configuration
-	 * @apiVersion 1.0.1
-	*/
-	var get_entity_user_evaluator = function (user,params){
-		console.log(params)
-		return _get(model_entity_user,user,{filter_field: "id_role", filter_value: "2"})
-	}
-	
-	/**
-	 * @api {get} api/configuration/evaluator_hall Request user information
-	 * @apiName Getuser
-	 * @apiGroup configuration
-	 * @apiVersion 1.0.1
-	*/
-	var get_entity_user_evaluator_hall = function (user,params){
-        return _get(model_entity_user,user,{filter_field: ["id_role", "user_flag_hall"], filter_value: ["2", "1"]})
-	}
-
-	
-	
-	
-	/**
 	 * @api {get} api/configuration/role Request role information
 	 * @apiName Getrole
 	 * @apiGroup configuration
@@ -457,17 +433,6 @@ var configuration_controller = function () {
 		return _get(model_entity_user_role,user,params)
 	}
 	
-	
-	var get_entity_user_evaluator = function (user,params){
-		return _get(model_entity_user_role,user,{filter_field: "id_role", filter_value: "2"})
-	}
-	
-
-	var get_entity_user_evaluator_hall = function (user,params){
-        return _get(model_entity_user_role,user,{filter_field: ["id_role", "user_flag_hall"], filter_value: ["2", "1"]})
-	}
-
-
 	/**
 	 * @api {get} api/configuration/config Request config information
 	 * @apiName Getconfig
@@ -528,6 +493,30 @@ var configuration_controller = function () {
 	var get_type_document = function (user, params) {
 		return _get(model_type_document,user,params)
 	}
+	
+//------------------------------------------------------------------------------	
+	/**
+	 * @api {get} api/configuration/evaluator Request user information
+	 * @apiName Getuser
+	 * @apiGroup configuration
+	 * @apiVersion 1.0.1
+	*/
+	var get_entity_user_evaluator = function (user,params){
+		return _get(model_entity_user_role,user,{filter_field: "id_role", filter_value: "2"})
+	}
+	
+	/**
+	 * @api {get} api/configuration/evaluator_hall Request user information
+	 * @apiName Getuser
+	 * @apiGroup configuration
+	 * @apiVersion 1.0.1
+	*/
+	var get_entity_user_evaluator_hall = function (user,params){
+        return _get(model_entity_user_role,user,{filter_field: ["id_role", "user_flag_hall"], filter_value: ["2", "1"]})
+	}
+//------------------------------------------------------------------------------	
+
+	
 	getMap.set('user', { method: get_entity_user, permits: Permissions.NONE })
 	getMap.set('role', { method: get_role, permits: Permissions.NONE })
 	getMap.set('availability', { method: get_availability, permits: Permissions.ADMIN })
