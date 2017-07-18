@@ -13,17 +13,15 @@ elif [ "$command" = "register_evaluator" ]; then
 elif [ "$command" = "login" ]; then
 	echo -e "\n--> "`date`", "`curl -H "Content-Type: application/json" -X POST -d "@${file}" ${host}auth/login` >> log/login.log
 	less log/login.log
-elif [ "$command" = "clear" ]; then
-	rm -v log/* 
-elif [ "$command" = "help" ]; then
-	echo "webservices.sh [command]"
-	echo "	register, registerjson, loginjson, clear"
-fi
-
-if [ "$command" = "get_institution" ]; then
+elif [ "$command" = "get_institution" ]; then
 	echo -e "\n--> "`date` ", "`curl ${host}place/institution` > log/institution.log
 	less log/institution.json
 elif [ "$command" = "register_institution" ]; then
 	echo -e "\n--> "`date`", "`curl -H "Content-Type: application/json" -X POST -d "@${file}" ${host}place/register_institution` >> log/institution.log
 	less log/institution.log
+elif [ "$command" = "clear" ]; then
+	rm -v log/* 
+elif [ "$command" = "help" ]; then
+	echo "webservices.sh [command]"
+	echo "	register, registerjson, loginjson, clear"
 fi
