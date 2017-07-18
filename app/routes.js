@@ -14,31 +14,34 @@ var Routes = function (app) {
     { type: 'test', file: './controllers/tests.js' },
     { type: 'configuration', file: './controllers/auto_configuration.js' },
     { type: "service", file: "./controllers/auto_service.js" },
-	{ type: "place", file: "./controllers/auto_place.js" },
+	  { type: "place", file: "./controllers/auto_place.js" },
     { type: "question", file: "./controllers/auto_question.js" },
-	{ type: "forum", file: "./controllers/auto_forum.js" }
+	  { type: "forum", file: "./controllers/auto_forum.js" }
   ]
   var formParser = form({ keepExtensions: true }) // POST
   var urlencodedParser = bodyParser.urlencoded({ extended: true }) // PUT, DELETE
   var jsonParser = bodyParser.json()//POST
-  
+
   // This is middleware that allows to retrive parameters from the POST, PUT & DELETE request
   /*
   This are the routing functions. They separate the request to the diferents controllers.
   There is a special considerations when usig POST, to allow file uploads
   */
-  var finishPost = function (req, res, body, files) {
+  var finishPostPut = function (req, res, body, files) {
     var i, controller
     for (i in controllers) {
       if (controllers[i].type === req.params.type) {
         controller = require(controllers[i].file)()
-        break
+        break;
       }
     }
-
+    
     if (controller) {
-      controller.post(req.params, req.headers.authorization, body, files)
-        .then((data) => {
+      let method
+      if (req.originalMethod === 'POST') method = controller.post(req.params, req.headers.authorization, body, files)
+      else if (req.originalMethod === 'PUT') method = controller.put(req.params, req.headers.authorization, body, files)
+      
+      method.then((data) => {
           if (data.error && data.error.htmlCode) res.status(data.error.htmlCode).send(data)
           else res.send(data)
         }).catch((err2) => {
@@ -46,26 +49,23 @@ var Routes = function (app) {
           else res.send(err2)
         })
     } else res.sendStatus(404)
-  }
-  var postFunction = function (req, res) {
+  };
+  var postPutFunction = function (req, res) {
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
     res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token')
-    if (req.form) {
-      if(req.headers['content-type'].indexOf("multipart")!=-1){
-        req.form.complete((err, fields, files) => {
-          if (err) res.sendStatus(500)
-          finishPost(req, res, fields, files)
-        })
-      } else {
-        finishPost(req, res, req.body, null)
-      }
+    let content = req.headers['content-type']
+    if(content.indexOf('multipart/form-data') >= 0){
+      req.form.complete((err, fields, files) => {
+        if (err) res.sendStatus(500)
+        finishPostPut(req, res, fields, files)
+      });
     } else {
-      finishPost(req, res, req.body, null)
+      finishPostPut(req, res, req.body, null)
     }
   }
 
-  var getPutDeleteFunction = function (req, res) {
+  var getDeleteFunction = function (req, res) {
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
     res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token')
@@ -78,9 +78,8 @@ var Routes = function (app) {
     }
 
     if (controller) {
-      var method
+      let method
       if (req.originalMethod === 'GET') method = controller.get(req.params, req.headers.authorization, req.query)
-      else if (req.originalMethod === 'PUT') method = controller.put(req.params, req.headers.authorization, req.body)
       else if (req.originalMethod === 'DELETE') method = controller.delete(req.params, req.headers.authorization, req.query)
 
       method.then((data) => {
@@ -93,20 +92,19 @@ var Routes = function (app) {
     } else res.sendStatus(404)
   }
 
+  app.get('/health', (req, res) => { res.sendStatus(200) })
   
   /* ---------------- CREATE ---------------- */
-  app.post('/api/:type/*', formParser, urlencodedParser, jsonParser, postFunction)  
+  app.post('/api/:type/*', formParser, urlencodedParser, jsonParser, postPutFunction)  
 
   /* ----------------  READ  ---------------- */
-  // This is some heartbeat to monitor that the app is working
-  app.get('/health', (req, res) => { res.sendStatus(200) })
-  app.get('/api/:type/*', getPutDeleteFunction)
+  app.get('/api/:type/*', urlencodedParser, getDeleteFunction)
 
   /* ---------------- UPDATE ---------------- */
-  app.put('/api/:type/*', formParser, urlencodedParser, jsonParser, getPutDeleteFunction)
+  app.put('/api/:type/*', formParser, urlencodedParser, jsonParser, postPutFunction)
 
   /* ---------------- DELETE ---------------- */
-  app.delete('/api/:type/*', getPutDeleteFunction)
+  app.delete('/api/:type/*', urlencodedParser, getDeleteFunction)
 
 }
 

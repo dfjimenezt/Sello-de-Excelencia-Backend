@@ -424,13 +424,20 @@ var EntityModel = function (info) {
 		return resolveQuery(insertIntoTable(table, body, connection), connection).then((base) => {
 			if (base.insertId) {
 				body[table.defaultSort] = base.insertId
-				connection = mysql.createConnection(dbConf)
-				return resolveQuery(updateTranslation(body, connection), connection)
+				if(entity.translate){
+					connection = mysql.createConnection(dbConf)
+					return resolveQuery(updateTranslation(body, connection), connection)
+				}else{
+					return body
+				}
 			} else {
 				throw utiles.informError(300)
 			}
-		}).then(() => {
-			return this.updateView()
+		}).then((res) => {
+			this.updateView()
+			return {
+				data:body
+			}
 		})
 	}
 	function updateTranslation(body, connection) {
