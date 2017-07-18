@@ -182,7 +182,7 @@ var Auth = function () {
   * @apiUse CreateUserError
   */
   // TODO: deben validarse que llegan todos los parametros
-  var register = function (token, body) {
+  var register = function (token, body, role_seguro) {
     return userModel.getUser(body.email).then((user) => {
       if (user) throw utiles.informError(201) // user already exists
       else {
@@ -212,7 +212,7 @@ var Auth = function () {
           if (user) {
             let role = ""
             if (!body.role) {
-              body.role = '1'
+              body.role = role_seguro
             }
             //create the role assignment
             user_role.create({
@@ -259,6 +259,14 @@ var Auth = function () {
     })
   }
 
+  var register_user = function (token, body) {
+    return register(token, body, '1')
+  }
+
+  var register_evaluator = function (token, body) {
+    return register(token, body, '2')
+  }
+
   /**
   * @api {post} /auth/recover Recover a user password
   * @apiVersion 0.0.1
@@ -300,7 +308,8 @@ var Auth = function () {
 
   postMap.set('login', { method: login, permits: Permissions.NONE })
   postMap.set('login_fb', { method: login, permits: Permissions.NONE })
-  postMap.set('register', { method: register, permits: Permissions.NONE })
+  postMap.set('register_user', { method: register_user, permits: Permissions.NONE })
+  postMap.set('register_evaluator', { method: register_evaluator, permits: Permissions.NONE })
   postMap.set('recover', { method: recover, permits: Permissions.NONE })
 
   var params = [getMap, postMap, null, null]

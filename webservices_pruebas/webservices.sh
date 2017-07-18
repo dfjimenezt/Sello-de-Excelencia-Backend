@@ -4,8 +4,11 @@ command=${1:-register}
 file=${2:-login.json}
 host="http://localhost:3000/api/"
 
-if [ "$command" = "register" ]; then
-	echo -e "\n--> "`date` ", "`curl -H "Content-Type: application/json" -X POST -d "@${file}" ${host}auth/register` >> log/register.log
+if [ "$command" = "register_user" ]; then
+	echo -e "\n--> "`date` ", "`curl -H "Content-Type: application/json" -X POST -d "@${file}" ${host}auth/${command}` >> log/register.log
+	less log/register.log
+elif [ "$command" = "register_evaluator" ]; then
+	echo -e "\n--> "`date` ", "`curl -H "Content-Type: application/json" -X POST -d "@${file}" ${host}auth/${command}` >> log/register.log
 	less log/register.log
 elif [ "$command" = "login" ]; then
 	echo -e "\n--> "`date`", "`curl -H "Content-Type: application/json" -X POST -d "@${file}" ${host}auth/login` >> log/login.log
