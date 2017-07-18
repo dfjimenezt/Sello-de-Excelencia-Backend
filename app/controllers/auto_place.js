@@ -385,7 +385,7 @@ var place_controller = function () {
 		let userId;
 		return userModel.getUser(body.email).then((user) => {
 			if (user) {
-				//throw utiles.informError(201) // user already exists
+				throw utiles.informError(201) // user already exists
 			}
 			if (body.nit === undefined || body.email === undefined) {
 				throw utiles.informError(400)
@@ -459,8 +459,7 @@ var place_controller = function () {
 			})
 			// send an email to the user
 			let token = '12345678'//utiles.sign(body.email)
-			let template = `Hola`
-			/*let template = `
+			let template = `
 				<p>Hola </p>
 				<p>Te has registrado con exito como ${role} en la plataforma del Sello de Excelencia </p>
 				<p>Tu contraseña para acceder es: ${body.password} </p>
@@ -468,7 +467,7 @@ var place_controller = function () {
 				<p>Nuestros mejores deseos. </p>
 
 				El equipo del Sello de Excelencia
-				`*/
+				`
 			return utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template).then(() => {
 				return { message: "Registro Exitoso." }
 			})
