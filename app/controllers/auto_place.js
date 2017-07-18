@@ -383,7 +383,7 @@ var place_controller = function () {
 	 */
 	var register_institution = function (toke, body) {
 		let userId = "";
-		let pass = "";
+		let pass_user = "";
 		let email = "";
 		let role = "";
 		return userModel.getUser(body.email).then((user) => {
@@ -393,16 +393,15 @@ var place_controller = function () {
 			if (body.nit === undefined || body.email === undefined) {
 				throw utiles.informError(400)
 			}
-			pass = utiles.createHmac('sha256')
 			email = body.email
 			//Generar pasword temporal para entidad a registrar y activar por e-mail
-			pass.update(
-				pass_generator.generate({
+			pass_user = pass_generator.generate({
 					length: 8,
-					symbols: true,
 					numbers: true
-				})
-			)
+			})
+			console.log(pass_user)
+			var pass = utiles.createHmac('sha256')
+			pass.update(pass_user)
 			pass = pass.digest('hex')
 			return userModel.create({
 				name: body.name || "",
@@ -461,29 +460,16 @@ var place_controller = function () {
 				id_user: userId
 			})
 			// send an email to the user
-			console.log("role")
-			console.log(role)
-			console.log("roleÓ!")
-			console.log("pass")
-			console.log(pass)
-			console.log("passÓ!")
 			let token = utiles.sign(email)
-			console.log("token")
-			console.log(token)
-			console.log("tokenÓ!")
 			let template = `
 			<p>Hola </p>
 			<p>Te has registrado con exito como ${role} en la plataforma del Sello de Excelencia </p>
-			<p>Tu contraseña para acceder es: ${pass} </p>
+			<p>Tu contraseña para acceder es: ${pass_user} </p>
 			<p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${email}'>Haz click aqui para activar tu cuenta</a> </p>
 			<p>Nuestros mejores deseos. </p>
 
 			El equipo del Sello de Excelencia
 			`
-			console.log("template")
-			console.log(template)
-			console.log("templÓ!")
-			console.log("\n\t:)\n\n")
 			return utiles.sendEmail(email, null, null, "Registro Sello de Excelencia", template).then(() => {
 				return { message: "Registro Exitoso." }
 			})
