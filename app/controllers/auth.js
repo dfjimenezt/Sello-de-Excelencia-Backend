@@ -124,25 +124,14 @@ var Auth = function () {
   */
   // TODO: deben validarse que llegan todos los parametros
   var login = function (token, body) {
-		//console.log(body.email)
     return userModel.getUser(body.email).then((user) => {
       if (!user) throw utiles.informError(202) // user doesnt exists
       else {
-				console.log("user???")
-				console.log(user)
-				console.log("name")
-				console.log(user.name)
         var pass = utiles.createHmac('sha256')
         pass.update(body.password)
         pass = pass.digest('hex')
-				console.log("pass")
-				console.log(pass)
-				console.log("pass server")
-				console.log(user.password)
         if (user.password === pass) {
-					console.log("iguales pass")
           if (user.active === 0) {
-						console.log("inactivo")
             throw utiles.informError(203) //user inactive
           }
           delete user.password
@@ -186,7 +175,6 @@ var Auth = function () {
     return userModel.getUser(body.email).then((user) => {
       if (user) throw utiles.informError(201) // user already exists
       else {
-        console.log(body.email)
         if(body.password === undefined || body.email === undefined){
           throw utiles.informError(400)
         }
@@ -323,6 +311,17 @@ var Auth = function () {
     return register(token, body, '2')
   }
 
+  /**
+  * @api {post} /auth/register_administrator Register a new Administrator
+  * @apiVersion 0.0.1
+  * @apiName registerAdministrator
+  * @apiGroup Auth
+  * @apiPermission none
+  */
+  var register_administrator = function (token, body) {
+    return register(token, body, '3')
+  }
+
 //-------------------------------------------------------------------------
 
   postMap.set('login', { method: login, permits: Permissions.NONE })
@@ -330,6 +329,7 @@ var Auth = function () {
   postMap.set('recover', { method: recover, permits: Permissions.NONE })
   postMap.set('register_user', { method: register_user, permits: Permissions.NONE })
   postMap.set('register_evaluator', { method: register_evaluator, permits: Permissions.NONE })
+  postMap.set('register_administrator', { method: register_administrator, permits: Permissions.NONE })
 
   var params = [getMap, postMap, null, null]
   BaseController.apply(this, params)

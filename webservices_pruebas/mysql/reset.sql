@@ -111,18 +111,18 @@ INSERT INTO stamp.role(id, name) VALUES
 ('3', 'Administrador'),
 ('4', 'Entidad');
 
-INSERT INTO permission_role(id_role, id_permission) VALUES
+INSERT INTO stamp.permission_role(id_role, id_permission) VALUES
 ('1', '1'),
 ('2', '2'),
 ('3', '2');
 
-INSERT INTO request_status(id, name) VALUES
+INSERT INTO stamp.request_status(id, name) VALUES
 ('1', 'Pendiente'),
 ('2', 'Aceptado'),
 ('3', 'Rechazado'),
 ('4', 'Solicitado');
 
-INSERT INTO status(id, name) VALUES
+INSERT INTO stamp.status(id, name) VALUES
 ('1', 'Postulado'),
 ('2', 'Retirado'),
 ('3', 'Rechazado'),

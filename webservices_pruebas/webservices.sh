@@ -24,4 +24,7 @@ elif [ "$command" = "clear" ]; then
 elif [ "$command" = "help" ]; then
 	echo "webservices.sh [command]"
 	echo "	register, registerjson, loginjson, clear"
+elif [ "$command" = "register_admin" ]; then
+	echo -e "\n--> "`date` ", "`curl -H "Content-Type: application/json" -X POST -d "@${file}" ${host}auth/${command}` >> log/register.log
+	less log/register.log
 fi

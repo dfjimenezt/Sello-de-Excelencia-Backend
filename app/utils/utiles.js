@@ -42,7 +42,7 @@ module.exports = {
     return Jwt.decode(token, Config.secret)
   },
   // This one is used in the authorization controller.
-  sign: function (user) {
+  sign: function (user) {    
     return Jwt.sign(user, Config.secret)
   },
   // This one is used in the authorization controller.
@@ -153,4 +153,27 @@ module.exports = {
     })
     return { col_names: col_names, data: data }
   }
+  
+  getUser: function(email){
+	var query = `SELECT u.*,p.name permission,r.name role,c.id id_category,c.name name_category,t.id id_topic, t.name name_topic
+		FROM user u 
+		LEFT JOIN user_role u_r ON u.id = u_r.id_user 
+		LEFT JOIN role r ON r.id = u_r.id_role 
+		LEFT JOIN permission_role p_r ON p_r.id_role = r.id 
+		LEFT JOIN permission p ON p.id = p_r.id_permission 
+		LEFT JOIN user_category u_c ON u_c.id_user = u.id 
+		LEFT JOIN category c ON u_c.id_category = c.id 
+		LEFT JOIN user_questiontopic u_qt ON u_qt.id_user = u.id 
+		LEFT JOIN questiontopic t ON u_qt.id_topic = t.id 
+		WHERE u.email = '${email}'`
+	return this.customQuery(query).then(function(data){
+		if(data.length === 0){
+			return null
+		}else{
+			console.log("data out")
+			console.log(data[0])
+			return data[0]
+		}
+	})
+  },
 }

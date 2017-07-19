@@ -378,6 +378,7 @@ var place_controller = function () {
 	var create_region = function (user, body) {
 		return model_region.create(body)
 	}
+
 	/*
 	 * POST api/place/register_institution
 	 */
