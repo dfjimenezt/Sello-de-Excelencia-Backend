@@ -1,9 +1,9 @@
 {
 	"name":"entidad2",
-	"nit":"ni22334455",
-	"legalrep_name": "representante1",
+	"nit":"22334455",
+	"legalrep_name": "representante2",
 	"phone":"3101111111",
-	"email":"johnny.cubides@domoti-sas.com",
+	"email":"carolina.pulido@domoti-sas.com",
 	"password":"1234",
 	"role":"4"
 }

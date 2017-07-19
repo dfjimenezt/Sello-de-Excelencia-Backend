@@ -1,6 +1,7 @@
 {
-	"name":"cuidadano1",
+	"name":"ciudadano1",
+	"lastname":"apellidoCiudadano1",
 	"email": "carolina.pulido@domoti-sas.com",
-	"password":"4321",
+	"password":"1234",
 	"role":"1"
 }

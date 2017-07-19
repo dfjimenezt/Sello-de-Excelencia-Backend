@@ -186,6 +186,7 @@ var Auth = function () {
     return userModel.getUser(body.email).then((user) => {
       if (user) throw utiles.informError(201) // user already exists
       else {
+        console.log(body.email)
         if(body.password === undefined || body.email === undefined){
           throw utiles.informError(400)
         }
@@ -259,13 +260,6 @@ var Auth = function () {
     })
   }
 
-  var register_user = function (token, body) {
-    return register(token, body, '1')
-  }
-
-  var register_evaluator = function (token, body) {
-    return register(token, body, '2')
-  }
 
   /**
   * @api {post} /auth/recover Recover a user password
@@ -306,15 +300,39 @@ var Auth = function () {
     })
   }
 
+//-------------------------------------------------------------------------
+  /**
+  * @api {post} /auth/register_user Register a new User
+  * @apiVersion 0.0.1
+  * @apiName registerUser
+  * @apiGroup Auth
+  * @apiPermission none
+  */
+  var register_user = function (token, body) {
+    return register(token, body, '1')
+  }
+
+  /**
+  * @api {post} /auth/register_evaluator Register a new Evaluator
+  * @apiVersion 0.0.1
+  * @apiName registerEvaluator
+  * @apiGroup Auth
+  * @apiPermission none
+  */
+  var register_evaluator = function (token, body) {
+    return register(token, body, '2')
+  }
+
+//-------------------------------------------------------------------------
+
   postMap.set('login', { method: login, permits: Permissions.NONE })
   postMap.set('login_fb', { method: login, permits: Permissions.NONE })
+  postMap.set('recover', { method: recover, permits: Permissions.NONE })
   postMap.set('register_user', { method: register_user, permits: Permissions.NONE })
   postMap.set('register_evaluator', { method: register_evaluator, permits: Permissions.NONE })
-  postMap.set('recover', { method: recover, permits: Permissions.NONE })
 
   var params = [getMap, postMap, null, null]
   BaseController.apply(this, params)
-  // ---------------------------------------------------------------
 
   return this
 }

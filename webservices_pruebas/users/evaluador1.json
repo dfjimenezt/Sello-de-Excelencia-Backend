@@ -1,8 +1,9 @@
 {
 	"name":"evaluador1",
-	"lastname":"apellido1",
-	"phone":"3101111111",
-	"email":"santiago.alvarez@domoti-sas.com",
+	"lastname":"apellidoEvaluador1",
+	"email":"crpulidog0@gmail.com",
+	"phone":"10000000",
+	"mobile":"20000000",
 	"password":"1234",
 	"role":"2"
 }
