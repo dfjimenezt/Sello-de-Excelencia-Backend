@@ -152,8 +152,7 @@ module.exports = {
       }
     })
     return { col_names: col_names, data: data }
-  }
-  
+  },
   getUser: function(email){
 	var query = `SELECT u.*,p.name permission,r.name role,c.id id_category,c.name name_category,t.id id_topic, t.name name_topic
 		FROM user u 

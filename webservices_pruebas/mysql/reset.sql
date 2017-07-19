@@ -113,8 +113,18 @@ INSERT INTO stamp.role(id, name) VALUES
 
 INSERT INTO stamp.permission_role(id_role, id_permission) VALUES
 ('1', '1'),
+('1', '5'),
+('2', '1'),
 ('2', '2'),
-('3', '2');
+('2', '5'),
+('3', '1'),
+('3', '2'),
+('3', '3'),
+('3', '4'),
+('3', '5'),
+('4', '1'),
+('4', '4'),
+('4', '5');
 
 INSERT INTO stamp.request_status(id, name) VALUES
 ('1', 'Pendiente'),
