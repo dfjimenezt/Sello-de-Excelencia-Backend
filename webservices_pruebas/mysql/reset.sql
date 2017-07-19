@@ -137,3 +137,8 @@ INSERT INTO stamp.status(id, name) VALUES
 ('2', 'Retirado'),
 ('3', 'Rechazado'),
 ('4', 'Aprobado');
+
+INSERT INTO stamp.type_document(id, name) VALUES
+('1', 'Cédula de Ciudadanía'),
+('2', 'Pasaporte'),
+('3', 'Cédula de Extranjería');

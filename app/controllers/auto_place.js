@@ -395,7 +395,7 @@ var place_controller = function () {
 				throw utiles.informError(400)
 			}
 			email = body.email
-			//Generar pasword temporal para entidad a registrar y activar por e-mail
+			//Generar password temporal para entidad a registrar y activar por e-mail
 			pass_user = pass_generator.generate({
 					length: 8,
 					numbers: true

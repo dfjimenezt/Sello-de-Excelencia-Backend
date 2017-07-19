@@ -7,6 +7,9 @@ var User = require('../models/user.js')
 var Session = require('../models/session.js')
 var User_role_model = require('../models/user_role.js')
 
+/* generador de password random*/
+var pass_generator = require('generate-password')
+
 var Auth = function () {
   var userModel = new User()
   var sessionModel = new Session()
@@ -172,16 +175,28 @@ var Auth = function () {
   */
   // TODO: deben validarse que llegan todos los parametros
   var register = function (token, body, role_seguro) {
+	var pass_user = ""
     return userModel.getUser(body.email).then((user) => {
       if (user) throw utiles.informError(201) // user already exists
       else {
-        if(body.password === undefined || body.email === undefined){
+        if(body.email === undefined){
+        //if(body.password === undefined || body.email === undefined){
           throw utiles.informError(400)
         }
-        var pass = utiles.createHmac('sha256')
-        pass.update(body.password)
-        pass = pass.digest('hex')
-        return userModel.create({
+		//Generar password temporal para evaluador a registrar y activar por e-mail
+		if(body.password === undefined){
+			pass_user = pass_generator.generate({
+				length: 8,
+				numbers: true
+			})
+		} else {
+			pass_user = body.password
+		}
+		console.log(pass_user)
+    var pass = utiles.createHmac('sha256')
+    pass.update(pass_user)
+    pass = pass.digest('hex')
+    return userModel.create({
           name: body.name || "",
           secondname: body.secondname || "",
           lastname: body.lastname || "",
@@ -195,8 +210,18 @@ var Auth = function () {
           password: pass,
           tmp_pwd: false,
           terms: body.terms === "true",
-          newsletter: body.newsletter === "true"
-        }).then(function (user) {
+          newsletter: body.newsletter === "true",
+          flag_hall: body.flag_hall === "0",
+          ranking_hall: body.ranking_hall || "0",
+		      //id_availability: body.id_availability || "",
+		      //id_level: body.id_level || "",
+		      //id_city: body.id_city || "",
+		      //id_type_document: body.id_type_document || "",
+		      document: body.document || "",
+		      education_level: body.education_level || "",
+		      ocupation: body.ocupation || "",
+		      organization: body.organization || ""
+    }).then(function (user) {
           // if the user was created sucessfully
           if (user) {
             let role = ""
@@ -230,7 +255,7 @@ var Auth = function () {
             let template = `
             <p>Hola </p>
             <p>Te has registrado con exito como ${role} en la plataforma del Sello de Excelencia </p>
-            <p>Tu contraseña para acceder es: ${body.password} </p>
+            <p>Tu contraseña para acceder es: ${pass_user} </p>
             <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}'>Haz click aquí para activar tu cuenta</a> </p>
             <p>Nuestros mejores deseos. </p>
             
