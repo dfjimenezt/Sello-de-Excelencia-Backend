@@ -15,6 +15,8 @@ var questiontopic = require('../models/questiontopic.js')
 var entity_form = require('../models/entity_form.js')
 var type = require('../models/type.js')
 var question = require('../models/question.js')
+var Service_status = require('../models/service_status.js')
+var Institution_user = require('../models/institution_user.js')
 var service_controller = function () {
 	var model_entity_service = new entity_service()
 	var model_category = new category()
@@ -22,6 +24,8 @@ var service_controller = function () {
 	var model_entity_form = new entity_form()
 	var model_type = new type()
 	var model_question = new question()
+    var service_status = new Service_status()
+    var institution_user = new Institution_user()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -459,9 +463,6 @@ var service_controller = function () {
 		return _get(model_entity_service,user,{filter_field: "institution_name", filter_value: "Pepito"})
 	}
 //-----------------------------------------------------------------------------------------
-
-
-
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
 	getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
@@ -501,7 +502,17 @@ var service_controller = function () {
  	 * 
 	 */
 	var create_entity_service = function (user, body) {
-		return model_entity_service.create(body)
+        return institution_user.getByUid(user.id).then((user_institution) => {
+            body.id_user = user_institution[0].id_user
+            body.id_institution = user_institution[0].id_institution
+            body.current_status = 1
+	        return model_entity_service.create(body).then((service) => {
+                return service_status.create({
+                    id_service: service.data.id,
+                    id_status: 1
+                })
+            })
+        })
 	}
 	/**
 	 * @api {post} api/service/category Create category information
@@ -577,7 +588,7 @@ var service_controller = function () {
 	var create_question = function (user, body) {
 		return model_question.create(body)
 	}
-	postMap.set('service', { method: create_entity_service, permits: Permissions.ADMIN })
+	postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE }) // WARNING: Permisos de Entidad
 	postMap.set('category', { method: create_category, permits: Permissions.ADMIN })
 	postMap.set('questiontopic', { method: create_questiontopic, permits: Permissions.ADMIN })
 	postMap.set('form', { method: create_entity_form, permits: Permissions.ADMIN })
