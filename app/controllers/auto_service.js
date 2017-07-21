@@ -588,7 +588,18 @@ var service_controller = function () {
 	var create_question = function (user, body) {
 		return model_question.create(body)
 	}
-	postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE }) // WARNING: Permisos de Entidad
+
+
+    var save_entity_service_evidence = function (user, body, files) {
+        return files
+        //return mediaModel.uploadFile(files.image, user.id, '1', null).then(result => {
+            //console.log(result)
+            //return userModel.update(params, { id: body.id })
+        //})
+    }
+
+	postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE })
+	postMap.set('save_evidence', { method: save_entity_service_evidence, permits: Permissions.ENTITY_SERVICE })
 	postMap.set('category', { method: create_category, permits: Permissions.ADMIN })
 	postMap.set('questiontopic', { method: create_questiontopic, permits: Permissions.ADMIN })
 	postMap.set('form', { method: create_entity_form, permits: Permissions.ADMIN })
