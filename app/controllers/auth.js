@@ -211,16 +211,16 @@ var Auth = function () {
           tmp_pwd: false,
           terms: body.terms === "true",
           newsletter: body.newsletter === "true",
-          flag_hall: body.flag_hall === "0",
-          ranking_hall: body.ranking_hall || "0",
-		      //id_availability: body.id_availability || "",
-		      //id_level: body.id_level || "",
-		      //id_city: body.id_city || "",
-		      //id_type_document: body.id_type_document || "",
-		      document: body.document || "",
-		      education_level: body.education_level || "",
-		      ocupation: body.ocupation || "",
-		      organization: body.organization || ""
+          flag_hall: body.flag_hall === "true",
+          ranking_hall: (body.ranking_hall)? parseInt(body.ranking_hall) : null,
+          id_availability: (body.id_availability)? parseInt(body.id_availability) : null,
+		      id_level: (body.id_level)? parseInt(body.id_level) : null,
+		      id_city: (body.id_city)? parseInt(body.id_city) : null,
+		      id_type_document: (body.id_type_document)? parseInt(body.id_type_document) : null,
+		      document: body.document || null,
+		      education_level: body.education_level || null,
+		      ocupation: body.ocupation || null,
+		      organization: body.organization || null
     }).then(function (user) {
           // if the user was created sucessfully
           if (user) {

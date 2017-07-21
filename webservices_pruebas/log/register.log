@@ -1,0 +1,4 @@
+
+--> Fri Jul 21 12:11:32 -05 2017 , {"code":"ER_NO_REFERENCED_ROW_2","errno":1452,"sqlState":"23000","index":0}
+
+--> Fri Jul 21 12:12:31 -05 2017 , {"message":"Registro Exitoso."}
