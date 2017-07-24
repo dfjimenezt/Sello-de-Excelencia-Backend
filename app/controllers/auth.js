@@ -216,7 +216,15 @@ var Auth = function () {
   */
   // TODO: deben validarse que llegan todos los parametros
   var register = function (token, body, role_seguro) {
-	var pass_user = ""
+		var pass_user = ""
+		var tmp_pwd_active = false
+		switch (role_seguro) {
+			case "1":
+				tmp_pwd_active = false
+					break
+			case "2":
+				tmp_pwd_active = true
+		}
     return userModel.getUser(body.email).then((user) => {
       if (user) throw utiles.informError(201) // user already exists
       else {
@@ -233,7 +241,7 @@ var Auth = function () {
 		} else {
 			pass_user = body.password
 		}
-		console.log(pass_user)
+		//console.log(pass_user)
     var pass = utiles.createHmac('sha256')
     pass.update(pass_user)
     pass = pass.digest('hex')
@@ -249,7 +257,7 @@ var Auth = function () {
           active: false,
           verified: false,
           password: pass,
-          tmp_pwd: false,
+          tmp_pwd: tmp_pwd_active,
           terms: body.terms === "true",
           newsletter: body.newsletter === "true",
           flag_hall: body.flag_hall === "true",
@@ -278,17 +286,17 @@ var Auth = function () {
             user.role = body.role
 
             switch(body.role){
-              case 1:
-                role = "Ciudadano"
+              case "1":
+                role = "ciudadano"
               break
-              case 2:
-                role = "Evaluador"
+              case "2":
+                role = "evaluador"
               break
-              case 3:
-                role = "Administrador"
+              case "3":
+                role = "administrador"
               break
-              case 4:
-                role = "Entidad"
+              case "4":
+                role = "entidad"
               break
             }
             // send an email to the user
@@ -298,6 +306,7 @@ var Auth = function () {
             <p>Te has registrado con exito como ${role} en la plataforma del Sello de Excelencia </p>
             <p>Tu contraseña para acceder es: ${pass_user} </p>
             <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}'>Haz click aquí para activar tu cuenta</a> </p>
+						<p><a href='http://localhost:3000/api/auth/activate?token=${token}&email=${body.email}'>Haz click aqui para activar tu cuenta (localhost only dbg) </a> </p>
             <p>Nuestros mejores deseos. </p>
             
             El equipo del Sello de Excelencia

@@ -406,13 +406,13 @@ var place_controller = function () {
 			pass = pass.digest('hex')
 			return userModel.create({
 				name: body.name || "",
-				secondname: body.secondname || "",
-				lastname: body.lastname || "",
-				secondlastname: body.secondlastname || "",
+				//secondname: body.secondname || "",
+				//lastname: body.lastname || "",
+				//secondlastname: body.secondlastname || "",
 				email: body.email,
-				phone: body.phone || "",
-				extension: body.extension || "",
-				mobile: body.mobile || "",
+				//phone: body.phone || "",
+				//extension: body.extension || "",
+				//mobile: body.mobile || "",
 				active: false,
 				verified: false,
 				password: pass,
@@ -437,16 +437,16 @@ var place_controller = function () {
 
 				switch (body.role) {
 					case 1:
-						role = "Ciudadano"
+						role = "ciudadano"
 						break
 					case 2:
-						role = "Evaluador"
+						role = "evaluador"
 						break
 					case 3:
-						role = "Administrador"
+						role = "administrador"
 						break
 					case 4:
-						role = "Entidad"
+						role = "etidad"
 						break
 				}
 				return create_entity_institution(user, body)
@@ -466,7 +466,8 @@ var place_controller = function () {
 			<p>Hola </p>
 			<p>Te has registrado con exito como ${role} en la plataforma del Sello de Excelencia </p>
 			<p>Tu contraseña para acceder es: ${pass_user} </p>
-			<p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${email}'>Haz click aqui para activar tu cuenta</a> </p>
+			<p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}'>Haz click aqui para activar tu cuenta</a> </p>
+			<p><a href='http://localhost:3000/api/auth/activate?token=${token}&email=${body.email}'>Haz click aqui para activar tu cuenta (localhost only dbg) </a> </p>
 			<p>Nuestros mejores deseos. </p>
 
 			El equipo del Sello de Excelencia
