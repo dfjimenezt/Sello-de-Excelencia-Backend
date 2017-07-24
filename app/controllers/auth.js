@@ -57,25 +57,30 @@ var Auth = function () {
         var pass = utiles.createHmac('sha256')
         pass.update(body.password_old)
         pass = pass.digest('hex')
+        if (body.password_old === body.password_new) return {message: "La contraseña nueva es la misma que la anterior."}
         if (user.password === pass) {
           if (user.active === 0) throw utiles.informError(203) //user inactive
           delete user.password
           pass = utiles.createHmac('sha256')
           pass.update(body.password_new)
           pass = pass.digest('hex')
-          user.password = pass
-		    } else { return {message: "Contraseña anterior inválida"}} // password inválida
-        return userModel.update(user, { id: user.id }).then(() => {
-          let template = "Hola " + user.name + "<p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia</p>"
-            + "<p>Tu nueva contraseña para acceder es: " + body.password_new + "</p>" +
-              "</p>Nuestros mejores deseos,<p>El equipo del Sello de Excelencia"
-            utiles.sendEmail(user.email, null, null, "Cambio de Contraseña", template)
+          if (user.password === pass) return { message: "La contraseña nueva no es diferente a la existente"}
+          else user.password = pass
+		    } else { return {message: "La contraseña antigua es incorrecta"}} // password inválida
+        return userModel.update({password: user.password}, { id: user.id }).then(() => {
+          let template = `Hola ${user.name} 
+          Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia
+          Tu nueva contraseña para acceder es: ${body.password_new}
+          Nuestros mejores deseos,
+          
+          El equipo del Sello de Excelencia`
+          utiles.sendEmail(user.email, null, null, "Cambio de Contraseña", template)
           return utiles.informError(0)
         })
-
       }
     })
   }
+
 
   putMap.set("password", { method: update_password, permits: Permissions.NONE })
 //-----------------------------------------------------------------------
@@ -241,7 +246,6 @@ var Auth = function () {
 		} else {
 			pass_user = body.password
 		}
-		//console.log(pass_user)
     var pass = utiles.createHmac('sha256')
     pass.update(pass_user)
     pass = pass.digest('hex')
