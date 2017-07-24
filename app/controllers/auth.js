@@ -15,9 +15,9 @@ var Auth = function () {
   var sessionModel = new Session()
   var user_role = new User_role_model()
 
-  // ---------------------------------------------------------------
+  var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 
-  var getMap = new Map()
+  // ---------------------------------------------------------------
   /**
    * @api {get} /auth/activate
    * @apiVersion 0.0.1
@@ -36,9 +36,50 @@ var Auth = function () {
 
   getMap.set("activate", { method: activate, permits: Permissions.NONE })
 
+//-----------------------------------------------------------------------
 
+  /**
+  * @api {put} /auth/password Change the password
+  * @apiVersion 0.0.1
+  * @apiName updatePassword
+  * @apiGroup Auth
+  * @apiPermission none
+  * 
+  * @apiParam {String} email
+  * @apiParam {String} password_old 
+  * @apiParam {String} password_new 
+  * 
+  */
+  var update_password = function (token, body){
+    return userModel.getUser(body.email).then((user) => {
+      if (!user) throw utiles.informError(202) // user doesnt exists
+      else {
+        var pass = utiles.createHmac('sha256')
+        pass.update(body.password_old)
+        pass = pass.digest('hex')
+        if (user.password === pass) {
+          if (user.active === 0) throw utiles.informError(203) //user inactive
+          delete user.password
+          pass = utiles.createHmac('sha256')
+          pass.update(body.password_new)
+          pass = pass.digest('hex')
+          user.password = pass
+		    } else { return {message: "Contraseña anterior inválida"}} // password inválida
+        return userModel.update(user, { id: user.id }).then(() => {
+          let template = "Hola " + user.name + "<p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia</p>"
+            + "<p>Tu nueva contraseña para acceder es: " + body.password_new + "</p>" +
+              "</p>Nuestros mejores deseos,<p>El equipo del Sello de Excelencia"
+            utiles.sendEmail(user.email, null, null, "Cambio de Contraseña", template)
+          return utiles.informError(0)
+        })
 
-  var postMap = new Map()
+      }
+    })
+  }
+
+  putMap.set("password", { method: update_password, permits: Permissions.NONE })
+//-----------------------------------------------------------------------
+
   /**
    * @api {post} /auth/login_fb
    * @apiVersion 0.0.1
@@ -313,6 +354,7 @@ var Auth = function () {
     })
   }
 
+
 //-------------------------------------------------------------------------
   /**
   * @api {post} /auth/register_user Register a new User
@@ -356,7 +398,7 @@ var Auth = function () {
   postMap.set('register_evaluator', { method: register_evaluator, permits: Permissions.NONE })
   postMap.set('register_administrator', { method: register_administrator, permits: Permissions.NONE })
 
-  var params = [getMap, postMap, null, null]
+  var params = [getMap, postMap, putMap, null]
   BaseController.apply(this, params)
 
   return this
