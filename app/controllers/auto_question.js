@@ -471,6 +471,8 @@ var question_controller = function () {
  	 * 
 	 */
 	var create_entity_evaluation_request = function (user, body) {
+		body.id_user = user.id
+		//body.id_request_status = {2,3} WARNING! Esto donde se define (body o acá)
 		return model_entity_evaluation_request.create(body)
 	}
 	/**
@@ -515,8 +517,8 @@ var question_controller = function () {
 	var create_request_status = function (user, body) {
 		return model_request_status.create(body)
 	}
-	postMap.set('evaluation_request', { method: create_entity_evaluation_request, permits: Permissions.ADMIN })
-	postMap.set('user_answer', { method: create_entity_user_answer, permits: Permissions.ADMIN })
+	postMap.set('evaluation_request', { method: create_entity_evaluation_request, permits: Permissions.EVALUATE })
+	postMap.set('user_answer', { method: create_entity_user_answer, permits: Permissions.EVALUATE })
 	postMap.set('request_status', { method: create_request_status, permits: Permissions.ADMIN })
 	/**
 	 * @api {put} api/question/evaluation_request Update evaluation_request information

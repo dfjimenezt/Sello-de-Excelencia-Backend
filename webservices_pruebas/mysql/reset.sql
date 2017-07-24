@@ -133,10 +133,12 @@ INSERT INTO stamp.request_status(id, name) VALUES
 ('4', 'Solicitado');
 
 INSERT INTO stamp.status(id, name) VALUES
-('1', 'Postulado'),
-('2', 'Retirado'),
-('3', 'Rechazado'),
-('4', 'Aprobado');
+('1', 'Postulando'),
+('2', 'Re-Postulando'),
+('3', 'Postulado'),
+('4', 'Retirado'),
+('5', 'Rechazado'),
+('6', 'Aprobado');
 
 INSERT INTO stamp.type_document(id, name) VALUES
 ('1', 'Cédula de Ciudadanía'),
