@@ -20,7 +20,10 @@ var entity_permission_role = require('../models/entity_permission_role.js')
 var entity_user_role = require('../models/entity_user_role.js')
 var config = require('../models/config.js')
 var type_document = require('../models/type_document.js')
+var User = require('../models/user.js')
+
 var configuration_controller = function () {
+	var userModel = new User()
 	var model_entity_user = new entity_user()
 	var model_role = new role()
 	var model_availability = new availability()
@@ -926,6 +929,28 @@ var configuration_controller = function () {
 		}
 		return model_type_document.update(body,{id:body.id})
 	}
+
+	// Actualizar datos del evaluador
+	var update_evaluator = function (token, body){
+		var update_data = [] 
+		for ( var i in  body) {
+			if (token[i] !== undefined){
+				update_data[i] = body[i]
+			}
+		}
+		console.log("update user")
+		console.log(body)
+		console.log(update_data)
+		return userModel.update(update_data, { id: token.id } ).then(() =>{
+			console.log("user create")
+			return { message: "Update exitoso."}
+		})
+		// Crear una relación de la categoría user_category 
+		// Crear una relación de la categoría user_questiontopic 
+		//console.log(token)
+		//console.log(body)
+	}
+
 	putMap.set('user', { method: update_entity_user, permits: Permissions.ADMIN })
 	putMap.set('role', { method: update_role, permits: Permissions.ADMIN })
 	putMap.set('availability', { method: update_availability, permits: Permissions.ADMIN })
@@ -937,6 +962,7 @@ var configuration_controller = function () {
 	putMap.set('user_role', { method: update_entity_user_role, permits: Permissions.ADMIN })
 	putMap.set('config', { method: update_config, permits: Permissions.ADMIN })
 	putMap.set('type_document', { method: update_type_document, permits: Permissions.ADMIN })
+	putMap.set('evaluator', { method: update_evaluator, permits: Permissions.PLATFORM })
 	/**
 	 * @api {delete} api/configuration/user Delete user information
 	 * @apiName Deleteuser
