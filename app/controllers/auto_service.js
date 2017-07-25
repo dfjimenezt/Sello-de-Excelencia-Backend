@@ -18,6 +18,7 @@ var question = require('../models/question.js')
 var Service_status = require('../models/service_status.js')
 var Institution_user = require('../models/institution_user.js')
 var Service_comment = require('../models/service_comment.js')
+var Media = require('../models/media.js')
 var service_controller = function () {
 	var model_entity_service = new entity_service()
 	var model_category = new category()
@@ -28,6 +29,7 @@ var service_controller = function () {
 	var model_service_comment = new Service_comment()
 	var service_status = new Service_status()
 	var institution_user = new Institution_user()
+	var model_media = new Media()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function (model, user, params) {
@@ -601,15 +603,17 @@ var service_controller = function () {
 	// TODO: FINISH
 	var save_service_evidence = function (user, body, files) {
 		for (var i in files) {
-			return utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type).then((url) => {
-				body[i] = url
-				console.log(body[i])
+			return utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type).then((url1) => {
+				//body[i] = url
 				//return model_entity_ficha.create(body, { id: body.id })
-				return body
+				return model_media.create({
+					url: url1,
+					type: files[i].type
+				})
 			})
 		}
 		//return model_entity_ficha.create(body)
-		return body
+		//return body
 	}
 
 	postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE })

@@ -555,11 +555,10 @@ var get_questiontopics_evaluator = function (token) {
 	let tabla_categoria = "stamp."
 	let level = ""
 	var query1 = 'SELECT * FROM stamp.user_questiontopic WHERE id_user = ' + token.id + ';'
-	var query2 = 'SELECT * FROM stamp.user_category;'// WHERE id_user = ' + token.id + ';'
 	return model_user_questiontopic.customQuery(query1).then((user_question) => {
-		retorno[0] = user_question
-		return model_user_category.customQuery(query2).then((category_user) => {
-			switch(category_user.id_category){
+		return model_questiontopic.getByUid(user_question[0].id_topic).then((quest_topic) => {
+			retorno[0] = quest_topic
+			switch(token.categories[0].id){
 				case 1:	 
 					tabla_categoria += "gobierno_en_linea_datos_abiertos"
 					break
@@ -581,15 +580,14 @@ var get_questiontopics_evaluator = function (token) {
 					level = "Experto"
 					break
 			}
-			var query3 = 'SELECT DISTINCT `Area Tematica` FROM ' + tabla_categoria + ' where Perfil = \'' + level + '\';'
-			return model_questiontopic.customQuery(query3).then((questiontopic) => {
+			var query2 = 'SELECT DISTINCT `Area Tematica` FROM ' + tabla_categoria + ' where Perfil = \'' + level + '\';'
+			return model_level.customQuery(query2).then((questiontopic) => {
 				retorno[1] = questiontopic
-				console.log("retorno2")
-				console.log(retorno)
+				return retorno
 			})
 		})
 	})
-	}
+}
 
 	
 	getMap.set('user', { method: get_entity_user, permits: Permissions.NONE })
