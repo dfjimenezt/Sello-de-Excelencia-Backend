@@ -556,7 +556,11 @@ var get_questiontopics_evaluator = function (token) {
 	let level = ""
 	var query1 = 'SELECT * FROM stamp.user_questiontopic WHERE id_user = ' + token.id + ';'
 	return model_user_questiontopic.customQuery(query1).then((user_question) => {
-		return model_questiontopic.getByUid(user_question[0].id_topic).then((quest_topic) => {
+		var ids_topics = []
+		for (var i in user_question ) {
+			ids_topics.push(user_question[i].id_topic)
+		}
+		return model_questiontopic.getByUids(ids_topics).then((quest_topic) => {
 			retorno[0] = quest_topic
 			switch(token.categories[0].id){
 				case 1:	 

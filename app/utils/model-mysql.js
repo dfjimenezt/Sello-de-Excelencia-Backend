@@ -55,7 +55,7 @@ var MysqlModel = function (info) {
     var connection = mysql.createConnection(dbConf)
     var queryGet = ''
     for (var i in uids) {
-      queryGet += 'list.Uid = ' + connection.escape(uids[i]) + ' AND '
+      queryGet += 'list.id = ' + connection.escape(uids[i]) + ' OR '
     }
     queryGet = queryGet.slice(0, -4)
     var query = 'SELECT * FROM `' + info.table + '` AS list WHERE ' + queryGet + ''
@@ -66,7 +66,7 @@ var MysqlModel = function (info) {
     var connection = mysql.createConnection(dbConf)
     var queryGet = ''
     for (var i in params) {
-      queryGet += 'list.' + i + ' = ' + connection.escape(params[i]) + ' AND '
+      queryGet += 'list.' + i + ' = ' + connection.escape(params[i]) + ' OR '
     }
     queryGet = queryGet.slice(0, -4)
     var query = 'SELECT * FROM `' + info.table + '` AS list WHERE ' + queryGet + ''
