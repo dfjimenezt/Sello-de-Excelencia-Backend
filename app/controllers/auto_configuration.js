@@ -519,6 +519,36 @@ var configuration_controller = function () {
 	}
 //------------------------------------------------------------------------------	
 
+var get_evaluation_thematic = function (token, params) {
+	let tabla_categoria = "stamp."
+	switch(params.id_category){
+		case "1":
+			tabla_categoria += "gobierno_en_linea_datos_abiertos"
+		break
+		case "2":
+			tabla_categoria += "gobierno_en_linea_requisitos_participacion"
+		break
+		case "3":
+			tabla_categoria += "servicios_en_linea"
+		break
+		case "4":
+			tabla_categoria += "gestion_de_ti"
+		break
+	}
+	let level = ""
+	switch(params.id_category){
+		case "1":
+			level = "Usuario"
+		break
+		case "2":
+			level = "Experto"
+		break
+	}
+	var query = 'SELECT DISTINCT `Area Tematica` FROM ' + tabla_categoria + ' where Perfil = \'' + level + '\';'
+	return model_level.customQuery(query)
+}
+
+
 	
 	getMap.set('user', { method: get_entity_user, permits: Permissions.NONE })
 	getMap.set('role', { method: get_role, permits: Permissions.NONE })
@@ -533,6 +563,7 @@ var configuration_controller = function () {
 	getMap.set('type_document', { method: get_type_document, permits: Permissions.NONE })
 	getMap.set('evaluator', { method: get_entity_user_evaluator, permits: Permissions.NONE })
 	getMap.set('evaluator_hall', { method: get_entity_user_evaluator_hall, permits: Permissions.NONE })
+	getMap.set('evaluation_thematic', { method: get_evaluation_thematic, permits: Permissions.PLATFORM })
 	/**
 	 * @api {post} api/configuration/user Create user information
 	 * @apiName Postuser
