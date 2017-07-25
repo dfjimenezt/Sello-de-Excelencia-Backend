@@ -2,7 +2,7 @@ SET FOREIGN_KEY_CHECKS=0;
 TRUNCATE TABLE stamp.answer;
 TRUNCATE TABLE stamp.availability;
 TRUNCATE TABLE stamp.category;
-TRUNCATE TABLE stamp.city;
+#TRUNCATE TABLE stamp.city;
 TRUNCATE TABLE stamp.config;
 TRUNCATE TABLE stamp.contact;
 TRUNCATE TABLE stamp.evaluation_request;
@@ -21,7 +21,7 @@ TRUNCATE TABLE stamp.permission_role;
 TRUNCATE TABLE stamp.question;
 TRUNCATE TABLE stamp.question_answer;
 TRUNCATE TABLE stamp.questiontopic;
-TRUNCATE TABLE stamp.region;
+#TRUNCATE TABLE stamp.region;
 TRUNCATE TABLE stamp.request_status;
 TRUNCATE TABLE stamp.role;
 TRUNCATE TABLE stamp.service;
@@ -51,44 +51,6 @@ INSERT INTO stamp.category(id, name) VALUES
 ('2', 'Gobierno en Linea - Requisitos de Participacion'),
 ('3', 'Servicios en Linea'),
 ('4', 'Gestion de TI');
-
-INSERT INTO stamp.region(id, name) VALUES
-('1', 'AMAZONAS'),
-('2', 'ANTIOQUIA'),
-('3', 'ARAUCA'),
-('4', 'ARCHIPIÉLAGO DE SAN ANDRÉS, PROVIDENCIA Y SANTA CATALINA'),
-('5', 'ATLANTICO'),
-('6', 'BOGOTÁ, D. C.'),
-('7', 'Bolivar'),
-('8', 'BOYACA'),
-('9', 'CALDAS'),
-('10', 'CAQUETA'),
-('11', 'CASANARE'),
-('12', 'CAUCA'),
-('13', 'CESAR'),
-('14', 'CHOCÓ'),
-('15', 'CORDOBA'),
-('16', 'CUNDINAMARCA'),
-('17', 'GUAINÍA'),
-('18', 'GUAVIARE'),
-('19', 'HUILA'),
-('20', 'LA GUAJIRA'),
-('21', 'MAGDALENA'),
-('22', 'META'),
-('23', 'NARIÑO'),
-('24', 'NORTE DE SANTANDER'),
-('25', 'PUTUMAYO'),
-('26', 'QUINDÍO'),
-('27', 'RISARALDA'),
-('28', 'SANTANDER'),
-('29', 'SUCRE'),
-('30', 'TOLIMA'),
-('31', 'VALLE DEL CAUCA'),
-('32', 'VAUPÉS'),
-('33', 'VICHADA');
-
-INSERT INTO stamp.city(id, name, id_region) VALUES
-('1', 'MEDELLIN', '2');
 
 INSERT INTO stamp.type(id, name) VALUES
 ('1', 'Abierta'),
