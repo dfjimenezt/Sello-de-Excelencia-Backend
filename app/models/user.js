@@ -30,18 +30,22 @@ var User = function () {
 			}
 			let	permissions=[]
 			let categories=[];
+			let categories2=[];
 			let topics=[];
+			let topics2=[];
 			for(var i in data){
 				if(data[i].permission && permissions.indexOf(data[i].permission) == -1){
 						permissions.push(data[i].permission)
 				}
-				if(data[i].id_category){
-						permissions.push({
+				if(data[i].id_category && categories2.indexOf(data[i].id_category) == -1){
+						categories2.push(data[i].id_category)
+						categories.push({
 							id:data[i].id_category,
 							name:data[i].name_category})
 				}
-				if(data[i].id_topic){
-						permissions.push({
+				if(data[i].id_topic && topics2.indexOf(data[i].id_topic) == -1){
+						topics2.push(data[i].id_topic)
+						topics.push({
 							id:data[i].id_topic,
 							name:data[i].name_topic})
 				}	
