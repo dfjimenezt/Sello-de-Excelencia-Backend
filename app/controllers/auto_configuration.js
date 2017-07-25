@@ -21,6 +21,7 @@ var entity_user_role = require('../models/entity_user_role.js')
 var config = require('../models/config.js')
 var type_document = require('../models/type_document.js')
 var User = require('../models/user.js')
+var Questiontopic = require('../models/questiontopic.js')
 
 var configuration_controller = function () {
 	var userModel = new User()
@@ -35,6 +36,7 @@ var configuration_controller = function () {
 	var model_entity_user_role = new entity_user_role()
 	var model_config = new config()
 	var model_type_document = new type_document()
+	var model_questiontopic = new Questiontopic()
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
 		let key = model.getPrimaryKey()
@@ -524,30 +526,70 @@ var get_evaluation_thematic = function (token, params) {
 	switch(params.id_category){
 		case "1":
 			tabla_categoria += "gobierno_en_linea_datos_abiertos"
-		break
+			break
 		case "2":
 			tabla_categoria += "gobierno_en_linea_requisitos_participacion"
-		break
+			break
 		case "3":
 			tabla_categoria += "servicios_en_linea"
-		break
+			break
 		case "4":
 			tabla_categoria += "gestion_de_ti"
-		break
+			break
 	}
 	let level = ""
-	switch(params.id_category){
+	switch(params.id_level){
 		case "1":
 			level = "Usuario"
-		break
+			break
 		case "2":
 			level = "Experto"
-		break
+			break
 	}
 	var query = 'SELECT DISTINCT `Area Tematica` FROM ' + tabla_categoria + ' where Perfil = \'' + level + '\';'
 	return model_level.customQuery(query)
 }
 
+var get_questiontopics_evaluator = function (token) {
+	let retorno = []
+	let tabla_categoria = "stamp."
+	let level = ""
+	var query1 = 'SELECT * FROM stamp.user_questiontopic WHERE id_user = ' + token.id + ';'
+	var query2 = 'SELECT * FROM stamp.user_category;'// WHERE id_user = ' + token.id + ';'
+	return model_user_questiontopic.customQuery(query1).then((user_question) => {
+		retorno[0] = user_question
+		return model_user_category.customQuery(query2).then((category_user) => {
+			switch(category_user.id_category){
+				case 1:	 
+					tabla_categoria += "gobierno_en_linea_datos_abiertos"
+					break
+				case 2:
+					tabla_categoria += "gobierno_en_linea_requisitos_participacion"
+					break
+				case 3:
+					tabla_categoria += "servicios_en_linea"
+					break
+				case 4:
+					tabla_categoria += "gestion_de_ti"
+					break
+			}	
+			switch(token.id_level){
+				case 1:
+					level = "Usuario"
+					break
+				case 2:
+					level = "Experto"
+					break
+			}
+			var query3 = 'SELECT DISTINCT `Area Tematica` FROM ' + tabla_categoria + ' where Perfil = \'' + level + '\';'
+			return model_questiontopic.customQuery(query3).then((questiontopic) => {
+				retorno[1] = questiontopic
+				console.log("retorno2")
+				console.log(retorno)
+			})
+		})
+	})
+	}
 
 	
 	getMap.set('user', { method: get_entity_user, permits: Permissions.NONE })
@@ -564,6 +606,7 @@ var get_evaluation_thematic = function (token, params) {
 	getMap.set('evaluator', { method: get_entity_user_evaluator, permits: Permissions.NONE })
 	getMap.set('evaluator_hall', { method: get_entity_user_evaluator_hall, permits: Permissions.NONE })
 	getMap.set('evaluation_thematic', { method: get_evaluation_thematic, permits: Permissions.PLATFORM })
+	getMap.set('questiontopics_evaluator', { method: get_questiontopics_evaluator, permits: Permissions.PLATFORM })
 	/**
 	 * @api {post} api/configuration/user Create user information
 	 * @apiName Postuser

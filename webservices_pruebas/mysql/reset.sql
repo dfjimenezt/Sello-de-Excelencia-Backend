@@ -88,6 +88,16 @@ INSERT INTO stamp.permission_role(id_role, id_permission) VALUES
 ('4', '4'),
 ('4', '5');
 
+INSERT INTO stamp.questiontopic(id, name) VALUES
+('1','Comunicación Digital'),
+('2','Estrategia Digital'),
+('3','Gobernanza Digital'),
+('4','Talento Digital'),
+('5','Gobernanza T.I'),
+('6','Conocimiento y Uso'),
+('7','Seguimiento y Control'),
+('8','Gestión de T.I');
+
 INSERT INTO stamp.request_status(id, name) VALUES
 ('1', 'Pendiente'),
 ('2', 'Aceptado'),
