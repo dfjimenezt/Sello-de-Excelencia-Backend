@@ -490,7 +490,7 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 				query += 'stamp.service.id_category = 4\n'
 				break
 			default:
-				// ERROR MESSAGE
+				// TODO: ERROR MESSAGE
 				break
 		}
 		// Insert filter institution name to query
@@ -521,8 +521,6 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 		}
 		*/
 		query += ';'
-		console.log("query")
-		console.log(query)
 		return model_institution.customQuery(query)
 	}
 
@@ -530,6 +528,16 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 		return get_filtered_list_institutions(user, params).then((filtered_list) => {
 			return utiles.JSONToCSVConvertor(filtered_list, "Entidades Certificadas", true);
 		})
+	}
+
+	var list_by_status = function (user, params) {
+		var query = `
+SELECT stamp.service.name, stamp.category.name as category, stamp.service.level, stamp.service.timestamp
+FROM stamp.user JOIN stamp.institution_user ON stamp.institution_user.id_user = stamp.user.id
+RIGHT JOIN stamp.service ON stamp.service.id_institution = stamp.institution_user.id_institution
+RIGHT JOIN stamp.category ON stamp.service.id_category = stamp.category.id
+WHERE stamp.user.id = ${user.id} AND stamp.service.current_status = ${params.id_status};`
+		return model_institution.customQuery(query)
 	}
 
 
@@ -545,6 +553,7 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 	getMap.set('service_name', { method: get_entity_service_name, permits: Permissions.NONE })
 	getMap.set('list_institutions', { method: get_filtered_list_institutions, permits: Permissions.NONE })
 	getMap.set('table_institutions', { method: get_filtered_list_institutions_csv, permits: Permissions.NONE })
+	getMap.set('list_by_status', { method: list_by_status, permits: Permissions.ENTITY_SERVICE })
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice
