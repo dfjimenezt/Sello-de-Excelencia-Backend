@@ -307,14 +307,16 @@ var Auth = function() {
                         }
                         // send an email to the user
                         let token = utiles.sign(body.email)
-                        let template = `<p> Hola ${user.name} <\p>
-                        <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia <\p>
-                        <p>Tu nueva contraseña para acceder es: ${pass_user} <\p><p><\p>
-                        <p><a href = 'http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}'>
-                        Haz click aquí para activar tu cuenta < /a><\p>
-                        <p>< a href = 'http://localhost:3000/api/auth/activate?token=${token}&email=${body.email}' > Haz click aqui para activar tu cuenta(localhost only dbg) < /a> <\p><p><\p>
-                        <p>Nuestros mejores deseos,<\p>
-                        <p>El equipo del Sello de Excelencia<\p>`
+                        let template = `
+												<p> Hola ${body.name} </p>
+                        <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia </p>
+                        <p>Tu nueva contraseña para acceder es: ${pass_user} </p><p></p>
+                        <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}'>Haz click aquí para activar tu cuenta </a></p>
+                        <p><a href='http://localhost:3000/api/auth/activate?token=${token}&email=${body.email}'> Haz click aqui para activar tu cuenta(localhost only dbg) </a> </p>
+                        <p>Nuestros mejores deseos,</p>
+
+                        <p>El equipo del Sello de Excelencia</p>
+												`
                         return utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template).then(() => {
                             return { message: "Registro Exitoso." }
                         })
