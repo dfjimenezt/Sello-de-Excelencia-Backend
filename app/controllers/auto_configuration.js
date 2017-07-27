@@ -519,79 +519,97 @@ var configuration_controller = function () {
 	var get_entity_user_evaluator_hall = function (user,params){
         return _get(model_entity_user_role,user,{filter_field: ["id_role", "user_flag_hall"], filter_value: ["2", "1"]})
 	}
-//------------------------------------------------------------------------------	
+	//------------------------------------------------------------------------------	
 
-var get_evaluation_thematic = function (token, params) {
-	let tabla_categoria = "stamp."
-	switch(params.id_category){
-		case "1":
-			tabla_categoria += "gobierno_en_linea_datos_abiertos"
-			break
-		case "2":
-			tabla_categoria += "gobierno_en_linea_requisitos_participacion"
-			break
-		case "3":
-			tabla_categoria += "servicios_en_linea"
-			break
-		case "4":
-			tabla_categoria += "gestion_de_ti"
-			break
-	}
-	let level = ""
-	switch(params.id_level){
-		case "1":
-			level = "Usuario"
-			break
-		case "2":
-			level = "Experto"
-			break
-	}
-	var query = 'SELECT DISTINCT `Area Tematica` FROM ' + tabla_categoria + ' where Perfil = \'' + level + '\';'
-	return model_level.customQuery(query)
-}
-
-var get_questiontopics_evaluator = function (token) {
-	let retorno = []
-	let tabla_categoria = "stamp."
-	let level = ""
-	var query1 = 'SELECT * FROM stamp.user_questiontopic WHERE id_user = ' + token.id + ';'
-	return model_user_questiontopic.customQuery(query1).then((user_question) => {
-		var ids_topics = []
-		for (var i in user_question ) {
-			ids_topics.push(user_question[i].id_topic)
+	// Traer temáticas según categorías (como parámetro) y nivel de evaluador (también como parámetro)
+	// Esta función se usa cuando el evaluador a entrado por primera vez (login) y debe anexar en sus
+	// datos la categoría a evaluar.
+	var get_evaluation_thematic = function (token, params) {
+		let tabla_categoria = "stamp."
+		switch(params.id_category){
+			case "1":
+				tabla_categoria += "gobierno_en_linea_datos_abiertos"
+				break
+			case "2":
+				tabla_categoria += "gobierno_en_linea_requisitos_participacion"
+				break
+			case "3":
+				tabla_categoria += "servicios_en_linea"
+				break
+			case "4":
+				tabla_categoria += "gestion_de_ti"
+				break
 		}
-		return model_questiontopic.getByUids(ids_topics).then((quest_topic) => {
-			retorno[0] = quest_topic
-			switch(token.categories[0].id){
-				case 1:	 
-					tabla_categoria += "gobierno_en_linea_datos_abiertos"
-					break
-				case 2:
-					tabla_categoria += "gobierno_en_linea_requisitos_participacion"
-					break
-				case 3:
-					tabla_categoria += "servicios_en_linea"
-					break
-				case 4:
-					tabla_categoria += "gestion_de_ti"
-					break
-			}	
-			switch(token.id_level){
-				case 1:
-					level = "Usuario"
-					break
-				case 2:
-					level = "Experto"
-					break
+		var query = `SELECT DISTINCT id, name 
+		FROM ${tabla_categoria}
+		RIGHT JOIN stamp.questiontopic ON ${tabla_categoria}.\`Area Tematica\` = stamp.questiontopic.name 
+		WHERE ${tabla_categoria}.Perfil = `
+		switch(params.id_level){
+			case "1":
+				query += `'Usuario';`
+				break
+			case "2":
+				query += `'Experto' OR ${tabla_categoria}.Perfil = 'Usuario';`
+				break
+		}
+		return model_level.customQuery(query)
+	}
+
+	// Traer temática según evaluador
+	// Se trata de las temáticas seleccionadas por el evaluador almacenada en sus datos, junto con
+	// las temáticas también seleccionables, esto con el fin de que cuando desee agregar más temáticas
+	// sea mostrada esa información con su id.
+	var get_questiontopics_evaluator = function (token) {
+		let retorno = []
+		let tabla_categoria = "stamp."
+		var query1 = 'SELECT * FROM stamp.user_questiontopic WHERE id_user = ' + token.id + ';'
+		return model_user_questiontopic.customQuery(query1).then((user_question) => {
+			var ids_topics = []
+			for (var i in user_question ) {
+				ids_topics.push(user_question[i].id_topic)
 			}
-			var query2 = 'SELECT DISTINCT `Area Tematica` FROM ' + tabla_categoria + ' where Perfil = \'' + level + '\';'
-			return model_level.customQuery(query2).then((questiontopic) => {
-				retorno[1] = questiontopic
-				return retorno
+			return model_questiontopic.getByUids(ids_topics).then((quest_topic) => {
+				retorno[0] = quest_topic
+				switch(token.categories[0].id){
+					case 1:	 
+						tabla_categoria += "gobierno_en_linea_datos_abiertos"
+						break
+					case 2:
+						tabla_categoria += "gobierno_en_linea_requisitos_participacion"
+						break
+					case 3:
+						tabla_categoria += "servicios_en_linea"
+						break
+					case 4:
+						tabla_categoria += "gestion_de_ti"
+						break
+				}	
+				var query2 = `SELECT DISTINCT id, name 
+				FROM ${tabla_categoria}
+				RIGHT JOIN stamp.questiontopic ON ${tabla_categoria}.\`Area Tematica\` = stamp.questiontopic.name 
+				WHERE ${tabla_categoria}.Perfil = `
+				switch(token.id_level){
+					case 1:
+						query2 += `'Usuario';`
+						break
+					case 2:
+						query2 += `'Experto' OR ${tabla_categoria}.Perfil = 'Usuario';`
+						break
+				}
+				return model_level.customQuery(query2).then((questiontopic) => {
+					retorno[1] = []
+					for( var i in retorno[0]){
+						for(var j in questiontopic){
+							if(!(retorno[0][i].id === questiontopic[j].id)){
+								retorno[1].push(questiontopic[j])
+							}
+						}
+					}
+					return retorno
+				})
 			})
 		})
-	})
-}
+	}
 
 	
 	getMap.set('user', { method: get_entity_user, permits: Permissions.NONE })
@@ -1006,7 +1024,38 @@ var get_questiontopics_evaluator = function (token) {
 		return model_type_document.update(body,{id:body.id})
 	}
 
-	// Actualizar datos del evaluador
+	/* Actualizar datos del evaluador (por primeara vez) de esta se genera update_evaluator
+	 * body.id_category
+	 * body.id_topic
+	 */
+	 
+	var update_evaluator_firstime = function (token, body){
+		var update_data = [] 
+		for ( var i in  body) {
+			if (token[i] !== undefined){
+				update_data[i] = body[i]
+			}
+		}
+		return userModel.update(update_data, { id: token.id } ).then(() =>{
+			return model_user_category.create({
+				id_user: token.id,
+				id_category: parseInt(body.id_category)
+			}).then(() => {
+				return model_user_questiontopic.create({
+					id_user: token.id,
+					id_topic: parseInt(body.id_topic) 
+				}).then(() => {
+					return { message: "Update exitoso"}
+				}) 
+			})
+		})
+	}
+
+	/* Actualizar datos del evaluador (por primeara vez) de esta se genera update_evaluator
+	 * body.id_category
+	 * body.id_topic
+	 */
+	 
 	var update_evaluator = function (token, body){
 		var update_data = [] 
 		for ( var i in  body) {
@@ -1014,18 +1063,17 @@ var get_questiontopics_evaluator = function (token) {
 				update_data[i] = body[i]
 			}
 		}
-		console.log("update user")
-		console.log(body)
-		console.log(update_data)
 		return userModel.update(update_data, { id: token.id } ).then(() =>{
-			console.log("user create")
-			return { message: "Update exitoso."}
+
+				return model_user_questiontopic.create({
+					id_user: token.id,
+					id_topic: parseInt(body.id_topic) 
+				}).then(() => {
+					return { message: "Update exitoso"}
+				}) 
 		})
-		// Crear una relación de la categoría user_category 
-		// Crear una relación de la categoría user_questiontopic 
-		//console.log(token)
-		//console.log(body)
 	}
+
 
 	putMap.set('user', { method: update_entity_user, permits: Permissions.ADMIN })
 	putMap.set('role', { method: update_role, permits: Permissions.ADMIN })
@@ -1038,6 +1086,7 @@ var get_questiontopics_evaluator = function (token) {
 	putMap.set('user_role', { method: update_entity_user_role, permits: Permissions.ADMIN })
 	putMap.set('config', { method: update_config, permits: Permissions.ADMIN })
 	putMap.set('type_document', { method: update_type_document, permits: Permissions.ADMIN })
+	putMap.set('evaluator_firstime', { method: update_evaluator_firstime, permits: Permissions.PLATFORM })
 	putMap.set('evaluator', { method: update_evaluator, permits: Permissions.PLATFORM })
 	/**
 	 * @api {delete} api/configuration/user Delete user information
