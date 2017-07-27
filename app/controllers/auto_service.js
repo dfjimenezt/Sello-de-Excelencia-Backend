@@ -19,6 +19,7 @@ var Service_status = require('../models/service_status.js')
 var Institution_user = require('../models/institution_user.js')
 var Service_comment = require('../models/service_comment.js')
 var Media = require('../models/media.js')
+var Institution = require('../models/institution.js')
 var service_controller = function () {
 	var model_entity_service = new entity_service()
 	var model_category = new category()
@@ -30,6 +31,7 @@ var service_controller = function () {
 	var service_status = new Service_status()
 	var institution_user = new Institution_user()
 	var model_media = new Media()
+	var model_institution = new Institution()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function (model, user, params) {
@@ -466,6 +468,71 @@ var service_controller = function () {
 	var get_entity_service_name = function (user, params) {
 		return _get(model_entity_service, user, { filter_field: "institution_name", filter_value: "Pepito" })
 	}
+
+	var get_filtered_list_institutions = function (user, params) {
+	//id_category=1&name=entidad1&service_name=Rut&date0=2010-01-01&date1=2010-01-01
+		// TODO: Only certified services must be displayed
+		var query = `SELECT stamp.institution.name AS name, stamp.service.name AS service_name, stamp.service.url AS url, stamp.service.timestamp as publication_date
+FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.service.id_institution\nWHERE `
+		// Add category filter
+		// TODO: Verify or inform the order of the tabs ids in the mokup
+		switch(params.id_category) {
+			case '1': // Tramites o servicios en linea
+				query += 'stamp.service.id_category = 3\n'
+				break
+			case '2':
+				query += 'stamp.service.id_category = 1\n'
+				break
+			case '3':
+				query += 'stamp.service.id_category = 2\n'
+				break
+			case '4':
+				query += 'stamp.service.id_category = 4\n'
+				break
+			default:
+				// ERROR MESSAGE
+				break
+		}
+		// Insert filter institution name to query
+		if (params.name)
+			query += 'AND stamp.institution.name LIKE \"%'+params.name+'%\"\n'
+		// Insert filter service name to query
+		if (params.service_name)
+			query += 'AND stamp.service.name LIKE \"%'+params.service_name+'%\"\n'
+		// Insert filter name to query
+		if (params.date0) {
+			var date0 = params.date0.split("-")
+			var date0_0 = new Date(parseInt(date0[0]), parseInt(date0[1])-1, parseInt(date0[2])-3) // Month starts from 0
+			date0_0 = date0_0.toISOString().slice(0,10)
+			var date0_1 = new Date(parseInt(date0[0]), parseInt(date0[1])-1, parseInt(date0[2])+3) // One week interval 6 days
+			date0_1 = date0_1.toISOString().slice(0,10)
+			query += 'AND stamp.service.timestamp >= \"'+date0_0+'\" AND stamp.service.timestamp < \"'+date0_1+'\"\n'
+		}
+		/*
+		// Insert filter name to query
+		// TODO: Find aprobation date table
+		if (params.date1) {
+			var date1 = parseInt(params.date0.split("-"))
+			var date1_0 = new Date(date1[0], date1[1]-1, date1[2]-3) // Month starts from 0
+			date1_0.toISOString().substring(0, 10);
+			var date1_1 = new Date(date1[0], date1[1]-1, date1[2]+3) // One week interval 6 days
+			date1_1.toISOString().substring(0, 10);
+			query += 'AND stamp.service.timestamp >= '+date1_0.getTime+' AND stamp.service.timestamp < '+date1_1.getTime+'\n'
+		}
+		*/
+		query += ';'
+		console.log("query")
+		console.log(query)
+		return model_institution.customQuery(query)
+	}
+
+	var get_filtered_list_institutions_csv = function (user, params) {
+		return get_filtered_list_institutions(user, params).then((filtered_list) => {
+			return utiles.JSONToCSVConvertor(filtered_list, "Entidades Certificadas", true);
+		})
+	}
+
+
 	//-----------------------------------------------------------------------------------------
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
@@ -476,6 +543,8 @@ var service_controller = function () {
 	getMap.set('service_category', { method: get_entity_service_category, permits: Permissions.NONE })
 	getMap.set('service_institution_name', { method: get_entity_service_institution_name, permits: Permissions.NONE })
 	getMap.set('service_name', { method: get_entity_service_name, permits: Permissions.NONE })
+	getMap.set('list_institutions', { method: get_filtered_list_institutions, permits: Permissions.NONE })
+	getMap.set('table_institutions', { method: get_filtered_list_institutions_csv, permits: Permissions.NONE })
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice
@@ -601,19 +670,43 @@ var service_controller = function () {
 	}
 
 	// TODO: FINISH
+	/*var getPromiseUrl = function(id, file, folder, type) {
+		return new Promise(function (resolve, reject) {
+			var url = utiles.uploadFileToGCS(id, file, folder, type)
+			if (!url) reject(Error("getPromiseUrl broke"));
+			else resolve(url);
+		})
+	}*/
+	
+	var getPromiseUrl = function(id, files, i, length) {
+		return new Promise(function (resolve, reject) {
+			var url = utiles.uploadFileToGCS(id, files[i], id, files[i].type)
+			if (i >= length-1) {
+				resolve(url)
+			} else {
+				if (!url) reject(Error("getPromiseUrl broke"));
+				else resolve(getPromiseUrl(id, files, i+1, length));
+			}
+		})
+	}
+
 	var save_service_evidence = function (user, body, files) {
+		var files_objs = []
+		var urls = []
+		let len = 0
 		for (var i in files) {
-			return utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type).then((url1) => {
-				//body[i] = url
-				//return model_entity_ficha.create(body, { id: body.id })
-				return model_media.create({
-					url: url1,
-					type: files[i].type
-				})
-			})
+			files_objs.push(files[i])
+			len++
 		}
-		//return model_entity_ficha.create(body)
-		//return body
+		utiles.uploadFilesToGCS(user.id, files, user.id).then((url) => {
+		//getPromiseUrl(user.id, files_objs, 0, len).then((url) => {
+			urls.push(url)
+			return model_media.create({
+				url: url,
+				type: files[i].type
+			})
+		})
+		return urls
 	}
 
 	postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE })
