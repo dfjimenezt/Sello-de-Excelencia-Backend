@@ -563,7 +563,7 @@ var place_controller = function () {
 		}
 		return model_region.update(body, { id: body.id })
 	}
-	putMap.set('institution', { method: update_entity_institution, permits: Permissions.ADMIN })
+	putMap.set('institution', { method: update_entity_institution, permits: Permissions.PLATFORM })
 	putMap.set('city', { method: update_entity_city, permits: Permissions.ADMIN })
 	putMap.set('region', { method: update_region, permits: Permissions.ADMIN })
 	/**
