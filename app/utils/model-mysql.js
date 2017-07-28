@@ -55,7 +55,7 @@ var MysqlModel = function (info) {
     var connection = mysql.createConnection(dbConf)
     var queryGet = ''
     for (var i in uids) {
-      queryGet += 'list.Uid = ' + connection.escape(uids[i]) + ' AND '
+      queryGet += 'list.id = ' + connection.escape(uids[i]) + ' OR '
     }
     queryGet = queryGet.slice(0, -4)
     var query = 'SELECT * FROM `' + info.table + '` AS list WHERE ' + queryGet + ''
@@ -66,7 +66,7 @@ var MysqlModel = function (info) {
     var connection = mysql.createConnection(dbConf)
     var queryGet = ''
     for (var i in params) {
-      queryGet += 'list.' + i + ' = ' + connection.escape(params[i]) + ' AND '
+      queryGet += 'list.' + i + ' = ' + connection.escape(params[i]) + ' OR '
     }
     queryGet = queryGet.slice(0, -4)
     var query = 'SELECT * FROM `' + info.table + '` AS list WHERE ' + queryGet + ''
@@ -135,7 +135,6 @@ var MysqlModel = function (info) {
     query += " ORDER BY list." + params.order +
       " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
     query += "SELECT FOUND_ROWS() as total"
-    console.log(query)
     return resolveQuery(query, connection).then((result) => {
       return { data: result[0], total_results: result[1][0].total }
     })
@@ -172,8 +171,7 @@ var MysqlModel = function (info) {
     queryFields = queryFields.slice(0, -1) + ')'
     queryValues = queryValues.slice(0, -1) + ')'
     var query = 'INSERT INTO ' + info.table + ' ' + queryFields + ' VALUES ' + queryValues + ''
-		console.log(query)
-    return resolveQuery(query, connection)
+		return resolveQuery(query, connection)
   }
 
   this.update = function (body, condition) {

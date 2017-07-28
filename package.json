@@ -11,6 +11,7 @@
     "test": "./node_modules/.bin/mocha app/tests/dev*",
     "start": "npm run apidoc && node index.js",
     "style": "eslint index.js app/routes.js app/controllers/ app/models/ app/utils/",
+	"debug": "node --debug-brk",
     "apidoc": "apidoc -i app/controllers app/models -o public/apidoc/"
   },
   "dependencies": {

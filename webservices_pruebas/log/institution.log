@@ -32,3 +32,9 @@
 --> Mon Jul 17 12:48:52 -05 2017, ReferenceError: User_role_model is not defined<br> &nbsp; &nbsp;at place_controller (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/controllers/auto_place.js:36:22)<br> &nbsp; &nbsp;at finishPost (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/routes.js:35:50)<br> &nbsp; &nbsp;at postFunction (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/app/routes.js:65:7)<br> &nbsp; &nbsp;at Layer.handle [as handle_request] (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/node_modules/express/lib/router/layer.js:95:5)<br> &nbsp; &nbsp;at next (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/node_modules/express/lib/router/route.js:131:13)<br> &nbsp; &nbsp;at /home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/node_modules/body-parser/lib/read.js:130:5<br> &nbsp; &nbsp;at invokeCallback (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/node_modules/raw-body/index.js:262:16)<br> &nbsp; &nbsp;at done (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/node_modules/raw-body/index.js:251:7)<br> &nbsp; &nbsp;at IncomingMessage.onEnd (/home/johnny/proyectos/dmt-sellodeexcelencia/backend-nodejs/node_modules/raw-body/index.js:307:7)<br> &nbsp; &nbsp;at emitNone (events.js:86:13)
 
 --> Mon Jul 17 12:49:26 -05 2017, {}
+
+--> Tue Jul 18 20:40:21 -05 2017, {"message":"Registro Exitoso."}
+
+--> Wed Jul 19 12:07:26 -05 2017, {}
+
+--> Wed Jul 19 12:08:00 -05 2017, {}

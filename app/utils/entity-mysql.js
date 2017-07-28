@@ -206,7 +206,6 @@ var EntityModel = function (info) {
 			where = search + conditions
 		}
 		let subtable = "";
-		console.log("*************************+")
 		if (info.translate && params.lang) {
 			subtable = "view_" + info.table + "_" + params.lang
 		} else {

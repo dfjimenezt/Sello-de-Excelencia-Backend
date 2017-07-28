@@ -15,6 +15,11 @@ var questiontopic = require('../models/questiontopic.js')
 var entity_form = require('../models/entity_form.js')
 var type = require('../models/type.js')
 var question = require('../models/question.js')
+var Service_status = require('../models/service_status.js')
+var Institution_user = require('../models/institution_user.js')
+var Service_comment = require('../models/service_comment.js')
+var Media = require('../models/media.js')
+var Institution = require('../models/institution.js')
 var service_controller = function () {
 	var model_entity_service = new entity_service()
 	var model_category = new category()
@@ -22,9 +27,14 @@ var service_controller = function () {
 	var model_entity_form = new entity_form()
 	var model_type = new type()
 	var model_question = new question()
+	var model_service_comment = new Service_comment()
+	var service_status = new Service_status()
+	var institution_user = new Institution_user()
+	var model_media = new Media()
+	var model_institution = new Institution()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
-	var _get = function(model,user,params){
+	var _get = function (model, user, params) {
 		let key = model.getPrimaryKey()
 		if (params.filter_field) {
 			if (typeof params.filter_field == 'string') {
@@ -259,8 +269,9 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_entity_service = function (user, params) {
-		return _get(model_entity_service,user,params)
+		return _get(model_entity_service, user, params)
 	}
+
 	/**
 	 * @api {get} api/service/category Request category information
 	 * @apiName Getcategory
@@ -288,7 +299,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_category = function (user, params) {
-		return _get(model_category,user,params)
+		return _get(model_category, user, params)
 	}
 	/**
 	 * @api {get} api/service/questiontopic Request questiontopic information
@@ -317,7 +328,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_questiontopic = function (user, params) {
-		return _get(model_questiontopic,user,params)
+		return _get(model_questiontopic, user, params)
 	}
 	/**
 	 * @api {get} api/service/form Request form information
@@ -363,7 +374,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_entity_form = function (user, params) {
-		return _get(model_entity_form,user,params)
+		return _get(model_entity_form, user, params)
 	}
 	/**
 	 * @api {get} api/service/type Request type information
@@ -392,7 +403,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_type = function (user, params) {
-		return _get(model_type,user,params)
+		return _get(model_type, user, params)
 	}
 	/**
 	 * @api {get} api/service/question Request question information
@@ -424,14 +435,125 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_question = function (user, params) {
-		return _get(model_question,user,params)
+		return _get(model_question, user, params)
 	}
+
+	//-----------------------------------------------------------------------------------------
+	/**
+	 * @api {get} api/service/service_category Request service information
+	 * @apiName Getservice
+	 * @apiGroup service
+	 * @apiVersion 1.0.1
+	 */
+	var get_entity_service_category = function (user, params) {
+		return _get(model_entity_service, user, { filter_field: "id_category", filter_value: "1" })
+	}
+
+	/**
+	 * @api {get} api/service/service_institution_name Request service information
+	 * @apiName Getservice
+	 * @apiGroup service
+	 * @apiVersion 1.0.1
+	 */
+	var get_entity_service_institution_name = function (user, params) {
+		return _get(model_entity_service, user, { filter_field: "institution_name", filter_value: "Pepito" })
+	}
+
+	/**
+	 * @api {get} api/service/service_name Request service information
+	 * @apiName Getservice
+	 * @apiGroup service
+	 * @apiVersion 1.0.1
+	 */
+	var get_entity_service_name = function (user, params) {
+		return _get(model_entity_service, user, { filter_field: "institution_name", filter_value: "Pepito" })
+	}
+
+	var get_filtered_list_institutions = function (user, params) {
+	//id_category=1&name=entidad1&service_name=Rut&date0=2010-01-01&date1=2010-01-01
+		// TODO: Only certified services must be displayed
+		var query = `SELECT stamp.institution.name AS name, stamp.service.name AS service_name, stamp.service.url AS url, stamp.service.timestamp as publication_date
+FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.service.id_institution\nWHERE `
+		// Add category filter
+		// TODO: Verify or inform the order of the tabs ids in the mokup
+		switch(params.id_category) {
+			case '1': // Tramites o servicios en linea
+				query += 'stamp.service.id_category = 3\n'
+				break
+			case '2':
+				query += 'stamp.service.id_category = 1\n'
+				break
+			case '3':
+				query += 'stamp.service.id_category = 2\n'
+				break
+			case '4':
+				query += 'stamp.service.id_category = 4\n'
+				break
+			default:
+				// TODO: ERROR MESSAGE
+				break
+		}
+		// Insert filter institution name to query
+		if (params.name)
+			query += 'AND stamp.institution.name LIKE \"%'+params.name+'%\"\n'
+		// Insert filter service name to query
+		if (params.service_name)
+			query += 'AND stamp.service.name LIKE \"%'+params.service_name+'%\"\n'
+		// Insert filter name to query
+		if (params.date0) {
+			var date0 = params.date0.split("-")
+			var date0_0 = new Date(parseInt(date0[0]), parseInt(date0[1])-1, parseInt(date0[2])-3) // Month starts from 0
+			date0_0 = date0_0.toISOString().slice(0,10)
+			var date0_1 = new Date(parseInt(date0[0]), parseInt(date0[1])-1, parseInt(date0[2])+3) // One week interval 6 days
+			date0_1 = date0_1.toISOString().slice(0,10)
+			query += 'AND stamp.service.timestamp >= \"'+date0_0+'\" AND stamp.service.timestamp < \"'+date0_1+'\"\n'
+		}
+		/*
+		// Insert filter name to query
+		// TODO: Find aprobation date table
+		if (params.date1) {
+			var date1 = parseInt(params.date0.split("-"))
+			var date1_0 = new Date(date1[0], date1[1]-1, date1[2]-3) // Month starts from 0
+			date1_0.toISOString().substring(0, 10);
+			var date1_1 = new Date(date1[0], date1[1]-1, date1[2]+3) // One week interval 6 days
+			date1_1.toISOString().substring(0, 10);
+			query += 'AND stamp.service.timestamp >= '+date1_0.getTime+' AND stamp.service.timestamp < '+date1_1.getTime+'\n'
+		}
+		*/
+		query += ';'
+		return model_institution.customQuery(query)
+	}
+
+	var get_filtered_list_institutions_csv = function (user, params) {
+		return get_filtered_list_institutions(user, params).then((filtered_list) => {
+			return utiles.JSONToCSVConvertor(filtered_list, "Entidades Certificadas", true);
+		})
+	}
+
+	var list_by_status = function (user, params) {
+		var query = `
+SELECT stamp.service.name, stamp.category.name as category, stamp.service.level, stamp.service.timestamp
+FROM stamp.user JOIN stamp.institution_user ON stamp.institution_user.id_user = stamp.user.id
+RIGHT JOIN stamp.service ON stamp.service.id_institution = stamp.institution_user.id_institution
+RIGHT JOIN stamp.category ON stamp.service.id_category = stamp.category.id
+WHERE stamp.user.id = ${user.id} AND stamp.service.current_status = ${params.id_status};`
+		return model_institution.customQuery(query)
+	}
+
+
+	//-----------------------------------------------------------------------------------------
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
 	getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
 	getMap.set('form', { method: get_entity_form, permits: Permissions.NONE })
 	getMap.set('type', { method: get_type, permits: Permissions.NONE })
 	getMap.set('question', { method: get_question, permits: Permissions.NONE })
+	getMap.set('service_category', { method: get_entity_service_category, permits: Permissions.NONE })
+	getMap.set('service_institution_name', { method: get_entity_service_institution_name, permits: Permissions.NONE })
+	getMap.set('service_name', { method: get_entity_service_name, permits: Permissions.NONE })
+	getMap.set('list_institutions', { method: get_filtered_list_institutions, permits: Permissions.NONE })
+	getMap.set('table_institutions', { method: get_filtered_list_institutions_csv, permits: Permissions.NONE })
+	getMap.set('list_by_status', { method: list_by_status, permits: Permissions.ENTITY_SERVICE })
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice
@@ -462,7 +584,18 @@ var service_controller = function () {
  	 * 
 	 */
 	var create_entity_service = function (user, body) {
-		return model_entity_service.create(body)
+		var query = "SELECT * FROM stamp.institution_user WHERE id_user = " + user.id + ";"
+		return institution_user.customQuery(query).then((user_institution) => {
+			body.id_user = user_institution[0].id_user
+			body.id_institution = user_institution[0].id_institution
+			body.current_status = 1
+			return model_entity_service.create(body).then((service) => {
+				return service_status.create({
+					id_service: service.data.id,
+					id_status: 1
+				})
+			})
+		})
 	}
 	/**
 	 * @api {post} api/service/category Create category information
@@ -538,7 +671,56 @@ var service_controller = function () {
 	var create_question = function (user, body) {
 		return model_question.create(body)
 	}
-	postMap.set('service', { method: create_entity_service, permits: Permissions.ADMIN })
+
+	var create_service_comment = function(user, body) {
+		body.id_user = user.id
+		//body.id_service = service.id
+		return model_service_comment.create(body)
+	}
+
+	// TODO: FINISH
+	/*var getPromiseUrl = function(id, file, folder, type) {
+		return new Promise(function (resolve, reject) {
+			var url = utiles.uploadFileToGCS(id, file, folder, type)
+			if (!url) reject(Error("getPromiseUrl broke"));
+			else resolve(url);
+		})
+	}*/
+	
+	var getPromiseUrl = function(id, files, i, length) {
+		return new Promise(function (resolve, reject) {
+			var url = utiles.uploadFileToGCS(id, files[i], id, files[i].type)
+			if (i >= length-1) {
+				resolve(url)
+			} else {
+				if (!url) reject(Error("getPromiseUrl broke"));
+				else resolve(getPromiseUrl(id, files, i+1, length));
+			}
+		})
+	}
+
+	var save_service_evidence = function (user, body, files) {
+		var files_objs = []
+		var urls = []
+		let len = 0
+		for (var i in files) {
+			files_objs.push(files[i])
+			len++
+		}
+		utiles.uploadFilesToGCS(user.id, files, user.id).then((url) => {
+		//getPromiseUrl(user.id, files_objs, 0, len).then((url) => {
+			urls.push(url)
+			return model_media.create({
+				url: url,
+				type: files[i].type
+			})
+		})
+		return urls
+	}
+
+	postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE })
+	postMap.set('save_evidence', { method: save_service_evidence, permits: Permissions.ENTITY_SERVICE })
+	postMap.set('service_comment', { method: create_service_comment, permits: Permissions.FORUM })
 	postMap.set('category', { method: create_category, permits: Permissions.ADMIN })
 	postMap.set('questiontopic', { method: create_questiontopic, permits: Permissions.ADMIN })
 	postMap.set('form', { method: create_entity_form, permits: Permissions.ADMIN })
@@ -577,7 +759,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_service.update(body,{id:body.id})
+		return model_entity_service.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/service/category Update category information
@@ -593,7 +775,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_category.update(body,{id:body.id})
+		return model_category.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/service/questiontopic Update questiontopic information
@@ -609,7 +791,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_questiontopic.update(body,{id:body.id})
+		return model_questiontopic.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/service/form Update form information
@@ -631,7 +813,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_form.update(body,{id:body.id})
+		return model_entity_form.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/service/type Update type information
@@ -647,7 +829,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_type.update(body,{id:body.id})
+		return model_type.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/service/question Update question information
@@ -666,7 +848,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_question.update(body,{id:body.id})
+		return model_question.update(body, { id: body.id })
 	}
 	putMap.set('service', { method: update_entity_service, permits: Permissions.ADMIN })
 	putMap.set('category', { method: update_category, permits: Permissions.ADMIN })
@@ -707,7 +889,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_service.delete(body,{id:body.id})
+		return model_entity_service.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/service/category Delete category information
@@ -723,7 +905,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_category.delete(body,{id:body.id})
+		return model_category.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/service/questiontopic Delete questiontopic information
@@ -739,7 +921,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_questiontopic.delete(body,{id:body.id})
+		return model_questiontopic.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/service/form Delete form information
@@ -761,7 +943,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_form.delete(body,{id:body.id})
+		return model_entity_form.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/service/type Delete type information
@@ -777,7 +959,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_type.delete(body,{id:body.id})
+		return model_type.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/service/question Delete question information
@@ -796,7 +978,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_question.delete(body,{id:body.id})
+		return model_question.delete(body, { id: body.id })
 	}
 	deleteMap.set('service', { method: delete_entity_service, permits: Permissions.ADMIN })
 	deleteMap.set('category', { method: delete_category, permits: Permissions.ADMIN })

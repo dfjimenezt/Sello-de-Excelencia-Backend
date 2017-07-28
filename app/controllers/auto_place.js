@@ -378,37 +378,41 @@ var place_controller = function () {
 	var create_region = function (user, body) {
 		return model_region.create(body)
 	}
+
 	/*
 	 * POST api/place/register_institution
 	 */
 	var register_institution = function (toke, body) {
-		let userId;
+		let userId = "";
+		let pass_user = "";
+		let email = "";
+		let role = "";
 		return userModel.getUser(body.email).then((user) => {
 			if (user) {
-				//throw utiles.informError(201) // user already exists
+				throw utiles.informError(201) // user already exists
 			}
 			if (body.nit === undefined || body.email === undefined) {
 				throw utiles.informError(400)
 			}
-			var pass = utiles.createHmac('sha256')
-			//Generar pasword temporal para entidad a registrar y activar por e-mail
-			pass.update(
-				pass_generator.generate({
+			email = body.email
+			//Generar password temporal para entidad a registrar y activar por e-mail
+			pass_user = pass_generator.generate({
 					length: 8,
-					symbols: true,
 					numbers: true
-				})
-			)
+			})
+			console.log(pass_user)
+			var pass = utiles.createHmac('sha256')
+			pass.update(pass_user)
 			pass = pass.digest('hex')
 			return userModel.create({
 				name: body.name || "",
-				secondname: body.secondname || "",
-				lastname: body.lastname || "",
-				secondlastname: body.secondlastname || "",
+				//secondname: body.secondname || "",
+				//lastname: body.lastname || "",
+				//secondlastname: body.secondlastname || "",
 				email: body.email,
-				phone: body.phone || "",
-				extension: body.extension || "",
-				mobile: body.mobile || "",
+				//phone: body.phone || "",
+				//extension: body.extension || "",
+				//mobile: body.mobile || "",
 				active: false,
 				verified: false,
 				password: pass,
@@ -419,7 +423,6 @@ var place_controller = function () {
 		}).then((user) => {
 			// if the user was created sucessfully
 			if (user) {
-				let role = ""
 				if (!body.role) {
 					body.role = '4'
 				}
@@ -434,16 +437,16 @@ var place_controller = function () {
 
 				switch (body.role) {
 					case 1:
-						role = "Ciudadano"
+						role = "ciudadano"
 						break
 					case 2:
-						role = "Evaluador"
+						role = "evaluador"
 						break
 					case 3:
-						role = "Administrador"
+						role = "administrador"
 						break
 					case 4:
-						role = "Entidad"
+						role = "etidad"
 						break
 				}
 				return create_entity_institution(user, body)
@@ -451,25 +454,25 @@ var place_controller = function () {
 				//if there was an error on creating the user
 				throw utiles.informError(300)
 			}
-		}).then((user_institution) => {
+		}).then((institution) => {
 			// insertar en tabla relacional
 			institution_user.create({
-				id_institution: user_institution.id,
+				id_institution: institution.data.id,
 				id_user: userId
 			})
 			// send an email to the user
-			let token = '12345678'//utiles.sign(body.email)
-			let template = `Hola`
-			/*let template = `
-				<p>Hola </p>
-				<p>Te has registrado con exito como ${role} en la plataforma del Sello de Excelencia </p>
-				<p>Tu contraseña para acceder es: ${body.password} </p>
-				<p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}'>Haz click aquí para activar tu cuenta</a> </p>
-				<p>Nuestros mejores deseos. </p>
+			let token = utiles.sign(email)
+			let template = `
+			<p>Hola </p>
+			<p>Te has registrado con exito como ${role} en la plataforma del Sello de Excelencia </p>
+			<p>Tu contraseña para acceder es: ${pass_user} </p>
+			<p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}'>Haz click aqui para activar tu cuenta</a> </p>
+			<p><a href='http://localhost:3000/api/auth/activate?token=${token}&email=${body.email}'>Haz click aqui para activar tu cuenta (localhost only dbg) </a> </p>
+			<p>Nuestros mejores deseos. </p>
 
-				El equipo del Sello de Excelencia
-				`*/
-			return utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template).then(() => {
+			El equipo del Sello de Excelencia
+			`
+			return utiles.sendEmail(email, null, null, "Registro Sello de Excelencia", template).then(() => {
 				return { message: "Registro Exitoso." }
 			})
 		})
@@ -560,7 +563,7 @@ var place_controller = function () {
 		}
 		return model_region.update(body, { id: body.id })
 	}
-	putMap.set('institution', { method: update_entity_institution, permits: Permissions.ADMIN })
+	putMap.set('institution', { method: update_entity_institution, permits: Permissions.PLATFORM })
 	putMap.set('city', { method: update_entity_city, permits: Permissions.ADMIN })
 	putMap.set('region', { method: update_region, permits: Permissions.ADMIN })
 	/**

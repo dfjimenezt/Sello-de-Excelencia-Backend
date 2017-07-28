@@ -1,8 +1,13 @@
 {
 	"name":"evaluador1",
-	"lastname":"apellido1",
-	"phone":"3101111111",
-	"email":"evaluador1@gmail.com",
+	"secondname": "segundo nombre",
+	"lastname":"apellidoEvaluador1",
+	"email":"crpulidog0@gmail.com",
+	"id_type_document": "1",
+	"document": "20170721",
+	"phone":"10000000",
+	"mobile":"20000000",
 	"password":"1234",
+	"terms": "1",
 	"role":"2"
 }

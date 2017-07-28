@@ -14,16 +14,15 @@
 'use strict';
 
 const Storage = require('@google-cloud/storage');
-const config = require('../../config/google_cloud_storage');
+//const config = require('../../config/google_cloud_storage'); WARNING: este era el directorio previo
+const config = require('../config.json');
 
-
-const CLOUD_BUCKET = config.CLOUD_BUCKET;
+const CLOUD_BUCKET = config.gcloud.CLOUD_BUCKET
 
 const storage = Storage({
-  projectId: config.GCLOUD_PROJECT
-});
-const bucket = storage.bucket(CLOUD_BUCKET);
-
+  projectId: config.gcloud.GCLOUD_PROJECT
+})
+const bucket = storage.bucket(CLOUD_BUCKET)
 
 function generateUUID() {
     var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {

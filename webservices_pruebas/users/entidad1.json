@@ -1,8 +1,9 @@
 {
 	"name":"entidad1",
+	"nit":"22334455",
 	"lastname":"apellido1",
 	"phone":"3101111111",
-	"email":"entidad1@gmail.com",
+	"email":"johnny.cubides@domoti-sas.com",
 	"password":"1234",
 	"role":"4"
 }

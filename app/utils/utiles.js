@@ -42,7 +42,7 @@ module.exports = {
     return Jwt.decode(token, Config.secret)
   },
   // This one is used in the authorization controller.
-  sign: function (user) {
+  sign: function (user) {    
     return Jwt.sign(user, Config.secret)
   },
   // This one is used in the authorization controller.
@@ -152,5 +152,136 @@ module.exports = {
       }
     })
     return { col_names: col_names, data: data }
+  },
+  getUser: function(email){
+	var query = `SELECT u.*,p.name permission,r.name role,c.id id_category,c.name name_category,t.id id_topic, t.name name_topic
+		FROM user u 
+		LEFT JOIN user_role u_r ON u.id = u_r.id_user 
+		LEFT JOIN role r ON r.id = u_r.id_role 
+		LEFT JOIN permission_role p_r ON p_r.id_role = r.id 
+		LEFT JOIN permission p ON p.id = p_r.id_permission 
+		LEFT JOIN user_category u_c ON u_c.id_user = u.id 
+		LEFT JOIN category c ON u_c.id_category = c.id 
+		LEFT JOIN user_questiontopic u_qt ON u_qt.id_user = u.id 
+		LEFT JOIN questiontopic t ON u_qt.id_topic = t.id 
+		WHERE u.email = '${email}'`
+	return this.customQuery(query).then(function(data){
+		if(data.length === 0){
+			return null
+		}else{
+			console.log("data out")
+			console.log(data[0])
+			return data[0]
+		}
+	})
+  },
+  uploadFileToGCS : function (folder, file, owner, type) {
+    var google_cloud_storage = require('../../gcp/cloud_storage.js')
+    var fs = require('fs')
+		if (file.name == '') {
+			file.name = "NO_NAME";
+		}
+		let read_file = fs.readFileSync(file.path);
+		let req = {
+			file: {
+				fieldname: type,
+				originalname: file.name,
+				mimetype: file.type,
+				buffer: read_file,
+				size: file.size,
+			}
+		}
+		let promise = google_cloud_storage.sendUploadToGCS(req)
+		return promise.then((media) => {
+			return media.file.cloudStoragePublicUrl
+		})
+  },
+  uploadFilesToGCS : function (folder, files, owner) {
+    let i = 0
+    const length = files.length
+
+    if (i<length){
+      uploadFileToGCS(folder,files[i],owner,files[i].type).then((current_file)=>{
+        if (current_file.file && current_file.file.cloudStoragePublicUrl && i<length) {
+          uploadFilesToGCS(folder,files.shift(),owner)
+        }
+      })
+    } else {
+
+    }
+
+    
+  },
+  JSONToCSVConvertor : function(JSONData, ReportTitle, ShowLabel) {
+    //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+    
+    var CSV = '';    
+    //Set Report title in first row or line
+    
+    CSV += ReportTitle + '\r\n\n';
+
+    //This condition will generate the Label/Header
+    if (ShowLabel) {
+        var row = "";
+        
+        //This loop will extract the label from 1st index of on array
+        for (var index in arrData[0]) {
+            
+            //Now convert each value to string and comma-seprated
+            row += index + ',';
+        }
+
+        row = row.slice(0, -1);
+        
+        //append Label row with line break
+        CSV += row + '\r\n';
+    }
+    
+    //1st loop is to extract each row
+    for (var i = 0; i < arrData.length; i++) {
+        var row = "";
+        
+        //2nd loop will extract each column and convert it in string comma-seprated
+        for (var index in arrData[i]) {
+            row += '"' + arrData[i][index] + '",';
+        }
+
+        row.slice(0, row.length - 1);
+        
+        //add a line break after each row
+        CSV += row + '\r\n';
+    }
+
+    if (CSV == '') {        
+        alert("Invalid data");
+        return;
+    }   
+    
+    //Generate a file name
+    //this will remove the blank-spaces from the title and replace it with an underscore
+    var fileName = ReportTitle.replace(/ /g,"_");   
+    
+    //Initialize file format you want csv or xls
+    var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+    
+    // Now the little tricky part.
+    // you can use either>> window.open(uri);
+    // but this will not work in some browsers
+    // or you will not get the correct file extension    
+    
+    //this trick will generate a temp <a /> tag
+    //var link = document.createElement("a");    
+    //link.href = uri;
+    
+    //set the visibility hidden so it will not effect on your web-layout
+    //link.style = "visibility:hidden";
+    //link.download = fileName + ".csv";
+    
+    //this part will append the anchor tag and remove it after automatic click
+    //document.body.appendChild(link);
+    //link.click();
+    //document.body.removeChild(link);
+    return CSV
   }
 }
