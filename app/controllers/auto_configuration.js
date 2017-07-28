@@ -540,18 +540,20 @@ var configuration_controller = function () {
 				tabla_categoria += "gestion_de_ti"
 				break
 		}
+		params.id_category = parseInt(params.id_category)
 		var query = `SELECT DISTINCT id, name 
 		FROM ${tabla_categoria}
 		RIGHT JOIN stamp.questiontopic ON ${tabla_categoria}.\`Area Tematica\` = stamp.questiontopic.name 
-		WHERE ${tabla_categoria}.Perfil = `
+		WHERE stamp.questiontopic.id_category = ${params.id_category} AND (${tabla_categoria}.Perfil = `
 		switch(params.id_level){
 			case "1":
-				query += `'Usuario';`
+				query += `'Usuario')`
 				break
 			case "2":
-				query += `'Experto' OR ${tabla_categoria}.Perfil = 'Usuario';`
+				query += `'Experto' OR ${tabla_categoria}.Perfil = 'Usuario')`
 				break
 		}
+		query += ' ORDER BY id ;';
 		return model_level.customQuery(query)
 	}
 
@@ -1063,14 +1065,38 @@ var configuration_controller = function () {
 				update_data[i] = body[i]
 			}
 		}
-		return userModel.update(update_data, { id: token.id } ).then(() =>{
-
-				return model_user_questiontopic.create({
-					id_user: token.id,
-					id_topic: parseInt(body.id_topic) 
-				}).then(() => {
+		return get_user_questiontopic(token, {id_user: token.id}).then((evaluator_questiontopic) =>{
+			//Hace un filtro entre las relaciones existentes y las traidas en el body
+			//si existen, entonces las borra de la lista del body, de lo contrario,
+			//la deja lista para la crear las nuevas relaciones.
+			for(var i in evaluator_questiontopic.data){
+				for(var j in body.id_topic){
+					if(evaluator_questiontopic.data[i].id_topic == body.id_topic[j]){
+						body.id_topic.splice(body.id_topic.indexOf(body.id_topic[j]),1)
+						break
+					}
+				}
+			}
+			// Existen topics para crear relación?
+			if(body.id_topic[0] == undefined){
+				return userModel.update(update_data, { id: token.id } ).then(() =>{
 					return { message: "Update exitoso"}
-				}) 
+				})
+			}
+			else{
+				var data_evaluator_questiontopic = {data:[], col_names:["id_user", "id_topic"]}
+				for(var i in body.id_topic){
+					data_evaluator_questiontopic.data.push([
+						token.id, parseInt(body.id_topic[i])
+					])
+				}
+				return model_user_questiontopic.createMultiple(data_evaluator_questiontopic).then(() => {
+					console.log("creada relación")
+					return userModel.update(update_data, { id: token.id } ).then(() =>{
+						return { message: "Update exitoso"}
+					})
+				})
+			}
 		})
 	}
 

@@ -3,7 +3,7 @@
  */
 module.exports = {
 	NONE:"None",
-    PLATFORM:"Platform",
+  PLATFORM:"Platform",
 	EVALUATE:"Evaluate",
 	ENTITY_USERS:"Manage_users",
 	ENTITY_SERVICE:"Manage_services",

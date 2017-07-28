@@ -142,21 +142,24 @@ var MysqlModel = function (info) {
 
   this.createMultiple = function (data) {
     let rows = data.data
+		console.log(rows)
     let col_names = data.col_names
+		console.log(col_names)
     var query = "INSERT INTO " + info.table + " (" + col_names.join(",") + ") VALUES "
     for (let i in rows) {
       query += "(" //init
       for (let j in col_names) {
-        if (rows[i][col_names[j]] === undefined) {
+        if (rows[i][col_names.indexOf(col_names[j])] === undefined) {
           query += "NULL,"
         } else {
-          query += "'" + rows[i][col_names[j]] + "',"
+          query += "'" + rows[i][col_names.indexOf(col_names[j])] + "',"
         }
       }
       query = query.slice(0, -1)
       query += "),"
     }
     query = query.slice(0, -1)
+		console.log(query)
     return this.customQuery(query)
   }
 
