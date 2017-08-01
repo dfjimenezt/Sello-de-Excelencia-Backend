@@ -12,12 +12,10 @@ var Auth_ctrl = require('./auth.js')
 var entity_evaluation_request = require('../models/entity_evaluation_request.js')
 var entity_user_answer = require('../models/entity_user_answer.js')
 var request_status = require('../models/request_status.js')
-var entity_service = require('../models/entity_service.js')
 var question_controller = function () {
 	var model_entity_evaluation_request = new entity_evaluation_request()
 	var model_entity_user_answer = new entity_user_answer()
 	var model_request_status = new request_status()
-	var model_entity_service = new entity_service()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -450,33 +448,9 @@ var question_controller = function () {
 	var get_request_status = function (user, params) {
 		return _get(model_request_status,user,params)
 	}
-
-	var get_requirements_from_category_level_create_service = function (user, params) {
-		let tabla_categoria = "stamp."
-		switch(params.id_category){
-			case "1":
-				tabla_categoria += "gobierno_en_linea_datos_abiertos"
-				break
-			case "2":
-				tabla_categoria += "gobierno_en_linea_requisitos_participacion"
-				break
-			case "3":
-				tabla_categoria += "servicios_en_linea"
-				break
-			case "4":
-				tabla_categoria += "gestion_de_ti"
-				break
-		}
-		var query = `SELECT ${tabla_categoria}.Requisito, ${tabla_categoria}.Criterio, ${tabla_categoria}.Evidencia, ${tabla_categoria}.\`Sustento legal o técnico\`, ${tabla_categoria}.Ayuda FROM ${tabla_categoria} 
-WHERE ${tabla_categoria}.Etapa = 'Preparación para publicar' AND ${tabla_categoria}.Nivel <= ${params.level};`
-		return model_entity_service.customQuery(query)
-	}
-
 	getMap.set('evaluation_request', { method: get_entity_evaluation_request, permits: Permissions.NONE })
 	getMap.set('user_answer', { method: get_entity_user_answer, permits: Permissions.NONE })
 	getMap.set('request_status', { method: get_request_status, permits: Permissions.NONE })
-	getMap.set('get_requirements_from_category_level', { method: get_requirements_from_category_level_create_service, permits: Permissions.ENTITY_SERVICE })
-	
 	/**
 	 * @api {post} api/question/evaluation_request Create evaluation_request information
 	 * @apiName Postevaluation_request
