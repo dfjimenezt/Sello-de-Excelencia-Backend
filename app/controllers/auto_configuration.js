@@ -1032,25 +1032,7 @@ var configuration_controller = function () {
 	 */
 	 
 	var update_evaluator_firstime = function (token, body){
-		var update_data = [] 
-		for ( var i in  body) {
-			if (token[i] !== undefined){
-				update_data[i] = body[i]
-			}
-		}
-		return userModel.update(update_data, { id: token.id } ).then(() =>{
-			return model_user_category.create({
-				id_user: token.id,
-				id_category: parseInt(body.id_category)
-			}).then(() => {
-				return model_user_questiontopic.create({
-					id_user: token.id,
-					id_topic: parseInt(body.id_topic) 
-				}).then(() => {
-					return { message: "Update exitoso"}
-				}) 
-			})
-		})
+		return update_evaluator(token, body)
 	}
 
 	/* Actualizar datos del evaluador (por primeara vez) de esta se genera update_evaluator
@@ -1065,38 +1047,76 @@ var configuration_controller = function () {
 				update_data[i] = body[i]
 			}
 		}
-		return get_user_questiontopic(token, {id_user: token.id}).then((evaluator_questiontopic) =>{
-			//Hace un filtro entre las relaciones existentes y las traidas en el body
-			//si existen, entonces las borra de la lista del body, de lo contrario,
-			//la deja lista para la crear las nuevas relaciones.
-			for(var i in evaluator_questiontopic.data){
-				for(var j in body.id_topic){
-					if(evaluator_questiontopic.data[i].id_topic == body.id_topic[j]){
-						body.id_topic.splice(body.id_topic.indexOf(body.id_topic[j]),1)
-						break
+		return get_user_category(token, {id_user: token.id}).then((category_user) =>{
+			token.categories = category_user.data
+			return get_user_questiontopic(token, {id_user: token.id}).then((topics_user) =>{
+				token.topics = topics_user.data
+				for(var i in token.categories){
+					for(var j in body.id_category){
+						if(token.categories[i].id_category == body.id_category[j]){
+							body.id_category.splice(body.id_category.indexOf(body.id_category[j]),1)
+							break
+						}
 					}
 				}
-			}
-			// Existen topics para crear relación?
-			if(body.id_topic[0] == undefined){
-				return userModel.update(update_data, { id: token.id } ).then(() =>{
-					return { message: "Update exitoso"}
-				})
-			}
-			else{
-				var data_evaluator_questiontopic = {data:[], col_names:["id_user", "id_topic"]}
-				for(var i in body.id_topic){
-					data_evaluator_questiontopic.data.push([
-						token.id, parseInt(body.id_topic[i])
-					])
+				for(var i in token.topics){
+					for(var j in body.id_topic){
+						if(token.topics[i].id_topic == body.id_topic[j]){
+							body.id_topic.splice(body.id_topic.indexOf(body.id_topic[j]),1)
+							break
+						}
+					}
 				}
-				return model_user_questiontopic.createMultiple(data_evaluator_questiontopic).then(() => {
-					console.log("creada relación")
+				if((body.id_topic[0] == undefined) && (body.id_category[0] == undefined)){
 					return userModel.update(update_data, { id: token.id } ).then(() =>{
-						return { message: "Update exitoso"}
+						return { message: "Update evaluator ok"}
 					})
-				})
-			}
+				}else if((body.id_category[0] == undefined) && (body.id_topic[0] != undefined)){
+					var data_evaluator_questiontopic = {data:[], col_names:["id_user", "id_topic"]}
+					for(var i in body.id_topic){
+						data_evaluator_questiontopic.data.push([
+							token.id, parseInt(body.id_topic[i])
+						])
+					}
+					return model_user_questiontopic.createMultiple(data_evaluator_questiontopic).then(() => {
+						return userModel.update(update_data, { id: token.id } ).then(() =>{
+							return { message: "Update topics ok"}
+						})
+					})
+				}else if((body.id_category[0] != undefined) && (body.id_topic[0] == undefined)){
+					var data_evaluator_categories = {data:[], col_names:["id_user", "id_category"]}
+					for(var i in body.id_category){
+						data_evaluator_categories.data.push([
+							token.id, parseInt(body.id_category[i])
+						])
+					}
+					return model_user_category.createMultiple(data_evaluator_categories).then(() => {
+						return userModel.update(update_data, { id: token.id } ).then(() =>{
+							return { message: "Update categories ok"}
+						})
+					})
+				}else if((body.id_category[0] != undefined) && (body.id_topic[0] != undefined)){
+					var data_evaluator_categories = {data:[], col_names:["id_user", "id_category"]}
+					for(var i in body.id_category){
+						data_evaluator_categories.data.push([
+							token.id, parseInt(body.id_category[i])
+						])
+					}
+					var data_evaluator_questiontopic = {data:[], col_names:["id_user", "id_topic"]}
+					for(var i in body.id_topic){
+						data_evaluator_questiontopic.data.push([
+							token.id, parseInt(body.id_topic[i])
+						])
+					}
+					return model_user_category.createMultiple(data_evaluator_categories).then(() => {
+						return model_user_questiontopic.createMultiple(data_evaluator_questiontopic).then(() => {
+							return userModel.update(update_data, { id: token.id } ).then(() =>{
+								return { message: "Update categories and topics ok"}
+							})
+						})
+					})
+				}
+			})
 		})
 	}
 
