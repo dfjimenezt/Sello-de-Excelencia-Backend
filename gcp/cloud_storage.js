@@ -11,11 +11,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-'use strict';
+'use strict'
 
-const Storage = require('@google-cloud/storage');
-//const config = require('../../config/google_cloud_storage'); WARNING: este era el directorio previo
-const config = require('../config.json');
+const Storage = require('@google-cloud/storage')
+const config = require('../config.json')
+
 
 const CLOUD_BUCKET = config.gcloud.CLOUD_BUCKET
 
@@ -24,12 +24,14 @@ const storage = Storage({
 })
 const bucket = storage.bucket(CLOUD_BUCKET)
 
-function generateUUID() {
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-    return uuid;
+
+function generateUUID () {
+  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0
+    var v = c === 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+  return uuid
 }
 
 // Returns the public, anonymously accessable URL to a given Cloud Storage
@@ -37,15 +39,12 @@ function generateUUID() {
 // The object's ACL has to be set to public read.
 // [START public_url]
 function getPublicUrl (filename) {
-
   // IF CLOUD_BUCKET has dots "." its a real domain, isn't neccessary https://storage.googleapis.com/
-  if (CLOUD_BUCKET.indexOf(".")!==-1 && CLOUD_BUCKET.indexOf(".appspot.com")===-1){
-      return 'http://' + CLOUD_BUCKET + '/' + filename;
+  if (CLOUD_BUCKET.indexOf('.') !== -1 && CLOUD_BUCKET.indexOf('.appspot.com') === -1) {
+    return 'http://' + CLOUD_BUCKET + '/' + filename
+  } else {
+    return 'https://storage.googleapis.com/' + CLOUD_BUCKET + '/' + filename
   }
-  else{
-    return 'https://storage.googleapis.com/' + CLOUD_BUCKET + '/' + filename;
-  }
-
 }
 // [END public_url]
 
@@ -55,38 +54,34 @@ function getPublicUrl (filename) {
 // * ``cloudStoragePublicUrl`` the public url to the object.
 // [START process]
 function sendUploadToGCS (req, folder) {
-  return new Promise(function(resolve,reject){
-    if (!req.file) {
-      reject ();
-    }
+  return new Promise((resolve, reject) => {
+    if (!req.file) reject()
 
-    var uuid = folder;
-    if (!folder){
-        uuid = generateUUID();
-    }
+    var uuid = folder
+    if (!folder) uuid = generateUUID()
+    let extension = req.file.originalname.substring(req.file.originalname.lastIndexOf('.'))
+    const gcsname = uuid + '/' + generateUUID() + extension
 
-    const gcsname =  uuid+ "/" + generateUUID() + "." + req.file.originalname.split(".")[1];
-
-    const file = bucket.file(gcsname);
-    const stream = file.createWriteStream();
+    const file = bucket.file(gcsname)
+    const stream = file.createWriteStream()
 
     stream.on('error', function (err) {
-      req.file.cloudStorageError = err;
-      console.log(err);
-      reject(err);
-    });
+      req.file.cloudStorageError = err
+      console.log(err)
+      reject(err)
+    })
 
     stream.on('finish', function () {
-      req.file.cloudStorageObject = gcsname;
-      req.file.cloudStoragePublicUrl = getPublicUrl(gcsname);
-      req.file.file_name = req.file.originalname;
-      req.file.folderId = uuid;
-      console.log("create file" + req.file.cloudStoragePublicUrl);
-      resolve(req);
-    });
+      req.file.cloudStorageObject = gcsname
+      req.file.cloudStoragePublicUrl = getPublicUrl(gcsname)
+      req.file.file_name = req.file.originalname
+      req.file.folderId = uuid
+      console.log('create file' + req.file.cloudStoragePublicUrl)
+      resolve(req)
+    })
 
-    stream.end(req.file.buffer);
-  }); // return promise
+    stream.end(req.file.buffer)
+  }) // return promise
 }
 // [END process]
 
@@ -95,19 +90,19 @@ function sendUploadToGCS (req, folder) {
 // conflicting with existing objects. This makes it straightforward to upload
 // to Cloud Storage.
 // [START multer]
-const Multer = require('multer');
-const multer = Multer({
-  inMemory: true,
-  fileSize: 5 * 1024 * 1024, // no larger than 5mb
-  rename: function (fieldname, filename) {
-    // generate a unique filename
-    return filename.replace(/\W+/g, '-').toLowerCase() + Date.now();
-  }
-});
+//const Multer = require('multer')
+//const multer = Multer({
+//  inMemory: true,
+//  fileSize: 5 * 1024 * 1024, // no larger than 5mb
+//  rename: function (fieldname, filename) {
+//    // generate a unique filename
+//    return filename.replace(/\W+/g, '-').toLowerCase() + Date.now()
+//  }
+//})
 // [END multer]
 
 module.exports = {
   getPublicUrl: getPublicUrl,
   sendUploadToGCS: sendUploadToGCS,
-  multer: multer
-};
+//  multer: multer
+}

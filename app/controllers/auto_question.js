@@ -12,10 +12,12 @@ var Auth_ctrl = require('./auth.js')
 var entity_evaluation_request = require('../models/entity_evaluation_request.js')
 var entity_user_answer = require('../models/entity_user_answer.js')
 var request_status = require('../models/request_status.js')
+var entity_service = require('../models/entity_service.js')
 var question_controller = function () {
 	var model_entity_evaluation_request = new entity_evaluation_request()
 	var model_entity_user_answer = new entity_user_answer()
 	var model_request_status = new request_status()
+	var model_entity_service = new entity_service()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -448,9 +450,101 @@ var question_controller = function () {
 	var get_request_status = function (user, params) {
 		return _get(model_request_status,user,params)
 	}
+
+	var get_requirements_from_category_level_create_service = function (user, params) {
+		let tabla_categoria = "stamp."
+		switch(params.id_category){
+			case "1":
+				tabla_categoria += "gobierno_en_linea_datos_abiertos"
+				break
+			case "2":
+				tabla_categoria += "gobierno_en_linea_requisitos_participacion"
+				break
+			case "3":
+				tabla_categoria += "servicios_en_linea"
+				break
+			case "4":
+				tabla_categoria += "gestion_de_ti"
+				break
+		}
+		var query = `SELECT ${tabla_categoria}.Requisito, ${tabla_categoria}.Criterio, ${tabla_categoria}.Evidencia, ${tabla_categoria}.\`Sustento legal o técnico\`, ${tabla_categoria}.Ayuda, ${tabla_categoria}.\`Area Tematica\`
+FROM ${tabla_categoria} WHERE ${tabla_categoria}.Nivel <= ${params.level};`
+		return model_entity_service.customQuery(query)
+	}
+
+	var get_filtered_list_requirements = function (user, params) {
+		var query = `SELECT stamp.institution.name AS name, stamp.service.name AS service_name, stamp.service.url AS url, stamp.service.timestamp as publication_date
+FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.service.id_institution\nWHERE `
+		// Add category filter
+		// TODO: Verify or inform the order of the tabs ids in the mokup
+		switch(params.id_category) {
+			case '1': // Tramites o servicios en linea
+				query += 'stamp.service.id_category = 3\n'
+				break
+			case '2':
+				query += 'stamp.service.id_category = 1\n'
+				break
+			case '3':
+				query += 'stamp.service.id_category = 2\n'
+				break
+			case '4':
+				query += 'stamp.service.id_category = 4\n'
+				break
+			default:
+				// TODO: ERROR MESSAGE
+				break
+		}
+		// Insert filter institution name to query
+		if (params.name)
+			query += 'AND stamp.institution.name LIKE \"%'+params.name+'%\"\n'
+		// Insert filter service name to query
+		if (params.service_name)
+			query += 'AND stamp.service.name LIKE \"%'+params.service_name+'%\"\n'
+		// Insert filter name to query
+		if (params.date0) {
+			var date0 = params.date0.split("-")
+			var date0_0 = new Date(parseInt(date0[0]), parseInt(date0[1])-1, parseInt(date0[2])-3) // Month starts from 0
+			date0_0 = date0_0.toISOString().slice(0,10)
+			var date0_1 = new Date(parseInt(date0[0]), parseInt(date0[1])-1, parseInt(date0[2])+3) // One week interval 6 days
+			date0_1 = date0_1.toISOString().slice(0,10)
+			query += 'AND stamp.service.timestamp >= \"'+date0_0+'\" AND stamp.service.timestamp < \"'+date0_1+'\"\n'
+		}
+		/*
+		// Insert filter name to query
+		// TODO: Find aprobation date table
+		if (params.date1) {
+			var date1 = parseInt(params.date0.split("-"))
+			var date1_0 = new Date(date1[0], date1[1]-1, date1[2]-3) // Month starts from 0
+			date1_0.toISOString().substring(0, 10);
+			var date1_1 = new Date(date1[0], date1[1]-1, date1[2]+3) // One week interval 6 days
+			date1_1.toISOString().substring(0, 10);
+			query += 'AND stamp.service.timestamp >= '+date1_0.getTime+' AND stamp.service.timestamp < '+date1_1.getTime+'\n'
+		}
+		*/
+		/*
+			// TODO: Only certified services must be displayed
+			query += 'AND stamp.service.current_status = 6;'
+		*/
+		query += ';'
+		return model_institution.customQuery(query)
+	}
+
+	// WARNING WHEN MERGE!
+	var get_service_retro = function (user, params) {
+		var query = `
+SELECT stamp.user_answer.requisite AS requisite, stamp.user_answer.justification AS justification,
+stamp.user_answer.evidence AS evidence, stamp.user_answer.support_legal AS support_legal, stamp.user_answer.help AS help,
+stamp.media.url AS url, stamp.mmedia.comment AS comment
+FROM stamp.user_answer JOIN stamp.media ON stamp.user_answer.id_media = stamp.media.id
+WHERE stamp.user_answer.`
+	}
+
 	getMap.set('evaluation_request', { method: get_entity_evaluation_request, permits: Permissions.NONE })
 	getMap.set('user_answer', { method: get_entity_user_answer, permits: Permissions.NONE })
 	getMap.set('request_status', { method: get_request_status, permits: Permissions.NONE })
+	getMap.set('get_requirements_from_category_level', { method: get_requirements_from_category_level_create_service, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('get_filtered_list_requirements', { method: get_filtered_list_requirements, permits: Permissions.EVALUATE })
+	
 	/**
 	 * @api {post} api/question/evaluation_request Create evaluation_request information
 	 * @apiName Postevaluation_request

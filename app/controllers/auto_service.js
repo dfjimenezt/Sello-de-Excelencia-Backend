@@ -20,6 +20,7 @@ var Institution_user = require('../models/institution_user.js')
 var Service_comment = require('../models/service_comment.js')
 var Media = require('../models/media.js')
 var Institution = require('../models/institution.js')
+var user_answer = require('../models/user_answer.js')
 var service_controller = function () {
 	var model_entity_service = new entity_service()
 	var model_category = new category()
@@ -32,6 +33,7 @@ var service_controller = function () {
 	var institution_user = new Institution_user()
 	var model_media = new Media()
 	var model_institution = new Institution()
+	var model_user_answer = new user_answer()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function (model, user, params) {
@@ -490,7 +492,7 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 				query += 'stamp.service.id_category = 4\n'
 				break
 			default:
-				// ERROR MESSAGE
+				// TODO: ERROR MESSAGE
 				break
 		}
 		// Insert filter institution name to query
@@ -520,9 +522,11 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 			query += 'AND stamp.service.timestamp >= '+date1_0.getTime+' AND stamp.service.timestamp < '+date1_1.getTime+'\n'
 		}
 		*/
+		/*                                                      
+		// TODO: Only certified services must be display
+		query += 'AND stamp.service.current_status = 6;'
+		*/ 
 		query += ';'
-		console.log("query")
-		console.log(query)
 		return model_institution.customQuery(query)
 	}
 
@@ -532,8 +536,51 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 		})
 	}
 
+	var list_by_status = function (user, params) {
+		var query = `
+SELECT stamp.service.name, stamp.category.name as category, stamp.service.level, stamp.service.timestamp
+FROM stamp.user JOIN stamp.institution_user ON stamp.institution_user.id_user = stamp.user.id
+RIGHT JOIN stamp.service ON stamp.service.id_institution = stamp.institution_user.id_institution
+RIGHT JOIN stamp.category ON stamp.service.id_category = stamp.category.id
+WHERE stamp.user.id = ${user.id} AND stamp.service.current_status = ${params.id_status};`
+		return model_institution.customQuery(query)
+	}
 
-	//-----------------------------------------------------------------------------------------
+	// WARNING WHEN MERGE!
+	var get_service_info = function (user, params) {
+		var query = `
+SELECT stamp.service.name AS name_service, stamp.category.name AS name_category, stamp.service_status.level AS level,
+stamp.service.timestamp AS date_postulation, service.service_status.timestamp AS date_certified,
+stamp.service.url AS url, stamp.service_status.id_status AS status, stamp.service.rate AS rate
+FROM stamp.service JOIN stamp.service_status on stamp.service_status.id_service = stamp.service.id
+JOIN stamp.category ON stamp.service.id_category = stamp.category.id
+WHERE stamp.service.id_service = ${params.id_service};`
+		return model_institution.customQuery(query);
+	}
+
+	// WARNING WHEN MERGE!
+	var get_service_comments = function (user, params) {
+		var query = `
+SELECT stamp.user.name AS name_user, stamp.service_comment.timestamp AS date, stamp.s     ervice_comment.text AS text
+FROM stamp.service JOIN stamp.service_comment ON stamp.service_comment.id_service = stamp.service.id
+JOIN stamp.user ON stamp.user.id = stamp.service_comment.id_user
+WHERE stamp.service_comment.id_service = ${params.id_service};`
+		return model_institution.customQuery(query);
+	}
+
+	var get_service_process = function (user, params) {
+		var block = []
+		var query1 = `
+SELECT stamp.service.name AS name_service, stamp.category.name AS name_category, stamp.service_status.level AS level,
+stamp.service.timestamp AS date_postulation, stamp.service.url AS url, stamp.service_status.id_status AS status
+FROM stamp.service JOIN stamp.service_status on stamp.service_status.id_service = stamp.service.id
+JOIN stamp.category ON stamp.service.id_category = stamp.category.id
+WHERE stamp.service.id_service = ${params.id_service};`
+		block[0] = model_institution.customQuery(query1)
+		var query2 = `
+ `
+	}
+
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
 	getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
@@ -545,6 +592,11 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 	getMap.set('service_name', { method: get_entity_service_name, permits: Permissions.NONE })
 	getMap.set('list_institutions', { method: get_filtered_list_institutions, permits: Permissions.NONE })
 	getMap.set('table_institutions', { method: get_filtered_list_institutions_csv, permits: Permissions.NONE })
+	getMap.set('list_by_status', { method: list_by_status, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('service_info', { method: get_service_info, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('service_comments', { method: get_service_comments, permits: Permissions.ENTITY_SERVICE })
+	//-----------------------------------------------------------------------------------------
+	
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice
@@ -669,23 +721,20 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 		return model_service_comment.create(body)
 	}
 
-	// TODO: FINISH
-	/*var getPromiseUrl = function(id, file, folder, type) {
-		return new Promise(function (resolve, reject) {
-			var url = utiles.uploadFileToGCS(id, file, folder, type)
-			if (!url) reject(Error("getPromiseUrl broke"));
-			else resolve(url);
-		})
-	}*/
-	
-	var getPromiseUrl = function(id, files, i, length) {
+	/*var getPromiseUrl = function(id, files, i, length) {
 		return new Promise(function (resolve, reject) {
 			var url = utiles.uploadFileToGCS(id, files[i], id, files[i].type)
 			if (i >= length-1) {
 				resolve(url)
 			} else {
 				if (!url) reject(Error("getPromiseUrl broke"));
-				else resolve(getPromiseUrl(id, files, i+1, length));
+				else {
+					model_media.create({
+						url: url,
+						type: files[i].type
+					})
+					resolve(getPromiseUrl(id, files, i+1, length))
+				}
 			}
 		})
 	}
@@ -698,17 +747,67 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 			files_objs.push(files[i])
 			len++
 		}
-		utiles.uploadFilesToGCS(user.id, files, user.id).then((url) => {
-		//getPromiseUrl(user.id, files_objs, 0, len).then((url) => {
-			urls.push(url)
-			return model_media.create({
-				url: url,
-				type: files[i].type
-			})
+		//utiles.uploadFilesToGCS(user.id, files, user.id).then((url) => {
+		getPromiseUrl(user.id, files_objs, 0, len).then((urls) => {
+			for(var i = 0; i < urls.length; i++) {
+				model_media.create({
+					url: urls[i],
+					type: files_objs[i].type
+				})
+			return urls
 		})
-		return urls
 	}
+	*/
 
+	// TODO: FINISH and check how to return if success
+	/*var getPromiseUrl = function(id, file, folder, type) {
+		return new Promise(function (resolve, reject) {
+			var url = utiles.uploadFileToGCS(id, file, folder, type)
+			if (!url) reject(Error("getPromiseUrl broke"));
+			else resolve(url);
+		})
+	}
+	
+	var save_service_evidence = function (user, body, files) {
+		for (var i in files) {
+			getPromiseUrl(user.id, file[i], user.id, file[i].type).then((url) => {
+				model_media.create({
+					url: url,
+					type: files[i].type
+				})
+			})
+		}
+	}
+	*/
+
+	var save_service_evidence = function (user, body, files) {
+		for (var i in files) {
+			utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type).then((url) => {
+				// Insertar objetos multimedia en tabla stamp.media
+				return model_media.create({
+					url: url,
+					type: files[i].type
+				}).then((media) => {
+					// Relacionar usuario, servicio y multimedia con el requisito
+					return model_user_answer.create({
+						id_answer: null,
+						id_question: null,
+						id_user: user.id,
+						datetime: null, // TODO: what is datetime in table (REVISADO, es on UPDATE)
+						id_media: media.insertId,
+						requisite: body.requisite || "",
+						support_legal: body.support_legal || "",
+						justifiaction: body.justification || "", // TODO: Correct with justification!
+						id_topic: body.id_topic || "",
+						evidence: body.evidence || "",
+						help: body.help || "",
+						id_service: body.id_service
+					})
+				})
+			})
+		}
+	}
+	
 	postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE })
 	postMap.set('save_evidence', { method: save_service_evidence, permits: Permissions.ENTITY_SERVICE })
 	postMap.set('service_comment', { method: create_service_comment, permits: Permissions.FORUM })
