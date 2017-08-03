@@ -191,9 +191,9 @@ var MysqlModel = function (info) {
     queryCondition = queryCondition.slice(0, -4)
     var query1 = 'UPDATE ' + info.table + ' SET ' + queryUpdate + ' WHERE ' + queryCondition + ''
     var query2 = 'SELECT * FROM ' + info.table + ' AS list WHERE ' + queryCondition + ''
-    return resolveQuery(query1, connection).then(() => {
-      connection = mysql.createConnection(dbConf)
-      return resolveQuery(query2, connection)
+		return resolveQuery(query1, connection).then(() => {
+			connection = mysql.createConnection(dbConf)
+			return resolveQuery(query2, connection)
     })
   }
 

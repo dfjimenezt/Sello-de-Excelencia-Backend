@@ -524,6 +524,47 @@ var place_controller = function () {
 		}
 		return model_entity_institution.update(body, { id: body.id })
 	}
+
+	/* 
+	 * Actualizar institución 
+	 * Ya habiéndo hecho login tiene el token "usuario"
+	 * */
+
+	var update_institution = function(token, body){
+		return institution_user.getByParams({id_user : token.id}).then((institution_user_relation) => {
+			return get_entity_institution(token, {id: institution_user_relation[0].id_institution}).then((institution) => {
+				if(institution.data[0] != undefined){
+					institution = institution.data[0]
+					var institution_up = []
+					institution_up.id = institution.id
+					institution_up.id_user_creator = token.id
+					institution_up.name = (body.name)? body.name : institution.name
+					institution_up.nit = (body.nit)? body.nit : institution.nit
+					institution_up.legalrep_name = (body.legalrep_name)? body.legalrep_name : institution.legalrep_name
+					institution_up.legalrep_secondname = (body.legalrep_secondname)? body.legalrep_secondname : institution.legalrep_secondname
+					// No existe en el UML
+					//institution.legalrep_phone = (body.legalrep_phone)? body.legalrep_phone : information.legalrep_phone
+					institution_up.legalrep_lastname = (body.legalrep_lastname)? body.legalrep_lastname : institution.legalrep_lastname
+					institution_up.legalrep_secondlastname = (body.legalrep_secondlastname)? body.legalrep_secondlastname : institution.legalrep_secondlastname
+					//institution.legalrep_mobile = (body.legalrep_mobile)? body.legalrep_mobile : institution.legalrep_mobile
+					institution_up.legalrep_typedoc = (body.legalrep_typedoc)? parseInt(body.legalrep_typedoc) : institution.legalrep_typedoc
+					//Corregir error de ortografía en el UML
+					//institution_up.legalrep_document = (body.legalrep_document)? body.legalrep_document : institution.legalrep_document
+					institution_up.legalrep_email = (body.legalrep_email)? body.legalrep_email : institution.legalrep_email
+					institution_up.phone = (body.institution_phone)? body.institution_phone : institution.phone
+					//institution.extension_phone = (body.extension_phone)? body.extension_phone : institution.extension_phone
+					institution_up.email = (body.institution_email)? body.institution_email : institution.email
+					// Es una relación
+					institution_up.id_region = (body.id_region)? parseInt(body.id_region) : null
+					institution_up.id_city = (body.id_city)? parseInt(body.id_city) : null
+					return update_entity_institution(token, institution_up).then(() => {
+						return { message : "Update institution ok" } 
+					})
+				}	
+			})
+		})
+	}
+
 	/**
 	 * @api {put} api/place/city Update city information
 	 * @apiName Putcity
@@ -563,7 +604,8 @@ var place_controller = function () {
 		}
 		return model_region.update(body, { id: body.id })
 	}
-	putMap.set('institution', { method: update_entity_institution, permits: Permissions.PLATFORM })
+	putMap.set('entity_institution', { method: update_entity_institution, permits: Permissions.PLATFORM })
+	putMap.set('institution', { method: update_institution, permits: Permissions.PLATFORM })
 	putMap.set('city', { method: update_entity_city, permits: Permissions.ADMIN })
 	putMap.set('region', { method: update_region, permits: Permissions.ADMIN })
 	/**
