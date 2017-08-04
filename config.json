@@ -34,8 +34,8 @@
 	},
 	"secret": "1234567890",
     "gcloud": {
-		"GCLOUD_PROJECT": "domoti-development",
-		"CLOUD_BUCKET": "domoti-development.appspot.com"
+		"GCLOUD_PROJECT": "domoti-production",
+		"CLOUD_BUCKET": "domoti-sellodeexcelencia.appspot.com"
 	},
 	"autorizedHosts": ["http://sellodeexcelencia.gov.co","https://sellodeexcelencia.gov.co/","*"]
 }
