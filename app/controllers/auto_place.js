@@ -343,7 +343,6 @@ var place_controller = function () {
 	 */
 	var create_entity_institution = function (user, body) {
 		return model_entity_institution.create(body)
-		//return [user, ]
 	}
 	/**
 	 * @api {post} api/place/city Create city information

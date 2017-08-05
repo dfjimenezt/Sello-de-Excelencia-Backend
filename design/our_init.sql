@@ -5,6 +5,7 @@ TRUNCATE TABLE stamp.category;
 #TRUNCATE TABLE stamp.city;
 TRUNCATE TABLE stamp.config;
 TRUNCATE TABLE stamp.contact;
+#TRUNCATE TABLE stamp.country;
 TRUNCATE TABLE stamp.evaluation_request;
 TRUNCATE TABLE stamp.faq;
 TRUNCATE TABLE stamp.form;
@@ -145,6 +146,11 @@ INSERT INTO stamp.questiontopic(id, id_category, name) VALUES
 ('16','3', 'Seguimiento y Control'),
 ('17','3', 'Talento Digital');
 
+INSERT INTO stamp.level_service (id, name) VALUES
+('1', 'Nivel 1'),
+('2', 'Nivel 2'),
+('3', 'Nivel 3');
+
 INSERT INTO stamp.form(id, name, id_category) VALUES
 ('1', 'Etapa Listar', '1'),
 ('2', 'Etapa Preparar', '1'),
@@ -169,7 +175,6 @@ INSERT INTO stamp.form(id, name, id_category) VALUES
 ('18', 'Etapa Agregar', '4'),
 ('19', 'Etapa Entregar', '4'),
 ('20', 'Etapa Conservar', '4');
-
 
 INSERT INTO stamp.question(id, id_type, id_form, text) VALUES 
 ('1', '3', '1', 'Requisito'),
@@ -232,18 +237,12 @@ INSERT INTO user (`id`, `name`, `email`, `active`, `verified`, `password`, `tmp_
 INSERT INTO institution (`id`, `name`, `nit`, `email`, `phone`, `extension`, `legalrep_name`, `legalrep_secondname`, `legalrep_lastname`, `legalrep_secondlastname`, `legalrep_typedoc`, `leaglrep_document`, `legalrep_email`, `id_region`, `id_city`) VALUES ('1', 'Entidad1', '22334455', '12332', 'santiago.alvarez@domoti-sas.com', '3101111111', 'Pepito', 'Ramón', 'Perez', 'Espitia', '1', '1010000000', 'santiago@gmail.com', '', '');
 INSERT INTO institution_user (`id_institution`,`id_user`) VALUES ('1', '4');
 
-# Entidad 2 , id_user = 5
-INSERT INTO user (`id`, `name`, `email`, `active`, `verified`, `password`, `tmp_pwd`, `flag_hall`, `ranking_hall`, `points`, `terms`) VALUES ('5', 'Entidad2', 'carolina.pulido@domoti-sas.com', '1', '1', 'c3951cfdddb5b507d7e4ddb6071a2999f7048edbf5d7c8eeacbb820fd1960868', '1', '0', '0', '10', '1');
-# La siguiente línea es la correcta
-#INSERT INTO institution (`id`, `name`, `nit`, `email`, `phone`, `extension`, `legalrep_name`, `legalrep_secondname`, `legalrep_lastname`, `legalrep_secondlastname`, `legalrep_typedoc`, `leaglrep_document`, `legalrep_email`, `id_region`, `id_city`) VALUES ('2', 'Entidad2', '11111155', '10302', 'carolina.pulido@domoti-sas.com', '3100001111', 'Rosa', 'María', 'Sepúlveda', 'Torres', '1', '1010111222', 'crpulidog1@gmail.com', '3', '1054');
-INSERT INTO institution (`id`, `name`, `nit`, `email`, `phone`, `legalrep_name`, `legalrep_secondname`, `legalrep_lastname`, `legalrep_secondlastname`, `legalrep_typedoc`, `leaglrep_document`, `legalrep_email`, `id_region`, `id_city`) VALUES ('2', 'Entidad2', '11111155', 'carolina.pulido@domoti-sas.com', '3100001111', 'Rosa', 'María', 'Sepúlveda', 'Torres', '1', '1010111222', 'crpulidog1@gmail.com', '3', '1054');
-INSERT INTO institution_user (`id_institution`,`id_user`) VALUES ('2', '5');
-
-
 /**
 *	Servicios
 */
 # Entidad 1 , id_service = 1
+
+
 
 
 SET FOREIGN_KEY_CHECKS=1;
