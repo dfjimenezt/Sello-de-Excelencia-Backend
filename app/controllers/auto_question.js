@@ -474,8 +474,19 @@ var question_controller = function () {
 				tabla_categoria += "gestion_de_ti"
 				break
 		}
-		var query = `SELECT ${tabla_categoria}.Requisito, ${tabla_categoria}.Criterio, ${tabla_categoria}.Evidencia, ${tabla_categoria}.\`Sustento legal o técnico\`, ${tabla_categoria}.Ayuda, ${tabla_categoria}.\`Area Tematica\`
-FROM ${tabla_categoria} WHERE ${tabla_categoria}.Nivel <= ${params.level};`
+		var query = `
+SELECT ${tabla_categoria}.Requisito,
+${tabla_categoria}.Criterio,
+${tabla_categoria}.Evidencia,
+${tabla_categoria}.\`Sustento legal o técnico\`, 
+${tabla_categoria}.Ayuda,
+${tabla_categoria}.\`Area Tematica\`,
+stamp.questiontopic.id AS id_topic
+FROM ${tabla_categoria}
+LEFT JOIN stamp.questiontopic ON stamp.questiontopic.name = ${tabla_categoria}.\`Area Tematica\`
+WHERE ${tabla_categoria}.Nivel <= ${params.level}
+AND stamp.questiontopic.id_category = ${params.id_category}
+;`
 		return model_entity_service.customQuery(query)
 	}
 
@@ -617,9 +628,23 @@ WHERE stamp.user_answer.`
 	var create_request_status = function (user, body) {
 		return model_request_status.create(body)
 	}
+
+	var add_service_evaluator = function (user, body) {
+		var query = `
+SELECT stamp.user_answer.id AS id_user_answer
+FROM stamp.user_answer
+WHERE stamp.user_answer.id_service = ${body.id_service}
+AND 
+;`
+		var result = model_request_status.customQuery(query)
+		return result
+	}
+
 	postMap.set('evaluation_request', { method: create_entity_evaluation_request, permits: Permissions.EVALUATE })
 	postMap.set('user_answer', { method: create_entity_user_answer, permits: Permissions.EVALUATE })
 	postMap.set('request_status', { method: create_request_status, permits: Permissions.ADMIN })
+	postMap.set('add_service_evaluator', { method: add_service_evaluator, permits: Permissions.EVALUATE })
+	
 	/**
 	 * @api {put} api/question/evaluation_request Update evaluation_request information
 	 * @apiName Putevaluation_request

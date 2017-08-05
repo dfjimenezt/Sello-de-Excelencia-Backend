@@ -564,34 +564,48 @@ WHERE stamp.user.id = ${user.id} AND stamp.service.current_status = ${params.id_
 		return model_institution.customQuery(query)
 	}
 
-	// WARNING WHEN MERGE!
 	var get_service_info = function (user, params) {
 		var query = `
-SELECT stamp.service.name AS name_service, stamp.category.name AS name_category, stamp.service_status.level AS level,
-stamp.service.timestamp AS date_postulation, service.service_status.timestamp AS date_certified,
-stamp.service.url AS url, stamp.service_status.id_status AS status, stamp.service.rate AS rate
-FROM stamp.service JOIN stamp.service_status on stamp.service_status.id_service = stamp.service.id
+SELECT stamp.service.name AS name_service, 
+stamp.category.name AS name_category, 
+stamp.service.id_level AS level,
+stamp.service.timestamp AS date_postulation, 
+stamp.service_status.timestamp AS date_certified,
+stamp.service.url AS url, 
+stamp.service_status.id_status AS status, 
+stamp.service.rate AS rate
+FROM stamp.service 
+JOIN stamp.service_status ON stamp.service_status.id_service = stamp.service.id
 JOIN stamp.category ON stamp.service.id_category = stamp.category.id
-WHERE stamp.service.id_service = ${params.id_service};`
+WHERE stamp.service.id = ${params.id_service}
+;`
 		return model_institution.customQuery(query);
 	}
 
-	// WARNING WHEN MERGE!
 	var get_service_comments = function (user, params) {
 		var query = `
-SELECT stamp.user.name AS name_user, stamp.service_comment.timestamp AS date, stamp.s     ervice_comment.text AS text
-FROM stamp.service JOIN stamp.service_comment ON stamp.service_comment.id_service = stamp.service.id
+SELECT stamp.user.name AS name_user,
+stamp.service_comment.timestamp AS date,
+stamp.service_comment.text AS text
+FROM stamp.service
+JOIN stamp.service_comment ON stamp.service_comment.id_service = stamp.service.id
 JOIN stamp.user ON stamp.user.id = stamp.service_comment.id_user
-WHERE stamp.service_comment.id_service = ${params.id_service};`
+WHERE stamp.service_comment.id_service = ${params.id_service}
+;`
 		return model_institution.customQuery(query);
 	}
 
 	var get_service_process = function (user, params) {
 		var block = []
 		var query1 = `
-SELECT stamp.service.name AS name_service, stamp.category.name AS name_category, stamp.service_status.level AS level,
-stamp.service.timestamp AS date_postulation, stamp.service.url AS url, stamp.service_status.id_status AS status
-FROM stamp.service JOIN stamp.service_status on stamp.service_status.id_service = stamp.service.id
+SELECT stamp.service.name AS name_service,
+stamp.category.name AS name_category,
+stamp.service_status.level AS level,
+stamp.service.timestamp AS date_postulation,
+stamp.service.url AS url,
+stamp.service_status.id_status AS status
+FROM stamp.service
+JOIN stamp.service_status on stamp.service_status.id_service = stamp.service.id
 JOIN stamp.category ON stamp.service.id_category = stamp.category.id
 WHERE stamp.service.id_service = ${params.id_service};`
 		block[0] = model_institution.customQuery(query1)
