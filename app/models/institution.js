@@ -2,7 +2,7 @@
  * institution
  * [{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"name","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"nit","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"address","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"website","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"email","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"second_email","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"phone","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"head_sector","Type":"tinyint(1)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"timestamp","Type":"timestamp","Null":"NO","Key":"","Default":"CURRENT_TIMESTAMP","Extra":""},{"Field":"designation_act","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"legalrep_name","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"legalrep_secondname","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"legalrep_lastname","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"legalrep_secondlastname","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"leaglrep_document","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"legalrep_typedoc","Type":"int(11)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"legalrep_email","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"flag_hall","Type":"tinyint(1)","Null":"NO","Key":"","Default":"0","Extra":""},{"Field":"ranking_hall","Type":"int(11)","Null":"NO","Key":"","Default":"0","Extra":""},{"Field":"id_city","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_region","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_user_creator","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""}]
  * DMT 2017
- * GENERATED: 21 / 7 / 2017 - 11:0:47
+ * GENERATED: 5 / 8 / 2017 - 14:44:43
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
@@ -14,7 +14,7 @@ var Institution = function () {
 	}]
 	BaseModel.apply(this, params)
 
-		/**
+	/**
 	 * Get Top entities, supports
 	 * {
 				limit: params.limit
@@ -39,7 +39,6 @@ var Institution = function () {
       return { data: result[0], total_results: result[1][0].total }
     })
 	}
-
 	return this
 };
 util.inherits(Institution, BaseModel)
