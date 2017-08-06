@@ -612,6 +612,43 @@ WHERE stamp.service.id_service = ${params.id_service};`
 		var query2 = `
  `
 	}
+
+	/* Se listará los servicios elegibles a evaluar, finalmente, solo deben ser mostradas
+	 * aquellas en las cuales el evaluador es apto.
+	 *
+	 * token -> solo se mostrará aquellos en los cuales el usuario es apto para evaluar
+	 * params -> serán los parámetros con los cuales se harán los filtros.
+	 * params
+	 * 	name_entity
+	 * 	region	(place)
+	 * 	category	(categoría del servicio)
+	 * 	level	(nivel del servicio)
+	 */
+
+	var get_filtered_list_services_for_select = function(token, params){
+		var query = `SELECT DISTINCT ser.name, ins.name as institution, ser.id_category, ser.timestamp
+FROM stamp.service ser
+RIGHT JOIN stamp.institution ins ON ser.id_institution = ins.id
+RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `
+		if (params.name_institution || params.id_region || params.id_category || params.id_level){
+			query += "WHERE ser.current_status = 1 "
+			if (params.name_institution != undefined ){
+				query += `AND ins.name LIKE "%${params.name_institution}%" `
+			}
+			if (params.id_region != undefined ){
+				query += "AND reg.id = "+parseInt(params.id_region)+" "
+			}
+			if (params.id_category != undefined ){
+				query += "AND ser.id_category = "+parseInt(params.id_category)+" "
+			}
+			if (params.id_level != undefined ){
+				query += "AND ser.id_level = "+parseInt(params.id_level)+" "
+			}
+		}
+		query += ";"
+		return model_entity_service.customQuery(query)
+	}
+
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
 	getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
@@ -626,6 +663,7 @@ WHERE stamp.service.id_service = ${params.id_service};`
 	getMap.set('list_by_status', { method: list_by_status, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('service_info', { method: get_service_info, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('service_comments', { method: get_service_comments, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('list_services_selectable', { method: get_filtered_list_services_for_select, permits: Permissions.NONE})
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice
