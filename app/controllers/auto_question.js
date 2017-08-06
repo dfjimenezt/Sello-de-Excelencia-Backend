@@ -10,11 +10,13 @@ var Errors = require('../utils/errors.js')
 var Permissions = require('../utils/permissions.js')
 var Auth_ctrl = require('./auth.js')
 var entity_evaluation_request = require('../models/entity_evaluation_request.js')
+var evaluation_request = require('../models/evaluation_request.js')
 var entity_user_answer = require('../models/entity_user_answer.js')
 var request_status = require('../models/request_status.js')
 var entity_service = require('../models/entity_service.js')
 var question_controller = function () {
 	var model_entity_evaluation_request = new entity_evaluation_request()
+	var model_evaluation_request = new evaluation_request()
 	var model_entity_user_answer = new entity_user_answer()
 	var model_request_status = new request_status()
 	var model_entity_service = new entity_service()
@@ -631,13 +633,20 @@ WHERE stamp.user_answer.`
 
 	var add_service_evaluator = function (user, body) {
 		var query = `
-SELECT stamp.user_answer.id AS id_user_answer
-FROM stamp.user_answer
+SELECT stamp.user_questiontopic.id_user AS id_user,
+stamp.user_answer.id AS id_user_answer,
+stamp.user_answer.id_service AS id_service
+FROM stamp.user_questiontopic
+JOIN stamp.user_answer ON stamp.user_answer.id_topic = stamp.user_questiontopic.id_topic
 WHERE stamp.user_answer.id_service = ${body.id_service}
-AND 
+AND stamp.user_questiontopic.id_user = ${user.id}
 ;`
-		var result = model_request_status.customQuery(query)
-		return result
+		return model_request_status.customQuery(query).then((requests) => {
+			for(var i in requests) {
+				requests[i].id_request_status = 4 // 4 es el id_request_status para un servicio Solicitado
+			}
+			return model_evaluation_request.createMultiple2(requests)
+		})
 	}
 
 	postMap.set('evaluation_request', { method: create_entity_evaluation_request, permits: Permissions.EVALUATE })
