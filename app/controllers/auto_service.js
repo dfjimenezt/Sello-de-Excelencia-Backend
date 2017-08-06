@@ -860,7 +860,7 @@ RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `
 					// Relacionar usuario, servicio y multimedia con el requisito
 					return model_user_answer.create({
 						id_answer: null,
-						id_question: null,
+						id_question: body.id_question,
 						id_user: user.id,
 						datetime: null, // TODO: what is datetime in table (REVISADO, es on UPDATE)
 						id_media: media.insertId,

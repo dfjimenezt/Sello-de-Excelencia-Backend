@@ -10,11 +10,13 @@ var Errors = require('../utils/errors.js')
 var Permissions = require('../utils/permissions.js')
 var Auth_ctrl = require('./auth.js')
 var entity_evaluation_request = require('../models/entity_evaluation_request.js')
+var evaluation_request = require('../models/evaluation_request.js')
 var entity_user_answer = require('../models/entity_user_answer.js')
 var request_status = require('../models/request_status.js')
 var entity_service = require('../models/entity_service.js')
 var question_controller = function () {
 	var model_entity_evaluation_request = new entity_evaluation_request()
+	var model_evaluation_request = new evaluation_request()
 	var model_entity_user_answer = new entity_user_answer()
 	var model_request_status = new request_status()
 	var model_entity_service = new entity_service()
@@ -487,7 +489,14 @@ LEFT JOIN stamp.questiontopic ON stamp.questiontopic.name = ${tabla_categoria}.\
 WHERE ${tabla_categoria}.Nivel <= ${params.level}
 AND stamp.questiontopic.id_category = ${params.id_category}
 ;`
-		return model_entity_service.customQuery(query)
+		return model_entity_service.customQuery(query).then((requirements) => {
+			let count = 1
+			for (var i in requirements) {
+				requirements[i].id_question = count
+				count += 1
+			}
+			return requirements
+		})
 	}
 
 	var get_filtered_list_requirements = function (user, params) {
@@ -556,11 +565,31 @@ stamp.media.url AS url, stamp.mmedia.comment AS comment
 FROM stamp.user_answer JOIN stamp.media ON stamp.user_answer.id_media = stamp.media.id
 WHERE stamp.user_answer.`
 	}
+
+	var get_evaluator_asigned = function (user, body) {
+		var query = `
+SELECT DISTINCT
+stamp.institution.name AS name_institution,
+stamp.service.name AS name_service,
+stamp.service.timestamp AS postulation_date,
+stamp.service.id_level AS level,
+stamp.questiontopic.name AS questiontopic
+FROM stamp.institution
+JOIN stamp.service ON stamp.service.id_institution = stamp.institution.id
+JOIN stamp.user_answer ON stamp.user_answer.id_service = stamp.service.id
+JOIN stamp.questiontopic ON stamp.questiontopic.id = stamp.user_answer.id_topic
+JOIN stamp.evaluation_request ON stamp.evaluation_request.id_service = stamp.user_answer.id_service
+WHERE stamp.evaluation_request.id_user = ${user.id}
+;`
+		return model_entity_service.customQuery(query)
+	}
+
 	getMap.set('evaluation_request', { method: get_entity_evaluation_request, permits: Permissions.NONE })
 	getMap.set('user_answer', { method: get_entity_user_answer, permits: Permissions.NONE })
 	getMap.set('request_status', { method: get_request_status, permits: Permissions.NONE })
 	getMap.set('get_requirements_from_category_level', { method: get_requirements_from_category_level_create_service, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('get_filtered_list_requirements', { method: get_filtered_list_requirements, permits: Permissions.EVALUATE })
+	getMap.set('get_evaluator_asigned', { method: get_evaluator_asigned, permits: Permissions.EVALUATE })
 	
 	/**
 	 * @api {post} api/question/evaluation_request Create evaluation_request information
@@ -582,9 +611,9 @@ WHERE stamp.user_answer.`
  	 * 
 	 */
 	var create_entity_evaluation_request = function (user, body) {
-		body.id_user = user.id
+		//body.id_user = user.id
 		//body.id_request_status = {2,3} WARNING! Esto donde se define (body o acá)
-		return model_entity_evaluation_request.create(body)
+		//return model_entity_evaluation_request.create(body)
 	}
 	/**
 	 * @api {post} api/question/user_answer Create user_answer information
@@ -631,13 +660,20 @@ WHERE stamp.user_answer.`
 
 	var add_service_evaluator = function (user, body) {
 		var query = `
-SELECT stamp.user_answer.id AS id_user_answer
-FROM stamp.user_answer
+SELECT stamp.user_questiontopic.id_user AS id_user,
+stamp.user_answer.id AS id_user_answer,
+stamp.user_answer.id_service AS id_service
+FROM stamp.user_questiontopic
+JOIN stamp.user_answer ON stamp.user_answer.id_topic = stamp.user_questiontopic.id_topic
 WHERE stamp.user_answer.id_service = ${body.id_service}
-AND 
+AND stamp.user_questiontopic.id_user = ${user.id}
 ;`
-		var result = model_request_status.customQuery(query)
-		return result
+		return model_request_status.customQuery(query).then((requests) => {
+			for(var i in requests) {
+				requests[i].id_request_status = 4 // 4 es el id_request_status para un servicio Solicitado
+			}
+			return model_evaluation_request.createMultiple2(requests)
+		})
 	}
 
 	postMap.set('evaluation_request', { method: create_entity_evaluation_request, permits: Permissions.EVALUATE })

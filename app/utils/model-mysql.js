@@ -163,6 +163,25 @@ var MysqlModel = function (info) {
     return this.customQuery(query)
   }
 
+  this.createMultiple2 = function (data) {
+    let col_names = []
+    for (var i in data[0]) {
+      col_names.push(i)
+    }
+    var query = "INSERT INTO stamp." + info.table + " (" + col_names.join(",") + ") VALUES "
+    for (let i in data) {
+      query += "(" //init
+      for (let j in col_names) {
+        query += "'" + data[i][col_names[j]] + "',"
+      }
+      query = query.slice(0, -1)
+      query += "),"
+    }
+    query = query.slice(0, -1)
+    query += ";"
+    return this.customQuery(query)
+  }
+
   this.create = function (body) {
     var connection = mysql.createConnection(dbConf)
     var queryFields = '('
