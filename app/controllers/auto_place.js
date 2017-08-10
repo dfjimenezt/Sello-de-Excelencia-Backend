@@ -12,6 +12,7 @@ var Auth_ctrl = require('./auth.js')
 var entity_institution = require('../models/entity_institution.js')
 var entity_city = require('../models/entity_city.js')
 var region = require('../models/region.js')
+var country = require('../models/country.js')
 var User = require("../models/user.js")
 var Institution_user_model = require("../models/institution_user.js")
 var User_role_model = require('../models/user_role.js')
@@ -22,6 +23,7 @@ var place_controller = function () {
 	var model_entity_institution = new entity_institution()
 	var model_entity_city = new entity_city()
 	var model_region = new region()
+	var model_country = new country()
 	var my_sql = new MYSQL()
 	var userModel = new User()
 	var institution_user = new Institution_user_model()
@@ -296,10 +298,17 @@ var place_controller = function () {
 	var get_region = function (user, params) {
 		return _get(model_region,user,params)
 	}
+
+
+	var get_country = function (user, params) {
+		return _get(model_country,user,params)
+	}
+
 	getMap.set('institution', { method: get_entity_institution, permits: Permissions.NONE })
 	getMap.set('institution_hall', { method: get_entity_institution_hall, permits: Permissions.NONE })
 	getMap.set('city', { method: get_entity_city, permits: Permissions.NONE })
 	getMap.set('region', { method: get_region, permits: Permissions.NONE })
+	getMap.set('country', { method: get_country, permits: Permissions.NONE })
 	/**
 	 * @api {post} api/place/institution Create institution information
 	 * @apiName Postinstitution
