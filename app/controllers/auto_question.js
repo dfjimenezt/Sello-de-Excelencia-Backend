@@ -573,15 +573,76 @@ stamp.institution.name AS name_institution,
 stamp.service.name AS name_service,
 stamp.service.timestamp AS postulation_date,
 stamp.service.id_level AS level,
-stamp.questiontopic.name AS questiontopic
+stamp.questiontopic.name AS questiontopic,
+stamp.evaluation_request.id AS id_evaluation_request
 FROM stamp.institution
 JOIN stamp.service ON stamp.service.id_institution = stamp.institution.id
 JOIN stamp.user_answer ON stamp.user_answer.id_service = stamp.service.id
 JOIN stamp.questiontopic ON stamp.questiontopic.id = stamp.user_answer.id_topic
 JOIN stamp.evaluation_request ON stamp.evaluation_request.id_service = stamp.user_answer.id_service
 WHERE stamp.evaluation_request.id_user = ${user.id}
+AND stamp.evaluation_request.id_request_status = 1
 ;`
 		return model_entity_service.customQuery(query)
+	}
+
+	var get_services_in_process = function (user, body) {
+		var query = `
+SELECT DISTINCT
+stamp.institution.name AS name_institution,
+stamp.service.name AS name_service,
+stamp.service.timestamp AS postulation_date,
+stamp.service.id_level AS level,
+stamp.questiontopic.name AS questiontopic,
+stamp.user_answer.id_question AS id_question,
+stamp.service.url AS url
+FROM stamp.institution
+JOIN stamp.service ON stamp.service.id_institution = stamp.institution.id
+JOIN stamp.user_answer ON stamp.user_answer.id_service = stamp.service.id
+JOIN stamp.questiontopic ON stamp.questiontopic.id = stamp.user_answer.id_topic
+JOIN stamp.evaluation_request ON stamp.evaluation_request.id_service = stamp.user_answer.id_service
+WHERE stamp.evaluation_request.id_user = ${user.id}
+AND stamp.evaluation_request.id_request_status = 4 
+;`
+		return model_entity_service.customQuery(query) 
+	}
+
+	var get_evaluating_requisite = function (user, body) {
+		var query = `
+SELECT
+stamp.user_answer.requisite AS requisite,
+stamp.user_answer.support_legal AS support_legal,
+stamp.user_answer.help AS help,
+stamp.user_answer.justifiaction AS justifications, # TODO: Correct this column name
+stamp.user_answer.evidence AS evidence,
+stamp.media.url AS url
+# WARNING: COMMENT MISSING IN TABLE USER_ANSWER
+FROM stamp.user_answer
+JOIN stamp.media ON stamp.media.id = stamp.user_answer.id_media
+WHERE stamp.user_answer.id_question = ${body.id_question}
+;`
+		return model_entity_service.customQuery(query) 
+	}
+
+	var get_evaluated_services = function (user, body) {
+		var query = `
+SELECT DISTINCT
+stamp.institution.name AS name_institution,
+stamp.service.name AS name_service,
+stamp.user_answer.id_question AS id_question,	
+stamp.service.timestamp AS postulation_date,
+stamp.service.id_level AS level,
+stamp.questiontopic.name AS questiontopic,
+stamp.evaluation_request.result AS result
+FROM stamp.institution
+JOIN stamp.service ON stamp.service.id_institution = stamp.institution.id
+JOIN stamp.user_answer ON stamp.user_answer.id_service = stamp.service.id
+JOIN stamp.questiontopic ON stamp.questiontopic.id = stamp.user_answer.id_topic
+JOIN stamp.evaluation_request ON stamp.evaluation_request.id_service = stamp.user_answer.id_service
+WHERE stamp.evaluation_request.id_user = ${user.id}
+AND (stamp.evaluation_request.result = 1 OR stamp.evaluation_request.result = 0)
+;`
+		return model_entity_service.customQuery(query) 
 	}
 
 	getMap.set('evaluation_request', { method: get_entity_evaluation_request, permits: Permissions.NONE })
@@ -590,6 +651,9 @@ WHERE stamp.evaluation_request.id_user = ${user.id}
 	getMap.set('get_requirements_from_category_level', { method: get_requirements_from_category_level_create_service, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('get_filtered_list_requirements', { method: get_filtered_list_requirements, permits: Permissions.EVALUATE })
 	getMap.set('get_evaluator_asigned', { method: get_evaluator_asigned, permits: Permissions.EVALUATE })
+	getMap.set('get_services_in_process', { method: get_services_in_process, permits: Permissions.EVALUATE })
+	getMap.set('get_evaluating_requisite', { method: get_evaluating_requisite, permits: Permissions.EVALUATE })
+	getMap.set('get_evaluated_services', { method: get_evaluated_services, permits: Permissions.EVALUATE })
 	
 	/**
 	 * @api {post} api/question/evaluation_request Create evaluation_request information
@@ -752,9 +816,33 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 		}
 		return model_request_status.update(body,{id:body.id})
 	}
+
+	var edit_evaluation_request_status = function (user, body) {
+		var query = `
+UPDATE stamp.evaluation_request
+SET stamp.evaluation_request.id_request_status = ${body.id_request_status}
+WHERE stamp.evaluation_request.id_user = ${user.id}
+AND stamp.evaluation_request.id_service = ${body.id_service}
+AND stamp.evaluation_request.id_user_answer = ${body.id_user_answer}
+;`
+		return model_request_status.customQuery(query)
+	}
+
+	var set_final_decission_requisite = function (user, body) {
+		var query = `
+UPDATE stamp.evaluation_request
+SET stamp.evaluation_request.result = ${body.result}
+WHERE stamp.evaluation_request.id_user_answer = ${body.id_user_answer}
+;`
+		return model_request_status.customQuery(query)
+	}
+
 	putMap.set('evaluation_request', { method: update_entity_evaluation_request, permits: Permissions.ADMIN })
 	putMap.set('user_answer', { method: update_entity_user_answer, permits: Permissions.ADMIN })
 	putMap.set('request_status', { method: update_request_status, permits: Permissions.ADMIN })
+	putMap.set('edit_evaluation_request_status', { method: edit_evaluation_request_status, permits: Permissions.EVALUATE })
+	putMap.set('set_final_decission_requisite', { method: set_final_decission_requisite, permits: Permissions.EVALUATE })
+
 	/**
 	 * @api {delete} api/question/evaluation_request Delete evaluation_request information
 	 * @apiName Deleteevaluation_request
