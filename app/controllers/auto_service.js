@@ -631,7 +631,8 @@ FROM stamp.service ser
 RIGHT JOIN stamp.institution ins ON ser.id_institution = ins.id
 RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `
 		if (params.name_institution || params.id_region || params.id_category || params.id_level){
-			query += "WHERE ser.current_status = 1 "
+			// Un servicio postulado es status 3, status 1, es cuando hasta ahora se está postulando
+			query += "WHERE ser.current_status = 3 "
 			if (params.name_institution != undefined ){
 				query += `AND ins.name LIKE "%${params.name_institution}%" `
 			}
