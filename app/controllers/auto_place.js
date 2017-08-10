@@ -544,16 +544,16 @@ var place_controller = function () {
 					institution_up.legalrep_name = (body.legalrep_name)? body.legalrep_name : institution.legalrep_name
 					institution_up.legalrep_secondname = (body.legalrep_secondname)? body.legalrep_secondname : institution.legalrep_secondname
 					// No existe en el UML
-					//institution.legalrep_phone = (body.legalrep_phone)? body.legalrep_phone : information.legalrep_phone
+					institution.legalrep_phone = (body.legalrep_phone)? body.legalrep_phone : information.legalrep_phone
 					institution_up.legalrep_lastname = (body.legalrep_lastname)? body.legalrep_lastname : institution.legalrep_lastname
 					institution_up.legalrep_secondlastname = (body.legalrep_secondlastname)? body.legalrep_secondlastname : institution.legalrep_secondlastname
-					//institution.legalrep_mobile = (body.legalrep_mobile)? body.legalrep_mobile : institution.legalrep_mobile
+					institution.legalrep_mobile = (body.legalrep_mobile)? body.legalrep_mobile : institution.legalrep_mobile
 					institution_up.legalrep_typedoc = (body.legalrep_typedoc)? parseInt(body.legalrep_typedoc) : institution.legalrep_typedoc
 					//Corregir error de ortografía en el UML
-					//institution_up.legalrep_document = (body.legalrep_document)? body.legalrep_document : institution.legalrep_document
+					institution_up.legalrep_document = (body.legalrep_document)? body.legalrep_document : institution.legalrep_document
 					institution_up.legalrep_email = (body.legalrep_email)? body.legalrep_email : institution.legalrep_email
 					institution_up.phone = (body.institution_phone)? body.institution_phone : institution.phone
-					//institution.extension_phone = (body.extension_phone)? body.extension_phone : institution.extension_phone
+					institution.extension = (body.extension_phone)? body.extension_phone : institution.extension
 					institution_up.email = (body.institution_email)? body.institution_email : institution.email
 					// Es una relación
 					institution_up.id_region = (body.id_region)? parseInt(body.id_region) : null

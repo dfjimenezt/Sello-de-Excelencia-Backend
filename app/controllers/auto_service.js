@@ -556,7 +556,7 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 
 	var list_by_status = function (user, params) {
 		var query = `
-SELECT stamp.service.name, stamp.category.name as category, stamp.service.level, stamp.service.timestamp
+SELECT stamp.service.name, stamp.category.name as category, stamp.service.id_level, stamp.service.timestamp
 FROM stamp.user JOIN stamp.institution_user ON stamp.institution_user.id_user = stamp.user.id
 RIGHT JOIN stamp.service ON stamp.service.id_institution = stamp.institution_user.id_institution
 RIGHT JOIN stamp.category ON stamp.service.id_category = stamp.category.id
@@ -596,21 +596,20 @@ WHERE stamp.service_comment.id_service = ${params.id_service}
 	}
 
 	var get_service_process = function (user, params) {
-		var block = []
 		var query1 = `
 SELECT stamp.service.name AS name_service,
 stamp.category.name AS name_category,
-stamp.service_status.level AS level,
+stamp.service.id_level AS level,
 stamp.service.timestamp AS date_postulation,
 stamp.service.url AS url,
-stamp.service_status.id_status AS status
+stamp.service_status.id_status AS status,
+stamp.institution.name AS name_entity
 FROM stamp.service
 JOIN stamp.service_status on stamp.service_status.id_service = stamp.service.id
 JOIN stamp.category ON stamp.service.id_category = stamp.category.id
-WHERE stamp.service.id_service = ${params.id_service};`
-		block[0] = model_institution.customQuery(query1)
-		var query2 = `
- `
+JOIN stamp.institution ON stamp.service.id_institution = stamp.institution.id
+WHERE stamp.service.id = ${params.id_service};`
+		return model_institution.customQuery(query1)
 	}
 
 	/* Se listará los servicios elegibles a evaluar, finalmente, solo deben ser mostradas
@@ -664,6 +663,7 @@ RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `
 	getMap.set('list_by_status', { method: list_by_status, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('service_info', { method: get_service_info, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('service_comments', { method: get_service_comments, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('process_service', { method: get_service_process, permits: Permissions.NONE})
 	getMap.set('list_services_selectable', { method: get_filtered_list_services_for_select, permits: Permissions.NONE})
 	/**
 	 * @api {post} api/service/service Create service information
