@@ -40,7 +40,7 @@ var Backend = function (configJSON) {
   var config = configJSON || require('./config.json')
   var Generator = require('./app/generator/mysql-parser.js')
   var generator = new Generator()
-  //generator.parse()
+  generator.parse()
 
 
   var verbose = config.verbose === true
