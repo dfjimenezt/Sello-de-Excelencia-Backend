@@ -252,7 +252,7 @@ CREATE TABLE `institution`
 	`legalrep_secondname` VARCHAR(50) NULL,
 	`legalrep_lastname` VARCHAR(50) NULL,
 	`legalrep_secondlastname` VARCHAR(50) NULL,
-	`leagalrep_document` VARCHAR(50) NULL,
+	`legalrep_document` VARCHAR(50) NULL,
 	`legalrep_typedoc` INT NULL,
 	`legalrep_email` VARCHAR(255) NULL,
 	`legalrep_phone` VARCHAR(50) NULL,
