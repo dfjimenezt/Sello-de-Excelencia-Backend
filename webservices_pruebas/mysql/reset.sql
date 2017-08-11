@@ -104,20 +104,20 @@ INSERT INTO stamp.questiontopic(id, id_category, name) VALUES
 
 INSERT INTO stamp.request_status(id, name) VALUES
 ('1', 'Pendiente'),
-('2', 'Aceptado'),
-('3', 'Rechazado'),
-('4', 'Solicitado');
+('2', 'Solicitado'),
+('3', 'Aceptado'),
+('4', 'Rechazado');
 
 INSERT INTO stamp.status(id, name) VALUES
-('1', 'Postulando'),
-('2', 'Re-Postulando'),
-('3', 'Postulado'),
+('1', 'Verificación'),
+('2', 'Asignación'),
+('3', 'Aceptación'),
 ('4', 'Retirado'),
-('5', 'Rechazado'),
-('6', 'Aprobado'),
-('7', 'En Evaluación'),
-('8', 'Rechazado'),
-('9', 'Certificado');
+('5', 'Evaluación'),
+('6', 'Retroalimentación'),
+('7', 'Cierre'),
+('8', 'Aprobado'),
+('9', 'Rechazado');
 
 INSERT INTO stamp.type_document(id, name) VALUES
 ('1', 'Cédula de Ciudadanía'),

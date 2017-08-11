@@ -872,6 +872,15 @@ RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `
 						evidence: body.evidence || "",
 						help: body.help || "",
 						id_service: body.id_service
+					}).then((usr_ans) => {
+						return model_user_answer.create({
+							id_user: user.id,
+							id_user_answer: user_answer.insertId,
+							id_service: body.id_service,
+							id_request_status: "1", // TODO: change request_status from service_status and viceversa
+							// // TODO: id_question se debe agregar para relacionar el requisito con el evaluador
+							result: "2" // WARNING: This status means the status is not defined
+						})
 					})
 				})
 			})
