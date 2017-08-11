@@ -21,6 +21,7 @@ var Service_comment = require('../models/service_comment.js')
 var Media = require('../models/media.js')
 var Institution = require('../models/institution.js')
 var user_answer = require('../models/user_answer.js')
+var user = require('../models/user.js')
 var service_controller = function () {
 	var model_entity_service = new entity_service()
 	var model_category = new category()
@@ -34,6 +35,7 @@ var service_controller = function () {
 	var model_media = new Media()
 	var model_institution = new Institution()
 	var model_user_answer = new user_answer()
+	var model_user = new user()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -649,6 +651,129 @@ RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `
 		return model_entity_service.customQuery(query)
 	}
 
+	var list_users_admin = function (user, body) {
+		var query = `
+SELECT stamp.user.id AS id_user,
+CONCAT(stamp.user.name, ' ', stamp.user.lastname) AS name,
+stamp.user.email AS email,
+stamp.user.active AS active,
+stamp.user.timestamp AS timestamp
+FROM stamp.user
+JOIN stamp.user_role ON stamp.user_role.id_user = stamp.user.id
+WHERE stamp.user_role.id_role = 1
+;`
+		return model_entity_service.customQuery(query)
+	}
+
+	var list_postulations_admin = function(user, body) {
+		var query = `
+SELECT 
+stamp.institution.name AS name_institution,
+stamp.service.name AS name_service,
+stamp.category.name AS name_category,
+stamp.service.id_level AS level,
+stamp.status.name AS service_status,
+# WARNING: FALTA IS_ACTIVE EN SERVICES !!!
+stamp.service.timestamp AS postulation_date,
+stamp.service.id AS id_service
+FROM stamp.institution
+JOIN stamp.institution_user ON stamp.institution_user.id_institution = stamp.institution.id
+JOIN stamp.service ON stamp.service.id_user = stamp.institution_user.id_user
+JOIN stamp.category ON stamp.category.id = stamp.service.id_category
+JOIN stamp.service_status ON stamp.service_status.id_service = stamp.service.id
+JOIN stamp.status ON stamp.status.id = stamp.service.current_status
+;`
+		return model_entity_service.customQuery(query)
+	}
+
+	var list_requisites_admin = function (user, body) {
+		var query = `
+SELECT stamp.user_answer.id_question AS id_question,
+stamp.questiontopic.name AS questiontopic,
+stamp.evaluation_request.id_request_status AS id_request_status,
+stamp.user.name AS name_evaluator,
+stamp.user.lastname AS lastname_evaluator,
+stamp.evaluation_request.result AS result,
+# WARNING: ALERTS MISSING
+stamp.user_answer.id AS id_user_answer
+FROM stamp.service
+JOIN stamp.user_answer ON stamp.user_answer.id_service = stamp.service.id
+JOIN stamp.evaluation_request ON stamp.evaluation_request.id_service = stamp.user_answer.id_service
+JOIN stamp.questiontopic ON stamp.questiontopic.id = stamp.user_answer.id_topic
+JOIN stamp.user ON stamp.user.id = stamp.evaluation_request.id_user
+WHERE stamp.service.id = ${body.id_service}
+;`
+		return model_entity_service.customQuery(query)
+	}
+
+	/*var get_requisite_info = function (user, body) {
+		var query = `
+		
+		`
+	}*/
+
+	var get_evaluators_admin = function (user, body) {
+		var query = `
+SELECT stamp.user.id AS id_user,
+stamp.user.name AS name,
+stamp.user.secondname AS secondname,
+stamp.user.lastname AS lastname,
+stamp.user.secondlastname AS secondlastname,
+stamp.user.phone AS phone,
+stamp.user.mobile AS mobile,
+stamp.type_document.name AS type_document,
+stamp.user.document AS document,
+stamp.user.email AS email,
+#stamp.city.name AS city,
+#stamp.region.name AS region,
+#stamp.country.name AS country,
+stamp.user.organization AS organization,
+stamp.user.ocupation AS ocupation,
+stamp.availability.name AS availability,
+stamp.category.name AS category,
+stamp.level.name AS level
+FROM stamp.user
+JOIN stamp.availability ON stamp.availability.id = stamp.user.id_availability
+JOIN stamp.user_category ON stamp.user_category.id_user = stamp.user.id
+JOIN stamp.category ON stamp.category.id = stamp.user_category.id_category
+JOIN stamp.level ON stamp.level.id = stamp.user.id_level
+JOIN stamp.type_document ON stamp.type_document.id = stamp.user.id_type_document
+#JOIN stamp.city ON stamp.city.id = stamp.user.id_city
+#JOIN stamp.region ON stamp.region.id = stamp.user.id_region
+#JOIN stamp.country ON stamp.country.id = stamp.user.id_country
+;`
+		return model_entity_service.customQuery(query).then((evaluators) => {
+			var result = []	// Lista final a retornar
+			var current_list = [] // Lista del información del usuario actual
+			var category_list = [] // Lista de las categorias de un usuario
+			let id_user = evaluators[0].id_user // Usuario actual
+			for(var i in evaluators) {
+				console.log("i")
+				console.log(i)
+				// Se dió na transición a un nuevo evaluador
+				if((evaluators[i].id_user == id_user) && (category_list == [])) {
+					for(var j in evaluators[i]) {
+						console.log("j")
+						console.log(j)
+						if(j == "category"){
+							category_list.push(evaluators[i][j])
+							continue
+						}
+						
+
+					}
+				} else {
+					id_user = evaluators[i].id_user
+					for(var j in evaluators[i]) {
+						if(j == "category")
+							continue
+
+					}
+				}
+			}
+		})
+	}
+
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
 	getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
@@ -665,6 +790,11 @@ RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `
 	getMap.set('service_comments', { method: get_service_comments, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('process_service', { method: get_service_process, permits: Permissions.NONE})
 	getMap.set('list_services_selectable', { method: get_filtered_list_services_for_select, permits: Permissions.NONE})
+	getMap.set('list_users_admin', { method: list_users_admin, permits: Permissions.NONE}) // TODO: CHANGE PERMSIONS TO PLATFORM
+	getMap.set('list_postulations_admin', { method: list_postulations_admin, permits: Permissions.NONE}) // TODO: CHANGE PERMSIONS TO PLATFORM
+	getMap.set('list_requisites_admin', { method: list_requisites_admin, permits: Permissions.NONE}) // TODO: CHANGE PERMSIONS TO PLATFORM
+	
+	
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice
