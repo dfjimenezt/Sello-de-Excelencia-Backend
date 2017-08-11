@@ -494,6 +494,7 @@ var service_controller = function () {
 	var get_filtered_list_institutions = function (user, params) {
 	//id_category=1&name=entidad1&service_name=Rut&date0=2010-01-01&date1=2010-01-01
 		// TODO: Only certified services must be displayed
+		//var query = `SELECT stamp.institution.name AS name, stamp.service.name AS service_name, stamp.service.url AS url, stamp.service.timestamp as publication_date, stamp.institution.ranking_hall as ranking_hall, stamp.institution.assignment_hall_date as assignment_hall_date
 		var query = `SELECT stamp.institution.name AS name, stamp.service.name AS service_name, stamp.service.url AS url, stamp.service.timestamp as publication_date
 FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.service.id_institution\nWHERE `
 		// Add category filter
