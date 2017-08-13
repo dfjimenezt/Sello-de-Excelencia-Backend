@@ -74,13 +74,6 @@ dmt.entities = {
       },
       {
         type: "1-1",
-        name: "level",
-        entity: "level",
-        leftKey: "id_level",
-        foreign_name: "name"
-      },
-      {
-        type: "1-1",
         name: "city",
         entity: "city",
         leftKey: "id_city",
@@ -306,19 +299,6 @@ dmt.entities = {
         leftKey: "id_category",
         foreign_name: "name"
       },
-      {
-        type: "1-1",
-        name: "topic",
-        entity: "questiontopic",
-        leftKey: "id_topic",
-        foreign_name: "name"
-      },
-      {
-        type: "1-n",
-        name: "questions",
-        entity: "question",
-        rightKey: "id_form"
-      }
     ]
   },
   "user_answer":{
