@@ -778,20 +778,41 @@ JOIN stamp.type_document ON stamp.type_document.id = stamp.user.id_type_document
 	 * Obtiene el historial de los puntajes (total)
 	 */
 	var get_points_user = function(user, params){
+		var query = ""
+		var message = ""
 		if(params.points_lost != undefined && params.id_user != undefined){// Puntos perdidos?
-			var query = `SELECT *
-FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)}  AND q.value < 0 ORDER BY id DESC;` 
-			return model_motives.customQuery(query) 
+			message = "Puntos perdidos"
+			query = `SELECT *
+FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)}  AND q.value < 0 ORDER BY id DESC;`
 		}else if(params.points_total != undefined && params.id_user != undefined){ //historial de puntos?
-			var query = `SELECT *
+			message = "Historial de puntos"
+			query = `SELECT *
 FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)} ORDER BY id DESC;`
-			return model_motives.customQuery(query)
+		}else if(params.id_motives != undefined && params.id_user != undefined){ //filtración por motivo e id_user
+			query = `SELECT *
+FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)} AND q.id_motives = ${parseInt(params.id_motives)} ORDER BY id DESC;`
 		}else if(params.id_user != undefined){ //puntos en total
-			var query = `SELECT *
+			message = "Total de puntos"
+			query = `SELECT *
 FROM
 stamp.points p WHERE p.id =( SELECT MAX(id)
 FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
-		return model_motives.customQuery(query) 
+		}else{
+			return { message : "no asignó un usuario con qué consultar" }
+		}
+		if(query != ""){
+			return model_points.customQuery(query).then((list_points) => {
+				if(params.id_motives == undefined){
+					return { message: message, total: list_points.length, list_points: list_points }
+				}else{
+					var params_motives = []
+					params_motives.filter_field = "id"
+					params_motives.filter_value = params.id_motives
+					return get_list_motive(user, params_motives).then((motive) =>{
+						return { message : "Filtrado por motivo "+ motive.data[0].name, total: list_points.length, list_points: list_points }
+					})
+				}
+			}) 
 		}
 	}
 
@@ -1064,7 +1085,7 @@ FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
 			return get_list_motive(user, params).then((motive) =>{
 				// en esta parte se revisa si el motivo no trae su valor en puntos, siendo así es requerido en el body
 				new_points_user.value = (motive.data[0].points == null || motive.data[0].points == 0)? parseInt(body.motive_value) : parseInt(motive.data[0].points)
-				new_points_user.justification = (motive.data[0].points == null || motive.data[0].points == undefined || motive.data[0].points == 0 )? body.justification : null
+				new_points_user.justification = (motive.data[0].points == null || motive.data[0].points == undefined || motive.data[0].points == 0 )? body.justification : motive.data[0].name
 				new_points_user.result = new_points_user.prev_points + new_points_user.value
 				return model_points.create(new_points_user).then(() =>{
 					var query = `UPDATE user SET user.points=${new_points_user.result} WHERE user.id=${new_points_user.id_user};`
