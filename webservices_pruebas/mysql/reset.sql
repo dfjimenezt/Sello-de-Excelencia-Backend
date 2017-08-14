@@ -28,28 +28,50 @@ INSERT INTO category(id, name) VALUES
 ('3', 'Servicios en Linea'),
 ('4', 'Gestion de TI');
 
-#4
-TRUNCATE TABLE `chats`;
+#4 
+TRUNCATE TABLE `category_questions`;
+INSERT INTO category_questions (text,id_category)
+SELECT DISTINCT r.Preguntas,c.id 
+FROM stamp.gobierno_en_linea_datos_abiertos r JOIN
+category c ON c.id = '1' AND r.Preguntas != "";
+
+INSERT INTO category_questions (text,id_category)
+SELECT DISTINCT r.Preguntas,c.id 
+FROM stamp.gobierno_en_linea_requisitos_participacion r JOIN
+category c ON c.id = '2' AND r.Preguntas != "";
+
+INSERT INTO category_questions (text,id_category)
+SELECT DISTINCT r.Preguntas,c.id 
+FROM stamp.servicios_en_linea r JOIN
+category c ON c.id = '3' AND r.Preguntas != "";
 
 #5
-TRUNCATE TABLE `city`;
+TRUNCATE TABLE `chats`;
 
 #6
-TRUNCATE TABLE `config`;
+TRUNCATE TABLE `city`;
+INSERT INTO city (name,id_region)
+SELECT c.Name, c.id_region 
+FROM stamp.ciudades c ;
 
 #7
-TRUNCATE TABLE `contact`;
+TRUNCATE TABLE `config`;
 
 #8
-TRUNCATE TABLE `country`;
+TRUNCATE TABLE `contact`;
 
 #9
-TRUNCATE TABLE `evaluation_request`;
+TRUNCATE TABLE `country`;
+INSERT INTO country (name)
+SELECT p.name 
+FROM stamp.paises p ;
 
 #10
-TRUNCATE TABLE `faq`;
+TRUNCATE TABLE `evaluation_request`;
 
 #11
+TRUNCATE TABLE `faq`;
+
 #TRUNCATE TABLE `form`;
 #INSERT INTO form(id, name, id_category) VALUES
 #('1', 'Etapa Listar', '1'),
@@ -132,12 +154,9 @@ INSERT INTO permission_role(id_role, id_permission) VALUES
 #23
 TRUNCATE TABLE `points`;
 
-#24
-TRUNCATE TABLE `question`;
-
 #25
 TRUNCATE TABLE `questiontopic`;
-INSERT INTO stamp.questiontopic(id, id_category, name) VALUES
+INSERT INTO stamp.questiontopic(id, id_category, id_usertype, name) VALUES
 # Gobierno en Linea - Datos Abiertos
 ('1', '1', '2', 'Comunicacion Digital'),
 ('2', '1', '1', 'Conocimiento y Uso'),
@@ -159,8 +178,28 @@ INSERT INTO stamp.questiontopic(id, id_category, name) VALUES
 ('16', '3', '1', 'Seguimiento y Control'),
 ('17', '3', '2', 'Talento Digital');
 
+#24
+TRUNCATE TABLE `question`;
+INSERT INTO question (text,criteria,evidence,legal_support,level, help,id_topic)
+SELECT r.Requisito,r.Criterio,r.Evidencia,r.`Sustento legal o técnico`,r.Nivel,r.Ayuda,qt.id 
+FROM stamp.gobierno_en_linea_datos_abiertos r JOIN
+questiontopic qt ON qt.name = r.`Area Tematica` AND qt.id_category = '1';
+
+INSERT INTO question (text,criteria,evidence,legal_support,level, help,id_topic)
+SELECT r.Requisito,r.Criterio,r.Evidencia,r.`Sustento legal o técnico`,r.Nivel,r.Ayuda,qt.id 
+FROM stamp.gobierno_en_linea_requisitos_participacion r JOIN
+questiontopic qt ON qt.name = r.`Area Tematica` AND qt.id_category = '2';
+
+INSERT INTO question (text,criteria,evidence,legal_support,level, help,id_topic)
+SELECT r.Requisito,r.Criterio,r.Evidencia,r.`Sustento legal o técnico`,r.Nivel,r.Ayuda,qt.id 
+FROM stamp.servicios_en_linea r JOIN
+questiontopic qt ON qt.name = r.`Area Tematica` AND qt.id_category = '3';
+
 #26
 TRUNCATE TABLE `region`;
+INSERT INTO region (name,id_country)
+SELECT r.name, r.id_country 
+FROM stamp.regiones r;
 
 #27
 TRUNCATE TABLE `request_status`;
@@ -168,8 +207,8 @@ INSERT INTO request_status(id, name) VALUES
 ('1', 'Pendiente'),
 ('2', 'Solicitado'),
 ('3', 'Asignado'),
-('3', 'Aceptado'),
-('4', 'Rechazado');
+('4', 'Aceptado'),
+('5', 'Rechazado');
 
 #28
 TRUNCATE TABLE `role`;
