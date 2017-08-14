@@ -65,7 +65,7 @@ INSERT INTO user_role (`id_user`,`id_role`) VALUES ('1','3');
 *   Ciudadanos
 */
 # Ciudadano 1 , id_user = 2
-INSERT INTO user (`id`, `name`, `secondname`, `lastname`, `secondlastname`, `email`, `active`, `verified`, `password`, `tmp_pwd`) VALUES ('2', 'Carolina', 'Rosa', 'Pulido', 'Gómez', 'crpulidog0@gmail.com', '1', '1', 'c3951cfdddb5b507d7e4ddb6071a2999f7048edbf5d7c8eeacbb820fd1960868', '0');
+INSERT INTO user (`id`, `name`, `secondname`, `lastname`, `secondlastname`, `email`, `active`, `verified`, `password`, `tmp_pwd`) VALUES ('2', 'Carolina', 'Rosa', 'Pulido', 'Gómez', 'caropugo92@gmail.com', '1', '1', 'c3951cfdddb5b507d7e4ddb6071a2999f7048edbf5d7c8eeacbb820fd1960868', '0');
 INSERT INTO user_role (`id_user`,`id_role`) VALUES ('2','1');
 
 /**
