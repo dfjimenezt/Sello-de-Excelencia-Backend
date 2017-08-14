@@ -132,7 +132,8 @@ INSERT INTO permission(id, name) VALUES
 ('2', 'Evaluate'),
 ('3', 'Manage_users'),
 ('4', 'Manage_services'),
-('5', 'Forum');
+('5', 'Forum'),
+('6', 'Admin');
 
 #22
 TRUNCATE TABLE `permission_role`;
@@ -147,6 +148,7 @@ INSERT INTO permission_role(id_role, id_permission) VALUES
 ('3', '3'),
 ('3', '4'),
 ('3', '5'),
+('3', '6'),
 ('4', '1'),
 ('4', '4'),
 ('4', '5');
