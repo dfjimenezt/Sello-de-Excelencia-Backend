@@ -76,7 +76,7 @@ INSERT INTO user_role (`id_user`,`id_role`) VALUES ('3','2');
 *   Entidad 2, id_user = 4
 */
 INSERT INTO user (`id`, `name`, `email`, `active`, `verified`, `password`, `tmp_pwd`, `points`, `terms`,  `id_region`, `id_city`) VALUES ('4', 'Entidad2', 'crpulidog1@gmail.com', '1', '1', 'c3951cfdddb5b507d7e4ddb6071a2999f7048edbf5d7c8eeacbb820fd1960868', '1', '13', '1',  '1', '3106');
-INSERT INTO institution (`id`, `name`, `nit`, `email`, `phone`, `extension_phone`, `legalrep_name`, `legalrep_secondname`, `legalrep_lastname`, `legalrep_secondlastname`, `legalrep_typedoc`, `legalrep_document`, `legalrep_email`, `id_region`, `id_city`) VALUES ('1', 'Entidad2', '22334455', '12332', 'crpulidog2@gmail.com', '3101111111', 'Pepito', 'Ramón', 'Perez', 'Espitia', '1', '1010000000', 'santiago@gmail.com', '1', '3106');
+INSERT INTO institution (`id`, `name`, `nit`, `email`, `phone`, `extension_phone`, `legalrep_name`, `legalrep_secondname`, `legalrep_lastname`, `legalrep_secondlastname`, `legalrep_typedoc`, `legalrep_document`, `legalrep_email`, `id_region`, `id_city`) VALUES ('1', 'Entidad2', '22334455', 'crpulidog2@gmail.com', '3101111111', '11111','Pepito', 'Ramón', 'Perez', 'Espitia', '1', '1010000000', 'santiago@gmail.com', '1', '3106');
 INSERT INTO institution_user (`id_institution`,`id_user`) VALUES ('1', '4');
 INSERT INTO user_role (`id_user`,`id_role`) VALUES ('4','4');
 
