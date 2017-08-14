@@ -778,16 +778,15 @@ JOIN stamp.type_document ON stamp.type_document.id = stamp.user.id_type_document
 	 * Obtiene el historial de los puntajes (total)
 	 */
 	var get_points_user = function(user, params){
-
-		if(params.points_lost != undefined && params.id_user != undefined){
+		if(params.points_lost != undefined && params.id_user != undefined){// Puntos perdidos?
 			var query = `SELECT *
 FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)}  AND q.value < 0 ORDER BY id DESC;` 
 			return model_motives.customQuery(query) 
-		}else if(params.points_total != undefined && params.id_user != undefined){
+		}else if(params.points_total != undefined && params.id_user != undefined){ //historial de puntos?
 			var query = `SELECT *
 FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)} ORDER BY id DESC;`
-			return model_motives.customQuery(query) 
-		}else if(params.id_user != undefined){
+			return model_motives.customQuery(query)
+		}else if(params.id_user != undefined){ //puntos en total
 			var query = `SELECT *
 FROM
 stamp.points p WHERE p.id =( SELECT MAX(id)
@@ -1046,16 +1045,35 @@ FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
 	/*
 	 * crear puntos
 	 * body.id_user
-	 * body.id_motive
+	 * body.id_motives
+	 * body.motive_value
+	 * body.justification
 	 */
 
 	var create_points = function(user, body){
-		body.id_motive = parseInt(body.id_motive)
-		var one_motive = [filter_field: "id" , filter_value:body.id_motive] 
-		//return get_list_motive(user)
-		return get_points_user(user, body).then((points_user) =>{
-			if(points_user == undefined){
-			}
+		var new_points_user = []
+		new_points_user.id_user = parseInt(body.id_user)
+		new_points_user.id_motives = parseInt(body.id_motives)
+		// traer puntos del usuario
+		// require body.id_user
+		return get_points_user(user, body).then((points_total_user) =>{
+			new_points_user.prev_points = (points_total_user[0].result!=undefined)? points_total_user[0].result : 0
+			var params = []
+			params.filter_field = "id"
+			params.filter_value = new_points_user.id_motives
+			return get_list_motive(user, params).then((motive) =>{
+				// en esta parte se revisa si el motivo no trae su valor en puntos, siendo así es requerido en el body
+				new_points_user.value = (motive.data[0].points == null || motive.data[0].points == 0)? parseInt(body.motive_value) : parseInt(motive.data[0].points)
+				new_points_user.justification = (motive.data[0].points == null || motive.data[0].points == undefined || motive.data[0].points == 0 )? body.justification : null
+				new_points_user.result = new_points_user.prev_points + new_points_user.value
+				return model_points.create(new_points_user).then(() =>{
+					var query = `UPDATE user SET user.points=${new_points_user.result} WHERE user.id=${new_points_user.id_user};`
+					// Acualiza puntaje de user en user tabla
+					return model_user.customQuery(query).then(()=>{
+						return { message : "points user update"}
+					})
+				})
+			})
 		})
 	}
 
@@ -1067,6 +1085,7 @@ FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
 	postMap.set('form', { method: create_entity_form, permits: Permissions.ADMIN })
 	postMap.set('type', { method: create_type, permits: Permissions.ADMIN })
 	postMap.set('question', { method: create_question, permits: Permissions.ADMIN })
+	postMap.set('points', { method: create_points, permits: Permissions.NONE })
 	/**
 	 * @api {put} api/service/service Update service information
 	 * @apiName Putservice
