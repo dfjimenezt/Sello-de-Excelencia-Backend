@@ -137,26 +137,27 @@ TRUNCATE TABLE `question`;
 
 #25
 TRUNCATE TABLE `questiontopic`;
-INSERT INTO questiontopic(id, id_category, name) VALUES
-('1', '1', 'Comunicacion Digital'),
-('2', '1', 'Conocimiento y Uso'),
-('3', '1', 'Estrategia Digital'),
-('4', '1', 'Gobernanza TI'),
-('5', '1', 'Seguimiento y Control'),
-('6', '1', 'Talento Digital'),
-
-('7', '2', 'Comunicacion Digital'),
-('8', '2', 'Conocimiento y Uso'),
-('9', '2', 'Estrategia Digital'),
-('10','2', 'Gobernanza Digital'),
-('11','2', 'Seguimiento y Control'),
-('12','2', 'Talento Digital'),
-
-('13','3', 'Conocimiento y Uso'),
-('14','3', 'Estrategia Digital'),
-('15','3', 'Gobernanza Digital'),
-('16','3', 'Seguimiento y Control'),
-('17','3', 'Talento Digital');
+INSERT INTO stamp.questiontopic(id, id_category, name) VALUES
+# Gobierno en Linea - Datos Abiertos
+('1', '1', '2', 'Comunicacion Digital'),
+('2', '1', '1', 'Conocimiento y Uso'),
+('3', '1', '2', 'Estrategia Digital'),
+('4', '1', '2', 'Gobernanza TI'),
+('5', '1', '1', 'Seguimiento y Control'),
+('6', '1', '2', 'Talento Digital'),
+# Gobierno en Linea - Requisitos de Participacion
+('7', '2', '2', 'Comunicacion Digital'),
+('8', '2', '1', 'Conocimiento y Uso'),
+('9', '2', '2', 'Estrategia Digital'),
+('10', '2', '2', 'Gobernanza Digital'),
+('11', '2', '1', 'Seguimiento y Control'),
+('12', '2', '2', 'Talento Digital'),
+# Servicios en Linea
+('13', '3', '1', 'Conocimiento y Uso'),
+('14', '3', '2', 'Estrategia Digital'),
+('15', '3', '2', 'Gobernanza Digital'),
+('16', '3', '1', 'Seguimiento y Control'),
+('17', '3', '2', 'Talento Digital');
 
 #26
 TRUNCATE TABLE `region`;
@@ -166,6 +167,7 @@ TRUNCATE TABLE `request_status`;
 INSERT INTO request_status(id, name) VALUES
 ('1', 'Pendiente'),
 ('2', 'Solicitado'),
+('3', 'Asignado'),
 ('3', 'Aceptado'),
 ('4', 'Rechazado');
 
