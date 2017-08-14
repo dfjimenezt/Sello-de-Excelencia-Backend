@@ -217,7 +217,7 @@ INSERT INTO type(id, name) VALUES
 
 #37
 TRUNCATE TABLE `type_banner`;
-INSERT INTO type(id, name) VALUES
+INSERT INTO type_banner(id, name) VALUES
 ('1', 'Foto y Texto'),
 ('2', 'Foto y Sombra'),
 ('3', 'Video y Texto');
