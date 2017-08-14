@@ -69,16 +69,28 @@ INSERT INTO user_role (`id_user`,`id_role`) VALUES ('2','1');
 /**
 *   Evaluador 1, id_user = 3
 */
-INSERT INTO user (`id`, `name`, `secondname`, `lastname`, `secondlastname`, `email`, `phone`, `mobile`, `active`, `verified`, `password`, `tmp_pwd`, `points`, `document`, `id_type_document`, `id_availability`, `education_level`, `ocupation`, `organization`, `id_country`, `id_city`, `id_region`) VALUES ('3', 'Carolina', 'Evaluador', '', '', 'crpulidog0@gmail.com', '0312456789', '3101234567', '1', '1', 'c3951cfdddb5b507d7e4ddb6071a2999f7048edbf5d7c8eeacbb820fd1960868', '0', '10', '1101175789', '1', '1', 'Universitario', 'Desempleado', 'unal', '42', '3136', '33');
+INSERT INTO user (`id`, `name`, `secondname`, `lastname`, `secondlastname`, `email`, `phone`, `mobile`, `active`, `verified`, `password`, `tmp_pwd`, `document`, `id_type_document`, `id_availability`, `education_level`, `ocupation`, `organization`, `id_country`, `id_city`, `id_region`, `terms`) VALUES ('3', 'Carolina', 'Evaluador', '', '', 'crpulidog0@gmail.com', '0312456789', '3101234567', '1', '1', 'c3951cfdddb5b507d7e4ddb6071a2999f7048edbf5d7c8eeacbb820fd1960868', '0', '1101175789', '1', '1', 'Universitario', 'Desempleado', 'unal', '42', '3136', '33', '1');
 INSERT INTO user_role (`id_user`,`id_role`) VALUES ('3','2');
+INSERT INTO user_category(`id_user`, `id_category`) VALUES ('3','1');
+INSERT INTO user_questiontopic(`id_user`, `id_topic`) VALUES ('3','2');
+INSERT INTO user_questiontopic(`id_user`, `id_topic`) VALUES ('3','3');
+INSERT INTO user_questiontopic(`id_user`, `id_topic`) VALUES ('3','4');
+INSERT INTO user_questiontopic(`id_user`, `id_topic`) VALUES ('3','8');
+INSERT INTO user_questiontopic(`id_user`, `id_topic`) VALUES ('3','9');
+INSERT INTO user_questiontopic(`id_user`, `id_topic`) VALUES ('3','10');
+INSERT INTO user_questiontopic(`id_user`, `id_topic`) VALUES ('3','11');
 
 /**
-*   Entidad 2, id_user = 4
+*   Entidad 2, id_user = 4, id_institution = 1
 */
 INSERT INTO user (`id`, `name`, `email`, `active`, `verified`, `password`, `tmp_pwd`, `points`, `terms`,  `id_region`, `id_city`) VALUES ('4', 'Entidad2', 'crpulidog1@gmail.com', '1', '1', 'c3951cfdddb5b507d7e4ddb6071a2999f7048edbf5d7c8eeacbb820fd1960868', '1', '13', '1',  '1', '3106');
-INSERT INTO institution (`id`, `name`, `nit`, `email`, `phone`, `extension_phone`, `legalrep_name`, `legalrep_secondname`, `legalrep_lastname`, `legalrep_secondlastname`, `legalrep_typedoc`, `legalrep_document`, `legalrep_email`, `id_region`, `id_city`) VALUES ('1', 'Entidad2', '22334455', 'crpulidog2@gmail.com', '3101111111', '11111','Pepito', 'Ramón', 'Perez', 'Espitia', '1', '1010000000', 'santiago@gmail.com', '1', '3106');
+INSERT INTO institution (`id`, `name`, `nit`, `email`, `phone`, `extension_phone`, `legalrep_name`, `legalrep_secondname`, `legalrep_lastname`, `legalrep_secondlastname`, `legalrep_typedoc`, `legalrep_document`, `legalrep_email`, `id_region`, `id_city`, `id_user_creator`) VALUES ('1', 'Entidad2', '22334455', 'crpulidog1@gmail.com', '3101111111', '11111','Pepito', 'Ramón', 'Perez', 'Espitia', '1', '1010000000', 'crpulidog2@gmail.com', '1', '3106', '4');
 INSERT INTO institution_user (`id_institution`,`id_user`) VALUES ('1', '4');
 INSERT INTO user_role (`id_user`,`id_role`) VALUES ('4','4');
+INSERT INTO service(`id_institution`, `id_user`, `id_category`, `name`, `url`, `test_user`, `test_password`, `is_service`, `is_product`, `current_status`) VALUES ('1', '4', '1', 'Pasado judicial en linea', 'mipasado.com', 'carito', '1234', '1', '0', '1') ;
+INSERT INTO service_status(`id_service`, `id_status`, `level`) VALUES ('1', '1', '1') ;
+INSERT INTO service_comment(`id_service`, `id_user`, `text`, `rate`) VALUES ('1', '2', 'Muy mal servicio', '2.3' ) ;
+
 
 /**
 *   Entidad 1, id_user = 5
