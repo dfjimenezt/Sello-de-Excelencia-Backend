@@ -812,6 +812,18 @@ JOIN stamp.type_document ON stamp.type_document.id = stamp.user.id_type_document
  	 * 
 	 */
 	var create_entity_service = function (user, body) {
+		var query = "SELECT * FROM stamp.institution_user WHERE id_user = " + user.id + ";"
+		return institution_user.customQuery(query).then((user_institution) => {
+-			body.id_user = user_institution[0].id_user
+-			body.id_institution = user_institution[0].id_institution
+-			body.current_status = 1
+-			return model_entity_service.create(body).then((service) => {
+-				return service_status.create({
+-					id_service: service.data.id,
+-					id_status: 1
+-				})
+-			})
+-		})
 		return model_entity_service.create(body)
 	}
 	/**
