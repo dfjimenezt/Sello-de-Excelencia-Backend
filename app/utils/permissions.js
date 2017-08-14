@@ -8,5 +8,5 @@ module.exports = {
 	ENTITY_USERS:"Manage_users",
 	ENTITY_SERVICE:"Manage_services",
 	FORUM:"Forum",
-	ADMNI:"Admin"
+	ADMIN:"Admin"
 }
