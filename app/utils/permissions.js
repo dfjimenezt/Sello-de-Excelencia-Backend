@@ -7,5 +7,6 @@ module.exports = {
 	EVALUATE:"Evaluate",
 	ENTITY_USERS:"Manage_users",
 	ENTITY_SERVICE:"Manage_services",
-	FORUM:"Forum"
+	FORUM:"Forum",
+	ADMNI:"Admin"
 }
