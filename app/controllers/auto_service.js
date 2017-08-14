@@ -22,6 +22,8 @@ var Media = require('../models/media.js')
 var Institution = require('../models/institution.js')
 var user_answer = require('../models/user_answer.js')
 var user = require('../models/user.js')
+var Points = require('../models/points.js')
+var Motives = require('../models/motives.js')
 var service_controller = function () {
 	var model_entity_service = new entity_service()
 	var model_category = new category()
@@ -36,6 +38,8 @@ var service_controller = function () {
 	var model_institution = new Institution()
 	var model_user_answer = new user_answer()
 	var model_user = new user()
+	var model_points = new Points()
+	var model_motives = new Motives()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -760,6 +764,38 @@ JOIN stamp.type_document ON stamp.type_document.id = stamp.user.id_type_document
 		})
 	}
 
+	/*
+	 * Obtener lista de motivos para puntos
+	 */
+	var get_list_motive = function(user, params){
+		return _get(model_motives,user,params) 
+	}
+
+	/* 
+	 * Obtener elemento de la tabla points entidades-evaluadores
+	 * obtiene la lista de puntos perdidos desde el más reciente hasta el último
+	 * muestra el puntaje total más reciente.
+	 * Obtiene el historial de los puntajes (total)
+	 */
+	var get_points_user = function(user, params){
+
+		if(params.points_lost != undefined && params.id_user != undefined){
+			var query = `SELECT *
+FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)}  AND q.value < 0 ORDER BY id DESC;` 
+			return model_motives.customQuery(query) 
+		}else if(params.points_total != undefined && params.id_user != undefined){
+			var query = `SELECT *
+FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)} ORDER BY id DESC;`
+			return model_motives.customQuery(query) 
+		}else if(params.id_user != undefined){
+			var query = `SELECT *
+FROM
+stamp.points p WHERE p.id =( SELECT MAX(id)
+FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
+		return model_motives.customQuery(query) 
+		}
+	}
+
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
 	getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
@@ -780,6 +816,8 @@ JOIN stamp.type_document ON stamp.type_document.id = stamp.user.id_type_document
 	getMap.set('list_users_admin', { method: list_users_admin, permits: Permissions.NONE}) // TODO: CHANGE PERMSIONS TO PLATFORM
 	getMap.set('list_postulations_admin', { method: list_postulations_admin, permits: Permissions.NONE}) // TODO: CHANGE PERMSIONS TO PLATFORM
 	getMap.set('list_requisites_admin', { method: list_requisites_admin, permits: Permissions.NONE}) // TODO: CHANGE PERMSIONS TO PLATFORM
+	getMap.set('list_motive', { method: get_list_motive, permits: Permissions.NONE })
+	getMap.set('points_user', { method: get_points_user, permits: Permissions.NONE })
 	
 	/**
 	 * @api {post} api/service/service Create service information
@@ -814,16 +852,16 @@ JOIN stamp.type_document ON stamp.type_document.id = stamp.user.id_type_document
 	var create_entity_service = function (user, body) {
 		var query = "SELECT * FROM stamp.institution_user WHERE id_user = " + user.id + ";"
 		return institution_user.customQuery(query).then((user_institution) => {
--			body.id_user = user_institution[0].id_user
--			body.id_institution = user_institution[0].id_institution
--			body.current_status = 1
--			return model_entity_service.create(body).then((service) => {
--				return service_status.create({
--					id_service: service.data.id,
--					id_status: 1
--				})
--			})
--		})
+			body.id_user = user_institution[0].id_user
+			body.id_institution = user_institution[0].id_institution
+			body.current_status = 1
+			return model_entity_service.create(body).then((service) => {
+				return service_status.create({
+					id_service: service.data.id,
+					id_status: 1
+				})
+			})
+		})
 		return model_entity_service.create(body)
 	}
 	/**
@@ -1004,7 +1042,23 @@ JOIN stamp.type_document ON stamp.type_document.id = stamp.user.id_type_document
 			})
 		}
 	}
-	
+
+	/*
+	 * crear puntos
+	 * body.id_user
+	 * body.id_motive
+	 */
+
+	var create_points = function(user, body){
+		body.id_motive = parseInt(body.id_motive)
+		var one_motive = [filter_field: "id" , filter_value:body.id_motive] 
+		//return get_list_motive(user)
+		return get_points_user(user, body).then((points_user) =>{
+			if(points_user == undefined){
+			}
+		})
+	}
+
 	postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE })
 	postMap.set('save_evidence', { method: save_service_evidence, permits: Permissions.ENTITY_SERVICE })
 	postMap.set('service_comment', { method: create_service_comment, permits: Permissions.FORUM })
