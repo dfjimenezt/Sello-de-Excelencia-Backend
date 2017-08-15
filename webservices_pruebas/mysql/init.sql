@@ -65,6 +65,11 @@ INSERT INTO user_role (`id_user`,`id_role`) VALUES ('1','3');
 */
 INSERT INTO user (`id`, `name`, `secondname`, `lastname`, `secondlastname`, `email`, `active`, `verified`, `password`, `tmp_pwd`) VALUES ('2', 'Carolina', 'Rosa', 'Pulido', 'Gómez', 'caropugo92@gmail.com', '1', '1', 'c3951cfdddb5b507d7e4ddb6071a2999f7048edbf5d7c8eeacbb820fd1960868', '0');
 INSERT INTO user_role (`id_user`,`id_role`) VALUES ('2','1');
+/**
+*   Ciudadano 2, id_user = 3
+*/
+INSERT INTO user (`id`, `name`, `secondname`, `lastname`, `secondlastname`, `email`, `active`, `verified`, `password`, `tmp_pwd`) VALUES ('6', 'Stella', 'Ciudadano', 'Pulido', 'Gómez', 'crpulidog3@gmail.com', '1', '1', 'c3951cfdddb5b507d7e4ddb6071a2999f7048edbf5d7c8eeacbb820fd1960868', '0');
+INSERT INTO user_role (`id_user`,`id_role`) VALUES ('6','1');
 
 /**
 *   Evaluador 1, id_user = 3
@@ -87,9 +92,74 @@ INSERT INTO user (`id`, `name`, `email`, `active`, `verified`, `password`, `tmp_
 INSERT INTO institution (`id`, `name`, `nit`, `email`, `phone`, `extension_phone`, `legalrep_name`, `legalrep_secondname`, `legalrep_lastname`, `legalrep_secondlastname`, `legalrep_typedoc`, `legalrep_document`, `legalrep_email`, `id_region`, `id_city`, `id_user_creator`) VALUES ('1', 'Entidad2', '22334455', 'crpulidog1@gmail.com', '3101111111', '11111','Pepito', 'Ramón', 'Perez', 'Espitia', '1', '1010000000', 'crpulidog2@gmail.com', '1', '3106', '4');
 INSERT INTO institution_user (`id_institution`,`id_user`) VALUES ('1', '4');
 INSERT INTO user_role (`id_user`,`id_role`) VALUES ('4','4');
-INSERT INTO service(`id_institution`, `id_user`, `id_category`, `name`, `url`, `test_user`, `test_password`, `is_service`, `is_product`, `current_status`) VALUES ('1', '4', '1', 'Pasado judicial en linea', 'mipasado.com', 'carito', '1234', '1', '0', '1') ;
+/**
+*	Servicios
+*/
+INSERT INTO service(`id_institution`, `id_user`, `id_category`, `name`, `url`, `test_user`, `test_password`, `is_service`, `is_product`, `current_status`) VALUES ('1', '4', '2', 'Pasado judicial en linea', 'mipasado.com', 'carito', '1234', '1', '0', '1') ;
 INSERT INTO service_status(`id_service`, `id_status`, `level`) VALUES ('1', '1', '1') ;
 INSERT INTO service_comment(`id_service`, `id_user`, `text`, `rate`) VALUES ('1', '2', 'Muy mal servicio', '2.3' ) ;
+INSERT INTO service_comment(`id_service`, `id_user`, `text`, `rate`) VALUES ('1', '6', 'Muy buen servicio', '4.5' ) ;
+
+INSERT INTO service(`id_institution`, `id_user`, `id_category`, `name`, `url`, `test_user`, `test_password`, `is_service`, `is_product`, `current_status`) VALUES ('1', '4', '3', 'Certificado de defunción en linea', 'midef.com', 'carito', '1234', '1', '0', '1') ;
+INSERT INTO service_status(`id_service`, `id_status`, `level`) VALUES ('2', '1', '3') ;
+INSERT INTO service_comment(`id_service`, `id_user`, `text`, `rate`) VALUES ('2', '2', 'Muy buen servicio', '4.6' ) ;
+INSERT INTO service_comment(`id_service`, `id_user`, `text`, `rate`) VALUES ('2', '6', 'Muy buen servicio', '4.5' ) ;
+
+INSERT INTO service(`id_institution`, `id_user`, `id_category`, `name`, `url`, `test_user`, `test_password`, `is_service`, `is_product`, `current_status`) VALUES ('1', '4', '2', 'Certificado de matrimonio en linea', 'matricidio.com', 'carito', '1234', '1', '0', '1') ;
+INSERT INTO service_status(`id_service`, `id_status`, `level`) VALUES ('3', '1', '1') ;
+INSERT INTO service_comment(`id_service`, `id_user`, `text`, `rate`) VALUES ('3', '2', 'Muy buen servicio', '4.6' ) ;
+INSERT INTO service_comment(`id_service`, `id_user`, `text`, `rate`) VALUES ('3', '6', 'Muy buen servicio', '4.5' ) ;
+/**
+*	Entity user answer
+*/
+INSERT INTO user_answer(`id_question`, `requisite`, `support_legal`, `justification`, `evidence`,`help`) 
+SELECT q.id,q.text,q.legal_support,q.criteria,q.evidence,q.help FROM stamp.question q 
+JOIN (SELECT id, name, level FROM stamp.questiontopic qt
+RIGHT JOIN (SELECT id_category, level FROM stamp.service s
+LEFT JOIN stamp.service_status s_s ON s.id = s_s.id_service WHERE s_s.id_service = 1) 
+join1 ON qt.id_category = join1.id_category) 
+join2 ON q.id_topic = join2.id WHERE q.level <= join2.level ORDER BY q.id;
+# Service 1 del 32 al 46 y 1 a 12
+UPDATE user_answer SET id_user = '4' WHERE id_question>= '32' AND id_question <= '46' AND id<=12;
+UPDATE user_answer SET id_service = '1' WHERE id_question>= '32' AND id_question <= '46' AND id<=12;
+UPDATE user_answer SET id_status = '1' WHERE id_question>= '32' AND id_question <= '46' AND id<=12;
+
+INSERT INTO user_answer(`id_question`, `requisite`, `support_legal`, `justification`, `evidence`,`help`) 
+SELECT q.id,q.text,q.legal_support,q.criteria,q.evidence,q.help FROM stamp.question q 
+JOIN (SELECT id, name, level FROM stamp.questiontopic qt
+RIGHT JOIN (SELECT id_category, level FROM stamp.service s
+LEFT JOIN stamp.service_status s_s ON s.id = s_s.id_service WHERE s_s.id_service = 2) 
+join1 ON qt.id_category = join1.id_category) 
+join2 ON q.id_topic = join2.id WHERE q.level <= join2.level ORDER BY q.id;
+# Service 2 del 63 a 94 y 13 a 47
+UPDATE user_answer SET id_user = '4' WHERE id_question>= '63' AND id_question <= '94' AND id>= 13 AND id<=47;
+UPDATE user_answer SET id_service = '2' WHERE id_question>= '63' AND id_question <= '94' AND id>= 13 AND id<=47;
+UPDATE user_answer SET id_status = '1' WHERE id_question>= '63' AND id_question <= '94' AND id>= 13 AND id<=47;
+
+INSERT INTO user_answer(`id_question`, `requisite`, `support_legal`, `justification`, `evidence`,`help`) 
+SELECT q.id,q.text,q.legal_support,q.criteria,q.evidence,q.help FROM stamp.question q 
+JOIN (SELECT id, name, level FROM stamp.questiontopic qt
+RIGHT JOIN (SELECT id_category, level FROM stamp.service s
+LEFT JOIN stamp.service_status s_s ON s.id = s_s.id_service WHERE s_s.id_service = 3) 
+join1 ON qt.id_category = join1.id_category) 
+join2 ON q.id_topic = join2.id WHERE q.level <= join2.level ORDER BY q.id;
+# Service 2 del 63 a 94 y 13 a 47
+UPDATE user_answer SET id_user = '4' WHERE id_question>= '63' AND id_question <= '94' AND id>= 13 AND id<=47;
+UPDATE user_answer SET id_service = '2' WHERE id_question>= '63' AND id_question <= '94' AND id>= 13 AND id<=47;
+UPDATE user_answer SET id_status = '1' WHERE id_question>= '63' AND id_question <= '94' AND id>= 13 AND id<=47;
+/**
+SELECT *
+FROM stamp.question q 
+RIGHT JOIN
+(SELECT id, name, level FROM stamp.questiontopic qt
+RIGHT JOIN (SELECT id_category, level FROM stamp.service ser
+LEFT JOIN stamp.service_status s_s ON ser.id = s_s.id_service WHERE s_s.id_service = 1) 
+join1 ON qt.id_category = join1.id_category) join2 ON q.id_topic = join2.id WHERE q.level <= join2.level ORDER BY q.id;
+*/
+
+
+INSERT INTO media (`url`, `type`) VALUES ('https://www.youtube.com/watch?v=JpKxJeuk4kE', 'video');
+INSERT INTO media (`url`, `type`) VALUES ('https://www.youtube.com/watch?v=CTK46mTNWkU', 'video');
 
 
 /**
@@ -100,9 +170,5 @@ INSERT INTO service_comment(`id_service`, `id_user`, `text`, `rate`) VALUES ('1'
 #INSERT INTO institution_user (`id_institution`,`id_user`) VALUES ('2', '5');
 #INSERT INTO user_role (`id_user`,`id_role`) VALUES ('5','4');
 
-/**
-*	Servicios
-*/
-# Entidad 1 , id_service = 1
 
 SET FOREIGN_KEY_CHECKS=1;
