@@ -748,10 +748,45 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 		})
 	}
 
+	/*
+	 * Crear question
+	 */
+	var create_question = function(user, body){
+		if(body.id_topic){
+			body.id_topic = parseInt(body.id_topic)
+		}else{
+			return { message: "se requiere id_topic" }
+		}
+		if(body.level){
+			body.level = parseInt(body.level)
+		}else{
+			return { message: "se requiere level" }
+		}
+		if(body.text == undefined){
+			return { message: "se requiere text" }
+		}
+		if(body.criteria == undefined){
+			return { message: "se requiere criteria" }
+		}
+		if(body.evidence == undefined){
+			return { message: "se requiere evidence" }
+		}
+		if(body.legal_support == undefined){
+			return { message: "se requiere legal_support" }
+		}
+		if(body.help == undefined){
+			return { message: "se requiere help" }
+		}
+		return model_questions.create(body).then(() => {
+			return { message: "Question creado" }
+		})
+	}
+
 	postMap.set('evaluation_request', { method: create_entity_evaluation_request, permits: Permissions.EVALUATE })
 	postMap.set('user_answer', { method: create_entity_user_answer, permits: Permissions.EVALUATE })
 	postMap.set('request_status', { method: create_request_status, permits: Permissions.ADMIN })
 	postMap.set('add_service_evaluator', { method: add_service_evaluator, permits: Permissions.EVALUATE })
+	postMap.set('question', { method: create_question, permits: Permissions.ADMIN })
 	
 	/**postMap.set('add_service_evaluator', { method: add_service_evaluator, permits: Permissions.EVALUATE })
 	 * @api {put} api/question/evaluation_request Update evaluation_request information
