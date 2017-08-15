@@ -1152,6 +1152,29 @@ RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${param
         })
     }
 
+
+	/*
+	 * body.id_category
+	 * body.text
+	 */
+	var create_questions_category = function(user, body){
+		var params = []
+		params.id_category = parseInt(body.id_category)
+		params.text = body.text
+		return model_category_questions.create(params).then(() =>{
+			return { message: "nueva pregunta al ciudadano creada" }
+		})
+	}
+
+	var create_motives = function(user, body){
+		var params = []
+		if(body.name != undefined && body.points != undefined){
+			params.name = body.name
+
+		}
+		return { message: "debe enviar name y points para nuevo motivo"}
+	}
+
     postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE })
     postMap.set('save_evidence', { method: save_service_evidence, permits: Permissions.ENTITY_SERVICE })
     postMap.set('service_comment', { method: create_service_comment, permits: Permissions.FORUM })
@@ -1160,7 +1183,9 @@ RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${param
     postMap.set('form', { method: create_entity_form, permits: Permissions.ADMIN })
     postMap.set('type', { method: create_type, permits: Permissions.ADMIN })
     postMap.set('question', { method: create_question, permits: Permissions.ADMIN })
-    postMap.set('points', { method: create_points, permits: Permissions.NONE })
+    postMap.set('points', { method: create_points, permits: Permissions.ADMIN })
+    postMap.set('questions_category', { method: create_questions_category, permits: Permissions.ADMIN })
+    postMap.set('motives', { method: create_motives, permits: Permissions.ADMIN })
         /**
          * @api {put} api/service/service Update service information
          * @apiName Putservice
