@@ -815,6 +815,22 @@ FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
 			}) 
 		}
 	}
+	/*
+	 * traer usuario
+	 */
+	var get_users = function(user, params){
+		var query = ""
+		if(params.id_role != undefined){
+			query = `SELECT id_user as id, name, lastname, email, active, timestamp
+			FROM stamp.user_role u_r
+			LEFT JOIN stamp.user u ON u_r.id_role = u.id WHERE id_role = ${parseInt(params.id_role)};`
+			return model_user.customQuery(query)
+		}
+		if(params.id_user){
+			return model_user.getByUid(parseInt(params.id_user))
+		}
+		//return _get(model_user, user, params)
+	}
 
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
@@ -838,6 +854,7 @@ FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
 	getMap.set('list_requisites_admin', { method: list_requisites_admin, permits: Permissions.NONE}) // TODO: CHANGE PERMSIONS TO PLATFORM
 	getMap.set('list_motive', { method: get_list_motive, permits: Permissions.NONE })
 	getMap.set('points_user', { method: get_points_user, permits: Permissions.NONE })
+	getMap.set('users', { method: get_users, permits: Permissions.NONE })
 	
 	/**
 	 * @api {post} api/service/service Create service information

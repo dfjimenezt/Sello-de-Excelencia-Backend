@@ -30,11 +30,15 @@ var Auth = function() {
      * activates an user email
      */
     var activate = function(token, params) {
-        if (!params.email) { throw utiles.informError(400) }
-        return userModel.getUser(params.email).then((user) => {
-            if (!user) throw utiles.informError(202) // user doesnt exists      
-            return userModel.update({ active: 1, verified: 1 }, { id: user.id })
-        })
+			if (!params.email) { throw utiles.informError(400) }
+			return userModel.getUser(params.email).then((user) => {
+				if (!user) throw utiles.informError(202) // user doesnt exists
+				if (params.active != undefined && parseInt(params.active) >= 0 && parseInt(params.active) <=1){
+					return userModel.update({ active: parseInt(params.active), verified: 1 }, { id: user.id })
+				}else{
+					return { message : "debe tener un argumeto active[0,1][inactivo, activo]" }
+				}
+			})
     }
 
     getMap.set("activate", { method: activate, permits: Permissions.NONE })
@@ -311,8 +315,8 @@ var Auth = function() {
 												<p> Hola ${body.name} </p>
                         <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia </p>
                         <p>Tu nueva contraseña para acceder es: ${pass_user} </p><p></p>
-                        <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}'>Haz click aquí para activar tu cuenta </a></p>
-                        <p><a href='http://localhost:3000/api/auth/activate?token=${token}&email=${body.email}'> Haz click aqui para activar tu cuenta(localhost only dbg) </a> </p>
+                        <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}&active=1'>Haz click aquí para activar tu cuenta </a></p>
+                        <p><a href='http://localhost:3000/api/auth/activate?token=${token}&email=${body.email}&active=1'> Haz click aqui para activar tu cuenta(localhost only dbg) </a> </p>
                         <p>Nuestros mejores deseos,</p>
 
                         <p>El equipo del Sello de Excelencia</p>
