@@ -25,6 +25,7 @@ var user = require('../models/user.js')
 var Points = require('../models/points.js')
 var Motives = require('../models/motives.js')
 var category_questions = require('../models/category_questions.js')
+var service = require('../models/service.js')
 var service_controller = function() {
     var model_entity_service = new entity_service()
     var model_category = new category()
@@ -42,6 +43,7 @@ var service_controller = function() {
     var model_points = new Points()
     var model_motives = new Motives()
     var model_category_questions = new category_questions()
+    var model_service = new service()
         //---------------------------------------------------------------
     var getMap = new Map(),
         postMap = new Map(),
@@ -802,40 +804,24 @@ FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)} AND q.id_motiv
 FROM
 stamp.points p WHERE p.id =( SELECT MAX(id)
 FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
-		}else{
-			return { message : "no asignó un usuario con qué consultar" }
-		}
-		if(query != ""){
-			return model_points.customQuery(query).then((list_points) => {
-				if(params.id_motives == undefined){
-					return { message: message, total: list_points.length, list_points: list_points }
-				}else{
-					var params_motives = []
-					params_motives.filter_field = "id"
-					params_motives.filter_value = params.id_motives
-					return get_list_motive(user, params_motives).then((motive) =>{
-						return { message : "Filtrado por motivo "+ motive.data[0].name, total: list_points.length, list_points: list_points }
-					})
-				}
-			}) 
-		}
-	}
-	/*
-	 * traer usuario
-	 */
-	var get_users = function(user, params){
-		var query = ""
-		if(params.id_role != undefined){
-			query = `SELECT id_user as id, name, lastname, email, active, timestamp
-			FROM stamp.user_role u_r
-			LEFT JOIN stamp.user u ON u_r.id_role = u.id WHERE id_role = ${parseInt(params.id_role)};`
-			return model_user.customQuery(query)
-		}
-		if(params.id_user){
-			return model_user.getByUid(parseInt(params.id_user))
-		}
-		//return _get(model_user, user, params)
-	}
+        } else {
+            return { message: "no asignó un usuario con qué consultar" }
+        }
+        if (query != "") {
+            return model_points.customQuery(query).then((list_points) => {
+                if (params.id_motives == undefined) {
+                    return { message: message, total: list_points.length, list_points: list_points }
+                } else {
+                    var params_motives = []
+                    params_motives.filter_field = "id"
+                    params_motives.filter_value = params.id_motives
+                    return get_list_motive(user, params_motives).then((motive) => {
+                        return { message: "Filtrado por motivo " + motive.data[0].name, total: list_points.length, list_points: list_points }
+                    })
+                }
+            })
+        }
+    }
 
     /**
      * Muestra las preguntas que debe calificar el ciudadano proporcionando
@@ -860,160 +846,157 @@ RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${param
             return encuesta
         });
     }
-	/*
-	 * Traer todas las pregunstas para el ciudadano
-	 */
-	var get_questions_category = function(user, params){
-		return _get(model_category_questions, user, params)
+
+	var get_all_services = function (token, params){
+		return model_service.getAll(params);
 	}
 
-	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
-	getMap.set('category', { method: get_category, permits: Permissions.NONE })
-	getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
-	getMap.set('form', { method: get_entity_form, permits: Permissions.NONE })
-	getMap.set('type', { method: get_type, permits: Permissions.NONE })
-	getMap.set('question', { method: get_question, permits: Permissions.NONE })
-	getMap.set('question', { method: get_question, permits: Permissions.NONE })
-	getMap.set('service_category', { method: get_entity_service_category, permits: Permissions.NONE })
-	getMap.set('service_institution_name', { method: get_entity_service_institution_name, permits: Permissions.NONE })
-	getMap.set('service_name', { method: get_entity_service_name, permits: Permissions.NONE })
-	getMap.set('list_institutions', { method: get_filtered_list_institutions, permits: Permissions.NONE })
-	getMap.set('table_institutions', { method: get_filtered_list_institutions_csv, permits: Permissions.NONE })
-	getMap.set('list_by_status', { method: list_by_status, permits: Permissions.ENTITY_SERVICE })
-	getMap.set('service_info', { method: get_service_info, permits: Permissions.ENTITY_SERVICE })
-	getMap.set('service_comments', { method: get_service_comments, permits: Permissions.ENTITY_SERVICE })
-	getMap.set('process_service', { method: get_service_process, permits: Permissions.NONE})
-	getMap.set('list_services_selectable', { method: get_filtered_list_services_for_select, permits: Permissions.NONE})
-	getMap.set('list_users_admin', { method: list_users_admin, permits: Permissions.NONE}) // TODO: CHANGE PERMSIONS TO PLATFORM
-	getMap.set('list_postulations_admin', { method: list_postulations_admin, permits: Permissions.NONE}) // TODO: CHANGE PERMSIONS TO PLATFORM
-	getMap.set('list_requisites_admin', { method: list_requisites_admin, permits: Permissions.NONE}) // TODO: CHANGE PERMSIONS TO PLATFORM
-	getMap.set('list_motive', { method: get_list_motive, permits: Permissions.NONE })
-	getMap.set('points_user', { method: get_points_user, permits: Permissions.NONE })
-	getMap.set('users', { method: get_users, permits: Permissions.NONE })
-	getMap.set('questions_calification', { method: get_questions_calificate_citizien, permits: Permissions.NONE }) // Revisar los permisos
-	getMap.set('questions_category', { method: get_questions_category, permits: Permissions.NONE })
+    getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
+    getMap.set('category', { method: get_category, permits: Permissions.NONE })
+    getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
+    getMap.set('form', { method: get_entity_form, permits: Permissions.NONE })
+    getMap.set('type', { method: get_type, permits: Permissions.NONE })
+    getMap.set('question', { method: get_question, permits: Permissions.NONE })
+    getMap.set('question', { method: get_question, permits: Permissions.NONE })
+    getMap.set('service_category', { method: get_entity_service_category, permits: Permissions.NONE })
+    getMap.set('service_institution_name', { method: get_entity_service_institution_name, permits: Permissions.NONE })
+    getMap.set('service_name', { method: get_entity_service_name, permits: Permissions.NONE })
+    getMap.set('list_institutions', { method: get_filtered_list_institutions, permits: Permissions.NONE })
+    getMap.set('table_institutions', { method: get_filtered_list_institutions_csv, permits: Permissions.NONE })
+    getMap.set('list_by_status', { method: list_by_status, permits: Permissions.ENTITY_SERVICE })
+    getMap.set('service_info', { method: get_service_info, permits: Permissions.ENTITY_SERVICE })
+    getMap.set('service_comments', { method: get_service_comments, permits: Permissions.ENTITY_SERVICE })
+    getMap.set('process_service', { method: get_service_process, permits: Permissions.NONE })
+    getMap.set('list_services_selectable', { method: get_filtered_list_services_for_select, permits: Permissions.NONE })
+    getMap.set('list_users_admin', { method: list_users_admin, permits: Permissions.NONE }) // TODO: CHANGE PERMSIONS TO PLATFORM
+    getMap.set('list_postulations_admin', { method: list_postulations_admin, permits: Permissions.NONE }) // TODO: CHANGE PERMSIONS TO PLATFORM
+    getMap.set('list_requisites_admin', { method: list_requisites_admin, permits: Permissions.NONE }) // TODO: CHANGE PERMSIONS TO PLATFORM
+    getMap.set('list_motive', { method: get_list_motive, permits: Permissions.NONE })
+    getMap.set('points_user', { method: get_points_user, permits: Permissions.NONE })
+    getMap.set('questions_calification', { method: get_questions_calificate_citizien, permits: Permissions.NONE }) // Revisar los permisos
+    getMap.set('all_services', { method: get_all_services, permits: Permissions.NONE }) // Revisar los permisos
 
-	/**
-	 * @api {post} api/service/service Create service information
-	 * @apiName Postservice
-	 * @apiGroup service
-	 * @apiVersion 1.0.1
-	 * 
-	 * @apiParam {Number} id 
-	 * @apiParam {String} name 
-	 * @apiParam {Text} url 
-	 * @apiParam {Number} id_category 
-	 * @apiParam {Number} id_institution 
-	 * @apiParam {Number} id_user 
-	 * @apiParam {String} hash 
-	 * @apiParam {Number} rate 
-	 * @apiParam {String} test_user 
-	 * @apiParam {String} test_password 
-	 * @apiParam {Boolean} is_active 
-	 * @apiParam {Boolean} is_product 
-	 * @apiParam {Boolean} is_service 
-	 * @apiParam {Date} timestamp 
-	 * @apiParam {Number} current_status 
-	 * @apiParam {Array} roles 
-	 * @apiParam {Object} category 
-	 * @apiParam {Object} institution 
-	 * @apiParam {Array} history 
-	 * @apiParam {Object} status 
-	 * @apiParam {Array} comments 
-	 * @apiParam {Array} requirements 
- 	 * 
-	 */
-	var create_entity_service = function (user, body) {
-		var query = "SELECT * FROM stamp.institution_user WHERE id_user = " + user.id + ";"
-		return institution_user.customQuery(query).then((user_institution) => {
-			body.id_user = user_institution[0].id_user
-			body.id_institution = user_institution[0].id_institution
-			body.current_status = 1
-			return model_entity_service.create(body).then((service) => {
-				return service_status.create({
-					id_service: service.data.id,
-					id_status: 1
-				})
-			})
-		})
-		return model_entity_service.create(body)
-	}
-	/**
-	 * @api {post} api/service/category Create category information
-	 * @apiName Postcategory
-	 * @apiGroup service
-	 * @apiVersion 1.0.1
-	 * 
-	 * @apiParam {Number} id 
-	 * @apiParam {String} name 
- 	 * 
-	 */
-	var create_category = function (user, body) {
-		return model_category.create(body)
-	}
-	/**
-	 * @api {post} api/service/questiontopic Create questiontopic information
-	 * @apiName Postquestiontopic
-	 * @apiGroup service
-	 * @apiVersion 1.0.1
-	 * 
-	 * @apiParam {Number} id 
-	 * @apiParam {String} name 
-	 * @apiParam {Number} id_usertype 
-	 * @apiParam {Number} id_category 
- 	 * 
-	 */
-	var create_questiontopic = function (user, body) {
-		return model_questiontopic.create(body)
-	}
-	/**
-	 * @api {post} api/service/form Create form information
-	 * @apiName Postform
-	 * @apiGroup service
-	 * @apiVersion 1.0.1
-	 * 
-	 * @apiParam {Number} id 
-	 * @apiParam {String} name 
-	 * @apiParam {Number} id_category 
-	 * @apiParam {Date} timestamp 
-	 * @apiParam {Object} category 
- 	 * 
-	 */
-	var create_entity_form = function (user, body) {
-		return model_entity_form.create(body)
-	}
-	/**
-	 * @api {post} api/service/type Create type information
-	 * @apiName Posttype
-	 * @apiGroup service
-	 * @apiVersion 1.0.1
-	 * 
-	 * @apiParam {Number} id 
-	 * @apiParam {String} name 
- 	 * 
-	 */
-	var create_type = function (user, body) {
-		return model_type.create(body)
-	}
-	/**
-	 * @api {post} api/service/question Create question information
-	 * @apiName Postquestion
-	 * @apiGroup service
-	 * @apiVersion 1.0.1
-	 * 
-	 * @apiParam {Number} id 
-	 * @apiParam {Number} id_topic 
-	 * @apiParam {Number} level 
-	 * @apiParam {Text} text 
-	 * @apiParam {Text} criteria 
-	 * @apiParam {Text} evidence 
-	 * @apiParam {Text} legal_support 
-	 * @apiParam {Text} help 
- 	 * 
-	 */
-	var create_question = function (user, body) {
-		return model_question.create(body)
-	}
+    /**
+     * @api {post} api/service/service Create service information
+     * @apiName Postservice
+     * @apiGroup service
+     * @apiVersion 1.0.1
+     * 
+     * @apiParam {Number} id 
+     * @apiParam {String} name 
+     * @apiParam {Text} url 
+     * @apiParam {Number} id_category 
+     * @apiParam {Number} id_institution 
+     * @apiParam {Number} id_user 
+     * @apiParam {String} hash 
+     * @apiParam {Number} rate 
+     * @apiParam {String} test_user 
+     * @apiParam {String} test_password 
+     * @apiParam {Boolean} is_active 
+     * @apiParam {Boolean} is_product 
+     * @apiParam {Boolean} is_service 
+     * @apiParam {Date} timestamp 
+     * @apiParam {Number} current_status 
+     * @apiParam {Array} roles 
+     * @apiParam {Object} category 
+     * @apiParam {Object} institution 
+     * @apiParam {Array} history 
+     * @apiParam {Object} status 
+     * @apiParam {Array} comments 
+     * @apiParam {Array} requirements 
+     * 
+     */
+    var create_entity_service = function(user, body) {
+            var query = "SELECT * FROM stamp.institution_user WHERE id_user = " + user.id + ";"
+            return institution_user.customQuery(query).then((user_institution) => {
+                body.id_user = user_institution[0].id_user
+                body.id_institution = user_institution[0].id_institution
+                body.current_status = 1
+                return model_entity_service.create(body).then((service) => {
+                    return service_status.create({
+                        id_service: service.data.id,
+                        id_status: 1
+                    })
+                })
+            })
+            return model_entity_service.create(body)
+        }
+        /**
+         * @api {post} api/service/category Create category information
+         * @apiName Postcategory
+         * @apiGroup service
+         * @apiVersion 1.0.1
+         * 
+         * @apiParam {Number} id 
+         * @apiParam {String} name 
+         * 
+         */
+    var create_category = function(user, body) {
+            return model_category.create(body)
+        }
+        /**
+         * @api {post} api/service/questiontopic Create questiontopic information
+         * @apiName Postquestiontopic
+         * @apiGroup service
+         * @apiVersion 1.0.1
+         * 
+         * @apiParam {Number} id 
+         * @apiParam {String} name 
+         * @apiParam {Number} id_usertype 
+         * @apiParam {Number} id_category 
+         * 
+         */
+    var create_questiontopic = function(user, body) {
+            return model_questiontopic.create(body)
+        }
+        /**
+         * @api {post} api/service/form Create form information
+         * @apiName Postform
+         * @apiGroup service
+         * @apiVersion 1.0.1
+         * 
+         * @apiParam {Number} id 
+         * @apiParam {String} name 
+         * @apiParam {Number} id_category 
+         * @apiParam {Date} timestamp 
+         * @apiParam {Object} category 
+         * 
+         */
+    var create_entity_form = function(user, body) {
+            return model_entity_form.create(body)
+        }
+        /**
+         * @api {post} api/service/type Create type information
+         * @apiName Posttype
+         * @apiGroup service
+         * @apiVersion 1.0.1
+         * 
+         * @apiParam {Number} id 
+         * @apiParam {String} name 
+         * 
+         */
+    var create_type = function(user, body) {
+            return model_type.create(body)
+        }
+        /**
+         * @api {post} api/service/question Create question information
+         * @apiName Postquestion
+         * @apiGroup service
+         * @apiVersion 1.0.1
+         * 
+         * @apiParam {Number} id 
+         * @apiParam {Number} id_topic 
+         * @apiParam {Number} level 
+         * @apiParam {Text} text 
+         * @apiParam {Text} criteria 
+         * @apiParam {Text} evidence 
+         * @apiParam {Text} legal_support 
+         * @apiParam {Text} help 
+         * 
+         */
+    var create_question = function(user, body) {
+        return model_question.create(body)
+    }
 
     var create_service_comment = function(user, body) {
         body.id_user = user.id
