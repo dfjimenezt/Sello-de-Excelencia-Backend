@@ -860,6 +860,12 @@ RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${param
             return encuesta
         });
     }
+	/*
+	 * Traer todas las pregunstas para el ciudadano
+	 */
+	var get_questions_category = function(user, params){
+		return _get(model_category_questions, user, params)
+	}
 
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
@@ -884,7 +890,8 @@ RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${param
 	getMap.set('list_motive', { method: get_list_motive, permits: Permissions.NONE })
 	getMap.set('points_user', { method: get_points_user, permits: Permissions.NONE })
 	getMap.set('users', { method: get_users, permits: Permissions.NONE })
-    getMap.set('questions_calification', { method: get_questions_calificate_citizien, permits: Permissions.NONE }) // Revisar los permisos
+	getMap.set('questions_calification', { method: get_questions_calificate_citizien, permits: Permissions.NONE }) // Revisar los permisos
+	getMap.set('questions_category', { method: get_questions_category, permits: Permissions.NONE })
 
 	/**
 	 * @api {post} api/service/service Create service information
