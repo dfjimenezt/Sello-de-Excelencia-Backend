@@ -1149,11 +1149,18 @@ RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${param
 		})
 	}
 
+	/*
+	 * body.points
+	 * body.name
+	 */
 	var create_motives = function(user, body){
 		var params = []
 		if(body.name != undefined && body.points != undefined){
 			params.name = body.name
-
+			params.points = parseInt(body.points)
+			return model_motives.create(params).then(() =>{
+				return { message: "Creado motivo" }
+			})
 		}
 		return { message: "debe enviar name y points para nuevo motivo"}
 	}
@@ -1296,12 +1303,27 @@ RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${param
         }
         return model_question.update(body, { id: body.id })
     }
+
+	/*
+	 * body.id
+	 * body.points
+	 */
+	var update_motives = function(user, body){
+		if(body.id != undefined && body.points != undefined){
+			var query=`UPDATE motives m SET m.points=${parseInt(body.points)} WHERE m.id=${parseInt(body.id)};`
+			return model_motives.customQuery(query).then(() =>{
+				return { message: "Motivo update" }
+			})
+		}
+		return { message: "no se pudo actualizar los puntos del motivo" }
+	}
     putMap.set('service', { method: update_entity_service, permits: Permissions.ADMIN })
     putMap.set('category', { method: update_category, permits: Permissions.ADMIN })
     putMap.set('questiontopic', { method: update_questiontopic, permits: Permissions.ADMIN })
     putMap.set('form', { method: update_entity_form, permits: Permissions.ADMIN })
     putMap.set('type', { method: update_type, permits: Permissions.ADMIN })
     putMap.set('question', { method: update_question, permits: Permissions.ADMIN })
+    putMap.set('motives', { method: update_motives, permits: Permissions.ADMIN })
         /**
          * @api {delete} api/service/service Delete service information
          * @apiName Deleteservice
