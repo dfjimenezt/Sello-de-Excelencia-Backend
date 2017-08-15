@@ -837,6 +837,30 @@ FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
 		//return _get(model_user, user, params)
 	}
 
+    /**
+     * Muestra las preguntas que debe calificar el ciudadano proporcionando
+     * el id del servicio.
+     * 
+     * /service/questions_calification?id_service=1
+     */
+    var get_questions_calificate_citizien = function(token, params) {
+        var query = ""
+        if (params.id_service) {
+            query = `
+SELECT DISTINCT cq.text FROM stamp.category_questions cq 
+RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${params.id_service}' AND cq.text IS NOT NULL; `
+            console.log(query)
+        }
+        return model_category_questions.customQuery(query).then(function(preguntas) {
+            var encuesta = []
+            for (var i in preguntas){
+                if(preguntas[i].text != null)
+					encuesta.push(preguntas[i].text)
+            }
+            return encuesta
+        });
+    }
+
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
 	getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
@@ -860,7 +884,8 @@ FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
 	getMap.set('list_motive', { method: get_list_motive, permits: Permissions.NONE })
 	getMap.set('points_user', { method: get_points_user, permits: Permissions.NONE })
 	getMap.set('users', { method: get_users, permits: Permissions.NONE })
-	
+    getMap.set('questions_calification', { method: get_questions_calificate_citizien, permits: Permissions.NONE }) // Revisar los permisos
+
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice
