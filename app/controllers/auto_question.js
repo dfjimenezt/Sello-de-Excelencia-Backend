@@ -14,12 +14,14 @@ var evaluation_request = require('../models/evaluation_request.js')
 var entity_user_answer = require('../models/entity_user_answer.js')
 var request_status = require('../models/request_status.js')
 var entity_service = require('../models/entity_service.js')
+var questions = require('../models/question.js')
 var question_controller = function () {
 	var model_entity_evaluation_request = new entity_evaluation_request()
 	var model_evaluation_request = new evaluation_request()
 	var model_entity_user_answer = new entity_user_answer()
 	var model_request_status = new request_status()
 	var model_entity_service = new entity_service()
+	var model_questions = new questions()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -645,6 +647,11 @@ AND (stamp.evaluation_request.result = 1 OR stamp.evaluation_request.result = 0)
 ;`
 		return model_entity_service.customQuery(query) 
 	}
+	
+	var get_services_questions_and_status = function(token, params){
+		return model_questions.getFiltered(params)
+	}
+	
 	getMap.set('evaluation_request', { method: get_entity_evaluation_request, permits: Permissions.NONE })
 	getMap.set('user_answer', { method: get_entity_user_answer, permits: Permissions.NONE })
 	getMap.set('request_status', { method: get_request_status, permits: Permissions.NONE })
@@ -654,6 +661,7 @@ AND (stamp.evaluation_request.result = 1 OR stamp.evaluation_request.result = 0)
 	getMap.set('get_services_in_process', { method: get_services_in_process, permits: Permissions.EVALUATE })
 	getMap.set('get_evaluating_requisite', { method: get_evaluating_requisite, permits: Permissions.EVALUATE })
 	getMap.set('get_evaluated_services', { method: get_evaluated_services, permits: Permissions.EVALUATE })
+	getMap.set('services_questions_status', { method: get_services_questions_and_status, permits: Permissions.NONE }) // Revisar permisos 
 	
 	/**
 	 * @api {post} api/question/evaluation_request Create evaluation_request information
