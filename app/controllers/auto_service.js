@@ -26,6 +26,7 @@ var Points = require('../models/points.js')
 var Motives = require('../models/motives.js')
 var category_questions = require('../models/category_questions.js')
 var service = require('../models/service.js')
+var hall_of_fame = require('../models/hall_of_fame.js')
 var service_controller = function() {
     var model_entity_service = new entity_service()
     var model_category = new category()
@@ -44,6 +45,7 @@ var service_controller = function() {
     var model_motives = new Motives()
     var model_category_questions = new category_questions()
     var model_service = new service()
+    var model_hall_of_fame = new hall_of_fame()
         //---------------------------------------------------------------
     var getMap = new Map(),
         postMap = new Map(),
@@ -902,7 +904,23 @@ WHERE i.id = "${body.id_institution}"
 AND ss.id_status >= 7
 ;`
 		return model_service.customQuery(query)
-	}
+    }
+    
+    var get_hall_csv = function(user, params) {
+        var query = `SELECT
+h.name AS Nombre,
+h.role AS Usuario,
+h.ranking AS ranking,
+h.date AS Fecha,
+h.points AS Puntaje
+FROM stamp.hall_of_fame AS h
+WHERE h.date >= "${params.date0}"
+AND h.date <= "${params.date1}"
+;`
+        return model_hall_of_fame.customQuery(query).then((hall) => {
+            return utiles.JSONToCSVConvertor(hall, "Hall de la Fama", true);
+        })
+    }
 
     getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
     getMap.set('category', { method: get_category, permits: Permissions.NONE })
@@ -931,6 +949,7 @@ AND ss.id_status >= 7
     getMap.set('institution', { method: get_institution_info, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('institution_service', { method: get_institution_service, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('institution_service_certified', { method: get_institution_service_certified, permits: Permissions.NONE }) // TODO: Change to PLATFORM
+	getMap.set('get_hall_csv', { method: get_hall_csv, permits: Permissions.ADMIN })
 	
 
     /**
