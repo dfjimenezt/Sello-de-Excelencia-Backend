@@ -264,22 +264,25 @@ var Auth = function() {
                     phone: body.phone || "",
                     extension: body.extension || "",
                     mobile: body.mobile || "",
-                    active: false,
-                    verified: false,
+                    organization: body.organization || null,
+                    ocupation: body.ocupation || null,
+                    education_level: body.education_level || null,
                     password: pass,
                     tmp_pwd: tmp_pwd_active,
+                    points: "0",
+                    active: false,
+                    verified: false,
                     terms: body.terms === "true",
                     newsletter: body.newsletter === "true",
-                    flag_hall: body.flag_hall === "true",
-                    ranking_hall: (body.ranking_hall) ? parseInt(body.ranking_hall) : null,
+                    //flag_hall: body.flag_hall === "true",
+                    //ranking_hall: (body.ranking_hall) ? parseInt(body.ranking_hall) : null,
                     id_availability: (body.id_availability) ? parseInt(body.id_availability) : null,
-                    id_level: (body.id_level) ? parseInt(body.id_level) : null,
+                    //id_level: (body.id_level) ? parseInt(body.id_level) : null,
                     id_city: (body.id_city) ? parseInt(body.id_city) : null,
-                    id_type_document: (body.id_type_document) ? parseInt(body.id_type_document) : null,
+                    id_region: (body.id_region) ? parseInt(body.id_region) : null,
+                    id_country: (body.id_country) ? parseInt(body.id_country) : null,
                     document: body.document || null,
-                    education_level: body.education_level || null,
-                    ocupation: body.ocupation || null,
-                    organization: body.organization || null
+                    id_type_document: (body.id_type_document) ? parseInt(body.id_type_document) : null
                 }).then(function(user) {
                     // if the user was created sucessfully
                     if (user) {
@@ -312,7 +315,7 @@ var Auth = function() {
                         // send an email to the user
                         let token = utiles.sign(body.email)
                         let template = `
-												<p> Hola ${body.name} </p>
+                        <p> Hola ${body.name} </p>
                         <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia </p>
                         <p>Tu nueva contraseña para acceder es: ${pass_user} </p><p></p>
                         <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}&active=1'>Haz click aquí para activar tu cuenta </a></p>
