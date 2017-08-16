@@ -849,6 +849,59 @@ RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${param
 
 	var get_all_services = function (token, params){
 		return model_service.getAll(params);
+    }
+    
+    var get_institution_info = function (user, body) {
+		var query = `
+SELECT 
+i.*, 
+td.name AS type_document,
+c.name AS city,
+r.name AS region,
+co.name AS country
+FROM stamp.institution AS i
+JOIN stamp.type_document AS td ON td.id = i.legalrep_typedoc
+JOIN stamp.city AS c ON c.id = i.id_city
+JOIN stamp.region AS r ON r.id = i.id_region
+JOIN stamp.country AS co ON co.id = i.id_country
+WHERE i.id = "${body.id_institution}"
+;`
+		return model_institution.customQuery(query)
+	}
+
+	var get_institution_service = function (user, body) {
+		var query = `
+SELECT 
+s.*,
+c.name AS category,
+ss.level AS level,
+st.name AS status
+FROM stamp.institution AS i
+JOIN stamp.service AS s ON s.id_institution = i.id
+JOIN stamp.category AS c ON c.id = s.id_category
+JOIN stamp.service_status AS ss ON ss.id_service = s.id
+JOIN stamp.status AS st ON st.id = ss.id_status
+WHERE i.id = "${body.id_institution}"
+;`
+		return model_service.customQuery(query)
+	}
+
+	var get_institution_service_certified = function (user, body) {
+		var query = `
+SELECT 
+s.*,
+c.name AS category,
+ss.level AS level,
+st.name AS status
+FROM stamp.institution AS i
+JOIN stamp.service AS s ON s.id_institution = i.id
+JOIN stamp.category AS c ON c.id = s.id_category
+JOIN stamp.service_status AS ss ON ss.id_service = s.id
+JOIN stamp.status AS st ON st.id = ss.id_status
+WHERE i.id = "${body.id_institution}"
+AND ss.id_status >= 7
+;`
+		return model_service.customQuery(query)
 	}
 
     getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
@@ -875,6 +928,10 @@ RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${param
     getMap.set('points_user', { method: get_points_user, permits: Permissions.NONE })
     getMap.set('questions_calification', { method: get_questions_calificate_citizien, permits: Permissions.NONE }) // Revisar los permisos
     getMap.set('all_services', { method: get_all_services, permits: Permissions.NONE }) // Revisar los permisos
+    getMap.set('institution', { method: get_institution_info, permits: Permissions.NONE }) // TODO: Change to PLATFORM
+	getMap.set('institution_service', { method: get_institution_service, permits: Permissions.NONE }) // TODO: Change to PLATFORM
+	getMap.set('institution_service_certified', { method: get_institution_service_certified, permits: Permissions.NONE }) // TODO: Change to PLATFORM
+	
 
     /**
      * @api {post} api/service/service Create service information
