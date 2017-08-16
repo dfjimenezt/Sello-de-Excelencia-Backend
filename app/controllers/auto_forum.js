@@ -11,9 +11,13 @@ var Permissions = require('../utils/permissions.js')
 var Auth_ctrl = require('./auth.js')
 var topic = require('../models/topic.js')
 var message = require('../models/message.js')
+var banner = require('../models/banner.js')
+var type_banner = require('../models/type_banner.js')
 var forum_controller = function () {
 	var model_topic = new topic()
 	var model_message = new message()
+	var model_banner = new banner()
+	var model_type_banner = new type_banner()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -107,8 +111,35 @@ var forum_controller = function () {
 	var get_message = function (user, params) {
 		return _get(model_message,user,params)
 	}
+
+	/*
+	var get_banners = function(user, body) {
+		var result = []
+		var query1 = `SELECT * FROM stamp.type_banner;`
+		return model_banner.customQuery(query1).then((tp_bnnr) => {
+			result.push(tp_bnnr)
+			var query2 = `SELECT * FROM stamp.banner;`
+			return model_banner.customQuery(query2).then((bnnr) => {
+				result.push(bnnr)
+				return result
+			})
+		})
+	}
+	*/
+
+	var get_banner = function(user, body) {
+		return _get(model_banner, user, body)
+	}
+
+	var get_type_banner = function(user, body) {
+		return _get(model_type_banner, user, body)
+	}
+
 	getMap.set('topic', { method: get_topic, permits: Permissions.NONE })
 	getMap.set('message', { method: get_message, permits: Permissions.NONE })
+	//getMap.set('banner', { method: get_banners, permits: Permissions.PLATFORM })
+	getMap.set('banner', { method: get_banner, permits: Permissions.PLATFORM })
+	getMap.set('type_banner', { method: get_type_banner, permits: Permissions.PLATFORM })
 	/**
 	 * @api {post} api/forum/topic Create topic information
 	 * @apiName Posttopic
@@ -142,8 +173,14 @@ var forum_controller = function () {
 	var create_message = function (user, body) {
 		return model_message.create(body)
 	}
+
+	var create_banner = function (user, body) {
+		return model_banner.create(body)
+	}
+
 	postMap.set('topic', { method: create_topic, permits: Permissions.ADMIN })
 	postMap.set('message', { method: create_message, permits: Permissions.ADMIN })
+	postMap.set('banner', { method: banner, permits: Permissions.PLATFORM })
 	/**
 	 * @api {put} api/forum/topic Update topic information
 	 * @apiName Puttopic
@@ -183,8 +220,18 @@ var forum_controller = function () {
 		}
 		return model_message.update(body,{id:body.id})
 	}
+
+	var update_banner = function(user, body) {
+		if (!body.id) {
+			throw utiles.informError(400)
+		}
+		return model_banner.update(body,{id:body.id})
+	}
+
 	putMap.set('topic', { method: update_topic, permits: Permissions.ADMIN })
 	putMap.set('message', { method: update_message, permits: Permissions.ADMIN })
+	putMap.set('banner', { method: update_banner, permits: Permissions.PLATFORM })
+
 	/**
 	 * @api {delete} api/forum/topic Delete topic information
 	 * @apiName Deletetopic
@@ -224,8 +271,18 @@ var forum_controller = function () {
 		}
 		return model_message.delete(body,{id:body.id})
 	}
+
+	var delete_banner = function (user, body) {
+		if (!body.id) {
+			throw utiles.informError(400)
+		}
+		return model_banner.delete(body,{id:body.id})
+	}
+
 	deleteMap.set('topic', { method: delete_topic, permits: Permissions.ADMIN })
 	deleteMap.set('message', { method: delete_message, permits: Permissions.ADMIN })
+	deleteMap.set('banner', { method: delete_banner, permits: Permissions.PLATFORM })
+
 	var params = [getMap, postMap, putMap, deleteMap]
 	BaseController.apply(this, params)
 	//---------------------------------------------------------------
