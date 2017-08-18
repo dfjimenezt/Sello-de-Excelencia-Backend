@@ -22,6 +22,7 @@ var config = require('../models/config.js')
 var type_document = require('../models/type_document.js')
 var User = require('../models/user.js')
 var Questiontopic = require('../models/questiontopic.js')
+var hall_of_fame = require('../models/hall_of_fame.js')
 
 var configuration_controller = function () {
 	var userModel = new User()
@@ -37,6 +38,7 @@ var configuration_controller = function () {
 	var model_config = new config()
 	var model_type_document = new type_document()
 	var model_questiontopic = new Questiontopic()
+	var model_hall_of_fame = new hall_of_fame()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -521,7 +523,30 @@ var configuration_controller = function () {
 	 * @apiVersion 1.0.1
 	*/
 	var get_entity_user_evaluator_hall = function (user,params){
-        return _get(model_entity_user_role,user,{filter_field: ["id_role", "user_flag_hall"], filter_value: ["2", "1"]})
+		var date = new Date()
+		date = date.toISOString()
+		date = date.split("T")
+		var query = "";
+		if( params.id_role == '4'){ // Entidad
+			query = `SELECT * 
+FROM
+stamp.hall_of_fame h_ff
+RIGHT JOIN
+(
+SELECT website, id_user
+FROM stamp.hall_of_fame h_f
+RIGHT JOIN stamp.institution i ON h_f.id_user = i.id_user_creator
+) h_f_i ON h_ff.id_user = h_f_i.id_user WHERE id_role = 4 AND date = '${date[0]}';`
+		}else if( params.id_role == '2'){ // Evaluador
+			var query = `SELECT * 
+FROM stamp.hall_of_fame WHERE id_role = 2 AND date = '${date[0]}';`
+		}
+		return model_hall_of_fame.customQuery(query).then((hall) => {
+			if( hall.length <= 0 ){
+				return { message : `No hay nadie en el hall de la fama con el rol ${params.id_role} y fecha ${date[0]}` }
+			} 
+			return hall 
+		})
 	}
 	// Traer temáticas según categorías (como parámetro) y nivel de evaluador (también como parámetro)
 	// Esta función se usa cuando el evaluador a entrado por primera vez (login) y debe anexar en sus
