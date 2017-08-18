@@ -13,6 +13,71 @@ var User = function () {
 		model:'mysql'
 	}]
 	BaseModel.apply(this, params)
+	
+	this.getUser = function(email){
+		var query = `SELECT u.*,p.name permission,r.name role,c.id id_category,c.name name_category,t.id id_topic, t.name name_topic
+		FROM user u 
+		LEFT JOIN user_role u_r ON u.id = u_r.id_user 
+		LEFT JOIN role r ON r.id = u_r.id_role 
+		LEFT JOIN permission_role p_r ON p_r.id_role = r.id 
+		LEFT JOIN permission p ON p.id = p_r.id_permission 
+		LEFT JOIN user_category u_c ON u_c.id_user = u.id 
+		LEFT JOIN category c ON u_c.id_category = c.id 
+		LEFT JOIN user_questiontopic u_qt ON u_qt.id_user = u.id 
+		LEFT JOIN questiontopic t ON u_qt.id_topic = t.id 
+		WHERE u.email = '${email}'`
+		return this.customQuery(query).then(function(data){
+			if(data.length === 0){
+				return null
+			}
+			let	permissions=[]
+			let categories=[];
+			let categories2=[];
+			let topics=[];
+			let topics2=[];
+			for(var i in data){
+				if(data[i].permission && permissions.indexOf(data[i].permission) == -1){
+						permissions.push(data[i].permission)
+				}
+				if(data[i].id_category && categories2.indexOf(data[i].id_category) == -1){
+						categories2.push(data[i].id_category)
+						categories.push({
+							id:data[i].id_category,
+							name:data[i].name_category})
+				}
+				if(data[i].id_topic && topics2.indexOf(data[i].id_topic) == -1){
+						topics2.push(data[i].id_topic)
+						topics.push({
+							id:data[i].id_topic,
+							name:data[i].name_topic})
+				}	
+			}
+			var user = data[0]
+			delete user.permission
+			delete user.id_category
+			delete user.id_topic
+			delete user.name_category
+			delete user.name_topic
+			user.permissions = permissions
+			user.categories = categories
+			user.topics = topics
+			return user
+		})
+	}
+
+
+	this.getUserAll = function(email){
+		var query = `SELECT * FROM stamp.user WHERE email = "${email}" ;`
+		return this.customQuery(query).then(function(data){
+			if(data.length === 0){
+				return null
+			}else{
+				console.log("data out")
+				console.log(data[0])
+				return data[0]
+			}
+		})
+	}
 	return this
 };
 util.inherits(User, BaseModel)

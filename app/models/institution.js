@@ -13,6 +13,32 @@ var Institution = function () {
 		model:'mysql'
 	}]
 	BaseModel.apply(this, params)
+	
+	/**
+	 * Get Top entities, supports
+	 * {
+				limit: params.limit
+				page: params.page
+			}
+	 */
+	this.getTop = function(params){
+		params = params || {};
+		params.page = params.page || "1"
+		params.limit = params.limit || "10"
+		var query = `SELECT i.*,count.services FROM institution i
+		JOIN (SELECT id_institution, count(*) services 
+			FROM service 
+			LEFT JOIN service_status ss on ss.id_service = service.id 
+			WHERE ss.id_status = 4 
+			GROUP BY id_institution
+			LIMIT ${((parseInt(params.page) - 1) * params.limit)} , ${params.limit} 
+			) AS count ON i.id = count.id_institution
+			ORDER BY services DESC;
+			SELECT COUNT(DISTINCT id_institution) total FROM service;`
+		return this.customQuery(query).then((result) => {
+			return { data: result[0], total_results: result[1][0].total }
+		})
+	}
 	return this
 };
 util.inherits(Institution, BaseModel)
