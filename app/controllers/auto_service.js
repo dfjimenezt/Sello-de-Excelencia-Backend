@@ -928,19 +928,17 @@ AND ss.id_status >= 7
     }
     
     var get_hall_csv = function(user, params) {
-        var query = `SELECT
-h.name AS Nombre,
-h.role AS Usuario,
-h.ranking AS ranking,
-h.date AS Fecha,
-h.points AS Puntaje
-FROM stamp.hall_of_fame AS h
-WHERE h.date >= "${params.date0}"
-AND h.date <= "${params.date1}"
-;`
-        return model_hall_of_fame.customQuery(query).then((hall) => {
-            return utiles.JSONToCSVConvertor(hall, "Hall de la Fama", true);
-        })
+			var query = ""
+			if (params.date_begin != undefined && params.date_end != undefined ){
+				query = `SELECT h_f.name, r.name as role, h_f.ranking, h_f.date, h_f.points
+FROM stamp.hall_of_fame h_f
+JOIN stamp.role r ON h_f.id_role = r.id WHERE h_f.date >= '${params.date_begin}' AND h_f.date <= '${params.date_end}';` 
+			}else{
+				return { message : "debe agregar un date_begin y date_end para generar csv del hall de la fama" }
+			}
+      return model_hall_of_fame.customQuery(query).then((hall) => {
+				return utiles.JSONToCSVConvertor(hall, "Hall de la Fama", true);
+			})
 	}
 	
 	var get_questions_category = function(user, body){
