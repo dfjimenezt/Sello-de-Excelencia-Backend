@@ -490,69 +490,88 @@ var service_controller = function () {
     }
 
     var get_filtered_list_institutions = function(user, params) {
-        //id_category=1&name=entidad1&service_name=Rut&date0=2010-01-01&date1=2010-01-01
-        // TODO: Only certified services must be displayed
-        //var query = `SELECT stamp.institution.name AS name, stamp.service.name AS service_name, stamp.service.url AS url, stamp.service.timestamp as publication_date, stamp.institution.ranking_hall as ranking_hall, stamp.institution.assignment_hall_date as assignment_hall_date
-        var query = `SELECT stamp.institution.name AS name, stamp.service.name AS service_name, stamp.service.url AS url, stamp.service.timestamp as publication_date
-FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.service.id_institution\nWHERE `
-            // Add category filter
-            // TODO: Verify or inform the order of the tabs ids in the mokup
-        switch (params.id_category) {
-            case '1': // Tramites o servicios en linea
-                query += 'stamp.service.id_category = 3\n'
-                break
-            case '2':
-                query += 'stamp.service.id_category = 1\n'
-                break
-            case '3':
-                query += 'stamp.service.id_category = 2\n'
-                break
-            case '4':
-                query += 'stamp.service.id_category = 4\n'
-                break
-            default:
-                // TODO: ERROR MESSAGE
-                break
-        }
-        // Insert filter institution name to query
-        if (params.name)
-            query += 'AND stamp.institution.name LIKE \"%' + params.name + '%\"\n'
-            // Insert filter service name to query
-        if (params.service_name)
-            query += 'AND stamp.service.name LIKE \"%' + params.service_name + '%\"\n'
-            // Insert filter name to query
-        if (params.date0) {
-            var date0 = params.date0.split("-")
-            var date0_0 = new Date(parseInt(date0[0]), parseInt(date0[1]) - 1, parseInt(date0[2]) - 3) // Month starts from 0
-            date0_0 = date0_0.toISOString().slice(0, 10)
-            var date0_1 = new Date(parseInt(date0[0]), parseInt(date0[1]) - 1, parseInt(date0[2]) + 3) // One week interval 6 days
-            date0_1 = date0_1.toISOString().slice(0, 10)
-            query += 'AND stamp.service.timestamp >= \"' + date0_0 + '\" AND stamp.service.timestamp < \"' + date0_1 + '\"\n'
-        }
-        /*
-        // Insert filter name to query
-        // TODO: Find aprobation date table
-        if (params.date1) {
-        	var date1 = parseInt(params.date0.split("-"))
-        	var date1_0 = new Date(date1[0], date1[1]-1, date1[2]-3) // Month starts from 0
-        	date1_0.toISOString().substring(0, 10);
-        	var date1_1 = new Date(date1[0], date1[1]-1, date1[2]+3) // One week interval 6 days
-        	date1_1.toISOString().substring(0, 10);
-        	query += 'AND stamp.service.timestamp >= '+date1_0.getTime+' AND stamp.service.timestamp < '+date1_1.getTime+'\n'
-        }
-        */
-        /*                                                      
-        // TODO: Only certified services must be display
-        query += 'AND stamp.service.current_status = 6;'
-        */
-        query += ';'
+		var query = `
+SELECT DISTINCT
+i.id AS id_institution,
+i.name AS name, 
+s.id AS id_service,
+s.name AS service_name,
+s.url AS url,
+s.timestamp as publication_date,
+ss.timestamp AS certification_date
+FROM stamp.institution AS i
+JOIN stamp.service AS s ON i.id = s.id_institution
+JOIN stamp.service_status AS ss ON ss.id_service = s.id
+WHERE s.id_category = ${params.id_category}\n`
+		// Insert filter institution name to query
+		if (params.name)
+			query += `AND i.name LIKE "%${params.name}%"\n`
+		// Insert filter service name to query
+		if (params.service_name)
+			query += `AND s.name LIKE "%${params.service_name}%"\n`
+		// Insert filter name to query
+		if (params.date0) {
+			var date0 = params.date0.split("-")
+			var date0_0 = new Date(parseInt(date0[0]), parseInt(date0[1]) - 1, parseInt(date0[2]) - 3) // Month starts from 0
+			date0_0 = date0_0.toISOString().slice(0, 10)
+			var date0_1 = new Date(parseInt(date0[0]), parseInt(date0[1]) - 1, parseInt(date0[2]) + 3) // One week interval 6 days
+			date0_1 = date0_1.toISOString().slice(0, 10)
+			query += `AND s.timestamp >= "${date0_0}" AND s.timestamp <= "${date0_1}"\n`
+		}
+		// Insert filter name to query
+		if (params.date1) {
+			var date1 = parseInt(params.date1.split("-"))
+			var date1_0 = new Date(date1[0], date1[1]-1, date1[2]-3) // Month starts from 0
+			date1_0.toISOString().substring(0, 10);
+			var date1_1 = new Date(date1[0], date1[1]-1, date1[2]+3) // One week interval 6 days
+			date1_1.toISOString().substring(0, 10);
+			query += `AND s.datetime >= ${date1_0} AND s.datetime <= ${date1_1}\n`
+		}
+		query += 'AND s.current_status = 8 ORDER BY ss.timestamp DESC;'
+		console.log(query)
         return model_institution.customQuery(query)
     }
-
+	
     var get_filtered_list_institutions_csv = function(user, params) {
-        return get_filtered_list_institutions(user, params).then((filtered_list) => {
-            return utiles.JSONToCSVConvertor(filtered_list, "Entidades Certificadas", true);
-        })
+		var query = `
+SELECT
+i.name AS name, 
+s.name AS service_name,
+s.url AS url,
+s.timestamp as publication_date
+ss.timestamp AS certification_date
+FROM stamp.institution AS i
+JOIN stamp.service AS s ON i.id = s.id_institution
+JOIN stamp.service_status AS ss ON ss.id_service = s.id
+WHERE s.id_category = ${params.id_category}\n`
+		// Insert filter institution name to query
+		if (params.name)
+			query += `AND i.name LIKE "%${params.name}%"\n`
+		// Insert filter service name to query
+		if (params.service_name)
+			query += `AND s.name LIKE "%${params.service_name}%"\n`
+		// Insert filter name to query
+		if (params.date0) {
+			var date0 = params.date0.split("-")
+			var date0_0 = new Date(parseInt(date0[0]), parseInt(date0[1]) - 1, parseInt(date0[2]) - 3) // Month starts from 0
+			date0_0 = date0_0.toISOString().slice(0, 10)
+			var date0_1 = new Date(parseInt(date0[0]), parseInt(date0[1]) - 1, parseInt(date0[2]) + 3) // One week interval 6 days
+			date0_1 = date0_1.toISOString().slice(0, 10)
+			query += `AND s.timestamp >= "${date0_0}" AND s.timestamp <= "${date0_1}"\n`
+		}
+		// Insert filter name to query
+		if (params.date1) {
+			var date1 = parseInt(params.date1.split("-"))
+			var date1_0 = new Date(date1[0], date1[1]-1, date1[2]-3) // Month starts from 0
+			date1_0.toISOString().substring(0, 10);
+			var date1_1 = new Date(date1[0], date1[1]-1, date1[2]+3) // One week interval 6 days
+			date1_1.toISOString().substring(0, 10);
+			query += `AND s.datetime >= ${date1_0} AND s.datetime <= ${date1_1}\n`
+		}
+		query += 'AND s.current_status = 8 ORDER BY ss.timestamp DESC;'
+		return model_institution.customQuery(query).then((filtered_list) => {
+			return utiles.JSONToCSVConvertor(filtered_list, "Entidades Certificadas", true);
+		})
     }
 
     var list_by_status = function(user, params) {
@@ -566,19 +585,22 @@ WHERE stamp.user.id = ${user.id} AND stamp.service.current_status = ${params.id_
     }
 
     var get_service_info = function(user, params) {
-        var query = `
-SELECT stamp.service.name AS name_service, 
-stamp.category.name AS name_category, 
-stamp.service.id_level AS level,
-stamp.service.timestamp AS date_postulation, 
-stamp.service_status.timestamp AS date_certified,
-stamp.service.url AS url, 
-stamp.service_status.id_status AS status, 
-stamp.service.rate AS rate
-FROM stamp.service 
-JOIN stamp.service_status ON stamp.service_status.id_service = stamp.service.id
-JOIN stamp.category ON stamp.service.id_category = stamp.category.id
-WHERE stamp.service.id = ${params.id_service}
+		var query = `
+SELECT 
+i.name AS name_institution,
+s.name AS name_service,
+ss.level AS level,
+s.timestamp AS postulation_date,
+s.datetime AS certificaton_date,
+s.url AS url, 
+st.name AS status, 
+s.rate AS rate
+FROM stamp.service AS s
+JOIN stamp.institution AS i ON i.id = s.id_institution
+JOIN stamp.service_status AS ss ON ss.id_service = s.id
+JOIN stamp.status AS st ON st.id = ss.id_status
+JOIN stamp.category AS c ON c.id = s.id_category
+WHERE s.id = "${params.id_service}"
 ;`
         return model_institution.customQuery(query);
     }
@@ -919,7 +941,20 @@ AND h.date <= "${params.date1}"
         return model_hall_of_fame.customQuery(query).then((hall) => {
             return utiles.JSONToCSVConvertor(hall, "Hall de la Fama", true);
         })
-    }
+	}
+	
+	var get_questions_category = function(user, body){
+		var query = `
+SELECT 
+cq.*,
+s.rate,
+(SELECT COUNT(sc.id) FROM stamp.service_comment AS sc WHERE sc.id_service = "${body.id_service}") AS num_votes
+FROM stamp.service AS s
+JOIN stamp.category AS c ON c.id = s.id_category
+JOIN stamp.category_questions AS cq ON cq.id_category = c.id
+WHERE s.id = "${body.id_service}";`
+		return model_category_questions.customQuery(query)
+	}
 
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
@@ -948,6 +983,7 @@ AND h.date <= "${params.date1}"
 	getMap.set('institution_service', { method: get_institution_service, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('institution_service_certified', { method: get_institution_service_certified, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('get_hall_csv', { method: get_hall_csv, permits: Permissions.ADMIN })
+	getMap.set('questions_category', { method: get_questions_category, permits: Permissions.PLATFORM })
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice
@@ -979,19 +1015,19 @@ AND h.date <= "${params.date1}"
  	 * 
 	 */
 	var create_entity_service = function(user, body) {
-            var query = "SELECT * FROM stamp.institution_user WHERE id_user = " + user.id + ";"
-            return institution_user.customQuery(query).then((user_institution) => {
-                body.id_user = user_institution[0].id_user
-                body.id_institution = user_institution[0].id_institution
-                body.current_status = 1
-                return model_entity_service.create(body).then((service) => {
-                    return service_status.create({
-                        id_service: service.data.id,
-                        id_status: 1
-                    })
+        var query = `SELECT * FROM stamp.institution_user WHERE id_user = "${user.id}";`
+        return institution_user.customQuery(query).then((user_institution) => {
+            body.id_user = user_institution[0].id_user
+            body.id_institution = user_institution[0].id_institution
+            body.current_status = 1
+            body.is_active = 1
+            return model_entity_service.create(body).then((serv) => {
+                return service_status.create({
+                    id_service: serv.data.id,
+                    id_status: 1
                 })
             })
-        return model_entity_service.create(body)
+        })
     }
 	//var create_entity_service = function (user, body) {
 	//	return model_entity_service.create(body)
@@ -1148,25 +1184,25 @@ AND h.date <= "${params.date1}"
                         id_answer: null,
                         id_question: body.id_question,
                         id_user: user.id,
-                        datetime: null, // TODO: what is datetime in table (REVISADO, es on UPDATE)
                         id_media: media.insertId,
-                        requisite: body.requisite || "",
-                        support_legal: body.support_legal || "",
-                        justification: body.justification || "",
-                        id_topic: body.id_topic || "",
-                        evidence: body.evidence || "",
-                        help: body.help || "",
-                        id_service: body.id_service
+                        requisite: body.requisite,// || "",
+                        support_legal: body.support_legal,// || "",
+                        justification: body.justification,// || "",
+                        id_topic: body.id_topic,// || "",
+                        evidence: body.evidence,// || "",
+                        help: body.help,// || "",
+						id_service: body.id_service,
+						id_status: "1"
                     }).then((usr_ans) => {
                         return model_evaluation_request.create({
                             id_user: null,
                             id_user_answer: user_answer.insertId,
                             id_service: body.id_service,
                             id_request_status: "1",
-                            id_question: body.id_question,
-                            result: "2", // WARNING: This status means the status is not defined
+                            //id_question: body.id_question,
+                            result: "0", // WARNING: This status means the status is not defined
                             justify_reject: null,
-                            //id_CONTADOR: j++
+                            //branch: j++
                         })
                         console.log(j++)
                     })
