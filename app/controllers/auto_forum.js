@@ -15,7 +15,7 @@ var banner = require('../models/banner.js')
 var type_banner = require('../models/type_banner.js')
 var hangouts = require('../models/hangouts.js')
 var status = require('../models/status.js')
-//var footer = require('../models/footer.js')
+var footer = require('../models/footer.js')
 var forum_controller = function () {
 	var model_topic = new topic()
 	var model_message = new message()
@@ -23,7 +23,7 @@ var forum_controller = function () {
 	var model_type_banner = new type_banner()
 	var model_hangouts = new hangouts()
 	var model_status = new status()
-	//var model_footer = new footer()
+	var model_footer = new footer()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -134,11 +134,9 @@ var forum_controller = function () {
 		return _get(model_status, user, body)
 	}
 
-	/*
 	var get_footer = function(user, body) {
 		return _get(model_footer, user, body)
 	}
-	*/
 
 	getMap.set('topic', { method: get_topic, permits: Permissions.NONE })
 	getMap.set('message', { method: get_message, permits: Permissions.NONE })
@@ -146,7 +144,7 @@ var forum_controller = function () {
 	getMap.set('type_banner', { method: get_type_banner, permits: Permissions.PLATFORM })
 	getMap.set('hangouts', { method: get_hangouts, permits: Permissions.PLATFORM })
 	getMap.set('status', { method: get_status, permits: Permissions.NONE })
-	//getMap.set('footer', { method: get_footer, permits: Permissions.PLATFORM })
+	getMap.set('footer', { method: get_footer, permits: Permissions.NONE })
 	/**
 	 * @api {post} api/forum/topic Create topic information
 	 * @apiName Posttopic
@@ -252,21 +250,19 @@ var forum_controller = function () {
 		return utiles.sendEmail(body.email, body.cc, body.bcc, body.subject, body.attachment)
 	}
 
-	/*
 	var update_footer = function(user, body) {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
 		return model_footer.update(body,{id:body.id})
 	}
-	*/
 
 	putMap.set('topic', { method: update_topic, permits: Permissions.ADMIN })
 	putMap.set('message', { method: update_message, permits: Permissions.ADMIN })
 	putMap.set('banner', { method: update_banner, permits: Permissions.ADMIN })
 	putMap.set('hangouts', { method: update_hangouts, permits: Permissions.ADMIN })
 	putMap.set('contact', { method: contact_user, permits: Permissions.ADMIN })
-	//putMap.set('footer', { method: update_footer, permits: Permissions.ADMIN })
+	putMap.set('footer', { method: update_footer, permits: Permissions.ADMIN })
 
 	/**
 	 * @api {delete} api/forum/topic Delete topic information
