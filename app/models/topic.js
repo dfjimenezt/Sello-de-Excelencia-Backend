@@ -2,7 +2,7 @@
  * topic
  * [{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"name","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"id_parent","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"private","Type":"tinyint(4)","Null":"YES","Key":"","Default":"0","Extra":""},{"Field":"timestamp","Type":"timestamp","Null":"NO","Key":"","Default":"CURRENT_TIMESTAMP","Extra":""}]
  * DMT 2017
- * GENERATED: 5 / 8 / 2017 - 14:44:43
+ * GENERATED: 18 / 8 / 2017 - 13:23:2
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')

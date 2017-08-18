@@ -66,6 +66,9 @@ INSERT INTO country (name)
 SELECT p.name 
 FROM stamp.paises p ;
 
+#45
+TRUNCATE TABLE `footer`;
+
 #10
 TRUNCATE TABLE `evaluation_request`;
 

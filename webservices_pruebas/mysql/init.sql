@@ -52,6 +52,8 @@ TRUNCATE TABLE `user_questiontopic`;
 
 TRUNCATE TABLE `user_role`;
 
+TRUNCATE TABLE `footer`;
+
 #requisito = requisito + sustentación legal + justificación + criterio + evidencia + ayuda + adjunto
 
 /**
@@ -170,5 +172,19 @@ INSERT INTO media (`url`, `type`) VALUES ('https://www.youtube.com/watch?v=CTK46
 #INSERT INTO institution_user (`id_institution`,`id_user`) VALUES ('2', '5');
 #INSERT INTO user_role (`id_user`,`id_role`) VALUES ('5','4');
 
+
+/**
+*   Entidad 3, id_user = 7, id_institution = 2
+*/
+INSERT INTO user (`id`, `name`, `email`, `active`, `verified`, `password`, `tmp_pwd`, `points`, `terms`,  `id_region`, `id_city`) VALUES ('7', 'EntidadJohnny', 'crpulidog1@gmail.com', '1', '1', 'c3951cfdddb5b507d7e4ddb6071a2999f7048edbf5d7c8eeacbb820fd1960868', '1', '13', '1',  '1', '3106');
+INSERT INTO institution (`id`, `name`, `nit`, `email`, `phone`, `extension_phone`, `legalrep_name`, `legalrep_secondname`, `legalrep_lastname`, `legalrep_secondlastname`, `legalrep_typedoc`, `legalrep_document`, `legalrep_email`, `id_region`, `id_city`, `id_user_creator`) VALUES ('2', 'Entidad2', '22334455', 'crpulidog1@gmail.com', '3101111111', '11111','Pepito', 'Ramón', 'Perez', 'Espitia', '1', '1010000000', 'crpulidog2@gmail.com', '1', '3106', '7');
+INSERT INTO institution_user (`id_institution`,`id_user`) VALUES ('2', '4');
+INSERT INTO user_role (`id_user`,`id_role`) VALUES ('7','4');
+
+/**
+*	HALL DE LA FAMA
+*/
+INSERT INTO hall_of_fame (`name`, `ranking`,`points`, `id_user`, `id_role`) VALUES ('EntidadJohnny', '1', '13', '7', '4');
+INSERT INTO hall_of_fame (`name`, `ranking`,`points`, `id_user`, `id_role`) VALUES ('Carolina Evaluador', '1', '20', '3', '2');
 
 SET FOREIGN_KEY_CHECKS=1;

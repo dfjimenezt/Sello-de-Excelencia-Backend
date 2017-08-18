@@ -2,7 +2,7 @@
  * chats
  * [{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"id_sender","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_receiver","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_evaluation_request","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"text","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"timestamp","Type":"timestamp","Null":"NO","Key":"","Default":"CURRENT_TIMESTAMP","Extra":""}]
  * DMT 2017
- * GENERATED: 11 / 8 / 2017 - 18:53:10
+ * GENERATED: 18 / 8 / 2017 - 13:23:2
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')

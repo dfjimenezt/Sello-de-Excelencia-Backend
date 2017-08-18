@@ -2,7 +2,7 @@
  * points
  * [{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"prev_points","Type":"int(11)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"value","Type":"int(11)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"result","Type":"int(11)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"justification","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"id_user","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_motives","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""}]
  * DMT 2017
- * GENERATED: 11 / 8 / 2017 - 18:53:10
+ * GENERATED: 18 / 8 / 2017 - 13:23:2
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')

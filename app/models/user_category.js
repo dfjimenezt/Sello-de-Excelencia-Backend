@@ -2,7 +2,7 @@
  * user_category
  * [{"Field":"id_user","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_category","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""}]
  * DMT 2017
- * GENERATED: 5 / 8 / 2017 - 14:44:43
+ * GENERATED: 18 / 8 / 2017 - 13:23:2
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
