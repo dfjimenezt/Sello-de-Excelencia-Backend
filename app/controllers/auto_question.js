@@ -471,42 +471,23 @@ var question_controller = function () {
 	}
 
 	var get_requirements_from_category_level_create_service = function (user, params) {
-		let tabla_categoria = "stamp."
-		switch(params.id_category){
-			case "1":
-				tabla_categoria += "gobierno_en_linea_datos_abiertos"
-				break
-			case "2":
-				tabla_categoria += "gobierno_en_linea_requisitos_participacion"
-				break
-			case "3":
-				tabla_categoria += "servicios_en_linea"
-				break
-			case "4":
-				tabla_categoria += "gestion_de_ti"
-				break
-		}
 		var query = `
-SELECT ${tabla_categoria}.Requisito,
-${tabla_categoria}.Criterio,
-${tabla_categoria}.Evidencia,
-${tabla_categoria}.\`Sustento legal o técnico\`, 
-${tabla_categoria}.Ayuda,
-${tabla_categoria}.\`Area Tematica\`,
-stamp.questiontopic.id AS id_topic
-FROM ${tabla_categoria}
-LEFT JOIN stamp.questiontopic ON stamp.questiontopic.name = ${tabla_categoria}.\`Area Tematica\`
-WHERE ${tabla_categoria}.Nivel <= ${params.level}
-AND stamp.questiontopic.id_category = ${params.id_category}
+SELECT 
+q.id AS id_question,
+q.id_topic,
+q.level,
+q.text AS requisite,
+q.criteria,
+q.evidence,
+q.legal_support,
+q.help
+FROM stamp.question AS q
+JOIN stamp.questiontopic AS qt ON qt.id = q.id_topic
+WHERE qt.id_category = ${params.id_category}
+AND q.level <= ${params.level}
+ORDER BY q.id
 ;`
-		return model_entity_service.customQuery(query).then((requirements) => {
-			let count = 1
-			for (var i in requirements) {
-				requirements[i].id_question = count
-				count += 1
-			}
-			return requirements
-		})
+		return model_entity_service.customQuery(query)
 	}
 
 	var get_filtered_list_requirements = function (user, params) {

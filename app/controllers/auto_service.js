@@ -27,6 +27,7 @@ var Motives = require('../models/motives.js')
 var category_questions = require('../models/category_questions.js')
 var service = require('../models/service.js')
 var hall_of_fame = require('../models/hall_of_fame.js')
+var evaluation_request = require('../models/evaluation_request.js')
 var service_controller = function () {
 	var model_entity_service = new entity_service()
 	var model_category = new category()
@@ -46,6 +47,7 @@ var service_controller = function () {
     var model_category_questions = new category_questions()
     var model_service = new service()
     var model_hall_of_fame = new hall_of_fame()
+    var model_evaluation_request = new evaluation_request()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -976,9 +978,9 @@ AND h.date <= "${params.date1}"
 	 * @apiParam {Array} comments 
 	 * @apiParam {Array} requirements 
  	 * 
-	 */
-	}
-    var create_entity_service = function(user, body) {
+	*/
+	
+	var create_entity_service = function(user, body) {
             var query = "SELECT * FROM stamp.institution_user WHERE id_user = " + user.id + ";"
             return institution_user.customQuery(query).then((user_institution) => {
                 body.id_user = user_institution[0].id_user
@@ -1136,6 +1138,7 @@ AND h.date <= "${params.date1}"
     */
 
     var save_service_evidence = function(user, body, files) {
+        let j = 1
         for (var i in files) {
             utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type).then((url) => {
                 // Insertar objetos multimedia en tabla stamp.media
@@ -1152,20 +1155,23 @@ AND h.date <= "${params.date1}"
                         id_media: media.insertId,
                         requisite: body.requisite || "",
                         support_legal: body.support_legal || "",
-                        justifiaction: body.justification || "", // TODO: Correct with justification!
+                        justification: body.justification || "",
                         id_topic: body.id_topic || "",
                         evidence: body.evidence || "",
                         help: body.help || "",
                         id_service: body.id_service
                     }).then((usr_ans) => {
-                        return model_user_answer.create({
-                            id_user: user.id,
+                        return model_evaluation_request.create({
+                            id_user: null,
                             id_user_answer: user_answer.insertId,
                             id_service: body.id_service,
-                            id_request_status: "1", // TODO: change request_status from service_status and viceversa
-                            // // TODO: id_question se debe agregar para relacionar el requisito con el evaluador
-                            result: "2" // WARNING: This status means the status is not defined
+                            id_request_status: "1",
+                            id_question: body.id_question,
+                            result: "2", // WARNING: This status means the status is not defined
+                            justify_reject: null,
+                            //id_CONTADOR: j++
                         })
+                        console.log(j++)
                     })
                 })
             })
