@@ -127,7 +127,7 @@ var forum_controller = function () {
 	}
 	
 	var get_hangouts = function(user, body) {
-		return _get(model_hangouts, user, body)
+			return _get(model_hangouts, user, body)
 	}
 	
 	var get_status = function(user, body) {
