@@ -15,11 +15,15 @@ var region = require('../models/region.js')
 var country = require('../models/country.js')
 var User = require("../models/user.js")
 var Institution_user_model = require("../models/institution_user.js")
+// model_institution
+var Model_institution = require("../models/institution.js")
 var User_role_model = require('../models/user_role.js')
 /* generador de password random*/
 var pass_generator = require('generate-password')
 var MYSQL = require('../utils/model-mysql.js')
 var place_controller = function () {
+	// model_institution
+	var model_institution = new Model_institution()
 	var model_entity_institution = new entity_institution()
 	var model_entity_city = new entity_city()
 	var model_region = new region()
@@ -562,7 +566,8 @@ var place_controller = function () {
 					// Es una relación
 					institution_up.id_region = (body.id_region)? parseInt(body.id_region) : null
 					institution_up.id_city = (body.id_city)? parseInt(body.id_city) : null
-					return update_entity_institution(token, institution_up).then(() => {
+					//return update_entity_institution(token, institution_up).then(() => {
+					return model_institution.update(institution_up,{ id: institution.id}).then(() => {
 						return { message : "Update institution ok" } 
 					})
 				}	

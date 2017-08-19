@@ -520,7 +520,7 @@ var configuration_controller = function () {
 	 * @apiGroup configuration
 	 * @apiVersion 1.0.1
 	*/
-	var get_entity_user_evaluator_hall = function (user,params){
+	var get_hall_today = function (user,params){
 		var date = new Date()
 		date = date.toISOString()
 		date = date.split("T")
@@ -650,7 +650,7 @@ FROM stamp.hall_of_fame WHERE id_role = 2 AND date = '${date[0]}';`
 	getMap.set('config', { method: get_config, permits: Permissions.NONE })
 	getMap.set('type_document', { method: get_type_document, permits: Permissions.NONE })
 	getMap.set('evaluator', { method: get_entity_user_evaluator, permits: Permissions.NONE })
-	getMap.set('evaluator_hall', { method: get_entity_user_evaluator_hall, permits: Permissions.NONE })
+	getMap.set('hall_today', { method: get_hall_today, permits: Permissions.NONE })
 	getMap.set('evaluation_thematic', { method: get_evaluation_thematic, permits: Permissions.PLATFORM })
 	getMap.set('questiontopics_evaluator', { method: get_questiontopics_evaluator, permits: Permissions.PLATFORM })
 	/**

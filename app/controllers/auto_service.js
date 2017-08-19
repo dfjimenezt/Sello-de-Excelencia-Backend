@@ -1223,8 +1223,9 @@ WHERE s.id = "${body.id_service}";`
         new_points_user.id_motives = parseInt(body.id_motives)
             // traer puntos del usuario
             // require body.id_user
-        return get_points_user(user, body).then((points_total_user) => {
-            new_points_user.prev_points = (points_total_user[0].result != undefined) ? points_total_user[0].result : 0
+        return get_points_user(user,{id_user: new_points_user.id_user}).then((points_total_user) => {
+					points_total_user = points_total_user.list_points
+          new_points_user.prev_points = (points_total_user[0].result != undefined) ? points_total_user[0].result : 0
             var params = []
             params.filter_field = "id"
             params.filter_value = new_points_user.id_motives
