@@ -189,7 +189,7 @@ var forum_controller = function () {
 
 	postMap.set('topic', { method: create_topic, permits: Permissions.ADMIN })
 	postMap.set('message', { method: create_message, permits: Permissions.ADMIN })
-	postMap.set('banner', { method: banner, permits: Permissions.ADMIN })
+	postMap.set('banner', { method: create_banner, permits: Permissions.ADMIN })
 	postMap.set('hangouts', { method: create_hangouts, permits: Permissions.ADMIN })
 	/**
 	 * @api {put} api/forum/topic Update topic information

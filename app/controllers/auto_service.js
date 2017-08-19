@@ -574,36 +574,80 @@ WHERE s.id_category = ${params.id_category}\n`
 		})
     }
 
-    var list_by_status = function(user, params) {
-        var query = `
-SELECT stamp.service.name, stamp.category.name as category, stamp.service.id_level, stamp.service.timestamp
-FROM stamp.user JOIN stamp.institution_user ON stamp.institution_user.id_user = stamp.user.id
-RIGHT JOIN stamp.service ON stamp.service.id_institution = stamp.institution_user.id_institution
-RIGHT JOIN stamp.category ON stamp.service.id_category = stamp.category.id
-WHERE stamp.user.id = ${user.id} AND stamp.service.current_status = ${params.id_status};`
-        return model_institution.customQuery(query)
-    }
+    var list_certified_services = function(user, params) {
+			var query = `
+	SELECT 
+	s.name AS name, 
+	c.name as category, 
+	ss.level AS level, 
+	s.timestamp
+	FROM stamp.user AS u
+	JOIN stamp.institution_user AS iu ON iu.id_user = u.id
+	JOIN stamp.service AS s ON s.id_institution = iu.id_institution
+	JOIN stamp.service_status AS ss ON ss.id_service = s.id
+	JOIN stamp.category AS c ON c.id = s.id_category
+	WHERE u.id = ${user.id}
+	AND s.current_status = 8;`
+					return model_institution.customQuery(query)
+			}
+	
+	
+			
+			var list_rejected_services = function(user, params) {
+					var query = `
+	SELECT 
+	s.name AS name, 
+	c.name as category, 
+	ss.level AS level, 
+	s.timestamp
+	FROM stamp.user AS u
+	JOIN stamp.institution_user AS iu ON iu.id_user = u.id
+	JOIN stamp.service AS s ON s.id_institution = iu.id_institution
+	JOIN stamp.service_status AS ss ON ss.id_service = s.id
+	JOIN stamp.category AS c ON c.id = s.id_category
+	WHERE u.id = ${user.id}
+	AND s.current_status = 9;`
+					return model_institution.customQuery(query)
+			}
+	
+			var list_in_progress_services = function(user, params) {
+					var query = `
+	SELECT 
+	s.name AS name, 
+	c.name as category, 
+	ss.level AS level, 
+	s.timestamp
+	FROM stamp.user AS u
+	JOIN stamp.institution_user AS iu ON iu.id_user = u.id
+	JOIN stamp.service AS s ON s.id_institution = iu.id_institution
+	JOIN stamp.service_status AS ss ON ss.id_service = s.id
+	JOIN stamp.category AS c ON c.id = s.id_category
+	WHERE u.id = ${user.id}
+	AND s.current_status <= 6;`
+					return model_institution.customQuery(query)
+			}
 
-    var get_service_info = function(user, params) {
-		var query = `
-SELECT 
-i.name AS name_institution,
-s.name AS name_service,
-ss.level AS level,
-s.timestamp AS postulation_date,
-s.datetime AS certificaton_date,
-s.url AS url, 
-st.name AS status, 
-s.rate AS rate
-FROM stamp.service AS s
-JOIN stamp.institution AS i ON i.id = s.id_institution
-JOIN stamp.service_status AS ss ON ss.id_service = s.id
-JOIN stamp.status AS st ON st.id = ss.id_status
-JOIN stamp.category AS c ON c.id = s.id_category
-WHERE s.id = "${params.id_service}"
-;`
-        return model_institution.customQuery(query);
-    }
+			var get_service_info = function(user, params) {
+				var query = `
+		SELECT 
+		i.name AS name_institution,
+		s.name AS name_service,
+		ss.level AS level,
+		s.timestamp AS postulation_date,
+		s.datetime AS certificaton_date,
+		s.url AS url, 
+		st.name AS status, 
+		s.rate AS rate,
+		(SELECT COUNT(sc.id) FROM stamp.service_comment AS sc WHERE sc.id_service = "${params.id_service}") AS votes
+		FROM stamp.service AS s
+		JOIN stamp.institution AS i ON i.id = s.id_institution
+		JOIN stamp.service_status AS ss ON ss.id_service = s.id
+		JOIN stamp.status AS st ON st.id = ss.id_status
+		JOIN stamp.category AS c ON c.id = s.id_category
+		WHERE s.id = "${params.id_service}"
+		;`
+						return model_institution.customQuery(query);
+				}
 
     var get_service_comments = function(user, params) {
         var query = `
@@ -946,12 +990,40 @@ JOIN stamp.role r ON h_f.id_role = r.id WHERE h_f.date >= '${params.date_begin}'
 SELECT 
 cq.*,
 s.rate,
-(SELECT COUNT(sc.id) FROM stamp.service_comment AS sc WHERE sc.id_service = "${body.id_service}") AS num_votes
+(SELECT COUNT(sc.id) FROM stamp.service_comment AS sc WHERE sc.id_service = "${body.id_service}") AS votes
 FROM stamp.service AS s
 JOIN stamp.category AS c ON c.id = s.id_category
 JOIN stamp.category_questions AS cq ON cq.id_category = c.id
 WHERE s.id = "${body.id_service}";`
 		return model_category_questions.customQuery(query)
+	}
+
+	var list_institutions_admin = function (user, body) {
+		var query = `
+SELECT 
+i.id_institution AS id_institution,
+u.name AS name,
+u.points AS points,
+u.timestamp AS register_date,
+(SELECT COUNT(s.name)
+FROM stamp.user AS us
+JOIN stamp.institution_user AS iu ON iu.id_user = us.id
+JOIN stamp.service AS s ON s.id_institution = iu.id_institution
+JOIN stamp.service_status AS ss ON ss.id_service = s.id
+JOIN stamp.category AS c ON c.id = s.id_category
+WHERE s.id_user = u.id
+AND s.current_status = 1) AS cuenta,
+u.active AS active
+FROM stamp.user_role AS ur
+JOIN stamp.user AS u ON u.id = ur.id_user
+JOIN stamp.institution_user AS i ON i.id_user = u.id
+WHERE ur.id_role = 4
+`		
+		if(body.name != null) 
+			query += `AND u.name LIKE "%${body.name}%";`
+		else
+			query += `;`
+		return model_institution.customQuery(query)
 	}
 
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
@@ -965,7 +1037,9 @@ WHERE s.id = "${body.id_service}";`
     getMap.set('service_name', { method: get_entity_service_name, permits: Permissions.NONE })
     getMap.set('list_institutions', { method: get_filtered_list_institutions, permits: Permissions.NONE })
     getMap.set('table_institutions', { method: get_filtered_list_institutions_csv, permits: Permissions.NONE })
-    getMap.set('list_by_status', { method: list_by_status, permits: Permissions.ENTITY_SERVICE })
+    getMap.set('list_certified_services', { method: list_certified_services, permits: Permissions.ENTITY_SERVICE })
+    getMap.set('list_rejected_services', { method: list_rejected_services, permits: Permissions.ENTITY_SERVICE })
+    getMap.set('list_in_progress_services', { method: list_in_progress_services, permits: Permissions.ENTITY_SERVICE })
     getMap.set('service_info', { method: get_service_info, permits: Permissions.ENTITY_SERVICE })
     getMap.set('service_comments', { method: get_service_comments, permits: Permissions.ENTITY_SERVICE })
     getMap.set('process_service', { method: get_service_process, permits: Permissions.NONE })
@@ -982,6 +1056,7 @@ WHERE s.id = "${body.id_service}";`
 	getMap.set('institution_service_certified', { method: get_institution_service_certified, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('get_hall_csv', { method: get_hall_csv, permits: Permissions.ADMIN })
 	getMap.set('questions_category', { method: get_questions_category, permits: Permissions.PLATFORM })
+	getMap.set('list_institutions_admin', { method: list_institutions_admin, permits: Permissions.ADMIN })
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice
