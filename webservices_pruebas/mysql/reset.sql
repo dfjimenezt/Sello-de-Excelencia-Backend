@@ -207,23 +207,6 @@ INSERT INTO stamp.questiontopic(id, id_category, id_usertype, name) VALUES
 ('16', '3', '1', 'Seguimiento y Control'),
 ('17', '3', '2', 'Talento Digital');
 
-#24
-TRUNCATE TABLE `question`;
-INSERT INTO question (text,criteria,evidence,legal_support,level, help,id_topic)
-SELECT r.Requisito,r.Criterio,r.Evidencia,r.`Sustento legal o técnico`,r.Nivel,r.Ayuda,qt.id 
-FROM stamp.gobierno_en_linea_datos_abiertos r JOIN
-questiontopic qt ON qt.name = r.`Area Tematica` AND qt.id_category = '1';
-
-INSERT INTO question (text,criteria,evidence,legal_support,level, help,id_topic)
-SELECT r.Requisito,r.Criterio,r.Evidencia,r.`Sustento legal o técnico`,r.Nivel,r.Ayuda,qt.id 
-FROM stamp.gobierno_en_linea_requisitos_participacion r JOIN
-questiontopic qt ON qt.name = r.`Area Tematica` AND qt.id_category = '2';
-
-INSERT INTO question (text,criteria,evidence,legal_support,level, help,id_topic)
-SELECT r.Requisito,r.Criterio,r.Evidencia,r.`Sustento legal o técnico`,r.Nivel,r.Ayuda,qt.id 
-FROM stamp.servicios_en_linea r JOIN
-questiontopic qt ON qt.name = r.`Area Tematica` AND qt.id_category = '3';
-
 #26
 TRUNCATE TABLE `region`;
 INSERT INTO region (name,id_country)
@@ -273,7 +256,9 @@ INSERT INTO status(id, name) VALUES
 ('6', 'Retroalimentación'),
 ('7', 'Cierre'),
 ('8', 'Aprobado'),
-('9', 'Rechazado');
+('9', 'Rechazado'),
+('10', 'Incompleto'),
+('11', 'Rechazado');
 
 #35
 TRUNCATE TABLE `topic`;
@@ -319,6 +304,25 @@ TRUNCATE TABLE `usertype`;
 INSERT INTO usertype(id, name) VALUES
 ('1', 'Usuario'),
 ('2', 'Experto');
+
+#24
+TRUNCATE TABLE `question`;
+INSERT INTO question (text,criteria,evidence,legal_support,level, help,id_topic)
+SELECT r.Requisito,r.Criterio,r.Evidencia,r.`Sustento legal o técnico`,r.Nivel,r.Ayuda,qt.id 
+FROM stamp.gobierno_en_linea_datos_abiertos r JOIN
+questiontopic qt ON qt.name = r.`Area Tematica` AND qt.id_category = '1';
+
+INSERT INTO question (text,criteria,evidence,legal_support,level, help,id_topic)
+SELECT r.Requisito,r.Criterio,r.Evidencia,r.`Sustento legal o técnico`,r.Nivel,r.Ayuda,qt.id 
+FROM stamp.gobierno_en_linea_requisitos_participacion r JOIN
+questiontopic qt ON qt.name = r.`Area Tematica` AND qt.id_category = '2';
+
+INSERT INTO question (text,criteria,evidence,legal_support,level, help,id_topic)
+SELECT r.Requisito,r.Criterio,r.Evidencia,r.`Sustento legal o técnico`,r.Nivel,r.Ayuda,qt.id 
+FROM stamp.servicios_en_linea r JOIN
+questiontopic qt ON qt.name = r.`Area Tematica` AND qt.id_category = '3';
+
+
 
 #requisito = requisito + sustentación legal + justificación + criterio + evidencia + ayuda + adjunto
 

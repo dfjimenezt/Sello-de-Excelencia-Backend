@@ -1028,10 +1028,6 @@ WHERE ur.id_role = 4
 		return model_institution.customQuery(query)
 	}
 
-
-
-
-
 	var get_requisites_for_service = function(token, params) {
 		if (params.id_service)
 			var query = `
@@ -1100,8 +1096,8 @@ var list_empty_user_answers = function (user, body) {
 		`
 		return model_questiontopic.customQuery(query)
 	}
-						 
-		var get_certificates = function (user, body) {
+	
+	var get_certificates = function (user, body) {
 			var query = `
 				SELECT 
 				i.name AS name_institution,
@@ -1117,7 +1113,76 @@ var list_empty_user_answers = function (user, body) {
 			return model_service.customQuery(query)
 		}
 			
-
+	/**
+	 * 	Muestra el progreso de los requisitos del servicio id_service 4
+	 *  /api/service/requisite_progress?id_service=4
+	 */
+	var get_requisite_progress = function (user, params) {
+		if(params){
+			var query = `
+				# inputs id_service
+				# outputs estado de los user answer desde el administrador
+				SELECT u_s.id AS id_user_answer, id_question, id_user AS id_user_creator, u_s.timestamp, id_service, id_status AS id_status_progress
+				FROM (SELECT * FROM stamp.user_answer WHERE stamp.user_answer.id_service = ${params.id_service}) u_s
+				LEFT JOIN stamp.media m ON u_s.id_media = m.id			`
+			return model_service.customQuery(query).then(function(result){
+				return {"data": result, "total": result.length}
+			})
+		}
+	}
+	/**
+	 * 	Muestra el progreso y las evidencias de los requisitos del servicio id_service 4
+	 *  /api/service/requisite_progress_evidence?id_service=4
+	 */
+	var get_requisite_progress_evidence = function (user, body) {
+		if(params){
+			var query = `
+				SELECT u_s.id AS id_user_answer, id_question, id_user AS id_user_creator, datetime, u_s.timestamp, requisite, support_legal, justification, id_topic, evidence, help, id_service, id_status AS id_status_progress, u_s.id_media, url AS url_media, type AS type_media, m.timestamp AS timestamp_media
+				FROM (SELECT * FROM stamp.user_answer WHERE stamp.user_answer.id_service = ${params.id_service}) u_s
+				LEFT JOIN stamp.media m ON u_s.id_media = m.id`
+			return model_service.customQuery(query).then(function(result){
+				return {"data": result, "total": result.length}
+			})
+		}
+	}
+	/**
+	 * 	Muestra los mensajes de los evaluadores que han rechazado los requisitos,
+	 *  de tal manera que el servicio queda rechazado por estos rechazos.
+	 *  /api/service/requisite_rejection_justify?id_service=4
+	 */
+	var get_justification_requisite_rejection = function (user, params) {
+		if(params){
+			var query = `
+				# NOTA: todo rechazo debe tener una justificación
+				# INPUT id_service
+				# OUTPUT id_evaluation_request, id_user_evaluator, justify_reject
+				SELECT id_service, id AS id_evaluation_request, id_user AS id_user_evaluator, justify_reject
+				FROM stamp.evaluation_request w_r WHERE w_r.result = 0 AND w_r.justify_reject IS NOT NULL AND w_r.id_service = ${params.id_service};`
+			return model_service.customQuery(query).then(function(result){
+				return {"data": result, "total": result.length}
+			})
+		}
+	}
+	/**
+	 * 	Muestra los requisitos que ya han sido evaluados 
+	 *  /api/service/requisites_evaluated?id_user=1
+	 */
+	var get_requisites_evaluated = function (user, params) {
+		if(params){
+			var query = `
+				# sql que retorna los requisitos evaluados desde el id del usuario creador (creador de institucion)
+				# INPUT id_user_creator (institution)
+				# OUTPUT user_answer (evaluados por cierre 7) comentar y descomentar según logica(evaluador por aprobados 8 o rechazados 9)
+				SELECT u_a.id AS id_answer, id_question, u_a.id_user AS id_user_creator, id_status AS id_status_
+				FROM stamp.user_answer u_a
+				#LEFT JOIN stamp.service s ON u_a.id_service = s.id WHERE s.id_user = 10 AND (u_a.id_status = 7)
+				LEFT JOIN stamp.service s ON u_a.id_service = s.id WHERE s.id_user = ${params.id_user_creator} AND (u_a.id_status = 8 OR u_a.id_status = 9)
+`
+			return model_service.customQuery(query).then(function(result){
+				return {"data": result, "total": result.length}
+			})
+		}
+	}
 	getMap.set('service_incomplete', { method: get_services_incomplete, permits: Permissions.NONE })
 	getMap.set('requisites_service', { method: get_requisites_for_service, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('list_empty_user_answers', { method: list_empty_user_answers, permits: Permissions.ENTITY_SERVICE })
@@ -1154,7 +1219,11 @@ var list_empty_user_answers = function (user, body) {
 	getMap.set('questions_category', { method: get_questions_category, permits: Permissions.PLATFORM })
 	getMap.set('list_institutions_admin', { method: list_institutions_admin, permits: Permissions.ADMIN })
 	getMap.set('get_certificates', { method: get_certificates, permits: Permissions.ENTITY_SERVICE })
-	
+	getMap.set('requisite_progress_evidence', { method: get_requisite_progress_evidence, permits: Permissions.NONE }) //permisos
+	getMap.set('requisite_progress', { method: get_requisite_progress, permits: Permissions.ADMIN })
+	getMap.set('requisite_rejection_justify', { method: get_justification_requisite_rejection, permits: Permissions.NONE }) //permisos
+	getMap.set('requisites_evaluated', { method: get_requisites_evaluated, permits: Permissions.NONE }) //permisos
+
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice
