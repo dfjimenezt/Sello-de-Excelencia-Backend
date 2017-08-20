@@ -920,23 +920,21 @@ RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${param
 		return model_service.getAll(params);
     }
     
-    var get_institution_info = function (user, body) {
-		var query = `
-SELECT 
-i.*, 
-td.name AS type_document,
-c.name AS city,
-r.name AS region,
-co.name AS country
-FROM stamp.institution AS i
-JOIN stamp.type_document AS td ON td.id = i.legalrep_typedoc
-JOIN stamp.city AS c ON c.id = i.id_city
-JOIN stamp.region AS r ON r.id = i.id_region
-JOIN stamp.country AS co ON co.id = i.id_country
-WHERE i.id = "${body.id_institution}"
-;`
-		return model_institution.customQuery(query)
-	}
+		var get_institution_info = function (user, body) {
+			var query = `
+				SELECT 
+				i.*, 
+				td.name AS type_document,
+				c.name AS city,
+				r.name AS region
+				FROM stamp.institution AS i
+				JOIN stamp.type_document AS td ON td.id = i.legalrep_typedoc
+				JOIN stamp.city AS c ON c.id = i.id_city
+				JOIN stamp.region AS r ON r.id = i.id_region
+				WHERE i.id = "${body.id_institution}";
+			`
+			return model_institution.customQuery(query)
+		}
 
 	var get_institution_service = function (user, body) {
 		var query = `
@@ -1183,6 +1181,96 @@ var list_empty_user_answers = function (user, body) {
 			})
 		}
 	}
+
+	/**
+	 * 	Muestra una lista de chats entre un evaluador y una entidad a partir del usuario 
+	 *  en la sesión actual
+	 *  /api/service/get_chats?id_service=4&id_question=10
+	 */
+	var get_chats = function (user, body) {
+		var query = `
+			SELECT ur.id_role AS role
+			FROM stamp.user_role AS ur
+			WHERE ur.id_user = ${user.id};
+		`
+		return model_chats.customQuery(query).then((role) => {
+			switch(role[0].role) {
+				case 4: // Entidad
+					query = `
+						SELECT 
+						er.id AS id_evaluation_request,
+						CONCAT(u.name, ' ', u.lastname) AS name,
+						u.id AS id_evaluator
+						FROM stamp.evaluation_request AS er
+						JOIN stamp.user AS u ON u.id = er.id_user
+						WHERE er.id_service = ${body.id_service}
+						AND er.id_question = ${body.id_question}
+						AND (er.id_request_status = 3 # Asignado
+								 OR er.id_request_status = 4); # Aceptado
+					`
+					return model_chats.customQuery(query).then(function(requisites) {
+						var data = { data: requisites[0], total: requisites.length }
+						return data
+					})
+				case 2: // Evaluador
+					query = `
+						SELECT 
+						er.id AS id_evaluation_request,
+						i.name AS name,
+						i.id AS id_institution,
+						u.id AS id_user_institution
+						FROM stamp.user_answer AS ua
+						JOIN stamp.evaluation_request AS er ON (er.id_service = ua.id_service AND er.id_question = ua.id_question)
+						JOIN stamp.user AS u ON u.id = ua.id_user
+						JOIN stamp.institution_user AS iu ON iu.id_user = u.id
+						JOIN stamp.institution AS i ON i.id = iu.id_institution
+						WHERE ua.id_service = 4
+						AND ua.id_question = 10
+						AND (er.id_request_status = 3 # Asignado
+								 OR er.id_request_status = 4); # Aceptado
+					`
+					return model_chats.customQuery(query).then(function(requisites) {
+						var data = { data: requisites[0], total: requisites.length }
+						return data
+					})
+				default: // Administrador
+					/*query = `
+						SELECT 
+						FROM stamp.user_answer AS 
+						JOIN stamp.evaluation_request AS er ON (er.id_service = ua.id_service AND er.id_question = ua.id_question)
+						JOIN stamp.user AS u ON u.id = ua.id_user
+						WHERE ua.id_service = ${body.id_service}
+						AND ua.id_question = ${body.id_question}
+						AND (er.id_request_status = 3 OR er.id_request_status = 4); # Pendiente 3 o Aceptado 4
+					`
+					return model_chats.customQuery(query).then(function(requisites) {
+						var data = { data: requisites[0], total: requisites.length }
+						return data
+					})*/
+					break
+			}
+		})
+	}
+
+	/**
+	 * 	Muestra el historial de mensajes de un chat en específico
+	 *  /api/service/get_chat_messages?id_evaluation_request=1
+	 */
+	var get_chat_messages = function(user, body) {
+		var query = `
+			SELECT *
+			FROM stamp.chats as ch
+			WHERE ch.id_evaluation_request = ${body.id_evaluation_request}
+			ORDER BY ch.timestamp ASC;
+		`
+		return model_chats.customQuery(query).then(function(requisites) {
+			var data = { data: requisites, total: requisites.length }
+			return data
+		})
+	}
+
+	getMap.set('get_chats', { method: get_chats, permits: Permissions.PLATFORM })
+	getMap.set('get_chat_messages', { method: get_chat_messages, permits: Permissions.PLATFORM })
 	getMap.set('service_incomplete', { method: get_services_incomplete, permits: Permissions.NONE })
 	getMap.set('requisites_service', { method: get_requisites_for_service, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('list_empty_user_answers', { method: list_empty_user_answers, permits: Permissions.ENTITY_SERVICE })
@@ -1510,45 +1598,65 @@ var list_empty_user_answers = function (user, body) {
 */
 
 
-	var create_user_answers_verification = function(token, body) {
-		if (body.id_service) {
-				return get_requisites_for_service(token, { "id_service": body.id_service }).then(function(requisitos) {
-						if (requisitos) {
-								var query = ''
-								var req = requisitos.data
-								for (var i in req) {
-										query += `
-USE stamp; SET FOREIGN_KEY_CHECKS=0;
-INSERT INTO user_answer(id_question, requisite, support_legal, justification, evidence,help,id_topic,id_service,id_user,id_status) 
-VALUES ('${req[i].id_question}', '${req[i].requisite}', '${req[i].support_legal}', '${req[i].justification}', '${req[i].evidence}', '${req[i].help}', '${req[i].id_topic}', '${req[i].id_service}', '${req[i].id_user}', '0');
-SET FOREIGN_KEY_CHECKS=1;
-`
-								}
-								return model_category.customQuery(query)
-						}
-				})
-		}
+var create_user_answers_verification = function(token, body) {
+	if (body.id_service) {
+		return get_requisites_for_service(token, { "id_service": body.id_service }).then(function(requisitos) {
+			if (requisitos) {
+				var query = ''
+				var req = requisitos.data
+				for (var i in req) {
+					query += `
+						USE stamp; SET FOREIGN_KEY_CHECKS=0;
+						INSERT INTO user_answer(id_question, requisite, support_legal, justification, evidence,help,id_topic,id_service,id_user,id_status) 
+						VALUES ('${req[i].id_question}', '${req[i].requisite}', '${req[i].support_legal}', '${req[i].justification}', '${req[i].evidence}', '${req[i].help}', '${req[i].id_topic}', '${req[i].id_service}', '${req[i].id_user}', '0');
+						SET FOREIGN_KEY_CHECKS=1;
+					`
+				}
+				return model_category.customQuery(query)
+			}
+		})
+	}
 }
-postMap.set('requisites_service', { method: create_user_answers_verification, permits: Permissions.NONE })//Permisos
 
+var update_evidence = function (user, body, files) {
+	return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type).then((url) => {
+		// Insertar objetos multimedia en tabla stamp.media
+		return model_media.create({
+			url: url,
+			type: files.file.type
+		}).then((media) => {
+			// Actualizar el user_answer del media subido
+			var ua_body = {
+				id_media: media.insertId,
+			}
+			return model_user_answer.update(ua_body, {id:body.id_user_answer})
+		})
+	})
+}
 
-	//postMap.set('service', { method: create_entity_service, permits: Permissions.ADMIN })
-	//postMap.set('category', { method: create_category, permits: Permissions.ADMIN })
-	//postMap.set('questiontopic', { method: create_questiontopic, permits: Permissions.ADMIN })
-	//postMap.set('form', { method: create_entity_form, permits: Permissions.ADMIN })
-	//postMap.set('type', { method: create_type, permits: Permissions.ADMIN })
-	//postMap.set('question', { method: create_question, permits: Permissions.ADMIN })
-    postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE }) // PERMSSIONS
-    postMap.set('save_evidence', { method: save_service_evidence, permits: Permissions.ENTITY_SERVICE })
-    postMap.set('service_comment', { method: create_service_comment, permits: Permissions.FORUM })
-    postMap.set('category', { method: create_category, permits: Permissions.ADMIN })
-    postMap.set('questiontopic', { method: create_questiontopic, permits: Permissions.ADMIN })
-    postMap.set('form', { method: create_entity_form, permits: Permissions.ADMIN })
-    postMap.set('type', { method: create_type, permits: Permissions.ADMIN })
-    postMap.set('question', { method: create_question, permits: Permissions.ADMIN })
-    postMap.set('points', { method: create_points, permits: Permissions.ADMIN })
-    postMap.set('questions_category', { method: create_questions_category, permits: Permissions.ADMIN })
-    postMap.set('motives', { method: create_motives, permits: Permissions.ADMIN })
+var write_to_chat = function(user, body) {
+	return model_chats.create({
+		id_evaluation_request: body.id_evaluation_request,
+		id_sender: user.id,
+		text: body.text,
+	})
+}
+
+	postMap.set('write_to_chat', { method: write_to_chat, permits: Permissions.PLATFORM })
+	postMap.set('update_evidence', { method: update_evidence, permits: Permissions.ENTITY_SERVICE })
+	postMap.set('requisites_service', { method: create_user_answers_verification, permits: Permissions.NONE })//Permisos
+	postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE }) // PERMSSIONS
+	postMap.set('save_evidence', { method: save_service_evidence, permits: Permissions.ENTITY_SERVICE })
+	postMap.set('service_comment', { method: create_service_comment, permits: Permissions.FORUM })
+	postMap.set('category', { method: create_category, permits: Permissions.ADMIN })
+	postMap.set('questiontopic', { method: create_questiontopic, permits: Permissions.ADMIN })
+	postMap.set('form', { method: create_entity_form, permits: Permissions.ADMIN })
+	postMap.set('type', { method: create_type, permits: Permissions.ADMIN })
+	postMap.set('question', { method: create_question, permits: Permissions.ADMIN })
+	postMap.set('points', { method: create_points, permits: Permissions.ADMIN })
+	postMap.set('questions_category', { method: create_questions_category, permits: Permissions.ADMIN })
+	postMap.set('motives', { method: create_motives, permits: Permissions.ADMIN })
+	
 	/**
 	 * @api {put} api/service/service Update service information
 	 * @apiName Putservice
@@ -1690,30 +1798,14 @@ postMap.set('requisites_service', { method: create_user_answers_verification, pe
 		return { message: "no se pudo actualizar los puntos del motivo" }
 	}
 
-	var update_evidence = function (user, body, files) {
-		return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type).then((url) => {
-			// Insertar objetos multimedia en tabla stamp.media
-			return model_media.create({
-				url: url,
-				type: files.file.type
-			}).then((media) => {
-				// Actualizar el user_answer del media subido
-				var ua_body = {
-					id_media: media.insertId,
-				}
-				return model_user_answer.update(ua_body, {id:body.id_user_answer})
-			})
-		})
-	}
-
-	putMap.set('update_evidence', { method: update_evidence, permits: Permissions.ENTITY_SERVICE })
 	putMap.set('service', { method: update_entity_service, permits: Permissions.ADMIN })
 	putMap.set('category', { method: update_category, permits: Permissions.ADMIN })
 	putMap.set('questiontopic', { method: update_questiontopic, permits: Permissions.ADMIN })
 	putMap.set('form', { method: update_entity_form, permits: Permissions.ADMIN })
 	putMap.set('type', { method: update_type, permits: Permissions.ADMIN })
 	putMap.set('question', { method: update_question, permits: Permissions.ADMIN })
-    putMap.set('motives', { method: update_motives, permits: Permissions.ADMIN })
+	putMap.set('motives', { method: update_motives, permits: Permissions.ADMIN })
+	
 	/**
 	 * @api {delete} api/service/service Delete service information
 	 * @apiName Deleteservice
