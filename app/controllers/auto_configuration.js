@@ -546,6 +546,17 @@ FROM stamp.hall_of_fame WHERE id_role = 2 AND date = '${date[0]}';`
 			return hall 
 		})
 	}
+
+	// Traer questiontopic según su categoria
+	var get_evaluation_thematic_for_category = function(token, params){
+		var query =`
+SELECT q.id AS id_questiontopic, q.name AS names_questiontopic, id_usertype, id_category, c.name AS name_Category 
+FROM stamp.questiontopic q
+LEFT JOIN stamp.category c ON q.id_category = c.id
+`
+		return model_questiontopic.customQuery(query)
+	}
+
 	// Traer temáticas según categorías (como parámetro) y nivel de evaluador (también como parámetro)
 	// Esta función se usa cuando el evaluador a entrado por primera vez (login) y debe anexar en sus
 	// datos la categoría a evaluar.
@@ -652,6 +663,7 @@ FROM stamp.hall_of_fame WHERE id_role = 2 AND date = '${date[0]}';`
 	getMap.set('evaluator', { method: get_entity_user_evaluator, permits: Permissions.NONE })
 	getMap.set('hall_today', { method: get_hall_today, permits: Permissions.NONE })
 	getMap.set('evaluation_thematic', { method: get_evaluation_thematic, permits: Permissions.PLATFORM })
+	getMap.set('evaluation_thematic_for_category', { method: get_evaluation_thematic_for_category, permits: Permissions.PLATFORM })
 	getMap.set('questiontopics_evaluator', { method: get_questiontopics_evaluator, permits: Permissions.PLATFORM })
 	/**
 	 * @api {post} api/configuration/user Create user information
