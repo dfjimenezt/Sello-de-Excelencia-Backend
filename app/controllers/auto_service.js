@@ -28,6 +28,7 @@ var category_questions = require('../models/category_questions.js')
 var service = require('../models/service.js')
 var hall_of_fame = require('../models/hall_of_fame.js')
 var evaluation_request = require('../models/evaluation_request.js')
+var entity_service_status = require('../models/entity_service_status.js')
 var service_controller = function () {
 	var model_entity_service = new entity_service()
 	var model_category = new category()
@@ -47,7 +48,8 @@ var service_controller = function () {
     var model_category_questions = new category_questions()
     var model_service = new service()
     var model_hall_of_fame = new hall_of_fame()
-    var model_evaluation_request = new evaluation_request()
+		var model_evaluation_request = new evaluation_request()
+		var model_entity_service_status = new entity_service_status()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -1026,6 +1028,84 @@ WHERE ur.id_role = 4
 		return model_institution.customQuery(query)
 	}
 
+
+
+
+
+	var get_requisites_for_service = function(token, params) {
+		if (params.id_service)
+				var query = `
+SELECT q.id as id_question, q.text as requisite, q.legal_support as support_legal, q.criteria as justification, q.evidence as evidence, q.help as help, join2.*
+FROM stamp.question q
+#JOIN (SELECT qt.id as id_questiontopic, qt.name as name_topics, qt.id_usertype, qt.id_category, join1.level, join1.id as id_service, join1.id_user
+JOIN (SELECT qt.id as id_topic, join1.level, join1.id as id_service, join1.id_user
+FROM stamp.questiontopic qt
+RIGHT JOIN 
+(SELECT id_category, s.id, level, s.id_user
+		FROM stamp.service s
+		RIGHT JOIN stamp.service_status s_s ON s.id = s_s.id_service 
+		WHERE s_s.id_service = '${params.id_service}') join1 
+ON qt.id_category = join1.id_category) join2 
+ON q.id_topic = join2.id_topic WHERE q.level <= join2.level ORDER BY q.id;
+`
+		return model_institution.customQuery(query).then(function(requisites) {
+				var data = { data: requisites, total: requisites.length }
+				return data
+		})
+}
+
+
+
+
+var list_empty_user_answers = function (user, body) {
+	var query = `
+		SELECT 
+		ua.id AS id_user_answer,
+		ua.id_question AS id_question,
+		ua.id_service AS id_service,
+		q.*
+		FROM stamp.user_answer AS ua
+		JOIN stamp.question AS q ON q.id = ua.id_question
+		WHERE ua.id_media IS NULL
+		AND ua.id_service = ${body.id_service};
+	`
+	return model_institution.customQuery(query)
+}
+
+       // Lista con nombres 
+       //
+       var get_questiontopic_all = function(user, params){
+               var query = `
+SELECT q_c.id, q_c.name_questiontopic, u_t.name AS usertype, q_c.name_category
+FROM
+(SELECT q.id, q.name AS name_questiontopic, q.id_usertype, c.name AS name_category
+FROM stamp.questiontopic q
+LEFT JOIN stamp.category c ON q.id_category = c.id) q_c
+LEFT JOIN stamp.usertype u_t ON q_c.id_usertype = u_t.id;
+               `
+               return model_user.customQuery(query)
+			 }
+
+			 
+			// params id_user institution
+			//
+			var get_services_incomplete = function(user, params){
+			               var query = `
+			SELECT id_service, name AS name_service, url, id_category, level, c.name AS name_category, test_user, test_password
+			FROM
+			(SELECT id AS id_service, name AS name_service, url, id_category, level, test_user, test_password
+			FROM stamp.service s
+			LEFT JOIN stamp.service_status s_t ON s.id = s_t.id_service WHERE s_t.id_status = 0 AND s.id_user = ${params.id_user}) s_s
+			LEFT JOIN stamp.category c ON s_s.id_category = c.id
+			`
+			               return model_questiontopic.customQuery(query)
+			       }
+			
+
+	getMap.set('service_incomplete', { method: get_services_incomplete, permits: Permissions.NONE })
+	getMap.set('requisites_service', { method: get_requisites_for_service, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('list_empty_user_answers', { method: list_empty_user_answers, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('questiontopic_all', { method: get_questiontopic_all, permits: Permissions.NONE })
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
 	getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
@@ -1088,20 +1168,38 @@ WHERE ur.id_role = 4
  	 * 
 	 */
 	var create_entity_service = function(user, body) {
-        var query = `SELECT * FROM stamp.institution_user WHERE id_user = "${user.id}";`
-        return institution_user.customQuery(query).then((user_institution) => {
-            body.id_user = user_institution[0].id_user
-            body.id_institution = user_institution[0].id_institution
-            body.current_status = 1
-            body.is_active = 1
-            return model_entity_service.create(body).then((serv) => {
-                return service_status.create({
-                    id_service: serv.data.id,
-                    id_status: 1
-                })
-            })
-        })
-    }
+		var result
+		var query = `SELECT * FROM stamp.institution_user WHERE id_user = "${user.id}";`
+		return institution_user.customQuery(query).then((user_institution) => {
+			return model_entity_service.create({
+				name: body.name,
+				url: body.url,
+				test_user: body.test_user,
+				test_password: body.test_password,
+				id_category: body.id_category,
+				id_user: user_institution[0].id_user,
+				id_institution: user_institution[0].id_institution,
+				current_status: 0,
+				is_active: 1
+			}).then((serv) => {
+				result = serv.data.id
+				query = ` 
+					SET FOREIGN_KEY_CHECKS=0;
+					INSERT INTO stamp.service_status 
+					(id_service, level, id_status) 
+					VALUES 
+					("${result}", "${body.level}", "0");
+					SET FOREIGN_KEY_CHECKS=1;
+				`
+				return model_question.customQuery(query).then((value) => {
+					return create_user_answers_verification(user, {id_service: result}).then((vals) => {
+						return list_empty_user_answers(user, {id_service: result})
+					})
+				})
+			})
+		})
+	}
+	
 	//var create_entity_service = function (user, body) {
 	//	return model_entity_service.create(body)
 	//}
@@ -1186,103 +1284,55 @@ WHERE ur.id_role = 4
             //body.id_service = service.id
         return model_service_comment.create(body)
     }
-    /*var getPromiseUrl = function(id, files, i, length) {
-    	return new Promise(function (resolve, reject) {
-    		var url = utiles.uploadFileToGCS(id, files[i], id, files[i].type)
-    		if (i >= length-1) {
-    			resolve(url)
-    		} else {
-    			if (!url) reject(Error("getPromiseUrl broke"));
-    			else {
-    				model_media.create({
-    					url: url,
-    					type: files[i].type
-    				})
-    				resolve(getPromiseUrl(id, files, i+1, length))
-    			}
-    		}
-    	})
-    }
-
-    var save_service_evidence = function (user, body, files) {
-    	var files_objs = []
-    	var urls = []
-    	let len = 0
-    	for (var i in files) {
-    		files_objs.push(files[i])
-    		len++
-    	}
-    	//utiles.uploadFilesToGCS(user.id, files, user.id).then((url) => {
-    	getPromiseUrl(user.id, files_objs, 0, len).then((urls) => {
-    		for(var i = 0; i < urls.length; i++) {
-    			model_media.create({
-    				url: urls[i],
-    				type: files_objs[i].type
-    			})
-    		return urls
-    	})
-    }
-    */
-    // TODO: FINISH and check how to return if success
-    /*var getPromiseUrl = function(id, file, folder, type) {
-    	return new Promise(function (resolve, reject) {
-    		var url = utiles.uploadFileToGCS(id, file, folder, type)
-    		if (!url) reject(Error("getPromiseUrl broke"));
-    		else resolve(url);
-    	})
-    }
-	
-    var save_service_evidence = function (user, body, files) {
-    	for (var i in files) {
-    		getPromiseUrl(user.id, file[i], user.id, file[i].type).then((url) => {
-    			model_media.create({
-    				url: url,
-    				type: files[i].type
-    			})
-    		})
-    	}
-    }
-    */
-    var save_service_evidence = function(user, body, files) {
-        let j = 1
-        for (var i in files) {
-            utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type).then((url) => {
-                // Insertar objetos multimedia en tabla stamp.media
-                return model_media.create({
-                    url: url,
-                    type: files[i].type
-                }).then((media) => {
-                    // Relacionar usuario, servicio y multimedia con el requisito
-                    return model_user_answer.create({
-                        id_answer: null,
-                        id_question: body.id_question,
-                        id_user: user.id,
-                        id_media: media.insertId,
-                        requisite: body.requisite,// || "",
-                        support_legal: body.support_legal,// || "",
-                        justification: body.justification,// || "",
-                        id_topic: body.id_topic,// || "",
-                        evidence: body.evidence,// || "",
-                        help: body.help,// || "",
+		
+		var save_service_evidence = function (user, body, files) {
+			return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type).then((url) => {
+				// Insertar objetos multimedia en tabla stamp.media
+				return model_media.create({
+					url: url,
+					type: files.file.type
+				}).then((media) => {
+					// Actualizar el user_answer del media subido
+					var ua_body = {
+						id_question: body.id_question,
+						id_user: user.id,
+						id_media: media.insertId,
+						id_topic: body.id_topic,
 						id_service: body.id_service,
+						// comment: body.comment, TODO: ADD TO user_answer
 						id_status: "1"
-                    }).then((usr_ans) => {
-                        return model_evaluation_request.create({
-                            id_user: null,
-                            id_user_answer: user_answer.insertId,
-                            id_service: body.id_service,
-                            id_request_status: "1",
-                            //id_question: body.id_question,
-                            result: "0", // WARNING: This status means the status is not defined
-                            justify_reject: null,
-                            //branch: j++
-                        })
-                        console.log(j++)
-                    })
-                })
-            })
-        }
-    }
+					}
+					return model_user_answer.update(ua_body, {id:body.id_user_answer})
+				}).then(() => {
+					// Traer todos los requisitos del servicio que están incompletos
+					var query = `
+						SELECT *
+						FROM stamp.user_answer AS ua
+						WHERE (ua.id_media IS NULL OR ua.id_status = 0)
+						AND id_service = ${body.id_service};
+					`
+					return model_user_answer.customQuery(query).then((incompletos) => {
+						// Cambiar estado del servicio
+						if(!incompletos.length) {
+							var s_body = {
+								id: body.id_service,
+								current_status: "1"
+							}
+							return model_service.update(s_body, {id: s_body.id}).then(() => {
+								var ss_body = {
+									id_service: body.id_service,
+									id_status: "1"
+								}
+								return service_status.update(ss_body, {id_service: ss_body.id_service}).then(() => {
+									return {mensaje:`Evidencia subida correctamente. Evidencias completadas`}
+								})
+							})
+						}
+						return {mensaje:`Evidencia subida correctamente`}
+					})
+				})
+			})
+		}
 
     /*
      * crear puntos
@@ -1350,13 +1400,58 @@ WHERE ur.id_role = 4
 		return { message: "debe enviar name y points para nuevo motivo"}
 	}
 
+/*
+****
+*  var create_entity_service = function(user, body) {
+            var query = SELECT * FROM stamp.institution_user WHERE id_user = "${user.id}";
+            return institution_user.customQuery(query).then((user_institution) => {
+                body.id_user = user_institution[0].id_user
+                body.id_institution = user_institution[0].id_institution
+                body.current_status = 1
+                body.is_active = 1
+                return model_entity_service.create(body).then((serv) => {
+                    return service_status.create({
+                        id_service: serv.data.id,
+                        id_status: 1
+                    })
+                })
+            })
+        }
+*
+*
+**
+*/
+
+
+	var create_user_answers_verification = function(token, body) {
+		if (body.id_service) {
+				return get_requisites_for_service(token, { "id_service": body.id_service }).then(function(requisitos) {
+						if (requisitos) {
+								var query = ''
+								var req = requisitos.data
+								for (var i in req) {
+										query += `
+USE stamp; SET FOREIGN_KEY_CHECKS=0;
+INSERT INTO user_answer(id_question, requisite, support_legal, justification, evidence,help,id_topic,id_service,id_user,id_status) 
+VALUES ('${req[i].id_question}', '${req[i].requisite}', '${req[i].support_legal}', '${req[i].justification}', '${req[i].evidence}', '${req[i].help}', '${req[i].id_topic}', '${req[i].id_service}', '${req[i].id_user}', '0');
+SET FOREIGN_KEY_CHECKS=1;
+`
+								}
+								return model_category.customQuery(query)
+						}
+				})
+		}
+}
+postMap.set('requisites_service', { method: create_user_answers_verification, permits: Permissions.NONE })//Permisos
+
+
 	//postMap.set('service', { method: create_entity_service, permits: Permissions.ADMIN })
 	//postMap.set('category', { method: create_category, permits: Permissions.ADMIN })
 	//postMap.set('questiontopic', { method: create_questiontopic, permits: Permissions.ADMIN })
 	//postMap.set('form', { method: create_entity_form, permits: Permissions.ADMIN })
 	//postMap.set('type', { method: create_type, permits: Permissions.ADMIN })
 	//postMap.set('question', { method: create_question, permits: Permissions.ADMIN })
-    postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE })
+    postMap.set('service', { method: create_entity_service, permits: Permissions.ENTITY_SERVICE }) // PERMSSIONS
     postMap.set('save_evidence', { method: save_service_evidence, permits: Permissions.ENTITY_SERVICE })
     postMap.set('service_comment', { method: create_service_comment, permits: Permissions.FORUM })
     postMap.set('category', { method: create_category, permits: Permissions.ADMIN })
@@ -1507,6 +1602,24 @@ WHERE ur.id_role = 4
 		}
 		return { message: "no se pudo actualizar los puntos del motivo" }
 	}
+
+	var update_evidence = function (user, body, files) {
+		return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type).then((url) => {
+			// Insertar objetos multimedia en tabla stamp.media
+			return model_media.create({
+				url: url,
+				type: files.file.type
+			}).then((media) => {
+				// Actualizar el user_answer del media subido
+				var ua_body = {
+					id_media: media.insertId,
+				}
+				return model_user_answer.update(ua_body, {id:body.id_user_answer})
+			})
+		})
+	}
+
+	putMap.set('update_evidence', { method: update_evidence, permits: Permissions.ENTITY_SERVICE })
 	putMap.set('service', { method: update_entity_service, permits: Permissions.ADMIN })
 	putMap.set('category', { method: update_category, permits: Permissions.ADMIN })
 	putMap.set('questiontopic', { method: update_questiontopic, permits: Permissions.ADMIN })

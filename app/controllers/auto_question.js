@@ -409,6 +409,51 @@ ORDER BY q.id
 ;`
 		return model_entity_service.customQuery(query)
 	}
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
+	var list_empty_user_answers = function (user, body) {
+		var query = `
+			SELECT 
+			ua.id_question AS id_question,
+			ua.id_service AS id_service,
+			q.*
+			FROM stamp.user_answer AS ua
+			JOIN stamp.question AS q ON q.id = ua.id_question
+			WHERE ua.id_media IS NULL
+			AND ua.id_service = ${body.id_service};
+		`
+		return model_entity_service.customQuery(query)
+	}
 
 	var get_filtered_list_requirements = function (user, params) {
 		var query = `SELECT stamp.institution.name AS name, stamp.service.name AS service_name, stamp.service.url AS url, stamp.service.timestamp as publication_date
@@ -573,7 +618,10 @@ AND (stamp.evaluation_request.result = 1 OR stamp.evaluation_request.result = 0)
 	getMap.set('evaluation_request', { method: get_entity_evaluation_request, permits: Permissions.NONE })
 	getMap.set('user_answer', { method: get_entity_user_answer, permits: Permissions.NONE })
 	getMap.set('request_status', { method: get_request_status, permits: Permissions.NONE })
+	getMap.set('list_empty_user_answers', { method: list_empty_user_answers, permits: Permissions.ENTITY_SERVICE })
 	/**
+	 * 
+	 * 
 	 * @api {post} api/question/evaluation_request Create evaluation_request information
 	 * @apiName Postevaluation_request
 	 * @apiGroup question
