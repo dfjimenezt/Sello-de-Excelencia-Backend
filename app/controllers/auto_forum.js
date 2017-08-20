@@ -127,7 +127,34 @@ var forum_controller = function () {
 	}
 	
 	var get_hangouts = function(user, body) {
-			return _get(model_hangouts, user, body)
+		var query = `
+			SELECT ur.id_role
+			FROM stamp.user_role AS ur
+			WHERE ur.id_user = ${user.id}
+		`
+		return model_hangouts.customQuery(query).then((role) => {
+			var query2 = ""
+			switch(role[0].id_role) {
+				case 2: // Evaluador
+					query2 += `
+						SELECT *
+						FROM stamp.hangouts AS h
+						WHERE h.id_role = 1
+						OR h.id_role = 3;
+					`
+					return model_hangouts.customQuery(query2)
+				case 4: // Entidad
+					query2 += `
+						SELECT *
+						FROM stamp.hangouts AS h
+						WHERE h.id_role = 2
+						OR h.id_role = 3;
+					`
+					return model_hangouts.customQuery(query2)
+				default: // Administrador
+					return  _get(model_hangouts, user, body)
+			}
+		})
 	}
 	
 	var get_status = function(user, body) {

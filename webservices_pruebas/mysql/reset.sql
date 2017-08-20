@@ -66,14 +66,15 @@ INSERT INTO country (name)
 SELECT p.name 
 FROM stamp.paises p ;
 
-#45
-TRUNCATE TABLE `footer`;
-
 #10
 TRUNCATE TABLE `evaluation_request`;
 
 #11
 TRUNCATE TABLE `faq`;
+
+#
+TRUNCATE TABLE `footer`;
+INSERT INTO footer (title, text) VALUES ('footer', 'El texto del footer');
 
 #TRUNCATE TABLE `form`;
 #INSERT INTO form(id, name, id_category) VALUES
@@ -103,6 +104,29 @@ TRUNCATE TABLE `faq`;
 
 #12
 TRUNCATE TABLE `hall_of_fame`;
+INSERT INTO stamp.hall_of_fame 
+(id, name, points, id_user, id_role)
+VALUES
+(1, "Entidad1", "100", "1", "2"),
+(2, "Entidad2", "101", "2", "2"),
+(3, "Entidad3", "102", "3", "2"),
+(4, "Entidad4", "103", "4", "2"),
+(5, "Entidad5", "104", "5", "2"),
+(6, "Entidad6", "105", "6", "2"),
+(7, "Entidad7", "106", "7", "2"),
+(8, "Entidad8", "107", "8", "2"),
+(9, "Entidad9", "108", "9", "2"),
+(10, "Entidad10", "109", "10", "2"),
+(11, "Evaluador1", "101", "11", "2"),
+(12, "Evaluador2", "102", "12", "2"),
+(13, "Evaluador3", "103", "13", "2"),
+(14, "Evaluador4", "104", "14", "2"),
+(15, "Evaluador5", "105", "15", "2"),
+(16, "Evaluador6", "106", "16", "2"),
+(17, "Evaluador7", "107", "17", "2"),
+(18, "Evaluador8", "108", "18", "2"),
+(19, "Evaluador9", "109", "19", "2"),
+(20, "Evaluador10", "110", "20", "2");
 
 #13
 TRUNCATE TABLE `hangouts`;

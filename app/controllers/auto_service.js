@@ -1034,20 +1034,20 @@ WHERE ur.id_role = 4
 
 	var get_requisites_for_service = function(token, params) {
 		if (params.id_service)
-				var query = `
-SELECT q.id as id_question, q.text as requisite, q.legal_support as support_legal, q.criteria as justification, q.evidence as evidence, q.help as help, join2.*
-FROM stamp.question q
-#JOIN (SELECT qt.id as id_questiontopic, qt.name as name_topics, qt.id_usertype, qt.id_category, join1.level, join1.id as id_service, join1.id_user
-JOIN (SELECT qt.id as id_topic, join1.level, join1.id as id_service, join1.id_user
-FROM stamp.questiontopic qt
-RIGHT JOIN 
-(SELECT id_category, s.id, level, s.id_user
-		FROM stamp.service s
-		RIGHT JOIN stamp.service_status s_s ON s.id = s_s.id_service 
-		WHERE s_s.id_service = '${params.id_service}') join1 
-ON qt.id_category = join1.id_category) join2 
-ON q.id_topic = join2.id_topic WHERE q.level <= join2.level ORDER BY q.id;
-`
+			var query = `
+				SELECT q.id as id_question, q.text as requisite, q.legal_support as support_legal, q.criteria as justification, q.evidence as evidence, q.help as help, join2.*
+				FROM stamp.question q
+				#JOIN (SELECT qt.id as id_questiontopic, qt.name as name_topics, qt.id_usertype, qt.id_category, join1.level, join1.id as id_service, join1.id_user
+				JOIN (SELECT qt.id as id_topic, join1.level, join1.id as id_service, join1.id_user
+				FROM stamp.questiontopic qt
+				RIGHT JOIN 
+				(SELECT id_category, s.id, level, s.id_user
+						FROM stamp.service s
+					RIGHT JOIN stamp.service_status s_s ON s.id = s_s.id_service 
+					WHERE s_s.id_service = '${params.id_service}') join1 
+				ON qt.id_category = join1.id_category) join2 
+				ON q.id_topic = join2.id_topic WHERE q.level <= join2.level ORDER BY q.id;
+			`
 		return model_institution.customQuery(query).then(function(requisites) {
 				var data = { data: requisites, total: requisites.length }
 				return data
@@ -1072,34 +1072,50 @@ var list_empty_user_answers = function (user, body) {
 	return model_institution.customQuery(query)
 }
 
-       // Lista con nombres 
-       //
-       var get_questiontopic_all = function(user, params){
-               var query = `
-SELECT q_c.id, q_c.name_questiontopic, u_t.name AS usertype, q_c.name_category
-FROM
-(SELECT q.id, q.name AS name_questiontopic, q.id_usertype, c.name AS name_category
-FROM stamp.questiontopic q
-LEFT JOIN stamp.category c ON q.id_category = c.id) q_c
-LEFT JOIN stamp.usertype u_t ON q_c.id_usertype = u_t.id;
-               `
-               return model_user.customQuery(query)
-			 }
+	// Lista con nombres 
+	//
+	var get_questiontopic_all = function(user, params){
+		var query = `
+			SELECT q_c.id, q_c.name_questiontopic, u_t.name AS usertype, q_c.name_category
+			FROM
+			(SELECT q.id, q.name AS name_questiontopic, q.id_usertype, c.name AS name_category
+			FROM stamp.questiontopic q
+			LEFT JOIN stamp.category c ON q.id_category = c.id) q_c
+			LEFT JOIN stamp.usertype u_t ON q_c.id_usertype = u_t.id;
+		`
+		return model_user.customQuery(query)
+	}
 
 			 
-			// params id_user institution
-			//
-			var get_services_incomplete = function(user, params){
-			               var query = `
+	// params id_user institution
+	//
+	var get_services_incomplete = function(user, params){
+		var query = `
 			SELECT id_service, name AS name_service, url, id_category, level, c.name AS name_category, test_user, test_password
 			FROM
 			(SELECT id AS id_service, name AS name_service, url, id_category, level, test_user, test_password
 			FROM stamp.service s
 			LEFT JOIN stamp.service_status s_t ON s.id = s_t.id_service WHERE s_t.id_status = 0 AND s.id_user = ${params.id_user}) s_s
 			LEFT JOIN stamp.category c ON s_s.id_category = c.id
+		`
+		return model_questiontopic.customQuery(query)
+	}
+						 
+		var get_certificates = function (user, body) {
+			var query = `
+				SELECT 
+				i.name AS name_institution,
+				ss.level,
+				s.name AS name_service,
+				s.datetime AS certification_date
+				FROM stamp.service AS s
+				JOIN stamp.institution AS i ON i.id = s.id_institution
+				JOIN stamp.service_status AS ss ON ss.id_service = s.id
+				WHERE s.id_user = ${user.id}
+				AND s.current_status = 1;
 			`
-			               return model_questiontopic.customQuery(query)
-			       }
+			return model_service.customQuery(query)
+		}
 			
 
 	getMap.set('service_incomplete', { method: get_services_incomplete, permits: Permissions.NONE })
@@ -1112,31 +1128,33 @@ LEFT JOIN stamp.usertype u_t ON q_c.id_usertype = u_t.id;
 	getMap.set('form', { method: get_entity_form, permits: Permissions.NONE })
 	getMap.set('type', { method: get_type, permits: Permissions.NONE })
 	getMap.set('question', { method: get_question, permits: Permissions.NONE })
-    getMap.set('service_category', { method: get_entity_service_category, permits: Permissions.NONE })
-    getMap.set('service_institution_name', { method: get_entity_service_institution_name, permits: Permissions.NONE })
-    getMap.set('service_name', { method: get_entity_service_name, permits: Permissions.NONE })
-    getMap.set('list_institutions', { method: get_filtered_list_institutions, permits: Permissions.NONE })
-    getMap.set('table_institutions', { method: get_filtered_list_institutions_csv, permits: Permissions.NONE })
-    getMap.set('list_certified_services', { method: list_certified_services, permits: Permissions.ENTITY_SERVICE })
-    getMap.set('list_rejected_services', { method: list_rejected_services, permits: Permissions.ENTITY_SERVICE })
-    getMap.set('list_in_progress_services', { method: list_in_progress_services, permits: Permissions.ENTITY_SERVICE })
-    getMap.set('service_info', { method: get_service_info, permits: Permissions.ENTITY_SERVICE })
-    getMap.set('service_comments', { method: get_service_comments, permits: Permissions.ENTITY_SERVICE })
-    getMap.set('process_service', { method: get_service_process, permits: Permissions.NONE })
-    getMap.set('list_services_selectable', { method: get_filtered_list_services_for_select, permits: Permissions.NONE })
-    getMap.set('list_users_admin', { method: list_users_admin, permits: Permissions.NONE }) // TODO: CHANGE PERMSIONS TO PLATFORM
-    getMap.set('list_postulations_admin', { method: list_postulations_admin, permits: Permissions.NONE }) // TODO: CHANGE PERMSIONS TO PLATFORM
-    getMap.set('list_requisites_admin', { method: list_requisites_admin, permits: Permissions.NONE }) // TODO: CHANGE PERMSIONS TO PLATFORM
-    getMap.set('list_motive', { method: get_list_motive, permits: Permissions.NONE })
-    getMap.set('points_user', { method: get_points_user, permits: Permissions.NONE })
-    getMap.set('questions_calification', { method: get_questions_calificate_citizien, permits: Permissions.NONE }) // Revisar los permisos
-    getMap.set('all_services', { method: get_all_services, permits: Permissions.NONE }) // Revisar los permisos
-    getMap.set('institution', { method: get_institution_info, permits: Permissions.NONE }) // TODO: Change to PLATFORM
+	getMap.set('service_category', { method: get_entity_service_category, permits: Permissions.NONE })
+	getMap.set('service_institution_name', { method: get_entity_service_institution_name, permits: Permissions.NONE })
+	getMap.set('service_name', { method: get_entity_service_name, permits: Permissions.NONE })
+	getMap.set('list_institutions', { method: get_filtered_list_institutions, permits: Permissions.NONE })
+	getMap.set('table_institutions', { method: get_filtered_list_institutions_csv, permits: Permissions.NONE })
+	getMap.set('list_certified_services', { method: list_certified_services, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('list_rejected_services', { method: list_rejected_services, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('list_in_progress_services', { method: list_in_progress_services, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('service_info', { method: get_service_info, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('service_comments', { method: get_service_comments, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('process_service', { method: get_service_process, permits: Permissions.NONE })
+	getMap.set('list_services_selectable', { method: get_filtered_list_services_for_select, permits: Permissions.NONE })
+	getMap.set('list_users_admin', { method: list_users_admin, permits: Permissions.NONE }) // TODO: CHANGE PERMSIONS TO PLATFORM
+	getMap.set('list_postulations_admin', { method: list_postulations_admin, permits: Permissions.NONE }) // TODO: CHANGE PERMSIONS TO PLATFORM
+	getMap.set('list_requisites_admin', { method: list_requisites_admin, permits: Permissions.NONE }) // TODO: CHANGE PERMSIONS TO PLATFORM
+	getMap.set('list_motive', { method: get_list_motive, permits: Permissions.NONE })
+	getMap.set('points_user', { method: get_points_user, permits: Permissions.NONE })
+	getMap.set('questions_calification', { method: get_questions_calificate_citizien, permits: Permissions.NONE }) // Revisar los permisos
+	getMap.set('all_services', { method: get_all_services, permits: Permissions.NONE }) // Revisar los permisos
+	getMap.set('institution', { method: get_institution_info, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('institution_service', { method: get_institution_service, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('institution_service_certified', { method: get_institution_service_certified, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('get_hall_csv', { method: get_hall_csv, permits: Permissions.ADMIN })
 	getMap.set('questions_category', { method: get_questions_category, permits: Permissions.PLATFORM })
 	getMap.set('list_institutions_admin', { method: list_institutions_admin, permits: Permissions.ADMIN })
+	getMap.set('get_certificates', { method: get_certificates, permits: Permissions.ENTITY_SERVICE })
+	
 	/**
 	 * @api {post} api/service/service Create service information
 	 * @apiName Postservice
