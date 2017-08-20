@@ -1050,20 +1050,18 @@ WHERE ur.id_role = 4
 
 
 
-var list_empty_user_answers = function (user, body) {
-	var query = `
-		SELECT 
-		ua.id AS id_user_answer,
-		ua.id_question AS id_question,
-		ua.id_service AS id_service,
-		q.*
-		FROM stamp.user_answer AS ua
-		JOIN stamp.question AS q ON q.id = ua.id_question
-		WHERE ua.id_media IS NULL
-		AND ua.id_service = ${body.id_service};
-	`
-	return model_institution.customQuery(query)
-}
+	var list_empty_user_answers = function (user, body) {
+		var query = `
+			SELECT ua.id AS id_user_answer,
+			ua.id_question AS id_question,
+			ua.id_service AS id_service,
+			q.*
+			FROM stamp.user_answer AS ua
+			JOIN stamp.question AS q ON q.id = ua.id_question
+			WHERE ua.id_media IS NULL
+			AND ua.id_service = ${body.id_service};`
+		return model_institution.customQuery(query)
+	}
 
 	// Lista con nombres 
 	//
@@ -1353,7 +1351,7 @@ var list_empty_user_answers = function (user, body) {
 				id_category: body.id_category,
 				id_user: user_institution[0].id_user,
 				id_institution: user_institution[0].id_institution,
-				current_status: 0,
+				current_status: 10,
 				is_active: 1
 			}).then((serv) => {
 				result = serv.data.id
@@ -1362,7 +1360,7 @@ var list_empty_user_answers = function (user, body) {
 					INSERT INTO stamp.service_status 
 					(id_service, level, id_status) 
 					VALUES 
-					("${result}", "${body.level}", "0");
+					("${result}", "${body.level}", "10");
 					SET FOREIGN_KEY_CHECKS=1;
 				`
 				return model_question.customQuery(query).then((value) => {
