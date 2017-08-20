@@ -301,7 +301,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_entity_service = function (user, params) {
-		return _get(model_entity_service,user,params)
+		return _get(model_service,user,params)
 	}
 	/**
 	 * @api {get} api/service/category Request category information
@@ -629,8 +629,8 @@ WHERE s.id_category = ${params.id_category}\n`
 					return model_institution.customQuery(query)
 			}
 
-			var get_service_info = function(user, params) {
-				var query = `
+	var get_service_info = function(user, params) {
+		var query = `
 		SELECT 
 		i.name AS name_institution,
 		s.name AS name_service,
@@ -646,10 +646,9 @@ WHERE s.id_category = ${params.id_category}\n`
 		JOIN stamp.service_status AS ss ON ss.id_service = s.id
 		JOIN stamp.status AS st ON st.id = ss.id_status
 		JOIN stamp.category AS c ON c.id = s.id_category
-		WHERE s.id = "${params.id_service}"
-		;`
-						return model_institution.customQuery(query);
-				}
+		WHERE s.id = "${params.id_service}";`
+		return model_institution.customQuery(query);
+	}
 
     var get_service_comments = function(user, params) {
         var query = `
@@ -1634,13 +1633,38 @@ var update_evidence = function (user, body, files) {
 	})
 }
 
-var write_to_chat = function(user, body) {
-	return model_chats.create({
-		id_evaluation_request: body.id_evaluation_request,
-		id_sender: user.id,
-		text: body.text,
-	})
-}
+	var write_to_chat = function(user, body) {
+		return model_chats.create({
+			id_evaluation_request: body.id_evaluation_request,
+			id_sender: user.id,
+			text: body.text,
+		})
+	}
+	
+	var repostulate_service = function (user, params){
+		if(params){
+			var query = `SELECT * FROM stamp.service s LEFT JOIN stamp.service_status s_st ON s.id = s_st.id_service WHERE s.id = '${params.id_service}';`
+			return model_service.customQuery(query).then(function(result){
+				if (result){
+					var query = `UPDATE stamp.service SET current_status = '11' WHERE id = ${params.id_service};
+								UPDATE stamp.service_status SET id_status = '11' WHERE id_service = ${params.id_service};`
+					return model_service.customQuery(query).then(function(){
+						var nuevo = {
+							"id_category":result[0].id_category,
+							"level":result[0].level,
+							"name":result[0].name,
+							"url":result[0].url,
+							"test_user":result[0].test_user,
+							"test_password":result[0].test_password
+						}
+						return create_entity_service(user, nuevo).then(function(nuevo){
+							return nuevo
+						})
+					})
+				}
+			})
+		}
+	}
 
 	postMap.set('write_to_chat', { method: write_to_chat, permits: Permissions.PLATFORM })
 	postMap.set('update_evidence', { method: update_evidence, permits: Permissions.ENTITY_SERVICE })
@@ -1656,7 +1680,7 @@ var write_to_chat = function(user, body) {
 	postMap.set('points', { method: create_points, permits: Permissions.ADMIN })
 	postMap.set('questions_category', { method: create_questions_category, permits: Permissions.ADMIN })
 	postMap.set('motives', { method: create_motives, permits: Permissions.ADMIN })
-	
+	postMap.set('repostulate_service', { method: repostulate_service, permits: Permissions.NONE })//permisos
 	/**
 	 * @api {put} api/service/service Update service information
 	 * @apiName Putservice
