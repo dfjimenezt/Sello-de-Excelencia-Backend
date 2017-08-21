@@ -845,14 +845,14 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 	var check_service_upgrade = function(user, body, level) {
 		// Traer requisitos de un servicio con status <= level
 		query = `
-			SELECT * 
+			SELECT COUNT(ua.id)
 			FROM stamp.user_answer AS ua
 			WHERE ua.id_service = ${body.id_service}
 			AND (ua.id_status < ${level} OR ua.id_status = 10);
 		`
 		return model_request_status.customQuery(query).then((empty_reqs) => {
 			// Cambiar status del servicio
-			if(!empty_reqs.length) {
+			if(empty_reqs[0].total == 0) {
 				query = `
 					UPDATE stamp.service AS s
 					SET s.current_status = ${level}
@@ -860,7 +860,7 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 
 					UPDATE stamp.service_status AS ss
 					SET ss.id_status = ${level}
-					WHERE s.id_service = ${body.id_service};
+					WHERE ss.id_service = ${body.id_service};
 				`
 				return model_request_status.customQuery(query)
 			}
@@ -870,14 +870,14 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 	var check_service_downgrade = function (user, body, level) {
 		// Traer requisitos de un servicio con status <= level
 			query = `
-			SELECT * 
+			SELECT COUNT(ua.id) AS total
 			FROM stamp.user_answer AS ua
 			WHERE ua.id_service = ${body.id_service}
 			AND (ua.id_status < ${level} OR ua.id_status = 10);
 		`
 		return model_request_status.customQuery(query).then((empty_reqs) => {
 			// Cambiar status del servicio
-			if(empty_reqs.length) {
+			if(empty_reqs[0].total > 0) {
 				query = `
 					UPDATE stamp.service AS s
 					SET s.current_status = ${level}
@@ -885,7 +885,7 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 
 					UPDATE stamp.service_status AS ss
 					SET ss.id_status = ${level}
-					WHERE s.id_service = ${body.id_service};
+					WHERE ss.id_service = ${body.id_service};
 				`
 				return model_request_status.customQuery(query)
 			}
@@ -906,7 +906,7 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 					//** Cambiar el status del requisito de ser necesario **//
 					// Traer los branches del requisito que no han sido aceptados
 					query = `
-						SELECT *
+						SELECT COUNT(er.id) AS total
 						FROM stamp.evaluation_request AS er
 						WHERE er.id_service = ${body.id_service}
 						AND er.id_question = ${body.id_question}
@@ -914,7 +914,7 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 					`
 					return model_request_status.customQuery(query).then((empty_brnchs) => {
 						// Cambiar status del requisito
-						if(!empty_brnchs.length) {
+						if(empty_brnchs[0].total == 0) {
 							query = `
 								UPDATE stamp.user_answer AS ua
 								SET ua.id_status = 3
@@ -927,10 +927,22 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 								})
 							})
 						}
+						return {message: "Requisito en proceso de evaluación"}
 					})
 				})
 			default: // Rechazar evaluar el requisito
-				break
+				var query = `
+					UPDATE stamp.evaluation_request AS er
+					SET er.id_request_status = 4 # Rechazado
+					WHERE er.id = ${body.id_evaluation_request};
+				`
+				return model_request_status.customQuery(query).then(() => {
+					// Contar número de rechazos en este branch
+					query = `
+						SELECT *
+						FROM 
+					`
+				})
 		}
 	}
 
