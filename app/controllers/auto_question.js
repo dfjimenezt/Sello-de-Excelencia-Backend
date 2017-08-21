@@ -523,6 +523,7 @@ AND stamp.evaluation_request.id_request_status = 1
 			er.id AS id_evaluation_request,
 			er.id_service AS id_service,
 			er.id_question AS id_question,
+			er.branch AS branch,
 			ua.id AS id_user_answer,
 			ua.id_topic AS id_topic
 			FROM stamp.evaluation_request AS er
@@ -917,12 +918,12 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 						if(empty_brnchs[0].total == 0) {
 							query = `
 								UPDATE stamp.user_answer AS ua
-								SET ua.id_status = 3
+								SET ua.id_status = 5 # Evaluación
 								WHERE ua.id_service = ${body.id_service}
 								AND ua.id_question = ${body.id_question};
 							`
 							return model_request_status.customQuery(query).then(() => {
-								return check_service_upgrade(user, body, 3).then(() => {
+								return check_service_upgrade(user, body, 5).then(() => {
 									return {message: "Requisito en proceso de evaluación"}
 								})
 							})
@@ -937,11 +938,105 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 					WHERE er.id = ${body.id_evaluation_request};
 				`
 				return model_request_status.customQuery(query).then(() => {
-					// Contar número de rechazos en este branch
+					// Crear nueva casilla del branch del requisito
 					query = `
-						SELECT *
-						FROM 
+						INSERT INTO stamp.evaluation_request
+						(id_question, id_service, id_request_status, branch)
+						SELECT er.id_question, er.id_service, '1' AS id_request_status, er.branch
+						FROM stamp.evaluation_request AS er
+						WHERE er.id = ${body.id_evaluation_request}
 					`
+					return model_request_status.customQuery(query).then(() => {
+						// Contar número de rechazos en este branch
+						query = `
+							SELECT COUNT(er.id) AS total
+							FROM stamp.evaluation_request AS er
+							WHERE er.id_service = ${body.id_service}
+							AND er.id_question = ${body.id_question}
+							AND er.branch = ${body.branch}
+							AND er.id_request_status = 4; # Rechazadas
+						`
+						return model_request_status.customQuery(query).then((rejected_rqsts) => {
+							// Verificar si se debe generar alerta por rechazos del requisito
+							if(rejected_rqsts[0][0].total >= 3) { 
+								query = `
+									UPDATE stamp.user_answer AS ua
+									SET ua.alert = 1
+									WHERE ua.id_service = ${body.id_service}
+									AND ua.id_question = ${body.id_question};
+								`
+								return model_request_status.customQuery(query).then(() => {
+									// Obtener fechas de alerta y de finalización de la etapa Asignación
+									query = `
+										SELECT st.pre_end AS pre_end, st.duration AS duration
+										FROM stamp.status AS st
+										WHERE st.id = 2 # Asignación
+										AND st.alert = 1
+									`
+									return model_request_status.customQuery(query).then((dates) => {
+										var dumy_date
+										end_date = new Date()
+										end_date.setDate(end_date.getDate() + dates[0].duration) // Agregar la duración de la etapa
+										alert_date = new Date()
+										alert_date.setDate(end_date.getDate() - dates[0].pre_end) // Restar el tiempo previo para alertar
+										end_date = end_date.toISOString()
+										dumy_date = end_date.split('T')
+										end_date = dumy_date[0]
+										alert_date = alert_date.toISOString()
+										dumy_date = alert_date.split('T')
+										alert_date = dumy_date[0]
+										query = `
+											UPDATE stamp.evaluation_request AS er SET 
+											er.alert_time = DATE '${alert_date}',
+											er.end_time = DATE '${end_date}'
+											WHERE er.id_service = ${body.id_service}
+											AND er.id_question = ${body.id_question}
+											AND er.branch = ${body.branch}
+											AND er.alert_time IS NULL
+											AND er.end_time IS NULL;
+										`
+										return model_request_status.customQuery(query).then(() => {
+											return {message: "Requisito fue rechazado exitosamente"}
+										})
+									})
+								})
+							} else {
+								// Obtener fechas de alerta y de finalización de la etapa Aceptación
+								query = `
+									SELECT st.pre_end AS pre_end, st.duration AS duration
+									FROM stamp.status AS st
+									WHERE st.id = 3 # Aceptación
+									AND st.alert = 1
+								`
+								return model_request_status.customQuery(query).then((dates) => {
+									var dumy_date
+									end_date = new Date()
+									end_date.setDate(end_date.getDate() + dates[0].duration) // Agregar la duración de la etapa
+									alert_date = new Date()
+									alert_date.setDate(end_date.getDate() - dates[0].pre_end) // Restar el tiempo previo para alertar
+									end_date = end_date.toISOString()
+									dumy_date = end_date.split('T')
+									end_date = dumy_date[0]
+									alert_date = alert_date.toISOString()
+									dumy_date = alert_date.split('T')
+									alert_date = dumy_date[0]
+									query = `
+										UPDATE stamp.evaluation_request AS er SET 
+										er.alert_time = DATE '${alert_date}',
+										er.end_time = DATE '${end_date}'
+										WHERE er.id_service = ${body.id_service}
+										AND er.id_question = ${body.id_question}
+										AND er.branch = ${body.branch}
+										AND er.alert_time IS NULL
+										AND er.end_time IS NULL;
+									`
+									return model_request_status.customQuery(query).then(() => {
+										return {message: "Requisito fue rechazado exitosamente"}
+									})
+								})
+							}
+						})
+					})
 				})
 		}
 	}
