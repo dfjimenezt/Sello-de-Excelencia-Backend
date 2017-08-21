@@ -1031,19 +1031,19 @@ var get_questions_category = function(user, body){
 // Puede filtrar preguntas por servicio o traer todas las preguntas
 var get_questions_category_answered_for_service = function(user, body){
 	var query = `
-SELECT 
-cq.*,
-s.rate,
-(SELECT COUNT(sc.id) FROM stamp.service_comment AS sc WHERE sc.id_service = "${body.id_service}") AS votes
-FROM stamp.service AS s
-JOIN stamp.category AS c ON c.id = s.id_category
-JOIN stamp.category_questions AS cq ON cq.id_category = c.id `
+		SELECT cq.*, s.rate,
+		(SELECT COUNT(sc.id) FROM stamp.service_comment AS sc WHERE sc.id_service = "${body.id_service}") AS votes
+		FROM stamp.service AS s
+		JOIN stamp.category AS c ON c.id = s.id_category
+		JOIN stamp.category_questions AS cq ON cq.id_category = c.id `
 	if(body.id_service != undefined){
 		query += `WHERE s.id = "${body.id_service}";`
 	}else{
 		query += ";"
 	}
-	return model_category_questions.customQuery(query)
+	return model_category_questions.customQuery(query).then(function(result){
+		return {"data": result, "total":result.length}
+	})
 }
 
 var list_institutions_admin = function (user, body) {
