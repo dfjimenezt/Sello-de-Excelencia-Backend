@@ -539,7 +539,8 @@ WHERE stamp.user_answer.`
 			JOIN stamp.category AS c ON c.id = s.id_category
 			JOIN stamp.service_status AS ss ON ss.id_service = s.id
 			WHERE er.id_user = ${user.id}
-			AND er.id_request_status = 3 # Aceptado;
+			AND er.id_request_status = 3 # Aceptado
+			AND er.result IS NULL;
 		`
 		return model_entity_service.customQuery(query) 
 	}
@@ -563,21 +564,28 @@ WHERE stamp.user_answer.id_question = ${body.id_question}
 
 	var get_evaluated_services = function (user, body) {
 		var query = `
-SELECT DISTINCT
-stamp.institution.name AS name_institution,
-stamp.service.name AS name_service,
-stamp.user_answer.id_question AS id_question,	
-stamp.service.timestamp AS postulation_date,
-stamp.service.id_level AS level,
-stamp.questiontopic.name AS questiontopic,
-stamp.evaluation_request.result AS result
-FROM stamp.institution
-JOIN stamp.service ON stamp.service.id_institution = stamp.institution.id
-JOIN stamp.user_answer ON stamp.user_answer.id_service = stamp.service.id
-JOIN stamp.questiontopic ON stamp.questiontopic.id = stamp.user_answer.id_topic
-JOIN stamp.evaluation_request ON stamp.evaluation_request.id_service = stamp.user_answer.id_service
-WHERE stamp.evaluation_request.id_user = ${user.id}
-AND (stamp.evaluation_request.result = 1 OR stamp.evaluation_request.result = 0)
+		SELECT 
+		i.name AS institution_name,
+		s.name AS service_name,
+		c.name AS category,
+		ss.level AS level,
+		s.url AS url,
+		er.result AS result,
+		s.timestamp AS postulation_date,
+		er.id AS id_evaluation_request,
+		er.id_service AS id_service,
+		er.id_question AS id_question,
+		er.branch AS branch,
+		ua.id AS id_user_answer,
+		ua.id_topic AS id_topic
+		FROM stamp.evaluation_request AS er
+		JOIN stamp.user_answer AS ua ON (ua.id_question = er.id_question AND ua.id_service = er.id_service)
+		JOIN stamp.service AS s ON s.id = er.id_service
+		JOIN stamp.institution AS i ON i.id = s.id_institution
+		JOIN stamp.category AS c ON c.id = s.id_category
+		JOIN stamp.service_status AS ss ON ss.id_service = s.id
+		WHERE er.id_user = ${user.id}
+		AND er.result IS NOT NULL;
 ;`
 		return model_entity_service.customQuery(query) 
 	}
@@ -1048,12 +1056,63 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 	}
 
 	var set_final_decission_requisite = function (user, body) {
+		// Guardar veredicto del evaluador
 		var query = `
-UPDATE stamp.evaluation_request
-SET stamp.evaluation_request.result = ${body.result}
-WHERE stamp.evaluation_request.id_user_answer = ${body.id_user_answer}
-;`
-		return model_request_status.customQuery(query)
+			UPDATE stamp.evaluation_request AS er
+			SET er.result = ${body.result}
+			WHERE er.id = ${body.id_evaluation_request};
+		`
+		return model_request_status.customQuery(query).then(() => {
+			// Verificar status del requisito
+			query = `
+				SELECT COUNT(er.id) AS total
+				FROM stamp.evaluation_request AS er
+				WHERE er.id_question = ${body.id_question}
+				AND er.id_service = ${body.id_service}
+				AND er.result IS NOT NULL;
+			`
+			return model_request_status.customQuery(query).then((evaluated) => {
+				// Generar veredicto total sobre el requisito
+				if(evaluated[0].total >= 3) {
+					query = `
+						SELECT AVG(er.result) AS average
+						FROM stamp.evaluation_request AS er
+						WHERE er.id_question = ${body.id_question}
+						AND er.id_service = ${body.id_service}
+						AND er.result IS NOT NULL;
+					`
+					return model_request_status.customQuery(query).then((average) => {
+						// Aprobar requisito
+						if(average[0].average >= 0.6) {
+							query = `
+								UPDATE stamp.user_answer AS ua
+								SET ua.id_status = 8 # Aprobado
+								WHERE ua.id_service = ${body.id_service}
+								AND ua.id_question = ${body.id_question};
+							`
+							return model_request_status.customQuery(query).then(() => {
+								return check_service_upgrade(user, body, 8).then(() => {
+									return {message: "Servicio calificado exitosamente"}
+								})
+							})
+						} else {
+							query = `
+								UPDATE stamp.user_answer AS ua
+								SET ua.id_status = 9 # Rechazado
+								WHERE ua.id_service = ${body.id_service}
+								AND ua.id_question = ${body.id_question};
+							`
+							return model_request_status.customQuery(query).then(() => {
+								return check_service_upgrade(user, body, 9).then(() => {
+									return {message: "Servicio calificado exitosamente"}
+								})
+							})
+						}
+					})
+				}
+				return {message: "Servicio calificado exitosamente"}
+			})
+		})
 	}
 
 	putMap.set('evaluation_request', { method: update_entity_evaluation_request, permits: Permissions.ADMIN })
