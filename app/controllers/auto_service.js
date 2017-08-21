@@ -1077,9 +1077,6 @@ WHERE ur.id_role = 4
 		})
 }
 
-
-
-
 	var list_empty_user_answers = function (user, body) {
 		var query = `
 			SELECT ua.id AS id_user_answer,
@@ -1159,12 +1156,22 @@ WHERE ur.id_role = 4
 	 * 	Muestra el progreso y las evidencias de los requisitos del servicio id_service 4
 	 *  /api/service/requisite_progress_evidence?id_service=4
 	 */
-	var get_requisite_progress_evidence = function (user, body) {
+	var get_requisite_progress_evidence = function (user, params) {
 		if(params){
 			var query = `
-				SELECT u_s.id AS id_user_answer, id_question, id_user AS id_user_creator, datetime, u_s.timestamp, requisite, support_legal, justification, id_topic, evidence, help, id_service, id_status AS id_status_progress, u_s.id_media, url AS url_media, type AS type_media, m.timestamp AS timestamp_media
-				FROM (SELECT * FROM stamp.user_answer WHERE stamp.user_answer.id_service = ${params.id_service}) u_s
-				LEFT JOIN stamp.media m ON u_s.id_media = m.id`
+				SELECT u_s.id AS id_user_answer, id_question, id_user AS id_user_creator, datetime, u_s.timestamp, 
+				requisite, support_legal, justification, id_topic, evidence, help, id_service, id_status AS id_status_progress, 
+				u_s.id_media, url AS url_media, type AS type_media, m.timestamp AS timestamp_media
+				FROM (SELECT * FROM stamp.user_answer WHERE `
+			if(params.id_service){
+				query += `stamp.user_answer.id_service = ${params.id_service} `
+				if(params.id_user_answer){
+					query+= `AND stamp.user_answer.id = ${params.id_user_answer} `
+				}
+			} else if (params.id_user_aswer){
+				query+= `stamp.user_answer.id = ${params.id_user_answer} `
+			}
+			query += `) u_s LEFT JOIN stamp.media m ON u_s.id_media = m.id `
 			return model_service.customQuery(query).then(function(result){
 				return {"data": result, "total": result.length}
 			})
