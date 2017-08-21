@@ -692,24 +692,54 @@ WHERE stamp.service.id = ${params.id_service};`
      * 	level	(nivel del servicio)
      */
     var get_filtered_list_services_for_select = function(token, params) {
-        var query = `SELECT DISTINCT ser.name, ins.name as institution, ser.id_category, ser.timestamp
+        /* var query = `SELECT DISTINCT ser.name, ins.name as institution, ser.id_category, ser.timestamp
 FROM stamp.service ser
 RIGHT JOIN stamp.institution ins ON ser.id_institution = ins.id
-RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `
+RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `*/
+		var query =`# 
+# join2.current_status_service = (2: asignación)
+# INPUTS
+SELECT join2.id_service, join2.level_service, join2.name_service, 
+join2.id_category_service, join2.id_institution, i.name AS name_institution, i.id_region,
+join2.id_user_creator_service, join2.timestamp_services, join2.current_status_service
+FROM
+stamp.institution i
+RIGHT JOIN
+(SELECT s.id AS id_service, join1.level AS level_service, s.name AS name_service, 
+s.id_category AS id_category_service, s.id_institution, s.id_user AS id_user_creator_service, 
+s.timestamp AS timestamp_services, s.current_status AS current_status_service 
+FROM
+stamp.service s
+LEFT JOIN
+(SELECT s_s.id_service, s_s.level
+FROM
+(SELECT DISTINCT id_service
+FROM stamp.user_answer u_a
+LEFT JOIN stamp.user_questiontopic u_q ON
+u_a.id_topic = u_q.id_topic WHERE u_q.id_user = 8 ORDER BY id_service) join0
+LEFT JOIN stamp.service_status s_s ON
+join0.id_service = s_s.id_service) join1
+ON s.id = join1.id_service) join2 ON i.id = join2.id_institution 
+WHERE join2.current_status_service = 3 
+` 
         if (params.name_institution || params.id_region || params.id_category || params.id_level) {
             // Un servicio postulado es status 3, status 1, es cuando hasta ahora se está postulando
-            query += "WHERE ser.current_status = 3 "
+            //query += "WHERE ser.current_status = 3 "
             if (params.name_institution != undefined) {
-                query += `AND ins.name LIKE "%${params.name_institution}%" `
+              //query += `AND ins.name LIKE "%${params.name_institution}%" `
+							query += `AND i.name LIKE "%${params.name_institution}%" `
             }
             if (params.id_region != undefined) {
-                query += "AND reg.id = " + parseInt(params.id_region) + " "
+              //query += "AND reg.id = " + parseInt(params.id_region) + " "
+							query += "AND i.id_region = "+ parseInt(params.id_region) + " " 
             }
             if (params.id_category != undefined) {
-                query += "AND ser.id_category = " + parseInt(params.id_category) + " "
+              //query += "AND ser.id_category = " + parseInt(params.id_category) + " "
+							query += "AND id_category_service = " + parseInt(params.id_category) + " "
             }
             if (params.id_level != undefined) {
-                query += "AND ser.id_level = " + parseInt(params.id_level) + " "
+                //query += "AND ser.id_level = " + parseInt(params.id_level) + " "
+								query += "AND join2.level_service = " + parseInt(params.id_level) + " "
             }
         }
         query += ";"
