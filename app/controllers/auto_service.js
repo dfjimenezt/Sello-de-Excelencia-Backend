@@ -48,6 +48,18 @@ var service_controller = function () {
 	var model_category_questions = new category_questions()
 	var model_service = new service()
 	var model_hall_of_fame = new hall_of_fame()
+	var model_service_comment = new Service_comment()
+	var service_status = new Service_status()
+	var institution_user = new Institution_user()
+	var model_media = new Media()
+	var model_institution = new Institution()
+	var model_user_answer = new user_answer()
+	var model_user = new user()
+	var model_points = new Points()
+	var model_motives = new Motives()
+	var model_category_questions = new category_questions()
+	var model_service = new service()
+	var model_hall_of_fame = new hall_of_fame()
 	var model_evaluation_request = new evaluation_request()
 	var model_entity_service_status = new entity_service_status()
 	//---------------------------------------------------------------
@@ -639,52 +651,88 @@ WHERE stamp.service.id = ${params.id_service};`
 			return model_institution.customQuery(query1)
 	}
 
-	/* Se listará los servicios elegibles a evaluar, finalmente, solo deben ser mostradas
-	 * aquellas en las cuales el evaluador es apto.
-	 *
-	 * token -> solo se mostrará aquellos en los cuales el usuario es apto para evaluar
-	 * params -> serán los parámetros con los cuales se harán los filtros.
-	 * params
-	 * 	name_entity
-	 * 	region	(place)
-	 * 	category	(categoría del servicio)
-	 * 	level	(nivel del servicio)
-	 */
-	var get_filtered_list_services_for_select = function(token, params) {
-			var query = `SELECT DISTINCT ser.name, ins.name as institution, ser.id_category, ser.timestamp
+    /* Se listará los servicios elegibles a evaluar, finalmente, solo deben ser mostradas
+     * aquellas en las cuales el evaluador es apto.
+     *
+     * token -> solo se mostrará aquellos en los cuales el usuario es apto para evaluar
+     * params -> serán los parámetros con los cuales se harán los filtros.
+     * params
+     * 	name_entity
+     * 	region	(place)
+     * 	category	(categoría del servicio)
+     * 	level	(nivel del servicio)
+     */
+    var get_filtered_list_services_for_select = function(token, params) {
+        /* var query = `SELECT DISTINCT ser.name, ins.name as institution, ser.id_category, ser.timestamp
 FROM stamp.service ser
 RIGHT JOIN stamp.institution ins ON ser.id_institution = ins.id
-RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `
-			if (params.name_institution || params.id_region || params.id_category || params.id_level) {
-					// Un servicio postulado es status 3, status 1, es cuando hasta ahora se está postulando
-					query += "WHERE ser.current_status = 3 "
-					if (params.name_institution != undefined) {
-							query += `AND ins.name LIKE "%${params.name_institution}%" `
-					}
-					if (params.id_region != undefined) {
-							query += "AND reg.id = " + parseInt(params.id_region) + " "
-					}
-					if (params.id_category != undefined) {
-							query += "AND ser.id_category = " + parseInt(params.id_category) + " "
-					}
-					if (params.id_level != undefined) {
-							query += "AND ser.id_level = " + parseInt(params.id_level) + " "
-					}
-			}
-			query += ";"
-			return model_entity_service.customQuery(query)
-	}
+RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `*/
+		var query =`# 
+# join2.current_status_service = [2: asignación]
+# INPUTS
+SELECT join2.id_service, join2.level_service, join2.name_service, 
+join2.id_category_service, join2.id_institution, i.name AS name_institution, i.id_region,
+join2.id_user_creator_service, join2.timestamp_services, join2.current_status_service
+FROM
+stamp.institution i
+ RIGHT JOIN
+(SELECT s.id AS id_service, join1.level AS level_service, s.name AS name_service, 
+s.id_category AS id_category_service, s.id_institution, s.id_user AS id_user_creator_service, 
+s.timestamp AS timestamp_services, s.current_status AS current_status_service 
+FROM
+stamp.service s
+LEFT JOIN
+(SELECT s_s.id_service, s_s.level
+FROM
+(SELECT DISTINCT u_a_q.id_service
+FROM
+(SELECT DISTINCT id_service
+FROM stamp.user_answer u_a
+LEFT JOIN stamp.user_questiontopic u_q ON
+u_a.id_topic = u_q.id_topic WHERE u_q.id_user = ${token.id}) u_a_q
+LEFT JOIN stamp.evaluation_request e_r ON u_a_q.id_service = e_r.id_service 
+WHERE e_r.id_user != ${token.id} OR e_r.id_user IS NULL) join0
+LEFT JOIN stamp.service_status s_s ON
+join0.id_service = s_s.id_service) join1
+ON s.id = join1.id_service) join2 ON i.id = join2.id_institution
+WHERE join2.current_status_service >= 2 AND join2.current_status_service <= 6
+`
+//WHERE join2.current_status_service = 2 
+//` 
+        if (params.name_institution || params.id_region || params.id_category || params.id_level) {
+            // Un servicio postulado es status 3, status 1, es cuando hasta ahora se está postulando
+            //query += "WHERE ser.current_status = 3 "
+            if (params.name_institution != undefined) {
+              //query += `AND ins.name LIKE "%${params.name_institution}%" `
+							query += `AND i.name LIKE "%${params.name_institution}%" `
+            }
+            if (params.id_region != undefined) {
+              //query += "AND reg.id = " + parseInt(params.id_region) + " "
+							query += "AND i.id_region = "+ parseInt(params.id_region) + " " 
+            }
+            if (params.id_category != undefined) {
+              //query += "AND ser.id_category = " + parseInt(params.id_category) + " "
+							query += "AND id_category_service = " + parseInt(params.id_category) + " "
+            }
+            if (params.id_level != undefined) {
+                //query += "AND ser.id_level = " + parseInt(params.id_level) + " "
+								query += "AND join2.level_service = " + parseInt(params.id_level) + " "
+            }
+        }
+        query += ";"
+        return model_entity_service.customQuery(query)
+    }
 
-	var list_users_admin = function(user, body) {
-			var query = `
-SELECT stamp.user.id AS id_user,
-CONCAT(stamp.user.name, ' ', stamp.user.lastname) AS name,
-stamp.user.email AS email,
-stamp.user.active AS active,
-stamp.user.timestamp AS timestamp
-FROM stamp.user
-JOIN stamp.user_role ON stamp.user_role.id_user = stamp.user.id
-WHERE stamp.user_role.id_role = 1
+    var list_users_admin = function(user, body) {
+        var query = `
+			SELECT stamp.user.id AS id_user,
+			CONCAT(stamp.user.name, ' ', stamp.user.lastname) AS name,
+			stamp.user.email AS email,
+			stamp.user.active AS active,
+			stamp.user.timestamp AS timestamp
+			FROM stamp.user
+			JOIN stamp.user_role ON stamp.user_role.id_user = stamp.user.id
+			WHERE stamp.user_role.id_role = 1
 ;`
 			return model_entity_service.customQuery(query)
 	}
@@ -862,17 +910,38 @@ FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
 					query = `
 SELECT DISTINCT cq.text FROM stamp.category_questions cq 
 RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${params.id_service}' AND cq.text IS NOT NULL; `
-					console.log(query)
-			}
-			return model_category_questions.customQuery(query).then(function(preguntas) {
-					var encuesta = []
-					for (var i in preguntas){
-							if(preguntas[i].text != null)
-				encuesta.push(preguntas[i].text)
-					}
-					return encuesta
-			});
-	}
+            console.log(query)
+        }
+        return model_category_questions.customQuery(query).then(function(preguntas) {
+            var encuesta = []
+            for (var i in preguntas){
+                if(preguntas[i].text != null)
+					encuesta.push(preguntas[i].text)
+            }
+            return encuesta
+        });
+    }
+
+	var get_all_services = function (token, params){
+		return model_service.getAll(params);
+    }
+    
+	var get_institution_info = function (user, body) {
+		var query = `
+			SELECT i.*, td.name AS type_document, c.name AS city, r.name AS region 
+			FROM stamp.institution AS i 
+			JOIN stamp.type_document AS td ON td.id = i.legalrep_typedoc
+			JOIN stamp.city AS c ON c.id = i.id_city
+			JOIN stamp.region AS r ON r.id = i.id_region
+			WHERE i.id = "${body.id_institution}";
+			`
+		return model_institution.customQuery(query).then(function(result){
+			if(result.length > 0)
+				return {"data": result, "total": result.length}
+			else
+				return {"data": "No existe la institutción", "total": result.length}	
+		})
+	}	
 
 var get_all_services = function (token, params){
 	return model_service.getAll(params);
