@@ -481,7 +481,6 @@ FROM stamp.institution JOIN stamp.service ON stamp.institution.id = stamp.servic
 		return model_institution.customQuery(query)
 	}
 
-	// WARNING WHEN MERGE!
 	var get_service_retro = function (user, params) {
 		var query = `
 SELECT stamp.user_answer.requisite AS requisite, stamp.user_answer.justification AS justification,
@@ -493,21 +492,28 @@ WHERE stamp.user_answer.`
 
 	var get_evaluator_asigned = function (user, body) {
 		var query = `
-SELECT DISTINCT
-stamp.institution.name AS name_institution,
-stamp.service.name AS name_service,
-stamp.service.timestamp AS postulation_date,
-stamp.service.id_level AS level,
-stamp.questiontopic.name AS questiontopic,
-stamp.evaluation_request.id AS id_evaluation_request
-FROM stamp.institution
-JOIN stamp.service ON stamp.service.id_institution = stamp.institution.id
-JOIN stamp.user_answer ON stamp.user_answer.id_service = stamp.service.id
-JOIN stamp.questiontopic ON stamp.questiontopic.id = stamp.user_answer.id_topic
-JOIN stamp.evaluation_request ON stamp.evaluation_request.id_service = stamp.user_answer.id_service
-WHERE stamp.evaluation_request.id_user = ${user.id}
-AND stamp.evaluation_request.id_request_status = 1
-;`
+			SELECT 
+			i.name AS institution_name,
+			s.name AS service_name,
+			c.name AS category,
+			ss.level AS level,
+			s.url AS url,
+			s.timestamp AS postulation_date,
+			er.id AS id_evaluation_request,
+			er.id_service AS id_service,
+			er.id_question AS id_question,
+			er.branch AS branch,
+			ua.id AS id_user_answer,
+			ua.id_topic AS id_topic
+			FROM stamp.evaluation_request AS er
+			JOIN stamp.user_answer AS ua ON (ua.id_question = er.id_question AND ua.id_service = er.id_service)
+			JOIN stamp.service AS s ON s.id = er.id_service
+			JOIN stamp.institution AS i ON i.id = s.id_institution
+			JOIN stamp.category AS c ON c.id = s.id_category
+			JOIN stamp.service_status AS ss ON ss.id_service = s.id
+			WHERE er.id_user = ${user.id}
+			AND er.id_request_status = 2 # Solicitado;
+		`
 		return model_entity_service.customQuery(query)
 	}
 
@@ -533,7 +539,7 @@ AND stamp.evaluation_request.id_request_status = 1
 			JOIN stamp.category AS c ON c.id = s.id_category
 			JOIN stamp.service_status AS ss ON ss.id_service = s.id
 			WHERE er.id_user = ${user.id}
-			AND er.id_request_status = 2 # Solicitado
+			AND er.id_request_status = 3 # Aceptado;
 		`
 		return model_entity_service.customQuery(query) 
 	}

@@ -1190,7 +1190,7 @@ WHERE ur.id_role = 4
 			FROM stamp.user_role AS ur
 			WHERE ur.id_user = ${user.id};
 		`
-		return model_chats.customQuery(query).then((role) => {
+		return model_service.customQuery(query).then((role) => {
 			switch(role[0].role) {
 				case 4: // Entidad
 					query = `
@@ -1205,28 +1205,7 @@ WHERE ur.id_role = 4
 						AND (er.id_request_status = 3 # Asignado
 								 OR er.id_request_status = 4); # Aceptado
 					`
-					return model_chats.customQuery(query).then(function(requisites) {
-						var data = { data: requisites[0], total: requisites.length }
-						return data
-					})
-				case 2: // Evaluador
-					query = `
-						SELECT 
-						er.id AS id_evaluation_request,
-						i.name AS name,
-						i.id AS id_institution,
-						u.id AS id_user_institution
-						FROM stamp.user_answer AS ua
-						JOIN stamp.evaluation_request AS er ON (er.id_service = ua.id_service AND er.id_question = ua.id_question)
-						JOIN stamp.user AS u ON u.id = ua.id_user
-						JOIN stamp.institution_user AS iu ON iu.id_user = u.id
-						JOIN stamp.institution AS i ON i.id = iu.id_institution
-						WHERE ua.id_service = 4
-						AND ua.id_question = 10
-						AND (er.id_request_status = 3 # Asignado
-								 OR er.id_request_status = 4); # Aceptado
-					`
-					return model_chats.customQuery(query).then(function(requisites) {
+					return model_service.customQuery(query).then(function(requisites) {
 						var data = { data: requisites[0], total: requisites.length }
 						return data
 					})
@@ -1260,7 +1239,7 @@ WHERE ur.id_role = 4
 			WHERE ch.id_evaluation_request = ${body.id_evaluation_request}
 			ORDER BY ch.timestamp ASC;
 		`
-		return model_chats.customQuery(query).then(function(requisites) {
+		return model_service.customQuery(query).then((requisites) => {
 			var data = { data: requisites, total: requisites.length }
 			return data
 		})
