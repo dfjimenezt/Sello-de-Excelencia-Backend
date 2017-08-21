@@ -409,38 +409,7 @@ ORDER BY q.id
 ;`
 		return model_entity_service.customQuery(query)
 	}
-/*
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/
 	var list_empty_user_answers = function (user, body) {
 		var query = `
 			SELECT 
@@ -544,22 +513,27 @@ AND stamp.evaluation_request.id_request_status = 1
 
 	var get_services_in_process = function (user, body) {
 		var query = `
-SELECT DISTINCT
-stamp.institution.name AS name_institution,
-stamp.service.name AS name_service,
-stamp.service.timestamp AS postulation_date,
-stamp.service.id_level AS level,
-stamp.questiontopic.name AS questiontopic,
-stamp.user_answer.id_question AS id_question,
-stamp.service.url AS url
-FROM stamp.institution
-JOIN stamp.service ON stamp.service.id_institution = stamp.institution.id
-JOIN stamp.user_answer ON stamp.user_answer.id_service = stamp.service.id
-JOIN stamp.questiontopic ON stamp.questiontopic.id = stamp.user_answer.id_topic
-JOIN stamp.evaluation_request ON stamp.evaluation_request.id_service = stamp.user_answer.id_service
-WHERE stamp.evaluation_request.id_user = ${user.id}
-AND stamp.evaluation_request.id_request_status = 4 
-;`
+			SELECT 
+			i.name AS institution_name,
+			s.name AS service_name,
+			c.name AS category,
+			ss.level AS level,
+			s.url AS url,
+			s.timestamp AS postulation_date,
+			er.id AS id_evaluation_request,
+			er.id_service AS id_service,
+			er.id_question AS id_question,
+			ua.id AS id_user_answer,
+			ua.id_topic AS id_topic
+			FROM stamp.evaluation_request AS er
+			JOIN stamp.user_answer AS ua ON (ua.id_question = er.id_question AND ua.id_service = er.id_service)
+			JOIN stamp.service AS s ON s.id = er.id_service
+			JOIN stamp.institution AS i ON i.id = s.id_institution
+			JOIN stamp.category AS c ON c.id = s.id_category
+			JOIN stamp.service_status AS ss ON ss.id_service = s.id
+			WHERE er.id_user = ${user.id}
+			AND er.id_request_status = 2 # Solicitado
+		`
 		return model_entity_service.customQuery(query) 
 	}
 
@@ -691,6 +665,46 @@ AND (stamp.evaluation_request.result = 1 OR stamp.evaluation_request.result = 0)
 	}
 
 	var add_service_evaluator = function (user, body) {
+		// Obtener requisitos del servicio que el evaluador puede calificar
+		var query = `
+			SELECT
+			ua.id AS id_user_answer,
+			er.id AS id_evaluation_request
+			FROM stamp.user_answer AS ua
+			JOIN stamp.user_questiontopic AS uqt ON uqt.id_topic = ua.id_topic
+			JOIN stamp.evaluation_request AS er ON (er.id_question = ua.id_question AND er.id_service = ua.id_service)
+			WHERE ua.id_service = ${body.id_service}
+			AND uqt.id_user = ${user.id}
+			AND er.id_request_status = 1
+			ORDER BY ua.id, er.id;
+		`
+		return model_request_status.customQuery(query).then((requests) => {
+			// Seleccionar el primer requisito de cada resultado
+			var actual = requests[0].id_user_answer
+			var result = []
+			result.push(requests[0])
+			for(var i in requests) {
+				if(requests[i].id_user_answer != actual) {
+					result.push(requests[i])
+					actual = requests[i].id_user_answer
+				}
+			}
+			// Actualizar el id_request_status y el usuario de estos evaluation_requests
+			query = ""
+			for(var i in result) {
+				query += `
+					UPDATE stamp.evaluation_request AS er
+					SET
+					er.id_request_status = "2", # Solicitado
+					er.id_user = ${user.id} # Evaluador asignado
+					WHERE er.id = ${result[i].id_evaluation_request};
+				`
+			}
+			return model_request_status.customQuery(query).then(() => {
+				return {message: "Requisitos agregados al evaluador exitosamente"}
+			})
+		})
+/*
 		var query = `
 SELECT stamp.user_questiontopic.id_user AS id_user,
 stamp.user_answer.id AS id_user_answer,
@@ -705,7 +719,7 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 				requests[i].id_request_status = 4 // 4 es el id_request_status para un servicio Solicitado
 			}
 			return model_evaluation_request.createMultiple2(requests)
-		})
+		})*/
 	}
 
 	/*
@@ -828,15 +842,96 @@ AND stamp.user_questiontopic.id_user = ${user.id}
 		return model_request_status.update(body,{id:body.id})
 	}
 
+	var check_service_upgrade = function(user, body, level) {
+		// Traer requisitos de un servicio con status <= level
+		query = `
+			SELECT * 
+			FROM stamp.user_answer AS ua
+			WHERE ua.id_service = ${body.id_service}
+			AND (ua.id_status < ${level} OR ua.id_status = 10);
+		`
+		return model_request_status.customQuery(query).then((empty_reqs) => {
+			// Cambiar status del servicio
+			if(!empty_reqs.length) {
+				query = `
+					UPDATE stamp.service AS s
+					SET s.current_status = ${level}
+					WHERE s.id = ${body.id_service};
+
+					UPDATE stamp.service_status AS ss
+					SET ss.id_status = ${level}
+					WHERE s.id_service = ${body.id_service};
+				`
+				return model_request_status.customQuery(query)
+			}
+		})
+	}
+
+	var check_service_downgrade = function (user, body, level) {
+		// Traer requisitos de un servicio con status <= level
+			query = `
+			SELECT * 
+			FROM stamp.user_answer AS ua
+			WHERE ua.id_service = ${body.id_service}
+			AND (ua.id_status < ${level} OR ua.id_status = 10);
+		`
+		return model_request_status.customQuery(query).then((empty_reqs) => {
+			// Cambiar status del servicio
+			if(empty_reqs.length) {
+				query = `
+					UPDATE stamp.service AS s
+					SET s.current_status = ${level}
+					WHERE s.id = ${body.id_service};
+
+					UPDATE stamp.service_status AS ss
+					SET ss.id_status = ${level}
+					WHERE s.id_service = ${body.id_service};
+				`
+				return model_request_status.customQuery(query)
+			}
+		})
+	}
+
 	var edit_evaluation_request_status = function (user, body) {
-		var query = `
-UPDATE stamp.evaluation_request
-SET stamp.evaluation_request.id_request_status = ${body.id_request_status}
-WHERE stamp.evaluation_request.id_user = ${user.id}
-AND stamp.evaluation_request.id_service = ${body.id_service}
-AND stamp.evaluation_request.id_user_answer = ${body.id_user_answer}
-;`
-		return model_request_status.customQuery(query)
+		if(!body.decission)
+			return {message: "Error: no se recibió flag decission"}
+		switch(body.decission) {
+			case "1": // Aceptar evaluar el requisito
+				var query = `
+					UPDATE stamp.evaluation_request AS er
+					SET er.id_request_status = 3 # Aceptado
+					WHERE er.id = ${body.id_evaluation_request};
+				`
+				return model_request_status.customQuery(query).then(() => {
+					//** Cambiar el status del requisito de ser necesario **//
+					// Traer los branches del requisito que no han sido aceptados
+					query = `
+						SELECT *
+						FROM stamp.evaluation_request AS er
+						WHERE er.id_service = ${body.id_service}
+						AND er.id_question = ${body.id_question}
+						AND er.id_request_status < 3;
+					`
+					return model_request_status.customQuery(query).then((empty_brnchs) => {
+						// Cambiar status del requisito
+						if(!empty_brnchs.length) {
+							query = `
+								UPDATE stamp.user_answer AS ua
+								SET ua.id_status = 3
+								WHERE ua.id_service = ${body.id_service}
+								AND ua.id_question = ${body.id_question};
+							`
+							return model_request_status.customQuery(query).then(() => {
+								return check_service_upgrade(user, body, 3).then(() => {
+									return {message: "Requisito en proceso de evaluación"}
+								})
+							})
+						}
+					})
+				})
+			default: // Rechazar evaluar el requisito
+				break
+		}
 	}
 
 	var set_final_decission_requisite = function (user, body) {
