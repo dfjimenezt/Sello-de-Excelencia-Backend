@@ -2,7 +2,7 @@
  * servicios_en_linea
  * [{"Field":"Etapa","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"Requisito","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"Criterio","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"Evidencia","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"Sustento legal o técnico","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"Ayuda","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"Nivel","Type":"int(11)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"Perfil","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"Area Tematica","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"Preguntas","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""}]
  * DMT 2017
- * GENERATED: 18 / 8 / 2017 - 13:23:2
+ * GENERATED: 21 / 8 / 2017 - 6:57:49
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
