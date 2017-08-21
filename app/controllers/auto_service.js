@@ -749,7 +749,6 @@ WHERE join2.current_status_service >= 2 AND join2.current_status_service <= 6
             }
         }
         query += ";"
-			console.log(query)
         return model_entity_service.customQuery(query)
     }
 
