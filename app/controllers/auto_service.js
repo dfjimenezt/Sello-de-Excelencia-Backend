@@ -48,8 +48,8 @@ var service_controller = function () {
     var model_category_questions = new category_questions()
     var model_service = new service()
     var model_hall_of_fame = new hall_of_fame()
-		var model_evaluation_request = new evaluation_request()
-		var model_entity_service_status = new entity_service_status()
+	var model_evaluation_request = new evaluation_request()
+	var model_entity_service_status = new entity_service_status()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -704,7 +704,7 @@ join2.id_category_service, join2.id_institution, i.name AS name_institution, i.i
 join2.id_user_creator_service, join2.timestamp_services, join2.current_status_service
 FROM
 stamp.institution i
-RIGHT JOIN
+ RIGHT JOIN
 (SELECT s.id AS id_service, join1.level AS level_service, s.name AS name_service, 
 s.id_category AS id_category_service, s.id_institution, s.id_user AS id_user_creator_service, 
 s.timestamp AS timestamp_services, s.current_status AS current_status_service 
@@ -754,14 +754,14 @@ WHERE join2.current_status_service >= 2 AND join2.current_status_service <= 6
 
     var list_users_admin = function(user, body) {
         var query = `
-SELECT stamp.user.id AS id_user,
-CONCAT(stamp.user.name, ' ', stamp.user.lastname) AS name,
-stamp.user.email AS email,
-stamp.user.active AS active,
-stamp.user.timestamp AS timestamp
-FROM stamp.user
-JOIN stamp.user_role ON stamp.user_role.id_user = stamp.user.id
-WHERE stamp.user_role.id_role = 1
+			SELECT stamp.user.id AS id_user,
+			CONCAT(stamp.user.name, ' ', stamp.user.lastname) AS name,
+			stamp.user.email AS email,
+			stamp.user.active AS active,
+			stamp.user.timestamp AS timestamp
+			FROM stamp.user
+			JOIN stamp.user_role ON stamp.user_role.id_user = stamp.user.id
+			WHERE stamp.user_role.id_role = 1
 ;`
         return model_entity_service.customQuery(query)
     }
@@ -955,21 +955,22 @@ RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${param
 		return model_service.getAll(params);
     }
     
-		var get_institution_info = function (user, body) {
-			var query = `
-				SELECT 
-				i.*, 
-				td.name AS type_document,
-				c.name AS city,
-				r.name AS region
-				FROM stamp.institution AS i
-				JOIN stamp.type_document AS td ON td.id = i.legalrep_typedoc
-				JOIN stamp.city AS c ON c.id = i.id_city
-				JOIN stamp.region AS r ON r.id = i.id_region
-				WHERE i.id = "${body.id_institution}";
+	var get_institution_info = function (user, body) {
+		var query = `
+			SELECT i.*, td.name AS type_document, c.name AS city, r.name AS region 
+			FROM stamp.institution AS i 
+			JOIN stamp.type_document AS td ON td.id = i.legalrep_typedoc
+			JOIN stamp.city AS c ON c.id = i.id_city
+			JOIN stamp.region AS r ON r.id = i.id_region
+			WHERE i.id = "${body.id_institution}";
 			`
-			return model_institution.customQuery(query)
-		}
+		return model_institution.customQuery(query).then(function(result){
+			if(result.length > 0)
+				return {"data": result, "total": result.length}
+			else
+				return {"data": "No existe la institutción", "total": result.length}	
+		})
+	}
 
 	var get_institution_service = function (user, body) {
 		var query = `
@@ -1020,6 +1021,12 @@ JOIN stamp.role r ON h_f.id_role = r.id WHERE h_f.date >= '${params.date_begin}'
 			})
 	}
 	
+    /**
+     * Muestra las preguntas que debe calificar el ciudadano proporcionando
+     * el id de la categoría.
+     * 
+     * /service/questions_category?id_category=1
+     */
 	var get_questions_category = function(user, body){
 		var query = `
 SELECT 
