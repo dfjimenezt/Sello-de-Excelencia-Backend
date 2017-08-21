@@ -1012,7 +1012,24 @@ JOIN stamp.role r ON h_f.id_role = r.id WHERE h_f.date >= '${params.date_begin}'
 		})
 }
 
+/*
+ * lista todas las preguntas según categoría
+ */
 var get_questions_category = function(user, body){
+	var query = `
+	SELECT cq.id AS id_question, cq.text, c.id AS id_category, c.name AS name_category  
+	FROM stamp.category c	
+	RIGHT JOIN stamp.category_questions cq ON c.id = cq.id_category `
+	if(body.id_category){
+		query += `WHERE c.id = ${parseInt(body.id_category)}`
+	}
+		query += ";"
+	return model_category_questions.customQuery(query)
+}
+
+
+// Puede filtrar preguntas por servicio o traer todas las preguntas
+var get_questions_category_answered_for_service = function(user, body){
 	var query = `
 SELECT 
 cq.*,
@@ -1020,8 +1037,12 @@ s.rate,
 (SELECT COUNT(sc.id) FROM stamp.service_comment AS sc WHERE sc.id_service = "${body.id_service}") AS votes
 FROM stamp.service AS s
 JOIN stamp.category AS c ON c.id = s.id_category
-JOIN stamp.category_questions AS cq ON cq.id_category = c.id
-WHERE s.id = "${body.id_service}";`
+JOIN stamp.category_questions AS cq ON cq.id_category = c.id `
+	if(body.id_service != undefined){
+		query += `WHERE s.id = "${body.id_service}";`
+	}else{
+		query += ";"
+	}
 	return model_category_questions.customQuery(query)
 }
 
