@@ -720,7 +720,7 @@ u_a.id_topic = u_q.id_topic WHERE u_q.id_user = 8 ORDER BY id_service) join0
 LEFT JOIN stamp.service_status s_s ON
 join0.id_service = s_s.id_service) join1
 ON s.id = join1.id_service) join2 ON i.id = join2.id_institution 
-WHERE join2.current_status_service = 3 
+WHERE join2.current_status_service = 2 
 ` 
         if (params.name_institution || params.id_region || params.id_category || params.id_level) {
             // Un servicio postulado es status 3, status 1, es cuando hasta ahora se está postulando
