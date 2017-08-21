@@ -1324,6 +1324,7 @@ var get_chat_messages = function(user, body) {
 	getMap.set('institution_service_certified', { method: get_institution_service_certified, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('get_hall_csv', { method: get_hall_csv, permits: Permissions.ADMIN })
 	getMap.set('questions_category', { method: get_questions_category, permits: Permissions.PLATFORM })
+	getMap.set('questions_category_service', { method: get_questions_category_answered_for_service, permits: Permissions.PLATFORM })
 	getMap.set('list_institutions_admin', { method: list_institutions_admin, permits: Permissions.ADMIN })
 	getMap.set('get_certificates', { method: get_certificates, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('requisite_progress_evidence', { method: get_requisite_progress_evidence, permits: Permissions.NONE }) //permisos
