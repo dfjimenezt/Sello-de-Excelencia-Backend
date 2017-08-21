@@ -697,7 +697,7 @@ FROM stamp.service ser
 RIGHT JOIN stamp.institution ins ON ser.id_institution = ins.id
 RIGHT JOIN stamp.region reg ON ins.id_region = reg.id `*/
 		var query =`# 
-# join2.current_status_service = (2: asignación)
+# join2.current_status_service = [2: asignación]
 # INPUTS
 SELECT join2.id_service, join2.level_service, join2.name_service, 
 join2.id_category_service, join2.id_institution, i.name AS name_institution, i.id_region,
@@ -713,15 +713,21 @@ stamp.service s
 LEFT JOIN
 (SELECT s_s.id_service, s_s.level
 FROM
+(SELECT DISTINCT u_a_q.id_service
+FROM
 (SELECT DISTINCT id_service
 FROM stamp.user_answer u_a
 LEFT JOIN stamp.user_questiontopic u_q ON
-u_a.id_topic = u_q.id_topic WHERE u_q.id_user = 8 ORDER BY id_service) join0
+u_a.id_topic = u_q.id_topic WHERE u_q.id_user = ${token.id}) u_a_q
+LEFT JOIN stamp.evaluation_request e_r ON u_a_q.id_service = e_r.id_service 
+WHERE e_r.id_user != ${token.id} OR e_r.id_user IS NULL) join0
 LEFT JOIN stamp.service_status s_s ON
 join0.id_service = s_s.id_service) join1
-ON s.id = join1.id_service) join2 ON i.id = join2.id_institution 
-WHERE join2.current_status_service = 2 
-` 
+ON s.id = join1.id_service) join2 ON i.id = join2.id_institution
+WHERE join2.current_status_service >= 2 AND join2.current_status_service <= 6
+`
+//WHERE join2.current_status_service = 2 
+//` 
         if (params.name_institution || params.id_region || params.id_category || params.id_level) {
             // Un servicio postulado es status 3, status 1, es cuando hasta ahora se está postulando
             //query += "WHERE ser.current_status = 3 "
@@ -743,6 +749,7 @@ WHERE join2.current_status_service = 2
             }
         }
         query += ";"
+			console.log(query)
         return model_entity_service.customQuery(query)
     }
 
