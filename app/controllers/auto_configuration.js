@@ -536,10 +536,14 @@ RIGHT JOIN
 SELECT website, id_user
 FROM stamp.hall_of_fame h_f
 RIGHT JOIN stamp.institution i ON h_f.id_user = i.id_user_creator
-) h_f_i ON h_ff.id_user = h_f_i.id_user WHERE id_role = 4 AND date = '${date[0]}';`
+) h_f_i ON h_ff.id_user = h_f_i.id_user 
+WHERE id_role = 4 AND date >= '${date[0]} 00:00:00' AND date <= '${date[0]} 23:59:59'
+ORDER BY ranking ASC LIMIT 10;` 
 		}else if( params.id_role == '2'){ // Evaluador
 			var query = `SELECT * 
-FROM stamp.hall_of_fame WHERE id_role = 2 AND date = '${date[0]}';`
+FROM stamp.hall_of_fame 
+WHERE id_role = 2 AND date >= '${date[0]} 00:00:00' AND date <= '${date[0]} 23:59:59' 
+ORDER BY ranking ASC LIMIT 10;` 
 		}
 		return model_hall_of_fame.customQuery(query).then((hall) => {
 			if( hall.length <= 0 ){
