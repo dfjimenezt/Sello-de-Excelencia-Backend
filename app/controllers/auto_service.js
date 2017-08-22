@@ -548,19 +548,13 @@ WHERE s.id_category = ${params.id_category}\n`
 	}
 
 	var list_certified_services = function(user, params) {
-		var query = `
-SELECT 
-s.name AS name, 
-c.name as category, 
-ss.level AS level, 
-s.timestamp
-FROM stamp.user AS u
-JOIN stamp.institution_user AS iu ON iu.id_user = u.id
-JOIN stamp.service AS s ON s.id_institution = iu.id_institution
-JOIN stamp.service_status AS ss ON ss.id_service = s.id
-JOIN stamp.category AS c ON c.id = s.id_category
-WHERE u.id = ${user.id}
-AND s.current_status = 8;`
+		var query = ` SELECT s.name AS name, c.name as category, ss.level AS level, s.timestamp
+				FROM stamp.user AS u 
+				JOIN stamp.institution_user AS iu ON iu.id_user = u.id
+				JOIN stamp.service AS s ON s.id_institution = iu.id_institution
+				JOIN stamp.service_status AS ss ON ss.id_service = s.id
+				JOIN stamp.category AS c ON c.id = s.id_category
+				WHERE u.id = ${user.id} AND s.current_status = 8;`
 				return model_institution.customQuery(query)
 		}
 
@@ -738,24 +732,24 @@ WHERE join2.current_status_service >= 2 AND join2.current_status_service <= 6
 	}
 
 	var list_postulations_admin = function(user, body) {
-			var query = `
-SELECT 
-stamp.institution.name AS name_institution,
-stamp.service.name AS name_service,
-stamp.category.name AS name_category,
-stamp.service.id_level AS level,
-stamp.status.name AS service_status,
-# WARNING: FALTA IS_ACTIVE EN SERVICES !!!
-stamp.service.timestamp AS postulation_date,
-stamp.service.id AS id_service
-FROM stamp.institution
-JOIN stamp.institution_user ON stamp.institution_user.id_institution = stamp.institution.id
-JOIN stamp.service ON stamp.service.id_user = stamp.institution_user.id_user
-JOIN stamp.category ON stamp.category.id = stamp.service.id_category
-JOIN stamp.service_status ON stamp.service_status.id_service = stamp.service.id
-JOIN stamp.status ON stamp.status.id = stamp.service.current_status
-;`
-			return model_entity_service.customQuery(query)
+			var query = `SELECT 
+				stamp.institution.name AS name_institution,
+				stamp.service.name AS name_service,
+				stamp.category.name AS name_category,
+				stamp.service_status.level AS level,
+				stamp.status.name AS service_status,
+				# WARNING: FALTA IS_ACTIVE EN SERVICES !!!
+				stamp.service.timestamp AS postulation_date,
+				stamp.service.id AS id_service
+				FROM stamp.institution
+				JOIN stamp.institution_user ON stamp.institution_user.id_institution = stamp.institution.id
+				JOIN stamp.service ON stamp.service.id_user = stamp.institution_user.id_user
+				JOIN stamp.category ON stamp.category.id = stamp.service.id_category
+				JOIN stamp.service_status ON stamp.service_status.id_service = stamp.service.id
+				JOIN stamp.status ON stamp.status.id = stamp.service.current_status;`
+			return model_entity_service.customQuery(query).then(function(result){
+				return {"postulaciones": result, "total": result.length}
+			})
 	}
 
 	var list_requisites_admin = function(user, body) {
@@ -1074,6 +1068,9 @@ WHERE ur.id_role = 4
 	return model_institution.customQuery(query)
 }
 
+/**
+ * /api/service/requisites_service?id_service=4
+ */
 var get_requisites_for_service = function(token, params) {
 	if (params.id_service)
 		var query = `
@@ -1175,20 +1172,43 @@ var get_requisite_progress = function (user, params) {
 	}
 }
 /**
- * 	Muestra el progreso y las evidencias de los requisitos del servicio id_service 4
- *  /api/service/requisite_progress_evidence?id_service=4
+ * 	Muestra el progreso y las evidencias de los requisitos del servicio id_service 4 y/o id_question  
+ *  /api/service/requisite_progress_evidence?id_service=14&id_question=3
  */
-var get_requisite_progress_evidence = function (user, body) {
-	if(params){
-		var query = `
-			SELECT u_s.id AS id_user_answer, id_question, id_user AS id_user_creator, datetime, u_s.timestamp, requisite, support_legal, justification, id_topic, evidence, help, id_service, id_status AS id_status_progress, u_s.id_media, url AS url_media, type AS type_media, m.timestamp AS timestamp_media
-			FROM (SELECT * FROM stamp.user_answer WHERE stamp.user_answer.id_service = ${params.id_service}) u_s
-			LEFT JOIN stamp.media m ON u_s.id_media = m.id`
-		return model_service.customQuery(query).then(function(result){
+var get_requisite_progress_evidence = function (user, params) {
+	var query = `SELECT u_s.id AS id_user_answer, id_question, id_user AS id_user_creator, datetime, u_s.timestamp, requisite, support_legal, justification, id_topic, evidence, help, id_service, id_status AS id_status_progress, u_s.id_media, url AS url_media, type AS type_media, m.timestamp AS timestamp_media
+			FROM (SELECT * FROM stamp.user_answer WHERE `
+	if(params.id_service){
+		query += `stamp.user_answer.id_service = ${params.id_service} `
+		if(params.id_question)
+			query += `AND stamp.user_answer.id_question = ${params.id_question} `
+	} else if(params.id_question){
+		query += `stamp.user_answer.id_question = ${params.id_question} `
+	query += `) u_s LEFT JOIN stamp.media m ON u_s.id_media = m.id `}
+	console.log(query)
+	return model_service.customQuery(query).then(function(result){
+		console.log(result)
+		if (result.length > 0)
 			return {"data": result, "total": result.length}
+		else
+			return {"data": "No hay progreso registrado.", "total": result.length}
+	})
+}
+
+/**
+ * 	Muestra el progreso y las evidencias de un requisito evaluado
+ *  /api/service/requisite_progress_evidence?id_service=14&id_question=3
+ */
+var get_historical_evaluated_requisite = function(user, body){
+	return get_evaluated_services(user, body)
+	if (body.id_service || body.id_question){
+		return get_requisite_progress_evidence(user, body).then(function(result){
+			var query = ``
+			return result
 		})
 	}
 }
+
 /**
  * 	Muestra los mensajes de los evaluadores que han rechazado los requisitos,
  *  de tal manera que el servicio queda rechazado por estos rechazos.
@@ -1337,6 +1357,7 @@ var get_chat_messages = function(user, body) {
 	getMap.set('requisites_service', { method: get_requisites_for_service, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('list_empty_user_answers', { method: list_empty_user_answers, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('questiontopic_all', { method: get_questiontopic_all, permits: Permissions.NONE })
+	getMap.set('historical_evaluated_requisite', { method: get_historical_evaluated_requisite, permits: Permissions.NONE })
 
 	/**
 	 * @api {post} api/service/service Create service information

@@ -22,6 +22,7 @@ var type_document = require('../models/type_document.js')
 var User = require('../models/user.js')
 var Questiontopic = require('../models/questiontopic.js')
 var hall_of_fame = require('../models/hall_of_fame.js')
+var evaluation_request = require('../models/evaluation_request.js')
 var configuration_controller = function () {
 	var model_entity_user = new entity_user()
 	var model_role = new role()
@@ -36,6 +37,7 @@ var configuration_controller = function () {
 	var userModel = new User()
 	var model_questiontopic = new Questiontopic()
 	var model_hall_of_fame = new hall_of_fame()
+	var model_evaluation_request = new evaluation_request()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function(model,user,params){
@@ -649,6 +651,15 @@ LEFT JOIN stamp.category c ON q.id_category = c.id
 	})
 	}
 
+	var get_my_evaluated_requisites = function (token, params){
+		var query = `SELECT sql_calc_found_rows id_user AS id_evaluator, id_question, id_service, result, justify_reject FROM stamp.evaluation_request 
+			WHERE id_user = ${params.id_evaluator} AND result IS NOT NULL; select found_rows() as total;`
+		return model_evaluation_request.customQuery(query).then(function(result){
+			return {"evaluaciones":result[0], "total":result[0].length}
+		})
+		
+	}
+	
 	getMap.set('user', { method: get_entity_user, permits: Permissions.NONE })
 	getMap.set('role', { method: get_role, permits: Permissions.NONE })
 	getMap.set('availability', { method: get_availability, permits: Permissions.ADMIN })
@@ -665,6 +676,7 @@ LEFT JOIN stamp.category c ON q.id_category = c.id
 	getMap.set('evaluation_thematic', { method: get_evaluation_thematic, permits: Permissions.PLATFORM })
 	getMap.set('evaluation_thematic_for_category', { method: get_evaluation_thematic_for_category, permits: Permissions.PLATFORM })
 	getMap.set('questiontopics_evaluator', { method: get_questiontopics_evaluator, permits: Permissions.PLATFORM })
+	getMap.set('my_evaluations', { method: get_my_evaluated_requisites, permits: Permissions.PLATFORM })
 
 	/**
 	 * @api {post} api/configuration/user Create user information
