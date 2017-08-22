@@ -2,7 +2,7 @@
  * institution_user
  * [{"Field":"id_institution","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_user","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"role","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"admin","Type":"tinyint(1)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"certificate","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""}]
  * DMT 2017
- * GENERATED: 21 / 8 / 2017 - 6:57:49
+ * GENERATED: 22 / 8 / 2017 - 9:41:42
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')

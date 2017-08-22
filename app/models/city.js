@@ -2,7 +2,7 @@
  * city
  * [{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"name","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"code","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"latitude","Type":"double(10,2)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"longitude","Type":"double(10,2)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"id_region","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""}]
  * DMT 2017
- * GENERATED: 21 / 8 / 2017 - 6:57:49
+ * GENERATED: 22 / 8 / 2017 - 9:41:42
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')

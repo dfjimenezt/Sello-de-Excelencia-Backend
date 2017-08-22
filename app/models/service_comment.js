@@ -2,7 +2,7 @@
  * service_comment
  * [{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"id_service","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_user","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"text","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"rate","Type":"float(4,3)","Null":"NO","Key":"","Default":"3.000","Extra":""},{"Field":"timestamp","Type":"timestamp","Null":"NO","Key":"","Default":"CURRENT_TIMESTAMP","Extra":""}]
  * DMT 2017
- * GENERATED: 21 / 8 / 2017 - 6:57:49
+ * GENERATED: 22 / 8 / 2017 - 9:41:42
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')

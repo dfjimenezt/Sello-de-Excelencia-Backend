@@ -2,7 +2,7 @@
  * contact
  * [{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"name","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"lastname","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"topic","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"message","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"timestamp","Type":"timestamp","Null":"NO","Key":"","Default":"CURRENT_TIMESTAMP","Extra":""}]
  * DMT 2017
- * GENERATED: 21 / 8 / 2017 - 6:57:49
+ * GENERATED: 22 / 8 / 2017 - 9:41:42
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
