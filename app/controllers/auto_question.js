@@ -552,6 +552,48 @@ WHERE stamp.user_answer.id_question = ${body.id_question}
 	var get_services_questions_and_status = function(token, params){
 		return model_questions.getFiltered(params)
 	}
+
+	var list_service_evaluators = function(user, body) {
+		// Traer evaluadores 
+		var query = `
+			SELECT 
+			CONCAT(u.name, ' ', u.lastname) AS name,
+			er.branch AS branch,
+			er.id AS id_evaluation_request,
+			er.id_user AS id_evaluator,
+			er.id_request_status AS id_request_status,
+			u.email AS evaluator_email,
+			er.timestamp AS timestamp,
+			er.alert_time AS alert_time,
+			er.end_time AS end_time
+			FROM stamp.evaluation_request AS er
+			JOIN stamp.user AS u ON u.id = er.id_user
+			WHERE er.id_service = ${body.id_service}
+			AND er.id_question = ${body.id_question}
+			ORDER BY er.branch ASC, er.id ASC
+		`
+		return model_request_status.customQuery(query).then((evaluators) => {
+			var branches = []
+			var branch1 = []
+			var branch2 = []
+			var branch3 = []
+			for(var i in evaluators) {
+				curr_date = new Date()
+				end_date = new Date(evaluators[i].end_time)
+				evaluators[i].missing_days = Math.round((end_date-curr_date)/(1000*60*60*24))
+				if (evaluators[i].branch == 1)
+					branch1.push(evaluators[i])
+				else if (evaluators[i].branch == 2)
+					branch2.push(evaluators[i])
+				else
+					branch3.push(evaluators[i])
+			}
+			branches.push({branch1: branch1, length: branch1.length})
+			branches.push({branch2: branch2, length: branch2.length})
+			branches.push({branch3: branch3, length: branch3.length})
+			return branches
+		})
+	}
 	
 	getMap.set('evaluation_request', { method: get_entity_evaluation_request, permits: Permissions.NONE })
 	getMap.set('user_answer', { method: get_entity_user_answer, permits: Permissions.NONE })
@@ -567,6 +609,7 @@ WHERE stamp.user_answer.id_question = ${body.id_question}
 	getMap.set('user_answer', { method: get_entity_user_answer, permits: Permissions.NONE })
 	getMap.set('request_status', { method: get_request_status, permits: Permissions.NONE })
 	getMap.set('list_empty_user_answers', { method: list_empty_user_answers, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('list_service_evaluators', { method: list_service_evaluators, permits: Permissions.ADMIN })
 
 	/**
 	 * @api {post} api/question/evaluation_request Create evaluation_request information
@@ -1075,11 +1118,74 @@ WHERE stamp.user_answer.id_question = ${body.id_question}
 		})
 	}
 
+	var verify_requisite = function (user, body) {
+		switch(body.decission) {
+			case "1": // Aceptado
+				var query = `
+					UPDATE stamp.user_answer AS ua
+					SET ua.id_status = 3 # Aceptación
+					WHERE er.id_service = ${body.id_service}
+					AND er.id_question = ${body.id_question};
+				`
+				return model_request_status.customQuery(query).then(() => {
+					return check_service_upgrade(user, body, 3).then(() => {
+						// Crear 3 branches en evaluation_request
+						query = `
+							SET FOREIGN_KEY_CHECKS=0;
+							INSERT INTO stamp.evaluation_request AS er
+							(id_question, id_service, id_request_status, branch) VALUES
+							("${body.id_question}", "${body.id_service}", "1", "1"),
+							("${body.id_question}", "${body.id_service}", "1", "2"),
+							("${body.id_question}", "${body.id_service}", "1", "3");	
+							SET FOREIGN_KEY_CHECKS=1;
+						`
+						return model_request_status.customQuery(query).then(() => {
+							// Obtener fechas de alerta y de finalización de la etapa Aceptación
+							query = `
+								SELECT st.pre_end AS pre_end, st.duration AS duration
+								FROM stamp.status AS st
+								WHERE st.id = 3 # Aceptación
+								AND st.alert = 1
+							`
+							return model_request_status.customQuery(query).then((dates) => {
+								var dumy_date
+								end_date = new Date()
+								end_date.setDate(end_date.getDate() + dates[0].duration) // Agregar la duración de la etapa
+								alert_date = new Date()
+								alert_date.setDate(end_date.getDate() - dates[0].pre_end) // Restar el tiempo previo para alertar
+								end_date = end_date.toISOString()
+								dumy_date = end_date.split('T')
+								end_date = dumy_date[0]
+								alert_date = alert_date.toISOString()
+								dumy_date = alert_date.split('T')
+								alert_date = dumy_date[0]
+								query = `
+									UPDATE stamp.evaluation_request AS er SET 
+									er.alert_time = DATE '${alert_date}',
+									er.end_time = DATE '${end_date}'
+									WHERE er.id_service = ${body.id_service}
+									AND er.id_question = ${body.id_question};
+								`
+								return model_request_status.customQuery(query).then(() => {
+									return {message: "Requisito fue rechazado exitosamente"}
+								})
+							})
+						})
+					})
+				})
+				break
+			default: // Rechazado
+				break
+			
+		}
+	}
+
 	putMap.set('evaluation_request', { method: update_entity_evaluation_request, permits: Permissions.ADMIN })
 	putMap.set('user_answer', { method: update_entity_user_answer, permits: Permissions.ADMIN })
 	putMap.set('request_status', { method: update_request_status, permits: Permissions.ADMIN })
 	putMap.set('edit_evaluation_request_status', { method: edit_evaluation_request_status, permits: Permissions.EVALUATE })
 	putMap.set('set_final_decission_requisite', { method: set_final_decission_requisite, permits: Permissions.EVALUATE })
+	putMap.set('verify_requisite', { method: verify_requisite, permits: Permissions.ADMIN })
 
 	/**
 	 * @api {delete} api/question/evaluation_request Delete evaluation_request information

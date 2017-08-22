@@ -215,10 +215,17 @@ var forum_controller = function () {
 		return model_hangouts.create(body)
 	}
 
+	var contact_user = function (user, body) {
+		return utiles.sendEmail(body.email, null, null, body.subject, body.body, null).then(() => {
+			return {message:"Correo enviado exitosamente"}
+		})
+	}
+
 	postMap.set('topic', { method: create_topic, permits: Permissions.ADMIN })
 	postMap.set('message', { method: create_message, permits: Permissions.ADMIN })
 	postMap.set('banner', { method: create_banner, permits: Permissions.ADMIN })
 	postMap.set('hangouts', { method: create_hangouts, permits: Permissions.ADMIN })
+	postMap.set('contact', { method: contact_user, permits: Permissions.NONE })
 
 	/**
 	 * @api {put} api/forum/topic Update topic information
@@ -274,11 +281,6 @@ var forum_controller = function () {
 		return model_hangouts.update(body,{id:body.id})
 	}
 
-	var contact_user = function (user, body, email) {
-		// to, cc, bcc, subject, body, attachment
-		return utiles.sendEmail(body.email, body.cc, body.bcc, body.subject, body.attachment)
-	}
-
 	var update_footer = function(user, body) {
 		if (!body.id) {
 			throw utiles.informError(400)
@@ -286,12 +288,19 @@ var forum_controller = function () {
 		return model_footer.update(body,{id:body.id})
 	}
 
+	var update_status = function(user, body) {
+		if (!body.id) {
+			throw utiles.informError(400)
+		}
+		return model_status.update(body,{id:body.id})
+	}
+
 	putMap.set('topic', { method: update_topic, permits: Permissions.ADMIN })
 	putMap.set('message', { method: update_message, permits: Permissions.ADMIN })
 	putMap.set('banner', { method: update_banner, permits: Permissions.ADMIN })
 	putMap.set('hangouts', { method: update_hangouts, permits: Permissions.ADMIN })
-	putMap.set('contact', { method: contact_user, permits: Permissions.ADMIN })
 	putMap.set('footer', { method: update_footer, permits: Permissions.ADMIN })
+	putMap.set('status', { method: update_status, permits: Permissions.ADMIN })
 
 	/**
 	 * @api {delete} api/forum/topic Delete topic information

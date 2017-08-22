@@ -42,6 +42,8 @@ var service_controller = function () {
 	var institution_user = new Institution_user()
 	var model_media = new Media()
 	var model_institution = new Institution()
+	var model_user_answer = new user_answer()
+	var model_user = new user()
 	var model_user_answer = new User_answer()
 	var model_user = new User()
 	var model_usertype = new Usertype()
@@ -52,13 +54,13 @@ var service_controller = function () {
 	var model_hall_of_fame = new hall_of_fame()
 	var model_service_comment = new Service_comment()
 	var service_status = new Service_status()
-	var institution_user = new Institution_user()
 	var model_media = new Media()
 	var model_institution = new Institution()
 	var model_points = new Points()
 	var model_motives = new Motives()
 	var model_category_questions = new category_questions()
 	var model_service = new service()
+	var model_hall_of_fame = new hall_of_fame()
 	var model_evaluation_request = new evaluation_request()
 	var model_entity_service_status = new entity_service_status()
 	//---------------------------------------------------------------
@@ -547,33 +549,39 @@ WHERE s.id_category = ${params.id_category}\n`
 	}
 
 	var list_certified_services = function(user, params) {
-		var query = ` SELECT s.name AS name, c.name as category, ss.level AS level, s.timestamp
-				FROM stamp.user AS u 
-				JOIN stamp.institution_user AS iu ON iu.id_user = u.id
-				JOIN stamp.service AS s ON s.id_institution = iu.id_institution
-				JOIN stamp.service_status AS ss ON ss.id_service = s.id
-				JOIN stamp.category AS c ON c.id = s.id_category
-				WHERE u.id = ${params.id_institution} AND s.current_status = 8;`
-		return model_institution.customQuery(query).then(function(result){
-			return {"data": result, "total": result.length}
-		})
+		var query = `
+			SELECT 
+			s.name AS name, 
+			c.name as category, 
+			ss.level AS level, 
+			s.timestamp
+			FROM stamp.user AS u
+			JOIN stamp.institution_user AS iu ON iu.id_user = u.id
+			JOIN stamp.service AS s ON s.id_institution = iu.id_institution
+			JOIN stamp.service_status AS ss ON ss.id_service = s.id
+			JOIN stamp.category AS c ON c.id = s.id_category
+			WHERE u.id = ${user.id}
+			AND s.current_status = 8;
+		`
+		return model_institution.customQuery(query)
 	}
 
 	var list_rejected_services = function(user, params) {
-				var query = `
-SELECT 
-s.name AS name, 
-c.name as category, 
-ss.level AS level, 
-s.timestamp
-FROM stamp.user AS u
-JOIN stamp.institution_user AS iu ON iu.id_user = u.id
-JOIN stamp.service AS s ON s.id_institution = iu.id_institution
-JOIN stamp.service_status AS ss ON ss.id_service = s.id
-JOIN stamp.category AS c ON c.id = s.id_category
-WHERE u.id = ${user.id}
-AND s.current_status = 9;`
-				return model_institution.customQuery(query)
+		var query = `
+			SELECT 
+			s.name AS name, 
+			c.name as category, 
+			ss.level AS level, 
+			s.timestamp
+			FROM stamp.user AS u
+			JOIN stamp.institution_user AS iu ON iu.id_user = u.id
+			JOIN stamp.service AS s ON s.id_institution = iu.id_institution
+			JOIN stamp.service_status AS ss ON ss.id_service = s.id
+			JOIN stamp.category AS c ON c.id = s.id_category
+			WHERE u.id = ${user.id}
+			AND s.current_status = 9;
+		`
+		return model_institution.customQuery(query)
 		}
 
 		var list_in_progress_services = function(user, params) {
@@ -958,13 +966,19 @@ var get_all_services = function (token, params){
 	}
 
 var get_institution_service = function (user, body) {
-	var query = ` SELECT s.*, c.name AS category, ss.level AS level, st.name AS status
-			FROM stamp.institution AS i
-			JOIN stamp.service AS s ON s.id_institution = i.id
-			JOIN stamp.category AS c ON c.id = s.id_category
-			JOIN stamp.service_status AS ss ON ss.id_service = s.id
-			JOIN stamp.status AS st ON st.id = ss.id_status
-			WHERE i.id = "${body.id_institution}";`
+	var query = `
+		SELECT 
+		s.*,
+		c.name AS category,
+		ss.level AS level,
+		st.name AS status
+		FROM stamp.institution AS i
+		JOIN stamp.service AS s ON s.id_institution = i.id
+		JOIN stamp.category AS c ON c.id = s.id_category
+		JOIN stamp.service_status AS ss ON ss.id_service = s.id
+		JOIN stamp.status AS st ON st.id = ss.id_status
+		WHERE i.id = "${body.id_institution}";
+	`
 	return model_service.customQuery(query).then(function(result){
 		return {"data": result, "total": result.length}
 	})
@@ -1274,23 +1288,26 @@ var get_chats = function (user, body) {
 					return data
 				})
 			default: // Administrador
-				/*query = `
+				query = `
 					SELECT 
-					FROM stamp.user_answer AS 
-					JOIN stamp.evaluation_request AS er ON (er.id_service = ua.id_service AND er.id_question = ua.id_question)
-					JOIN stamp.user AS u ON u.id = ua.id_user
-					WHERE ua.id_service = ${body.id_service}
-					AND ua.id_question = ${body.id_question}
-					AND (er.id_request_status = 3 OR er.id_request_status = 4); # Pendiente 3 o Aceptado 4
+					er.id AS id_evaluation_request,
+					CONCAT(u.name, ' ', u.lastname) AS name,
+					u.id AS id_evaluator
+					FROM stamp.evaluation_request AS er
+					JOIN stamp.user AS u ON u.id = er.id_user
+					WHERE er.id_service = ${body.id_service}
+					AND er.id_question = ${body.id_question}
+					AND (er.id_request_status = 3 # Asignado
+							 OR er.id_request_status = 4); # Aceptado
 				`
-				return model_chats.customQuery(query).then(function(requisites) {
+				return model_service.customQuery(query).then(function(requisites) {
 					var data = { data: requisites[0], total: requisites.length }
 					return data
-				})*/
-				break
+				})
 		}
 	})
 }
+
 
 /**
  * 	Muestra el historial de mensajes de un chat en específico
@@ -1298,8 +1315,11 @@ var get_chats = function (user, body) {
  */
 var get_chat_messages = function(user, body) {
 	var query = `
-		SELECT *
-		FROM stamp.chats as ch
+		SELECT 
+		u.name AS name,
+		ch.*
+		FROM stamp.chats AS ch
+		JOIN stamp.user AS u ON u.id = ch.id_sender
 		WHERE ch.id_evaluation_request = ${body.id_evaluation_request}
 		ORDER BY ch.timestamp ASC;
 	`
@@ -1525,9 +1545,24 @@ WHERE u.points IS NOT NULL AND u_r.id_role = ${params.id_role} ORDER BY u.points
 
 	var create_service_comment = function(user, body) {
 		body.id_user = user.id
-				//body.id_service = service.id
-		return model_service_comment.create(body)
-}
+		return model_service_comment.create(body).then(() => {
+			query = `
+				SELECT AVG(sc.rate) AS average
+				FROM stamp.service_comment as sc
+				WHERE sc.id_service = ${body.id_service}
+			`
+			return model_institution.customQuery(query).then((average) => {
+				query = `
+					UPDATE stamp.service AS s
+					SET s.rate = ${average[0].average}
+					WHERE s.id = ${body.id_service};
+				`
+				return model_institution.customQuery(query).then(() => {
+					return {message: "Comentario generado exitosamente"}
+				})
+			})
+		})
+	}
 
 var save_service_evidence = function (user, body, files) {
 	return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type).then((url) => {
