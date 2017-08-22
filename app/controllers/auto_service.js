@@ -20,8 +20,9 @@ var Institution_user = require('../models/institution_user.js')
 var Service_comment = require('../models/service_comment.js')
 var Media = require('../models/media.js')
 var Institution = require('../models/institution.js')
-var user_answer = require('../models/user_answer.js')
-var user = require('../models/user.js')
+var User_answer = require('../models/user_answer.js')
+var User = require('../models/user.js')
+var Usertype = require('../models/usertype.js')
 var Points = require('../models/points.js')
 var Motives = require('../models/motives.js')
 var category_questions = require('../models/category_questions.js')
@@ -41,8 +42,9 @@ var service_controller = function () {
 	var institution_user = new Institution_user()
 	var model_media = new Media()
 	var model_institution = new Institution()
-	var model_user_answer = new user_answer()
-	var model_user = new user()
+	var model_user_answer = new User_answer()
+	var model_user = new User()
+	var model_usertype = new Usertype()
 	var model_points = new Points()
 	var model_motives = new Motives()
 	var model_category_questions = new category_questions()
@@ -53,13 +55,10 @@ var service_controller = function () {
 	var institution_user = new Institution_user()
 	var model_media = new Media()
 	var model_institution = new Institution()
-	var model_user_answer = new user_answer()
-	var model_user = new user()
 	var model_points = new Points()
 	var model_motives = new Motives()
 	var model_category_questions = new category_questions()
 	var model_service = new service()
-	var model_hall_of_fame = new hall_of_fame()
 	var model_evaluation_request = new evaluation_request()
 	var model_entity_service_status = new entity_service_status()
 	//---------------------------------------------------------------
@@ -1025,19 +1024,19 @@ var get_questions_category = function(user, body){
 // Puede filtrar preguntas por servicio o traer todas las preguntas
 var get_questions_category_answered_for_service = function(user, body){
 	var query = `
-		SELECT cq.*, s.rate,
-		(SELECT COUNT(sc.id) FROM stamp.service_comment AS sc WHERE sc.id_service = "${body.id_service}") AS votes
-		FROM stamp.service AS s
-		JOIN stamp.category AS c ON c.id = s.id_category
-		JOIN stamp.category_questions AS cq ON cq.id_category = c.id `
+SELECT 
+cq.*,
+s.rate,
+(SELECT COUNT(sc.id) FROM stamp.service_comment AS sc WHERE sc.id_service = "${body.id_service}") AS votes
+FROM stamp.service AS s
+JOIN stamp.category AS c ON c.id = s.id_category
+JOIN stamp.category_questions AS cq ON cq.id_category = c.id `
 	if(body.id_service != undefined){
 		query += `WHERE s.id = "${body.id_service}";`
 	}else{
 		query += ";"
 	}
-	return model_category_questions.customQuery(query).then(function(result){
-		return {"data": result, "total":result.length}
-	})
+	return model_category_questions.customQuery(query)
 }
 
 var list_institutions_admin = function (user, body) {
@@ -1113,9 +1112,9 @@ var list_empty_user_answers = function (user, body) {
 //
 var get_questiontopic_all = function(user, params){
 	var query = `
-		SELECT q_c.id, q_c.name_questiontopic, u_t.name AS usertype, q_c.name_category
+		SELECT q_c.id, q_c.name_questiontopic, q_c.id_usertype ,u_t.name AS usertype, q_c.id_category, q_c.name_category
 		FROM
-		(SELECT q.id, q.name AS name_questiontopic, q.id_usertype, c.name AS name_category
+		(SELECT q.id, q.name AS name_questiontopic, q.id_usertype, c.id AS id_category ,c.name AS name_category
 		FROM stamp.questiontopic q
 		LEFT JOIN stamp.category c ON q.id_category = c.id) q_c
 		LEFT JOIN stamp.usertype u_t ON q_c.id_usertype = u_t.id;
@@ -1208,7 +1207,6 @@ var get_historical_evaluated_requisite = function(user, body){
 		})
 	}
 }
-
 /**
  * 	Muestra los mensajes de los evaluadores que han rechazado los requisitos,
  *  de tal manera que el servicio queda rechazado por estos rechazos.
@@ -1314,6 +1312,35 @@ var get_chat_messages = function(user, body) {
 	})
 }
 
+	/*
+	 * Lista los user type
+	 */
+	var get_usertype = function (user, params) {
+		return _get(model_usertype,user,params)
+	}
+
+	/*
+	 * Traer los 10 primeros usuarios por mayor puntaje (points) y por rol.
+	 * INTPUT id_role [2,4] [Evaluador, Entidad]
+	 * falta definir permisos, ya que ésto debe desarrollarse de manera automática diariamente
+	 */
+
+	var get_user_for_higher_score_and_role = function(user, params){
+		var query = `
+SELECT u.name, u.points, u.id AS id_user, u_r.id_role
+FROM stamp.user u
+LEFT JOIN stamp.user_role u_r
+ON u.id = u_r.id_user
+WHERE u.points IS NOT NULL AND u_r.id_role = ${params.id_role} ORDER BY u.points DESC LIMIT 10;
+`
+		return model_user.customQuery(query).then((user_ranking) => {
+			return { "ranking": user_ranking, "total": user_ranking.length }
+		})
+	}
+
+	// pueda que se deba comentar el get_user_for_higher_score_and_role si éste solo se accede del desde el servidor como proceso automático
+	getMap.set('user_for_higher_score_and_role', { method: get_user_for_higher_score_and_role, permits: Permissions.ADMIN })
+	getMap.set('usertype', { method: get_usertype, permits: Permissions.NONE })
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
 	getMap.set('questiontopic', { method: get_questiontopic, permits: Permissions.NONE })
@@ -1569,8 +1596,8 @@ var create_points = function(user, body) {
 				// traer puntos del usuario
 				// require body.id_user
 		return get_points_user(user,{id_user: new_points_user.id_user}).then((points_total_user) => {
-			points_total_user = points_total_user.list_points
-			new_points_user.prev_points = (points_total_user[0].result != undefined) ? points_total_user[0].result : 0
+			points_total_user = (points_total_user.total == 0)? [] : points_total_user.list_points
+			new_points_user.prev_points = (points_total_user[0] != undefined) ? points_total_user[0].result : 0
 				var params = []
 				params.filter_field = "id"
 				params.filter_value = new_points_user.id_motives
@@ -1617,6 +1644,21 @@ if(body.name != undefined && body.points != undefined){
 }
 return { message: "debe enviar name y points para nuevo motivo"}
 }
+	
+	/*
+	 * Crear nuevo usertype
+	*/
+	var create_usertype = function(user, body){
+	var params = []
+	if(body.name != undefined){
+		params.name = body.name
+		return model_usertype.create(params).then((okupdate) =>{
+			return { message: "Creado usertype", data : okupdate }
+		})
+	}
+	return { message: "debe enviar name para el usertype "}
+	}
+
 
 /*
 ****
@@ -1709,7 +1751,39 @@ if(params){
 	})
 }
 }
+	/*
+	 * body.id_role[2,4]
+	 */
+	//var update_hall_of_fame = function(){
+	var update_to_hall_of_fame = function(user, body){
+		var query = `
+SELECT u.name, u.points, u.id AS id_user, u_r.id_role
+FROM stamp.user u
+LEFT JOIN stamp.user_role u_r
+ON u.id = u_r.id_user
+WHERE u.points IS NOT NULL AND u_r.id_role = ${body.id_role} ORDER BY u.points DESC LIMIT 10;
+`
+		return model_user.customQuery(query).then((user_ranking) => {
+			return { "ranking": user_ranking, "total": user_ranking.length }
+		}).then((ranking_ok) =>{
+			if(ranking_ok.total > 0 ){
+				ranking_ok = ranking_ok.ranking
+				var ranking_up = { data:[], col_names:["name", "ranking", "points", "id_user", "id_role"]}
+				for(var i in ranking_ok){
+					ranking_up.data.push([
+						ranking_ok[i].name, parseInt(i)+1, ranking_ok[i].points, ranking_ok[i].id_user, ranking_ok[i].id_role	
+					])
+				}
+				return model_hall_of_fame.createMultiple(ranking_up).then(()=>{
+					return { message: `Salón de la fama actualizado para el id_role ${body.id_role}` }
+				})
+			}
+			return { message: `No hay usuarios con el id_role ${body.id_role} para subir al salón de la fama` }
+		})
+	}
 
+	postMap.set('users_up_in_hall_of_fame', { method: update_to_hall_of_fame, permits: Permissions.ADMIN })
+	postMap.set('usertype', { method: create_usertype, permits: Permissions.ADMIN })
 	postMap.set('service', { method: create_entity_service, permits: Permissions.ADMIN })
 	postMap.set('category', { method: create_category, permits: Permissions.ADMIN })
 	postMap.set('questiontopic', { method: create_questiontopic, permits: Permissions.ADMIN })
@@ -1857,19 +1931,47 @@ if(params){
 	}
 
 	/*
+	 * Actualiza un usertype
+	 */
+	var update_usertype = function (user, body) {
+		if (!body.id) {
+			throw utiles.informError(400)
+		}
+		return model_usertype.update(body,{id:body.id}).then((okupdate) =>{
+			return { message: "Update exitoso", data: okupdate }
+		})
+	}
+
+	/*
 	 * body.id
 	 * body.points
 	 */
 	var update_motives = function(user, body){
-		if(body.id != undefined && body.points != undefined){
-			var query=`UPDATE motives m SET m.points=${parseInt(body.points)} WHERE m.id=${parseInt(body.id)};`
+		/*if(body.id != undefined && body.points != undefined){
+			var query=`UPDATE motives m SET m.points=${parseInt(body.points)} m.name="${body.name}" WHERE m.id=${parseInt(body.id)};`
 			return model_motives.customQuery(query).then(() =>{
 				return { message: "Motivo update" }
 			})
+		}*/
+		if (!body.id){
+			throw utiles.informError(400)
 		}
-		return { message: "no se pudo actualizar los puntos del motivo" }
+		return model_motives.update(body, {id:body.id}).then((okupdate) => {
+			return { message : "Update exitoso", data : okupdate }
+		})
+		//return { message: "no se pudo actualizar los puntos del motivo" }
 	}
 
+	var update_category_question = function(user, body){
+		if (!body.id){
+			throw utiles.informError(400)
+		}
+		return model_category_questions.update(body, {id:body.id}).then((okupdate) =>{
+			return { message: "Update exitoso", data: okupdate }
+		})
+	}
+
+	putMap.set('usertype', { method: update_usertype, permits: Permissions.ADMIN })
 	putMap.set('service', { method: update_entity_service, permits: Permissions.ADMIN })
 	putMap.set('category', { method: update_category, permits: Permissions.ADMIN })
 	putMap.set('questiontopic', { method: update_questiontopic, permits: Permissions.ADMIN })
@@ -1877,6 +1979,7 @@ if(params){
 	putMap.set('type', { method: update_type, permits: Permissions.ADMIN })
 	putMap.set('question', { method: update_question, permits: Permissions.ADMIN })
 	putMap.set('motives', { method: update_motives, permits: Permissions.ADMIN })
+	putMap.set('category_question', { method: update_category_question, permits: Permissions.ADMIN })
 	
 	/**
 	 * @api {delete} api/service/service Delete service information
