@@ -553,13 +553,13 @@ WHERE s.id_category = ${params.id_category}\n`
 				JOIN stamp.service AS s ON s.id_institution = iu.id_institution
 				JOIN stamp.service_status AS ss ON ss.id_service = s.id
 				JOIN stamp.category AS c ON c.id = s.id_category
-				WHERE u.id = ${user.id} AND s.current_status = 8;`
-				return model_institution.customQuery(query)
-		}
+				WHERE u.id = ${params.id_institution} AND s.current_status = 8;`
+		return model_institution.customQuery(query).then(function(result){
+			return {"data": result, "total": result.length}
+		})
+	}
 
-
-		
-		var list_rejected_services = function(user, params) {
+	var list_rejected_services = function(user, params) {
 				var query = `
 SELECT 
 s.name AS name, 
@@ -725,9 +725,10 @@ WHERE join2.current_status_service >= 2 AND join2.current_status_service <= 6
 			stamp.user.timestamp AS timestamp
 			FROM stamp.user
 			JOIN stamp.user_role ON stamp.user_role.id_user = stamp.user.id
-			WHERE stamp.user_role.id_role = 1
-;`
-			return model_entity_service.customQuery(query)
+			WHERE stamp.user_role.id_role = ${body.id_role};`
+			return model_entity_service.customQuery(query).then(function(result){
+				return {"data": result, "total": result.length}
+			})
 	}
 
 	var list_postulations_admin = function(user, body) {
@@ -957,20 +958,16 @@ var get_all_services = function (token, params){
 	}
 
 var get_institution_service = function (user, body) {
-	var query = `
-SELECT 
-s.*,
-c.name AS category,
-ss.level AS level,
-st.name AS status
-FROM stamp.institution AS i
-JOIN stamp.service AS s ON s.id_institution = i.id
-JOIN stamp.category AS c ON c.id = s.id_category
-JOIN stamp.service_status AS ss ON ss.id_service = s.id
-JOIN stamp.status AS st ON st.id = ss.id_status
-WHERE i.id = "${body.id_institution}"
-;`
-	return model_service.customQuery(query)
+	var query = ` SELECT s.*, c.name AS category, ss.level AS level, st.name AS status
+			FROM stamp.institution AS i
+			JOIN stamp.service AS s ON s.id_institution = i.id
+			JOIN stamp.category AS c ON c.id = s.id_category
+			JOIN stamp.service_status AS ss ON ss.id_service = s.id
+			JOIN stamp.status AS st ON st.id = ss.id_status
+			WHERE i.id = "${body.id_institution}";`
+	return model_service.customQuery(query).then(function(result){
+		return {"data": result, "total": result.length}
+	})
 }
 
 var get_institution_service_certified = function (user, body) {
