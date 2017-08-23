@@ -566,6 +566,24 @@ WHERE s.id_category = ${params.id_category}\n`
 		return model_institution.customQuery(query)
 	}
 
+	var list_certified_services_admin = function(user, params) {
+		var query = `
+			SELECT 
+			s.name AS name, 
+			c.name as category, 
+			ss.level AS level, 
+			s.timestamp
+			FROM stamp.user AS u
+			JOIN stamp.institution_user AS iu ON iu.id_user = u.id
+			JOIN stamp.service AS s ON s.id_institution = iu.id_institution
+			JOIN stamp.service_status AS ss ON ss.id_service = s.id
+			JOIN stamp.category AS c ON c.id = s.id_category
+			WHERE u.id = ${body.id_institution}
+			AND s.current_status = 8;
+		`
+		return model_institution.customQuery(query)
+	}
+
 	var list_rejected_services = function(user, params) {
 		var query = `
 			SELECT 
@@ -1355,6 +1373,32 @@ WHERE u.points IS NOT NULL AND u_r.id_role = ${params.id_role} ORDER BY u.points
 		})
 	}
 
+	var list_evaluator_services = function(user, body) {
+		var query = `
+			SELECT 
+			er.id AS id_evaluation_request,
+			s.id AS id_service,
+			s.id_question AS id_question,
+			i.name AS name,
+			ua.id_question AS id_question,
+			st.name AS status,
+			er.timestamp AS timestamp,
+			c.name AS category,
+			ss.level AS level
+			FROM stamp.evaluation_request AS er
+			JOIN stamp.user_answer AS ua ON (ua.id_question = er.id_question AND ua.id_service = er.id_service)
+			JOIN stamp.user AS u ON u.id = ua.id_user
+			JOIN stamp.institution_user AS iu ON iu.id_user = u.id
+			JOIN stamp.institution AS i ON i.id = iu.
+			JOIN stamp.service AS s ON s.id = er.id_service
+			JOIN stamp.service_status AS ss ON ss.id_service = s.id
+			JOIN stamp.status AS st ON st.id = ss.id_status
+			JOIN stamp.categoty AS c ON c.id = s.id_category
+			WHERE er.id_user = ${body.id_user};
+		`
+		return model_user.customQuery(query)
+	}
+
 	// pueda que se deba comentar el get_user_for_higher_score_and_role si éste solo se accede del desde el servidor como proceso automático
 	getMap.set('user_for_higher_score_and_role', { method: get_user_for_higher_score_and_role, permits: Permissions.ADMIN })
 	getMap.set('usertype', { method: get_usertype, permits: Permissions.NONE })
@@ -1370,6 +1414,7 @@ WHERE u.points IS NOT NULL AND u_r.id_role = ${params.id_role} ORDER BY u.points
 	getMap.set('list_institutions', { method: get_filtered_list_institutions, permits: Permissions.NONE })
 	getMap.set('table_institutions', { method: get_filtered_list_institutions_csv, permits: Permissions.NONE })
 	getMap.set('list_certified_services', { method: list_certified_services, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('list_certified_services_admin', { method: list_certified_services_admin, permits: Permissions.ADMIN })
 	getMap.set('list_rejected_services', { method: list_rejected_services, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('list_in_progress_services', { method: list_in_progress_services, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('service_info', { method: get_service_info, permits: Permissions.ENTITY_SERVICE })
@@ -1402,6 +1447,7 @@ WHERE u.points IS NOT NULL AND u_r.id_role = ${params.id_role} ORDER BY u.points
 	getMap.set('list_empty_user_answers', { method: list_empty_user_answers, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('questiontopic_all', { method: get_questiontopic_all, permits: Permissions.NONE })
 	getMap.set('historical_evaluated_requisite', { method: get_historical_evaluated_requisite, permits: Permissions.NONE })
+	//getMap.set('list_evaluator_services', { method: list_evaluator_services, permits: Permissions.ADMIN })
 
 	/**
 	 * @api {post} api/service/service Create service information
