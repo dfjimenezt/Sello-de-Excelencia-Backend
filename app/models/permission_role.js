@@ -2,7 +2,7 @@
  * permission_role
  * [{"Field":"id_role","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_permission","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""}]
  * DMT 2017
- * GENERATED: 22 / 8 / 2017 - 9:41:42
+ * GENERATED: 24 / 8 / 2017 - 18:2:54
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')

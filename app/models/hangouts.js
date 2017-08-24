@@ -2,7 +2,7 @@
  * hangouts
  * [{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"title","Type":"varchar(512)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"url","Type":"varchar(512)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"description","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"id_role","Type":"tinyint(4)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"activation_date","Type":"timestamp","Null":"YES","Key":"","Default":null,"Extra":""}]
  * DMT 2017
- * GENERATED: 22 / 8 / 2017 - 9:41:42
+ * GENERATED: 24 / 8 / 2017 - 18:2:54
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')

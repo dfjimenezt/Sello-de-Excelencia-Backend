@@ -2,7 +2,7 @@
  * config
  * [{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"header","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"address","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"postal_code","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"phone","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"free_phone","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"anticorruption_phone","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"email_PQRS","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"schedulle","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""}]
  * DMT 2017
- * GENERATED: 22 / 8 / 2017 - 9:41:42
+ * GENERATED: 24 / 8 / 2017 - 18:2:54
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')

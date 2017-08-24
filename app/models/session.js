@@ -2,7 +2,7 @@
  * session
  * [{"Field":"id_user","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"agent","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"ip","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"token","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"expires","Type":"datetime","Null":"YES","Key":"","Default":null,"Extra":""}]
  * DMT 2017
- * GENERATED: 22 / 8 / 2017 - 9:41:42
+ * GENERATED: 24 / 8 / 2017 - 18:2:54
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')

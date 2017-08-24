@@ -2,7 +2,7 @@
  * service
  * [{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"name","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"url","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"id_category","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_institution","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_user","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"hash","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"rate","Type":"float(4,3)","Null":"NO","Key":"","Default":"3.000","Extra":""},{"Field":"test_user","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"test_password","Type":"varchar(255)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"is_active","Type":"tinyint(1)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"is_product","Type":"tinyint(1)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"is_service","Type":"tinyint(1)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"timestamp","Type":"timestamp","Null":"NO","Key":"","Default":"CURRENT_TIMESTAMP","Extra":""},{"Field":"current_status","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"datetime","Type":"timestamp","Null":"YES","Key":"","Default":null,"Extra":""}]
  * DMT 2017
- * GENERATED: 22 / 8 / 2017 - 9:41:42
+ * GENERATED: 24 / 8 / 2017 - 18:2:54
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')

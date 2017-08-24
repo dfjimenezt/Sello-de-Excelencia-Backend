@@ -2,7 +2,7 @@
  * faq
  * [{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"question","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"answer","Type":"text","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"active","Type":"tinyint(1)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"timestamp","Type":"timestamp","Null":"NO","Key":"","Default":"CURRENT_TIMESTAMP","Extra":""}]
  * DMT 2017
- * GENERATED: 22 / 8 / 2017 - 9:41:42
+ * GENERATED: 24 / 8 / 2017 - 18:2:54
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
