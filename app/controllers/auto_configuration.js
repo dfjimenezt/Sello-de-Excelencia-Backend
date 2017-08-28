@@ -928,6 +928,22 @@ LEFT JOIN stamp.category c ON q.id_category = c.id
 		return model_availability.update(body,{id:body.id})
 	}
 	/**
+	 * @api {put} api/configuration/level Update level information
+	 * @apiName Putlevel
+	 * @apiGroup configuration
+	 * @apiVersion 1.0.1
+	 * 
+	 * @apiParam {Number} id 
+	 * @apiParam {String} name 
+ 	 * 
+	 */
+	var update_level = function (user, body) {
+		if (!body.id) {
+			throw utiles.informError(400)
+		}
+		return model_level.update(body,{id:body.id})
+	}
+	/**
 	 * @api {put} api/configuration/user_category Update user_category information
 	 * @apiName Putuser_category
 	 * @apiGroup configuration
