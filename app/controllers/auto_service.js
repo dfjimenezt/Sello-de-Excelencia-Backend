@@ -1400,6 +1400,265 @@ WHERE u.points IS NOT NULL AND u_r.id_role = ${params.id_role} ORDER BY u.points
 		return model_user.customQuery(query)
 	}
 
+	var send_notification1_entity = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Solicitud postulación Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Estimado Usuario:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la solicitud de postulación para el Sello de Excelencia Gobierno Digital ha sido recibida bajo las siguientes características: 
+	- Categoría: ${params.category}
+	- Nivel: ${params.level}
+	- Número de Registro: ${params.id_service}
+	- Entidad:  ${params.name_institution}
+	- Fecha de Postulación: ${params.date}
+Próximamente se le notificará si su postulación ha sido aceptada.`
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification2_entity = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Solicitud ajustes de postulación Sello de Excelencia Gobierno Digital Colombia'
+		let requisites = ''
+		//for(var i in params.requisites){TODO: Crear lista de requisitos}
+		let body = `Estimado Usuario:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la solicitud de postulación del Sello de Excelencia Gobierno Digital con número de registro ${params.id_service}, no cumple con los siguientes requisitos habilitantes para aceptar su postulación:
+${requisites}	 
+A partir de este momento, tiene un plazo máximo de cinco (5) días para subsanar las inconsistencias identificadas. En caso contrario, la postulación no será aceptada en la plataforma del Sello de Excelencia Gobierno Digital.
+Para realizar la subsanación, por favor ingrese al siguiente link.` // TODO: El link cuál es?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification3_entity = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Aceptación Postulación Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Estimado Usuario:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la postulación con las siguientes características ha sido aceptada: 
+	- Categoría: ${params.category}
+	- Nivel: ${params.level}
+	- Número de Registro: ${params.id_service}
+	- Entidad:  ${params.name_institution}
+	- Fecha de Postulación: ${params.date}
+La plataforma del Sello de Excelencia Gobierno digital, asignará automáticamente al evaluador los requisitos que deberán evaluar y validar. 
+A partir de este momento se da inicio al ciclo de evaluación y retroalimentación.`
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification4_entity = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Retroalimentación Postulación Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Estimado Usuario:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la postulación del producto con número de registro: ${params.id_service} tiene una solicitud de ajuste por parte de los evaluadores.
+Favor ingresar a la plataforma del Sello de Excelencia Gobierno Digital en el siguiente link, para dar solución al requerimiento solicitado.` // TODO: cuál link?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification5_entity = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Otorgamiento Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Estimado Usuario:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la postulación del producto con número de registro: ${params.id_service} cumple con el 100% de los requisitos del Sello de Excelencia Gobierno Digital Colombia, por lo tanto, ha sido certificado en el nivel ${params.level}.
+Recuerde que tiene una vigencia de ${params.vigency} años.
+Se adjunta con el presente correo, el certificado de reconocimiento del Sello de Excelencia Gobierno Digital y las instrucciones para su uso.
+Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification6_entity = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'No otorgamiento certificación Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Estimado Usuario:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la postulación del producto con número de registro: ${params.id_service} para el Sello de Excelencia Gobierno Digital Colombia, no cumple con el 100% de los requisitos, por lo tanto no ha sido certificado en el nivel ${params.level}.
+Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification7_entity = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Renovación certificación Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Estimado Usuario:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la certificación del producto con número de registro: ${params.id_service} del Sello de Excelencia Gobierno Digital, está próxima a vencerse. Lo invitamos a presentar la solicitud de renovación a través de la plataforma web del Sello de Excelencia en el siguiente link.` // TODO: cuál link?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification8_evaluator = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Asignación de requisitos Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Estimado evaluador:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que tiene asignado un requisito del Sello de Excelencia de Gobierno Digital para su evaluación y validación. Solicitamos que ingrese a la plataforma web del Sello de Excelencia Gobierno Digital para la aceptación del mismo.
+A partir de la aceptación del requisito, se inicia el ciclo de evaluación y retroalimentación. Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification9_evaluator = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Vencimiento evaluación de requisitos Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Estimado Evaluador:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que tiene diez (10) días para evaluar el requisito del Sello de Excelencia Gobierno Digital. Solicitamos que ingrese a la plataforma web del Sello de Excelencia Gobierno Digital para la aceptación y evaluación del mismo. 
+A partir de la aceptación del requisito se inicia el ciclo de evaluación y retroalimentación. Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification10_evaluator = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Retroalimentación postulación Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Estimado Usuario:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la solicitud de ajuste ha sido solucionada por la Entidad.
+Favor ingresar a la plataforma web del Sello de Excelencia Gobierno Digital Colombia para su revisión, en el siguiente link Ruta de la plataforma.` // TODO: cuál link? cuál ruta de la plataforma?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification11_admin = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Verificación Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Señores Secretaría técnica del Comité del Sello de Excelencia:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que recibió una postulación para el Sello de Excelencia Gobierno Digital bajo las siguientes características: 
+	- Categoría: ${params.category}
+	- Nivel: ${params.level}
+	- Número de Registro: ${params.id_service}
+	- Entidad:  ${params.name_institution}
+	- Fecha de Postulación: ${params.date}
+A partir de este momento, cuenta con un plazo máximo de cinco (5) días para validar la veracidad de la información.  Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification12_admin = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Rechazo de Asignación Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Señores Secretaría técnica del Comité del Sello de Excelencia:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que se han registrado tres (3) rechazos de asignación de evaluación de requisitos para el Sello de Excelencia Gobierno Digital. 
+	- Categoría: ${params.category}
+	- Nivel: ${params.level}
+	- Número de Registro: ${params.id_service}
+	- Entidad:  ${params.name_institution}
+	- Fecha de Postulación: ${params.date}
+Favor ingresar a la plataforma web del Sello de Excelencia Gobierno Digital Ruta de la plataforma y realizar la debida asignación o evaluación del requisito.` // TODO: cuál ruta de la plataforma?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification13_admin = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Vencimiento evaluación Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Señores Secretaría técnica del Comité del Sello de Excelencia:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que se acerca la fecha de vencimiento para la evaluación de requisitos para el Sello de Excelencia Gobierno Digital. 
+	- Categoría: ${params.category}
+	- Nivel: ${params.level}
+	- Número de Registro: ${params.id_service}
+	- Entidad:  ${params.name_institution}
+	- Fecha de Postulación: ${params.date}
+Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification14_admin = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Vencimiento Retroalimentación Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Señores Secretaría técnica del Comité del Sello de Excelencia:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que se acerca la fecha de vencimiento de la retroalimentación de requisitos para el Sello de Excelencia Gobierno Digital. 
+	- Categoría: ${params.category}
+	- Nivel: ${params.level}
+	- Número de Registro: ${params.id_service}
+	- Entidad:  ${params.name_institution}
+	- Fecha de Postulación: ${params.date}
+Para más información, por favor consultar el siguiente link.` // TODO: cuál link?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var send_notification15_admin = function (params) {
+		let to = params.email
+		let cc = null
+		let bcc = null
+		let subject = 'Vencimiento Vigencia Sello de Excelencia Gobierno Digital Colombia'
+		let body = `Señores Secretaría técnica del Comité del Sello de Excelencia:
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que se acerca la fecha de vencimiento de la vigencia del Sello de Excelencia Gobierno Digital. 
+	- Categoría: ${params.category}
+	- Nivel: ${params.level}
+	- Número de Registro: ${params.id_service}
+	- Entidad:  ${params.name_institution}
+	- Fecha de Postulación: ${params.date}
+	- Vigencia: ${params.vigency} Años
+Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+		let attachment = null
+		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
+	}
+
+	var list_evaluators_admin = function (user, body) {
+		var result1
+		var total
+		var query = `
+			SELECT
+			u.id AS id_user,
+			CONCAT(u.name + ' ' + u.lastname) AS name,
+			u.points AS points,
+			u.timestamp AS date,
+			u.alert AS alert
+			FROM stamp.user AS u
+			JOIN stamp.user_role AS ur ON ur.id_user = u.id
+			WHERE ur.id_role = 2 # Evaluador
+			ORDER BY u.points;
+		`
+		return model_service.customQuery(query).then((results) => {
+			result1 = results
+			query = `
+				SELECT 
+				c.name AS category
+				FROM stamp.user AS u
+				JOIN stamp.user_role AS ur ON ur.id_user = u.id
+				JOIN stamp.user_category AS uc ON uc.id_user = u.id
+				JOIN stamp.category AS c ON c.id = uc.id_category
+				WHERE ur.id_role = 2 # Evaluador
+				ORDER BY u.points;
+			` 
+			return model_service.customQuery(query).then((categories) => {
+				total = []
+				for(var i=0; i<result1.length; i++) {
+					total.push({user: result1[i], category: categories[i]})
+				}
+				return total
+			})
+		})
+	}
+
 	// pueda que se deba comentar el get_user_for_higher_score_and_role si éste solo se accede del desde el servidor como proceso automático
 	getMap.set('user_for_higher_score_and_role', { method: get_user_for_higher_score_and_role, permits: Permissions.ADMIN })
 	getMap.set('usertype', { method: get_usertype, permits: Permissions.NONE })
@@ -1448,6 +1707,7 @@ WHERE u.points IS NOT NULL AND u_r.id_role = ${params.id_role} ORDER BY u.points
 	getMap.set('list_empty_user_answers', { method: list_empty_user_answers, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('questiontopic_all', { method: get_questiontopic_all, permits: Permissions.NONE })
 	getMap.set('historical_evaluated_requisite', { method: get_historical_evaluated_requisite, permits: Permissions.NONE })
+	getMap.set('list_evaluators_admin', { method: list_evaluators_admin, permits: Permissions.ADMIN })
 	//getMap.set('list_evaluator_services', { method: list_evaluator_services, permits: Permissions.ADMIN })
 
 	/**

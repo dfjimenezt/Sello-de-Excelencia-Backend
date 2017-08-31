@@ -1270,6 +1270,7 @@ var question_controller = function () {
 						WHERE er.id_evaluation_request = ${body.id_evaluation_request};
 					`
 				}
+				// TODO: Agregar envío de notificación 8 a evaluador
 				return model_request_status.customQuery(query).then(() => {
 					return {message: "Requisito fue asignado exitosamente"}
 				})
