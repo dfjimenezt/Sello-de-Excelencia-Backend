@@ -658,7 +658,7 @@ WHERE stamp.service_comment.id_service = ${params.id_service}
 			var query1 = `
 SELECT stamp.service.name AS name_service,
 stamp.category.name AS name_category,
-stamp.service.id_level AS level,
+stamp.service_status.level AS level,
 stamp.service.timestamp AS date_postulation,
 stamp.service.url AS url,
 stamp.service_status.id_status AS status,
@@ -668,7 +668,9 @@ JOIN stamp.service_status on stamp.service_status.id_service = stamp.service.id
 JOIN stamp.category ON stamp.service.id_category = stamp.category.id
 JOIN stamp.institution ON stamp.service.id_institution = stamp.institution.id
 WHERE stamp.service.id = ${params.id_service};`
-			return model_institution.customQuery(query1)
+			return model_institution.customQuery(query1).then((res) => {
+				return {data: res, total: res.length}
+			})
 	}
 
     /* Se listará los servicios elegibles a evaluar, finalmente, solo deben ser mostradas
@@ -1654,7 +1656,7 @@ Para mayor información, por favor consultar el siguiente <p><a href='http://www
 				for(var i=0; i<result1.length; i++) {
 					total.push({user: result1[i], category: categories[i]})
 				}
-				return total
+				return {data: total, total: total.length}
 			})
 		})
 	}
@@ -1710,40 +1712,6 @@ Para mayor información, por favor consultar el siguiente <p><a href='http://www
 	getMap.set('list_evaluators_admin', { method: list_evaluators_admin, permits: Permissions.ADMIN })
 	//getMap.set('list_evaluator_services', { method: list_evaluator_services, permits: Permissions.ADMIN })
 
-	/**
-	 * @api {post} api/service/service Create service information
-	 * @apiName Postservice
-	 * @apiGroup service
-	 * @apiVersion 1.0.1
-	 * 
-	 * @apiParam {Number} id 
-	 * @apiParam {String} name 
-	 * @apiParam {Text} url 
-	 * @apiParam {Number} id_category 
-	 * @apiParam {Number} id_institution 
-	 * @apiParam {Number} id_user 
-	 * @apiParam {String} hash 
-	 * @apiParam {Number} rate 
-	 * @apiParam {String} test_user 
-	 * @apiParam {String} test_password 
-	 * @apiParam {Boolean} is_active 
-	 * @apiParam {Boolean} is_product 
-	 * @apiParam {Boolean} is_service 
-	 * @apiParam {Date} timestamp 
-	 * @apiParam {Number} current_status 
-	 * @apiParam {Date} datetime 
-	 * @apiParam {Array} roles 
-	 * @apiParam {Object} category 
-	 * @apiParam {Object} institution 
-	 * @apiParam {Array} history 
-	 * @apiParam {Object} status 
-	 * @apiParam {Array} comments 
-	 * @apiParam {Array} requirements 
- 	 * 
-	 */
-	var create_entity_service = function (user, body) {
-		return model_entity_service.create(body)
-	}
 	/**
 	 * @api {post} api/service/category Create category information
 	 * @apiName Postcategory
@@ -1901,7 +1869,7 @@ Para mayor información, por favor consultar el siguiente <p><a href='http://www
 					id_media: media.insertId,
 					id_topic: body.id_topic,
 					id_service: body.id_service,
-					// comment: body.comment, TODO: ADD TO user_answer
+					comment: body.comment,
 					id_status: "1"
 				}
 				return model_user_answer.update(ua_body, {id:body.id_user_answer})
@@ -1911,7 +1879,7 @@ Para mayor información, por favor consultar el siguiente <p><a href='http://www
 					SELECT *
 					FROM stamp.user_answer AS ua
 					WHERE (ua.id_media IS NULL OR ua.id_status = 0)
-					AND id_service = ${body.id_service};
+					AND ua.id_service = ${body.id_service};
 				`
 				return model_user_answer.customQuery(query).then((incompletos) => {
 					// Cambiar estado del servicio

@@ -295,7 +295,7 @@ var Auth = function() {
                                 id_user: user.insertId,
                                 id_role: parseInt(body.role)
                             })
-                            // add the role manually reduce time
+                        // add the role manually reduce time
                         user.role = body.role
 
                         switch (body.role) {

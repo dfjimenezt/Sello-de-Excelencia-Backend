@@ -476,7 +476,9 @@ var question_controller = function () {
 				WHERE er.id_user = ${user.id}
 				AND er.id_request_status = 2 # Solicitado;
 			`
-			return model_entity_service.customQuery(query)
+			return model_entity_service.customQuery(query).then((res) => {
+				return {data: res, total: res.length}
+			})
 		}
 	
 		var get_services_in_process = function (user, body) {
@@ -883,7 +885,7 @@ var question_controller = function () {
 		var check_service_upgrade = function(user, body, level) {
 			// Traer requisitos de un servicio con status <= level
 			query = `
-				SELECT COUNT(ua.id)
+				SELECT COUNT(ua.id) AS total
 				FROM stamp.user_answer AS ua
 				WHERE ua.id_service = ${body.id_service}
 				AND (ua.id_status < ${level} OR ua.id_status = 10);
@@ -937,7 +939,7 @@ var question_controller = function () {
 				case "1": // Aceptar evaluar el requisito
 					var query = `
 						UPDATE stamp.evaluation_request AS er
-						SET er.id_request_status = 3 # Aceptado
+						SET er.id_request_status = 4 # Aceptado
 						WHERE er.id = ${body.id_evaluation_request};
 					`
 					return model_request_status.customQuery(query).then(() => {
@@ -971,7 +973,7 @@ var question_controller = function () {
 				default: // Rechazar evaluar el requisito
 					var query = `
 						UPDATE stamp.evaluation_request AS er
-						SET er.id_request_status = 4 # Rechazado
+						SET er.id_request_status = 5 # Rechazado
 						WHERE er.id = ${body.id_evaluation_request};
 					`
 					return model_request_status.customQuery(query).then(() => {
@@ -988,8 +990,8 @@ var question_controller = function () {
 							query = `
 								SELECT COUNT(er.id) AS total
 								FROM stamp.evaluation_request AS er
-								WHERE er.id_user = ${body.id_user}
-								AND er.id_request_status = 4; # Rechazadas por evaluador
+								WHERE er.id_user = ${user.id}
+								AND er.id_request_status = 5; # Rechazadas por evaluador
 							`
 							return model_request_status.customQuery(query).then((rejects_user) => {
 								// Verificar si se debe generar alerta por rechazos del requisito
@@ -997,13 +999,13 @@ var question_controller = function () {
 									query = `
 										UPDATE stamp.user AS u
 										SET u.alert = 1
-										WHERE u.id = ${body.id_user};
+										WHERE u.id = ${user.id};
 									`
 								} else {
 									query = `
 										SELECT u.id
 										FROM stamp.user AS u
-										WHERE u.id = ${body.id_user};
+										WHERE u.id = ${user.id};
 									`
 								}
 								return model_request_status.customQuery(query).then(() => {
@@ -1014,7 +1016,7 @@ var question_controller = function () {
 										WHERE er.id_service = ${body.id_service}
 										AND er.id_question = ${body.id_question}
 										AND er.branch = ${body.branch}
-										AND er.id_request_status = 4; # Rechazadas
+										AND er.id_request_status = 5; # Rechazadas
 									`
 									return model_request_status.customQuery(query).then((rejected_rqsts) => {
 										// Verificar si se debe generar alerta por rechazos del requisito
@@ -1030,15 +1032,15 @@ var question_controller = function () {
 												query = `
 													SELECT st.pre_end AS pre_end, st.duration AS duration
 													FROM stamp.status AS st
-													WHERE st.id = 2 # Asignación
-													AND st.alert = 1
+													WHERE st.id = 2; # Asignación
+													#AND st.alert = 1
 												`
 												return model_request_status.customQuery(query).then((dates) => {
 													var dumy_date
 													end_date = new Date()
-													end_date.setDate(end_date.getDate() + dates[0].duration) // Agregar la duración de la etapa
+													end_date.setDate(end_date.getDate() + dates[0][0].duration) // Agregar la duración de la etapa
 													alert_date = new Date()
-													alert_date.setDate(end_date.getDate() - dates[0].pre_end) // Restar el tiempo previo para alertar
+													alert_date.setDate(end_date.getDate() - (dates[0][0].pre_end || 0)) // Restar el tiempo previo para alertar
 													end_date = end_date.toISOString()
 													dumy_date = end_date.split('T')
 													end_date = dumy_date[0]
@@ -1073,7 +1075,7 @@ var question_controller = function () {
 												end_date = new Date()
 												end_date.setDate(end_date.getDate() + dates[0].duration) // Agregar la duración de la etapa
 												alert_date = new Date()
-												alert_date.setDate(end_date.getDate() - dates[0].pre_end) // Restar el tiempo previo para alertar
+												alert_date.setDate(end_date.getDate() - (dates[0].pre_end || 0)) // Restar el tiempo previo para alertar
 												end_date = end_date.toISOString()
 												dumy_date = end_date.split('T')
 												end_date = dumy_date[0]
@@ -1169,15 +1171,15 @@ var question_controller = function () {
 					var query = `
 						UPDATE stamp.user_answer AS ua
 						SET ua.id_status = 3 # Aceptación
-						WHERE er.id_service = ${body.id_service}
-						AND er.id_question = ${body.id_question};
+						WHERE ua.id_service = ${body.id_service}
+						AND ua.id_question = ${body.id_question};
 					`
 					return model_request_status.customQuery(query).then(() => {
 						return check_service_upgrade(user, body, 3).then(() => {
 							// Crear 3 branches en evaluation_request
 							query = `
 								SET FOREIGN_KEY_CHECKS=0;
-								INSERT INTO stamp.evaluation_request AS er
+								INSERT INTO stamp.evaluation_request# AS er
 								(id_question, id_service, id_request_status, branch) VALUES
 								("${body.id_question}", "${body.id_service}", "1", "1"),
 								("${body.id_question}", "${body.id_service}", "1", "2"),
@@ -1189,15 +1191,15 @@ var question_controller = function () {
 								query = `
 									SELECT st.pre_end AS pre_end, st.duration AS duration
 									FROM stamp.status AS st
-									WHERE st.id = 3 # Aceptación
-									AND st.alert = 1
+									WHERE st.id = 3; # Aceptación
+									#AND st.alert = 1;
 								`
 								return model_request_status.customQuery(query).then((dates) => {
 									var dumy_date
 									end_date = new Date()
-									end_date.setDate(end_date.getDate() + dates[0].duration) // Agregar la duración de la etapa
+									end_date.setDate(end_date.getDate() + dates[0][0].duration) // Agregar la duración de la etapa
 									alert_date = new Date()
-									alert_date.setDate(end_date.getDate() - dates[0].pre_end) // Restar el tiempo previo para alertar
+									alert_date.setDate(end_date.getDate() - (dates[0][0].pre_end || 0)) // Restar el tiempo previo para alertar
 									end_date = end_date.toISOString()
 									dumy_date = end_date.split('T')
 									end_date = dumy_date[0]
@@ -1212,7 +1214,7 @@ var question_controller = function () {
 										AND er.id_question = ${body.id_question};
 									`
 									return model_request_status.customQuery(query).then(() => {
-										return {message: "Requisito fue rechazado exitosamente"}
+										return {message: "Requisito fue aceptado exitosamente"}
 									})
 								})
 							})
