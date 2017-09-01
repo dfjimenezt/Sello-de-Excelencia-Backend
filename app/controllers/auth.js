@@ -77,7 +77,7 @@ var Auth = function() {
                 return userModel.update({ password: user.password }, { id: user.id }).then(() => {
                     let template = `<p>Hola ${user.name} <\p>
                     <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia <\p>
-                    <p>Tu nueva contraseña para acceder es: ${body.password_new} <\p><p><\p>
+                    <p>Tu nueva contraseña para acceder es: ${body.password_new} <\p>
                     <p>Nuestros mejores deseos,<\p>
                     <p>El equipo del Sello de Excelencia<\p>`
                     utiles.sendEmail(user.email, null, null, "Cambio de Contraseña", template)
@@ -317,7 +317,7 @@ var Auth = function() {
                         let template = `
                         <p> Hola ${body.name} </p>
                         <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia </p>
-                        <p>Tu nueva contraseña para acceder es: ${pass_user} </p><p></p>
+                        <p>Tu nueva contraseña para acceder es: ${pass_user} </p>
                         <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}&active=1'>Haz click aquí para activar tu cuenta </a></p>
                         <p><a href='http://localhost:3000/api/auth/activate?token=${token}&email=${body.email}&active=1'> Haz click aqui para activar tu cuenta(localhost only dbg) </a> </p>
                         <p>Nuestros mejores deseos,</p>
@@ -369,7 +369,7 @@ var Auth = function() {
                 return userModel.update({ password: user.password }, { id: user.id }).then(() => {
                     let template = `<p> Hola ${user.name} <\p>
                     <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia <\p>
-                    <p>Tu nueva contraseña para acceder es: ${pass_user} <\p><p><\p>
+                    <p>Tu nueva contraseña para acceder es: ${pass_user} <\p>
                     <p>Nuestros mejores deseos,<\p>
                     <p>El equipo del Sello de Excelencia <\p>`
                     utiles.sendEmail(user.email, null, null, "Cambio de Contraseña", template)

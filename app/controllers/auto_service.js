@@ -1458,7 +1458,7 @@ A partir de este momento se da inicio al ciclo de evaluación y retroalimentaci�
 		let subject = 'Retroalimentación Postulación Sello de Excelencia Gobierno Digital Colombia'
 		let body = `Estimado Usuario:
 El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la postulación del producto con número de registro: ${params.id_service} tiene una solicitud de ajuste por parte de los evaluadores.
-Favor ingresar a la plataforma del Sello de Excelencia Gobierno Digital en el siguiente link, para dar solución al requerimiento solicitado.` // TODO: cuál link?
+Favor ingresar a la plataforma del Sello de Excelencia Gobierno Digital en el siguiente <p><a href='http://www.sellodeexcelencia.gov.co/#!/'>link </a></p>, para dar solución al requerimiento solicitado.` // TODO: cuál link?
 		let attachment = null
 		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
 	}
@@ -1472,7 +1472,7 @@ Favor ingresar a la plataforma del Sello de Excelencia Gobierno Digital en el si
 El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la postulación del producto con número de registro: ${params.id_service} cumple con el 100% de los requisitos del Sello de Excelencia Gobierno Digital Colombia, por lo tanto, ha sido certificado en el nivel ${params.level}.
 Recuerde que tiene una vigencia de ${params.vigency} años.
 Se adjunta con el presente correo, el certificado de reconocimiento del Sello de Excelencia Gobierno Digital y las instrucciones para su uso.
-Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+Para mayor información, por favor consultar el siguiente <p><a href='http://www.sellodeexcelencia.gov.co/#!/'>link</a></p>.` // TODO: cuál link?
 		let attachment = null
 		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
 	}
@@ -1484,7 +1484,7 @@ Para mayor información, por favor consultar el siguiente link.` // TODO: cuál 
 		let subject = 'No otorgamiento certificación Sello de Excelencia Gobierno Digital Colombia'
 		let body = `Estimado Usuario:
 El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la postulación del producto con número de registro: ${params.id_service} para el Sello de Excelencia Gobierno Digital Colombia, no cumple con el 100% de los requisitos, por lo tanto no ha sido certificado en el nivel ${params.level}.
-Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+Para mayor información, por favor consultar el siguiente <p><a href='http://www.sellodeexcelencia.gov.co/#!/'>link</a></p>.` // TODO: cuál link?
 		let attachment = null
 		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
 	}
@@ -1495,7 +1495,7 @@ Para mayor información, por favor consultar el siguiente link.` // TODO: cuál 
 		let bcc = null
 		let subject = 'Renovación certificación Sello de Excelencia Gobierno Digital Colombia'
 		let body = `Estimado Usuario:
-El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la certificación del producto con número de registro: ${params.id_service} del Sello de Excelencia Gobierno Digital, está próxima a vencerse. Lo invitamos a presentar la solicitud de renovación a través de la plataforma web del Sello de Excelencia en el siguiente link.` // TODO: cuál link?
+El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la certificación del producto con número de registro: ${params.id_service} del Sello de Excelencia Gobierno Digital, está próxima a vencerse. Lo invitamos a presentar la solicitud de renovación a través de la plataforma web del Sello de Excelencia en el siguiente <p><a href='http://www.sellodeexcelencia.gov.co/#!/'>link</a></p>.` // TODO: cuál link?
 		let attachment = null
 		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
 	}
@@ -1507,7 +1507,7 @@ El Ministerio de Tecnologías de la Información y las Comunicaciones, le inform
 		let subject = 'Asignación de requisitos Sello de Excelencia Gobierno Digital Colombia'
 		let body = `Estimado evaluador:
 El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que tiene asignado un requisito del Sello de Excelencia de Gobierno Digital para su evaluación y validación. Solicitamos que ingrese a la plataforma web del Sello de Excelencia Gobierno Digital para la aceptación del mismo.
-A partir de la aceptación del requisito, se inicia el ciclo de evaluación y retroalimentación. Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+A partir de la aceptación del requisito, se inicia el ciclo de evaluación y retroalimentación. Para mayor información, por favor consultar el siguiente <p><a href='http://www.sellodeexcelencia.gov.co/#!/'>link</a></p>.` // TODO: cuál link?
 		let attachment = null
 		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
 	}
@@ -1519,7 +1519,7 @@ A partir de la aceptación del requisito, se inicia el ciclo de evaluación y re
 		let subject = 'Vencimiento evaluación de requisitos Sello de Excelencia Gobierno Digital Colombia'
 		let body = `Estimado Evaluador:
 El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que tiene diez (10) días para evaluar el requisito del Sello de Excelencia Gobierno Digital. Solicitamos que ingrese a la plataforma web del Sello de Excelencia Gobierno Digital para la aceptación y evaluación del mismo. 
-A partir de la aceptación del requisito se inicia el ciclo de evaluación y retroalimentación. Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+A partir de la aceptación del requisito se inicia el ciclo de evaluación y retroalimentación. Para mayor información, por favor consultar el siguiente <p><a href='http://www.sellodeexcelencia.gov.co/#!/'>link</a></p>.` // TODO: cuál link?
 		let attachment = null
 		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
 	}
@@ -1531,7 +1531,7 @@ A partir de la aceptación del requisito se inicia el ciclo de evaluación y ret
 		let subject = 'Retroalimentación postulación Sello de Excelencia Gobierno Digital Colombia'
 		let body = `Estimado Usuario:
 El Ministerio de Tecnologías de la Información y las Comunicaciones, le informa que la solicitud de ajuste ha sido solucionada por la Entidad.
-Favor ingresar a la plataforma web del Sello de Excelencia Gobierno Digital Colombia para su revisión, en el siguiente link Ruta de la plataforma.` // TODO: cuál link? cuál ruta de la plataforma?
+Favor ingresar a la plataforma web del Sello de Excelencia Gobierno Digital Colombia para su revisión, en el siguiente <p><a href='http://www.sellodeexcelencia.gov.co/#!/'>link</a></p> Ruta de la plataforma.` // TODO: cuál link? cuál ruta de la plataforma?
 		let attachment = null
 		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
 	}
@@ -1582,7 +1582,7 @@ El Ministerio de Tecnologías de la Información y las Comunicaciones, le inform
 	- Número de Registro: ${params.id_service}
 	- Entidad:  ${params.name_institution}
 	- Fecha de Postulación: ${params.date}
-Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+Para mayor información, por favor consultar el siguiente <p><a href='http://www.sellodeexcelencia.gov.co/#!/'>link</a></p>.` // TODO: cuál link?
 		let attachment = null
 		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
 	}
@@ -1599,7 +1599,7 @@ El Ministerio de Tecnologías de la Información y las Comunicaciones, le inform
 	- Número de Registro: ${params.id_service}
 	- Entidad:  ${params.name_institution}
 	- Fecha de Postulación: ${params.date}
-Para más información, por favor consultar el siguiente link.` // TODO: cuál link?
+Para más información, por favor consultar el siguiente <p><a href='http://www.sellodeexcelencia.gov.co/#!/'>link</a></p>.` // TODO: cuál link?
 		let attachment = null
 		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
 	}
@@ -1617,7 +1617,7 @@ El Ministerio de Tecnologías de la Información y las Comunicaciones, le inform
 	- Entidad:  ${params.name_institution}
 	- Fecha de Postulación: ${params.date}
 	- Vigencia: ${params.vigency} Años
-Para mayor información, por favor consultar el siguiente link.` // TODO: cuál link?
+Para mayor información, por favor consultar el siguiente <p><a href='http://www.sellodeexcelencia.gov.co/#!/'>link</a></p>.` // TODO: cuál link?
 		let attachment = null
 		return utiles.sendEmail(to, cc, bcc, subject, body, attachment)
 	}
