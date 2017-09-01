@@ -42,8 +42,8 @@ var service_controller = function () {
 	var institution_user = new Institution_user()
 	var model_media = new Media()
 	var model_institution = new Institution()
-	var model_user_answer = new user_answer()
-	var model_user = new user()
+	var model_user_answer = new User_answer()
+	var model_user = new User()
 	var model_user_answer = new User_answer()
 	var model_user = new User()
 	var model_usertype = new Usertype()
@@ -1780,7 +1780,9 @@ Para mayor información, por favor consultar el siguiente link.` // TODO: cuál 
 				`
 				return model_question.customQuery(query).then((value) => {
 					return create_user_answers_verification(user, {id_service: result}).then((vals) => {
-						return list_empty_user_answers(user, {id_service: result})
+						return list_empty_user_answers(user, {id_service: result}).then(function(result){
+							return {"data": result, "total": result.length}
+						})
 					})
 				})
 			})
@@ -1870,6 +1872,20 @@ Para mayor información, por favor consultar el siguiente link.` // TODO: cuál 
 				})
 			})
 		}
+	
+	/**
+	 * @api {post} api/service/category Create category information
+	 * @apiName Postcategory
+	 * @apiGroup service
+	 * @apiVersion 1.0.1
+	 * 
+	 * @apiParam {Number} id 
+	 * @apiParam {String} name 
+ 	 * 
+	 */
+	var create_category = function (user, body) {
+		return model_category.create(body)
+	}
 	
 	var save_service_evidence = function (user, body, files) {
 		return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type).then((url) => {
@@ -2043,19 +2059,19 @@ Para mayor información, por favor consultar el siguiente link.` // TODO: cuál 
 	}
 	
 	var update_evidence = function (user, body, files) {
-	return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type).then((url) => {
-	// Insertar objetos multimedia en tabla stamp.media
-	return model_media.create({
-		url: url,
-		type: files.file.type
-	}).then((media) => {
-		// Actualizar el user_answer del media subido
-		var ua_body = {
-			id_media: media.insertId,
-		}
-		return model_user_answer.update(ua_body, {id:body.id_user_answer})
-	})
-	})
+		return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type).then((url) => {
+		// Insertar objetos multimedia en tabla stamp.media
+		return model_media.create({
+			url: url,
+			type: files.file.type
+		}).then((media) => {
+			// Actualizar el user_answer del media subido
+			var ua_body = {
+				id_media: media.insertId,
+			}
+			return model_user_answer.update(ua_body, {id:body.id_user_answer})
+			})
+		})
 	}
 	
 	var write_to_chat = function(user, body) {
@@ -2123,7 +2139,7 @@ Para mayor información, por favor consultar el siguiente link.` // TODO: cuál 
 	
 		postMap.set('users_up_in_hall_of_fame', { method: update_to_hall_of_fame, permits: Permissions.ADMIN })
 		postMap.set('usertype', { method: create_usertype, permits: Permissions.ADMIN })
-		postMap.set('service', { method: create_entity_service, permits: Permissions.ADMIN })
+		postMap.set('service', { method: create_entity_service, permits: Permissions.Manage_services })
 		postMap.set('category', { method: create_category, permits: Permissions.ADMIN })
 		postMap.set('questiontopic', { method: create_questiontopic, permits: Permissions.ADMIN })
 		postMap.set('form', { method: create_entity_form, permits: Permissions.ADMIN })
