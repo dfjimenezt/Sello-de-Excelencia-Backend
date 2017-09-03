@@ -1679,8 +1679,8 @@ Para mayor información, por favor consultar el siguiente <p><a href='http://www
 	getMap.set('list_certified_services_admin', { method: list_certified_services_admin, permits: Permissions.ADMIN })
 	getMap.set('list_rejected_services', { method: list_rejected_services, permits: Permissions.ENTITY_SERVICE })
 	getMap.set('list_in_progress_services', { method: list_in_progress_services, permits: Permissions.ENTITY_SERVICE })
-	getMap.set('service_info', { method: get_service_info, permits: Permissions.ENTITY_SERVICE })
-	getMap.set('service_comments', { method: get_service_comments, permits: Permissions.ENTITY_SERVICE })
+	getMap.set('service_info', { method: get_service_info, permits: Permissions.NONE })
+	getMap.set('service_comments', { method: get_service_comments, permits: Permissions.NONE })
 	getMap.set('process_service', { method: get_service_process, permits: Permissions.NONE })
 	getMap.set('list_services_selectable', { method: get_filtered_list_services_for_select, permits: Permissions.NONE })
 	getMap.set('list_users_admin', { method: list_users_admin, permits: Permissions.NONE }) // TODO: CHANGE PERMSIONS TO PLATFORM
