@@ -273,7 +273,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_entity_service = function (user, params) {
-		return _get(model_service,user,params)
+		return _get(model_entity_service,user,params)
 	}
 	/**
 	 * @api {get} api/service/category Request category information
