@@ -29,11 +29,14 @@ var EntityModel = function (info) {
 		let table = null
 		if (ety) {
 			table = dmt.tables[ety.table]
+			if (!table) {
+				console.log(name)
+			}
 			table.name = ety.table
 			return table
 		} else {
 			table = dmt.tables[name]
-			if(!table){
+			if (!table) {
 				console.log(name)
 			}
 			table.name = name
@@ -55,7 +58,7 @@ var EntityModel = function (info) {
 		let str = [];
 		let table = getTable(relation.entity || relation.table)
 		table.fields.forEach((f) => {
-			str.push(table.name + "." + f.name + " " + table.name + "_" + f.name)
+			str.push('`'+table.name + '_' + relation.name + "`.`" + f.name + "` `" + table.name + '_' + relation.name + "_" + f.name+"`")
 		})
 		return str.join(",")
 	}
@@ -77,21 +80,34 @@ var EntityModel = function (info) {
 
 	function generateGetQuery(base, lang) {
 		let selection = "\`base\`.*";
-		let get_query = `SELECT {{SELECTION}} FROM ${base} \`base\` `;
+		let get_query = `SELECT {{SELECTION}} FROM \`${base}\` \`base\` `;
 		if (info.relations) {
 			info.relations.forEach((relation) => {
-				switch (relation.type) {
-					case "1-1":
+				if (relation.type === '1-1') {
+					if (dmt.entities[relation.entity] && dmt.entities[relation.entity].translate && relation.entity != info.entity) {
+						let ety = dmt.entities[relation.entity]
+						let view = resolveViewName(relation.entity, lang)
+						let baseTable = getTable(relation.entity)
+						let translateTable = getTable(ety.translate.table)
+						let fields = []
+						baseTable.fields.forEach((f) => {
+							if (f.name !== relation.leftKey) {
+								//fields.push(view + '.' + f.name + ' ' + baseTable.name + '_' + f.name)
+								fields.push('`'+view + '_' + relation.name + '`.`' + f.name + '` `' + baseTable.name + '_' + relation.name + '_' + f.name+'`')
+							}
+						})
+						translateTable.fields.forEach((f) => {
+							if (f.name !== ety.translate.rightKey) {
+								fields.push('`'+view + '`.`' + translateTable.name + "_" + f.name + '` `' + baseTable.name + '_' + f.name+'`')
+							}
+						})
+						selection += `,${fields.join(',')} `
+						get_query += `LEFT JOIN \`${view}\` \`${view}_${relation.name}\` ON \`base\`.\`${relation.leftKey}\` = \`${view}_${relation.name}\`.\`${baseTable.defaultSort}\` `
+					} else {
 						selection += `,${getFields(relation)} `
-						get_query += `LEFT JOIN ${getTable(relation.entity).name} ON \`base\`.${relation.leftKey} = ${getTable(relation.entity).name}.${getTable(relation.entity).defaultSort} `
-						break;
-					case "1-n":
-						//get_query += `LEFT JOIN ${relation.table} ON ${info.table}.${info.defaultSort} = ${relation.table}.${relation.rightKey} `
-						break;
-					case "n-n":
-						//get_query += `LEFT JOIN ${relation.intermediate.table} ON ${info.table}.${info.defaultSort} = ${relation.intermediate.table}.${relation.intermediate.leftKey}
-						//                        LEFT JOIN ${relation.table} ON ${relation.table}.${relation.defaultSort} = ${relation.intermediate.table}.${relation.intermediate.rightKey} `
-						break;
+						let table = getTable(relation.entity)
+						get_query += `LEFT JOIN \`${table.name}\` \`${table.name}_${relation.name}\` ON \`base\`.\`${relation.leftKey}\` = \`${table.name}_${relation.name}\`.\`${table.defaultSort}\` `
+					}
 				}
 			})
 		}
@@ -144,7 +160,7 @@ var EntityModel = function (info) {
 		var connection = mysql.createConnection(dbConf)
 		var queryGet = ''
 		for (var i in params) {
-			queryGet += 'list.' + i + ' = ' + connection.escape(params[i]) + ' AND '
+			queryGet += '`list`.`' + i + '` = ' + connection.escape(params[i]) + ' AND '
 		}
 		queryGet = queryGet.slice(0, -4)
 		var query = 'SELECT * FROM `' + info.table + '` AS list WHERE ' + queryGet + ''
@@ -153,12 +169,16 @@ var EntityModel = function (info) {
 	this.getFiltered = function (params) {
 		var connection = mysql.createConnection(dbConf)
 		let filters = {}
+		var relation_filters = {}
 		var where = ""
 		params.limit = params.limit || 20
 		params.page = params.page || 1
 		params.lang = params.lang || 1
+		if (params.simple === undefined) {
+			params.simple = true
+		}
+		params.simple = JSON.parse(params.simple)
 		params.order = params.order || getTable(info.entity).defaultSort
-		params.limit = Math.min(params.limit, 20)//max amount of entities to request is 50 due to heavy computing
 		params.filter_fields = params.filter_fields || []
 		params.filter_values = params.filter_values || []
 		if (typeof params.filter_fields == "string") {
@@ -169,31 +189,74 @@ var EntityModel = function (info) {
 		if (typeof params.fields == "string") {
 			params.fields = [params.fields]
 		}
-		
+		function resolveEqual(connection, value) {
+			let array = value.split(" ");
+			if (array.length > 1) {
+				return array[0] + connection.escape(array[1]);
+			}
+			return '= ' + connection.escape(value);
+		}
+
+
 		//group fields by name
 		params.filter_fields.forEach((key, i) => {
-			if (!filters[key]) {
-				filters[key] = []
+			if (key.indexOf(".") !== -1) {
+				let rel = key.split(".")
+				let rel_name = rel[0]
+				let rel_field = rel[1]
+				if (!relation_filters[rel_name]) {
+					relation_filters[rel_name] = {}
+				}
+				if (!relation_filters[rel_name][rel_field]) {
+					relation_filters[rel_name][rel_field] = []
+				}
+				relation_filters[rel_name][rel_field].push(connection.escape(params.filter_values[i]))
+			} else {
+				if (!filters[key]) {
+					filters[key] = []
+				}
+				filters[key].push(resolveEqual(connection, params.filter_values[i]))
 			}
-			filters[key].push(params.filter_values[i])
+
 		})
 
 		let search = ""
-		if (params.fields.length > 0) {
+		if (params.filter && params.filter.length > 0) {
+			let ety = dmt.entities[info.entity]
+			let view = resolveViewName(info.entity, params.lang)
+			let baseTable = getTable(info.entity)
+			let translateTable = null
+			if (ety && ety.translate)
+				translateTable = getTable(ety.translate.table)
+			let fields = []
+			baseTable.fields.forEach((f) => {
+				if (f.type === "string" || f.type === "text") {
+					fields.push(f.name)
+				}
+			})
+			if (translateTable) {
+				translateTable.fields.forEach((f) => {
+					if (f.name !== ety.translate.rightKey && (f.type === "string" || f.type === "text")) {
+						fields.push(translateTable.name + '_' + f.name)
+					}
+				})
+			}
+
 			search = []
-			for (var i in params.fields) {
+			for (var i in fields) {
 				// TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
-				search.push(params.fields[i] + " like " + connection.escape("%" + params.filter.split(" ").join("%") + "%"))
+				search.push('`'+fields[i] + "` like " + connection.escape("%" + params.filter.split(" ").join("%") + "%"))
 			}
 			search = "(" + search.join(" OR ") + ")"
 		}
 
 		let conditions = ""
 		if (params.filter_fields.length > 0) {
+			let view = resolveViewName(info.entity, params.lang)
 			for (var f in filters) {
 				conditions += "("
 				for (var v in filters[f]) {
-					conditions += f + " = " + filters[f][v] + " OR "
+					conditions += '`'+view +'`.`'+f+'`' + filters[f][v] + " OR "
 				}
 				conditions = conditions.slice(0, -4)
 				conditions += ") AND "
@@ -205,18 +268,68 @@ var EntityModel = function (info) {
 		} else { //just one of these
 			where = search + conditions
 		}
-		let subtable = "";
-		if (info.translate && params.lang) {
-			subtable = "view_" + info.table + "_" + params.lang
-		} else {
-			subtable = "view_" + info.table
+		let subtable = resolveViewName(info.entity, params.lang)
+		/**
+		 * Support for filters into n-n  and 1-n relations
+		 */
+		for (let r in relation_filters) {
+			let relation = null
+			console.warn("Doing relation filters can reduce the performance")
+			for (let i = 0; i < info.relations.length; i++) {
+				console.log(info.relations[i].entity + " " + r)
+				if (info.relations[i].name === r) {
+					relation = info.relations[i]
+					break
+				}
+			}
+			if (!relation) {
+				break
+			}
+			let joins = []
+			let name = resolveViewName(relation.entity, params.lang)
+			let rwhere = '('
+			for (let k in relation_filters[r]) {
+				rwhere += `\`${name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
+			}
+			rwhere = rwhere.slice(0, -4) + ')'
+			if (relation.intermediate) { // n-n relation 
+				let iname = resolveViewName(relation.intermediate.entity, params.lang)
+				joins.push(`JOIN \`${iname}\` \`intermediate\` ON \`intermediate\`.\`${relation.intermediate.leftKey}\` = \`${subtable}\`.\`${getTable(info.table).defaultSort}\`
+				JOIN \`${name}\` ON \`intermediate\`.\`${relation.intermediate.rightKey}\` = \`${name}\`.\`${getTable(relation.entity).defaultSort}\` AND (${rwhere})`)
+			} else if (relation.rightKey) { //1-n relation
+				joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation.rightKey}\` = \`${subtable}\`.\`${getTable(info.table).defaultSort}\` AND (${rwhere})`)
+			} else if (relation.leftKey) { // 1-1 and  
+				let relation_table = getTable(relation.entity || relation.table)
+				joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation_table.defaultSort}\` = \`${subtable}\`.\`${relation.leftKey}\` AND (${rwhere})`)
+			}
+			subtable = '`' + subtable + '` ' + joins.join(' ')
+			console.log(subtable)
 		}
 
-		var query = "SELECT SQL_CALC_FOUND_ROWS " + getTable(info.table).defaultSort + " `key` FROM `" + subtable + "` "
+		var query = "SELECT SQL_CALC_FOUND_ROWS `" + resolveViewName(info.entity, params.lang) + "`.`" + getTable(info.table).defaultSort + "` `key` FROM " + subtable + " "
 		if (where.length > 2) {
 			query += "WHERE " + where
 		}
-		query += "GROUP BY " + getTable(info.table).defaultSort + " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
+		query += "GROUP BY `key` "
+		for (let r in relation_filters) {
+			for (let k in relation_filters[r]) {
+				let relation = null
+				console.warn("Doing relation filters can reduce the performance")
+				for (let i = 0; i < info.relations.length; i++) {
+					console.log(info.relations[i].entity + " " + r)
+					if (info.relations[i].name === r) {
+						relation = info.relations[i]
+						break
+					}
+				}
+				if (!relation) {
+					break
+				}
+				let name = resolveViewName(relation.entity, params.lang)
+				query += `HAVING COUNT(\`${name + '`.`' + k}\`) = ${relation_filters[r][k].length} `
+			}
+		}
+		query += "LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
 		query += "SELECT FOUND_ROWS() as total"
 		console.log(query)
 		return this.customQuery(query).then((result) => {
@@ -229,26 +342,29 @@ var EntityModel = function (info) {
 				return { data: [], total_results: 0 }
 			}
 			keys = keys.join(",")
-			query = "SELECT * FROM " + subtable + " WHERE " + getTable(info.table).defaultSort + " IN (" + keys + ") ORDER BY " + params.order + ";"
+			query = "SELECT * FROM `" + resolveViewName(info.entity, params.lang) + "` WHERE `" + getTable(info.table).defaultSort + "` IN (" + keys + ") ORDER BY " + params.order + ";"
 			let count = 0;
-			if (info.relations) {
-				for (let i = 0; i < info.relations.length; i++) {
-					let relation = info.relations[i]
-					//info.relations.forEach((relation) =>
-					switch (relation.type) {
-						case "1-n":
-							count++;
-							query += `SELECT * FROM ${resolveViewName(relation.entity, params.lang)} WHERE ${resolveViewName(relation.entity, params.lang)}.${relation.rightKey} IN (${keys});`
-							break;
-						case "n-n":
-							count++;
-							query += `SELECT * FROM ${resolveViewName(relation.entity, params.lang)}
-							LEFT JOIN ${resolveViewName(relation.intermediate.entity, params.lang)} intermediate ON intermediate.${relation.intermediate.rightKey} = ${resolveViewName(relation.entity, params.lang)}.${getTable(relation.entity).defaultSort}
-							WHERE intermediate.${relation.intermediate.leftKey} IN (${keys});`
-							break;
+			if (params.simple === false) {
+				if (info.relations) {
+					for (let i = 0; i < info.relations.length; i++) {
+						let relation = info.relations[i]
+						//info.relations.forEach((relation) =>
+						switch (relation.type) {
+							case "1-n":
+								count++;
+								query += `SELECT * FROM \`${resolveViewName(relation.entity, params.lang)}\` WHERE \`${resolveViewName(relation.entity, params.lang)}\`.\`${relation.rightKey}\` IN (${keys});`
+								break;
+							case "n-n":
+								count++;
+								query += `SELECT * FROM \`${resolveViewName(relation.entity, params.lang)}\`
+							LEFT JOIN \`${resolveViewName(relation.intermediate.entity, params.lang)}\` \`intermediate\` ON \`intermediate\`.\`${relation.intermediate.rightKey}\` = \`${resolveViewName(relation.entity, params.lang)}\`.\`${getTable(relation.entity).defaultSort}\`
+							WHERE \`intermediate\`.\`${relation.intermediate.leftKey}\` IN (${keys});`
+								break;
+						}
 					}
 				}
 			}
+
 			/**
 			 * From row to json
 			 */
@@ -275,11 +391,18 @@ var EntityModel = function (info) {
 					ety.relations.forEach((relation) => {
 						if (relation.type === "1-1") {
 							let object = {}
+							let ety = dmt.entities[relation.entity]
 							let relation_table = getTable(relation.entity || relation.table)
-							relation_table.fields.forEach((f) => {
+
+							let fields = relation_table.fields
+							if (ety && ety.translate) {
+								let translate_table = getTable(ety.translate.table)
+								fields = fields.concat(translate_table.fields)
+							}
+							fields.forEach((f) => {
 								if (f.name === "password") { return }
 								if (!object[f.name]) {
-									object[f.name] = data[relation_table.name + "_" + f.name]
+									object[f.name] = data[relation_table.name + '_' + relation.name + '_' + f.name]
 								}
 							})
 							result[relation.name || relation.entity] = object
@@ -379,7 +502,7 @@ var EntityModel = function (info) {
 		})
 		queryFields = queryFields.slice(0, -1) + ')'
 		queryValues = queryValues.slice(0, -1) + ')'
-		var query = 'INSERT INTO ' + table.name + ' ' + queryFields + ' VALUES ' + queryValues + ''
+		var query = 'INSERT INTO `' + table.name + '` ' + queryFields + ' VALUES ' + queryValues + ''
 		return query
 	}
 	function updateTable(table, data, connection) {
@@ -396,7 +519,7 @@ var EntityModel = function (info) {
 		})
 		queryValues = queryValues.slice(0, -1)
 		queryWhere = queryWhere.slice(0, -5) + ')'
-		var query = 'UPDATE ' + table.name + ' SET ' + queryValues + ' WHERE ' + queryWhere
+		var query = 'UPDATE `' + table.name + '` SET ' + queryValues + ' WHERE ' + queryWhere
 		return query
 	}
 	function updateIntermediates(relation, baseId, intermediates) {
@@ -421,22 +544,16 @@ var EntityModel = function (info) {
 			return this.update(body, { key: body[key] })
 		}*/
 		return resolveQuery(insertIntoTable(table, body, connection), connection).then((base) => {
-			if (base.insertId) {
+			if (base.insertId && entity.translate) {
 				body[table.defaultSort] = base.insertId
-				if(entity.translate){
-					connection = mysql.createConnection(dbConf)
-					return resolveQuery(updateTranslation(body, connection), connection)
-				}else{
-					return body
-				}
+				connection = mysql.createConnection(dbConf)
+				return resolveQuery(updateTranslation(body, connection), connection)
 			} else {
-				throw utiles.informError(300)
+				return this.updateView()
+				//throw utiles.informError(300)
 			}
-		}).then((res) => {
-			this.updateView()
-			return {
-				data:body
-			}
+		}).then(() => {
+			return this.updateView()
 		})
 	}
 	function updateTranslation(body, connection) {
@@ -458,6 +575,7 @@ var EntityModel = function (info) {
 		keys = keys.slice(0, -1) + ')'
 		values = values.slice(0, -1) + ')'
 		query += keys + ' VALUES ' + values
+		query = "SET FOREIGN_KEY_CHECKS= 0;" + query + "SET FOREIGN_KEY_CHECKS = 1;";
 		return query
 	}
 	this.update = function (body, condition) {
@@ -516,7 +634,9 @@ var EntityModel = function (info) {
 		let table = getTable(info.entity)
 		let data = {}
 		table.fields.forEach((f) => {
-			data[f.name] = condition[f.name]
+			if (condition[f.name]) {
+				data[f.name] = condition[f.name]
+			}
 		})
 		var connection = mysql.createConnection(dbConf)
 		var queryCondition = ''

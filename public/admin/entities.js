@@ -254,7 +254,13 @@ dmt.entities = {
           leftKey: "id_institution",
           rightKey: "id_user"
         }
-      }
+      },
+      {
+        type: "1-n",
+        name: "service",
+        rightKey: "id_institution",
+        entity: "service"
+      },
     ]
   },
   "city": {
