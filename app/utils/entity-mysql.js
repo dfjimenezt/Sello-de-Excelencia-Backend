@@ -326,7 +326,7 @@ var EntityModel = function (info) {
 					break
 				}
 				let name = resolveViewName(relation.entity, params.lang)
-				query += `HAVING COUNT(\`${name + '`.`' + k}\`) = ${relation_filters[r][k].length} `
+				//query += `HAVING COUNT(\`${name + '`.`' + k}\`) = ${relation_filters[r][k].length} `
 			}
 		}
 		query += "LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
