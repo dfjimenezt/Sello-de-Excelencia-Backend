@@ -85,6 +85,7 @@ var service_controller = function () {
 			limit: params.limit,
 			page: params.page,
 			order: params.order,
+			simple: params.simple,
 			filter_fields: params.filter_field,
 			filter_values: params.filter_value,
 			fields: params.field,
@@ -466,43 +467,43 @@ var service_controller = function () {
 
 	var get_filtered_list_institutions = function(user, params) {
 	var query = `
-SELECT DISTINCT
-i.id AS id_institution,
-i.name AS name, 
-s.id AS id_service,
-s.name AS service_name,
-s.url AS url,
-s.timestamp as publication_date,
-ss.timestamp AS certification_date
-FROM stamp.institution AS i
-JOIN stamp.service AS s ON i.id = s.id_institution
-JOIN stamp.service_status AS ss ON ss.id_service = s.id
-WHERE s.id_category = ${params.id_category}\n`
-	// Insert filter institution name to query
-	if (params.name)
-		query += `AND i.name LIKE "%${params.name}%"\n`
-	// Insert filter service name to query
-	if (params.service_name)
-		query += `AND s.name LIKE "%${params.service_name}%"\n`
-	// Insert filter name to query
-	if (params.date0) {
-		var date0 = params.date0.split("-")
-		var date0_0 = new Date(parseInt(date0[0]), parseInt(date0[1]) - 1, parseInt(date0[2]) - 3) // Month starts from 0
-		date0_0 = date0_0.toISOString().slice(0, 10)
-		var date0_1 = new Date(parseInt(date0[0]), parseInt(date0[1]) - 1, parseInt(date0[2]) + 3) // One week interval 6 days
-		date0_1 = date0_1.toISOString().slice(0, 10)
-		query += `AND s.timestamp >= "${date0_0}" AND s.timestamp <= "${date0_1}"\n`
-	}
-	// Insert filter name to query
-	if (params.date1) {
-		var date1 = parseInt(params.date1.split("-"))
-		var date1_0 = new Date(date1[0], date1[1]-1, date1[2]-3) // Month starts from 0
-		date1_0.toISOString().substring(0, 10);
-		var date1_1 = new Date(date1[0], date1[1]-1, date1[2]+3) // One week interval 6 days
-		date1_1.toISOString().substring(0, 10);
-		query += `AND s.datetime >= ${date1_0} AND s.datetime <= ${date1_1}\n`
-	}
-	query += 'AND s.current_status = 8 ORDER BY ss.timestamp DESC;'
+		SELECT DISTINCT
+		i.id AS id_institution,
+		i.name AS name, 
+		s.id AS id_service,
+		s.name AS service_name,
+		s.url AS url,
+		s.timestamp as publication_date,
+		ss.timestamp AS certification_date
+		FROM stamp.institution AS i
+		JOIN stamp.service AS s ON i.id = s.id_institution
+		JOIN stamp.service_status AS ss ON ss.id_service = s.id
+		WHERE s.id_category = ${params.id_category}\n`
+			// Insert filter institution name to query
+			if (params.name)
+				query += `AND i.name LIKE "%${params.name}%"\n`
+			// Insert filter service name to query
+			if (params.service_name)
+				query += `AND s.name LIKE "%${params.service_name}%"\n`
+			// Insert filter name to query
+			if (params.date0) {
+				var date0 = params.date0.split("-")
+				var date0_0 = new Date(parseInt(date0[0]), parseInt(date0[1]) - 1, parseInt(date0[2]) - 3) // Month starts from 0
+				date0_0 = date0_0.toISOString().slice(0, 10)
+				var date0_1 = new Date(parseInt(date0[0]), parseInt(date0[1]) - 1, parseInt(date0[2]) + 3) // One week interval 6 days
+				date0_1 = date0_1.toISOString().slice(0, 10)
+				query += `AND s.timestamp >= "${date0_0}" AND s.timestamp <= "${date0_1}"\n`
+			}
+			// Insert filter name to query
+			if (params.date1) {
+				var date1 = parseInt(params.date1.split("-"))
+				var date1_0 = new Date(date1[0], date1[1]-1, date1[2]-3) // Month starts from 0
+				date1_0.toISOString().substring(0, 10);
+				var date1_1 = new Date(date1[0], date1[1]-1, date1[2]+3) // One week interval 6 days
+				date1_1.toISOString().substring(0, 10);
+				query += `AND s.datetime >= ${date1_0} AND s.datetime <= ${date1_1}\n`
+			}
+			query += 'AND s.current_status = 8 ORDER BY ss.timestamp DESC;'
 	console.log(query)
 			return model_institution.customQuery(query)
 	}
