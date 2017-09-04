@@ -10,12 +10,6 @@ var Service = function () {
 		{
 			"table": "service",
 			"relations": [
-				{
-					"type": "n-n", "entity": "role", "name": "roles",
-					"intermediate": {
-						"entity": "user_role", "leftKey": "id_user", "rightKey": "id_role"
-					}
-				},
 				{ "type": "1-1", "name": "category", "foreign_name": "name", "entity": "category", "leftKey": "id_category" },
 				{ "type": "1-1", "name": "institution", "foreign_name": "name", "entity": "institution", "leftKey": "id_institution" },
 				{ "type": "1-n", "name": "history", "rightKey": "id_service", "entity": "service_status" },

@@ -130,16 +130,6 @@ dmt.entities = {
     table: "service",
     relations: [
       {
-        type: "n-n",
-        entity: "role",
-        name: "roles",
-        intermediate: {
-          entity: "user_role",
-          leftKey: "id_user",
-          rightKey: "id_role"
-        }
-      },
-      {
         type: "1-1",
         name: "category",
         foreign_name: "name",
@@ -171,16 +161,6 @@ dmt.entities = {
         name: "comments",
         entity: "service_comment",
         rightKey: "id_service"
-      },
-      {
-        type:"n-n",
-        entity:"form",
-        name:"requirements",
-        intermediate:{
-          entity:"category",
-          leftKey:"id_category",
-          rightKey:"id_category"
-        }
       }
     ]
   },
