@@ -56,11 +56,6 @@ var service_controller = function () {
 	var service_status = new Service_status()
 	var model_media = new Media()
 	var model_institution = new Institution()
-	var model_points = new Points()
-	var model_motives = new Motives()
-	var model_category_questions = new category_questions()
-	var model_service = new service()
-	var model_hall_of_fame = new hall_of_fame()
 	var model_evaluation_request = new evaluation_request()
 	var model_entity_service_status = new entity_service_status()
 	//---------------------------------------------------------------
@@ -922,30 +917,6 @@ FROM stamp.points q WHERE q.id_user = ${parseInt(params.id_user)});`
 			}
 	}
 
-	/**
-	 * Muestra las preguntas que debe calificar el ciudadano proporcionando
-	 * el id del servicio.
-	 * 
-	 * /service/questions_calification?id_service=1
-	 */
-	var get_questions_calificate_citizien = function(token, params) {
-			var query = ""
-			if (params.id_service) {
-					query = `
-SELECT DISTINCT cq.text FROM stamp.category_questions cq 
-RIGHT JOIN stamp.service s ON s.id_category = cq.id_category AND s.id = '${params.id_service}' AND cq.text IS NOT NULL; `
-            console.log(query)
-        }
-        return model_category_questions.customQuery(query).then(function(preguntas) {
-            var encuesta = []
-            for (var i in preguntas){
-                if(preguntas[i].text != null)
-					encuesta.push(preguntas[i].text)
-            }
-            return encuesta
-        });
-    }
-
 	var get_all_services = function (token, params){
 		return model_service.getAll(params);
     }
@@ -1041,16 +1012,8 @@ JOIN stamp.role r ON h_f.id_role = r.id WHERE h_f.date >= '${params.date_begin}'
 /*
  * lista todas las preguntas según categoría
  */
-var get_questions_category = function(user, body){
-	var query = `
-	SELECT cq.id AS id_question, cq.text, c.id AS id_category, c.name AS name_category  
-	FROM stamp.category c	
-	RIGHT JOIN stamp.category_questions cq ON c.id = cq.id_category `
-	if(body.id_category){
-		query += `WHERE c.id = ${parseInt(body.id_category)}`
-	}
-		query += ";"
-	return model_category_questions.customQuery(query)
+var get_questions_category = function(user, params){
+	return _get(model_category_questions,user,params)
 }
 
 
@@ -1689,13 +1652,12 @@ Para mayor información, por favor consultar el siguiente <p><a href='http://www
 	getMap.set('list_requisites_admin', { method: list_requisites_admin, permits: Permissions.NONE }) // TODO: CHANGE PERMSIONS TO PLATFORM
 	getMap.set('list_motive', { method: get_list_motive, permits: Permissions.NONE })
 	getMap.set('points_user', { method: get_points_user, permits: Permissions.NONE })
-	getMap.set('questions_calification', { method: get_questions_calificate_citizien, permits: Permissions.NONE }) // Revisar los permisos
 	getMap.set('all_services', { method: get_all_services, permits: Permissions.NONE }) // Revisar los permisos
 	getMap.set('institution', { method: get_institution_info, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('institution_service', { method: get_institution_service, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('institution_service_certified', { method: get_institution_service_certified, permits: Permissions.NONE }) // TODO: Change to PLATFORM
 	getMap.set('get_hall_csv', { method: get_hall_csv, permits: Permissions.ADMIN })
-	getMap.set('questions_category', { method: get_questions_category, permits: Permissions.PLATFORM })
+	getMap.set('questions_category', { method: get_questions_category, permits: Permissions.NONE })
 	getMap.set('questions_category_service', { method: get_questions_category_answered_for_service, permits: Permissions.PLATFORM })
 	getMap.set('list_institutions_admin', { method: list_institutions_admin, permits: Permissions.ADMIN })
 	getMap.set('get_certificates', { method: get_certificates, permits: Permissions.ENTITY_SERVICE })
