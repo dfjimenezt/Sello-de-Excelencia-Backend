@@ -62,7 +62,6 @@ dmt.entities = {
           entity: "user_questiontopic",
           leftKey: "id_user",
           rightKey: "id_topic",
-
         }
       },
       {
@@ -85,6 +84,17 @@ dmt.entities = {
         entity: "type_document",
         leftKey: "id_type_document",
         foreign_name: "document"
+      },
+      {
+        type: "n-n",
+        entity: "institution",
+        name: "institutions",
+        intermediate: {
+          entity: "institution_user",
+          leftKey: "id_user",
+          rightKey: "id_institution",
+
+        }
       }
     ]
   },
@@ -241,7 +251,7 @@ dmt.entities = {
       {
         type: "1-1",
         entity: "institutionType",
-        name: "creator",
+        name: "type",
         leftKey: "id_institution_type",
         foreign_name: "id"
       },
@@ -275,6 +285,61 @@ dmt.entities = {
       }
     ]
   },
+  "region":{
+    table:"region",
+    relations: [
+      {
+        type: "1-1",
+        entity: "country",
+        name: "country",
+        leftKey: "id_country",
+        foreign_name: "name"
+      },
+      {
+        type: "1-1",
+        entity: "city",
+        name: "capital",
+        leftKey: "id_capital",
+        foreign_name: "name"
+      }
+    ]
+  },
+  "country":{
+    table:"region",
+    relations: [
+      {
+        type: "1-1",
+        entity: "region",
+        name: "capital",
+        leftKey: "id_capital",
+        foreign_name: "name"
+      }
+    ]
+  },
+  "banner":{
+    table:"banner",
+    relations:[
+      {
+        type:"1-1",
+        entity:"type_banner",
+        name:"type",
+        leftKey:"id_type_banner",
+        foreign_name:"name"
+      }
+    ]
+  },
+  "hangouts":{
+    table:"hangouts",
+    relations:[
+      {
+        type:"1-1",
+        entity:"role",
+        name:"role",
+        leftKey:"id_role",
+        foreign_name:"name"
+      }
+    ]
+  },
   "form": {
     table: "form",
     relations: [
@@ -287,9 +352,47 @@ dmt.entities = {
       },
     ]
   },
+  "questiontopic": {
+    table: "questiontopic",
+    relations: [
+      {
+        type: "1-1",
+        name: "user_type",
+        entity: "usertype",
+        leftKey: "id_usertype",
+        foreign_name: "name"
+      },
+      {
+        type: "1-1",
+        name: "category",
+        entity: "category",
+        leftKey: "id_category",
+        foreign_name: "name"
+      },
+    ]
+  },
+  "question": {
+    table: "question",
+    relations: [
+      {
+        type: "1-1",
+        name: "topic",
+        entity: "questiontopic",
+        leftKey: "id_topic",
+        foreign_name: "name"
+      },
+    ]
+  },
   "user_answer":{
     table:"user_answer",
     relations:[
+      {
+        type:"1-1",
+        entity:"service",
+        name:"service",
+        leftKey:"id_service",
+        foreign_name:"name"
+      },
       {
         type:"1-1",
         entity:"question",
@@ -317,6 +420,52 @@ dmt.entities = {
         name:"topic",
         leftKey:"id_topic",
         foreign_name:"name"
+      },
+      {
+        type:"1-1",
+        entity:"status",
+        name:"status",
+        leftKey:"id_status",
+        foreign_name:"name"
+      }
+    ]
+  },
+  "evaluation_request":{
+    table:"evaluation_request",
+    relations:[
+      {
+        type:"1-1",
+        entity:"user",
+        leftKey:"id_user",
+        name:"user",
+        foreign_name:"email"
+      },
+      {
+        type:"1-1",
+        entity:"quesiton",
+        leftKey:"id_quesiton",
+        name:"question",
+        foreign_name:"name"
+      },
+      {
+        type:"1-1",
+        entity:"service",
+        leftKey:"id_service",
+        name:"service",
+        foreign_name:"name"
+      },
+      {
+        type:"1-1",
+        entity:"request_status",
+        leftKey:"id_request_status",
+        name:"status",
+        foreign_name:"name"
+      },
+      {
+        type:"1-n",
+        entity:"chats",
+        name:"chats",
+        rightKey:"id_evaluation_request"
       }
     ]
   }

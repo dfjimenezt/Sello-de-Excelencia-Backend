@@ -113,6 +113,7 @@ var EntityModel = function (info) {
 		}
 		get_query = get_query.replace(new RegExp("{{SELECTION}}", "g"), selection);
 		let query = `CREATE OR REPLACE VIEW view_${info.table}${lang ? "_" + lang : ""} AS ${get_query};`;
+		console.log(query)
 		return query
 	}
 	this.updateView = function () {
