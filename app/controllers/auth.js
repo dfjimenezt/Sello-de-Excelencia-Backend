@@ -189,8 +189,7 @@ var Auth = function() {
                     if (user.active === 0) {
                         throw utiles.informError(203) //user inactive
                     }
-                    delete user.password
-                        // encode
+                    delete user.password // encode
                     var now = new Date()
                     now.setDate(now.getDate() + 15) // the token expires in 15 days
                     var session = {
@@ -240,7 +239,6 @@ var Auth = function() {
             if (user) throw utiles.informError(201) // user already exists
             else {
                 if (body.email === undefined) {
-                    //if(body.password === undefined || body.email === undefined){
                     throw utiles.informError(400)
                 }
                 //Generar password temporal para evaluador a registrar y activar por e-mail
@@ -274,10 +272,7 @@ var Auth = function() {
                     verified: false,
                     terms: body.terms === "true",
                     newsletter: body.newsletter === "true",
-                    //flag_hall: body.flag_hall === "true",
-                    //ranking_hall: (body.ranking_hall) ? parseInt(body.ranking_hall) : null,
                     id_availability: (body.id_availability) ? parseInt(body.id_availability) : null,
-                    //id_level: (body.id_level) ? parseInt(body.id_level) : null,
                     id_city: (body.id_city) ? parseInt(body.id_city) : null,
                     id_region: (body.id_region) ? parseInt(body.id_region) : null,
                     id_country: (body.id_country) ? parseInt(body.id_country) : null,

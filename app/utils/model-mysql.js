@@ -109,12 +109,19 @@ var MysqlModel = function (info) {
       search = search.slice(0, -4)
       search += ")"
     }
+    function resolveEqual(connection, value) {
+			let array = value.split(" ");
+			if (array.length > 1) {
+				return array[0] + connection.escape(array[1]);
+			}
+			return '= ' + connection.escape(value);
+		}
     let conditions = ""
     if (params.filter_fields.length > 0) {
       for (var f in filters) {
         conditions += "("
         for (var v in filters[f]) {
-          conditions += "list." + f + " = " + filters[f][v] + " OR "
+          conditions += "list." + f + resolveEqual(connection, filters[f][v]) + " OR "
         }
         conditions = conditions.slice(0, -4)
         conditions += ") AND "
@@ -135,6 +142,7 @@ var MysqlModel = function (info) {
     query += " ORDER BY list." + params.order +
       " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
     query += "SELECT FOUND_ROWS() as total"
+    console.log(query)
     return resolveQuery(query, connection).then((result) => {
       return { data: result[0], total_results: result[1][0].total }
     })

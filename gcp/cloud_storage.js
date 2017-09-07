@@ -60,7 +60,7 @@ function sendUploadToGCS (req, folder) {
     var uuid = folder
     if (!folder) uuid = generateUUID()
     let extension = req.file.originalname.substring(req.file.originalname.lastIndexOf('.'))
-    const gcsname = uuid + '/' + generateUUID() + extension
+    const gcsname = uuid + '/' + req.file.originalname
 
     const file = bucket.file(gcsname)
     const stream = file.createWriteStream()

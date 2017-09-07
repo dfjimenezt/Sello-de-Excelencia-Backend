@@ -206,7 +206,7 @@ dmt.api= {
                     entity:"service",
                     permissions:{
                         read:"none",
-                        write:"admin_services",
+                        write:"postulate_service",
                         update:"admin_services",
                         delete:"admin_services"
                     }
@@ -347,7 +347,7 @@ dmt.api= {
         },
         {
             controller:"platform",
-            endpoints:[
+            entities:[
                 {
                     entity:"contact",
                     permissions:{

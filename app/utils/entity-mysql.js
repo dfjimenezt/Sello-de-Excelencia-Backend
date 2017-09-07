@@ -312,6 +312,7 @@ var EntityModel = function (info) {
 			query += "WHERE " + where
 		}
 		query += "GROUP BY `key` "
+		console.log(query)
 		for (let r in relation_filters) {
 			for (let k in relation_filters[r]) {
 				let relation = null
@@ -510,6 +511,9 @@ var EntityModel = function (info) {
 		var queryValues = ''
 		var queryWhere = '('
 		table.fields.forEach((f) => {
+			if(f.name == 'timestamp'){
+				return
+			}
 			if (!data[f.name]) {
 				return
 			}
@@ -545,12 +549,14 @@ var EntityModel = function (info) {
 			return this.update(body, { key: body[key] })
 		}*/
 		return resolveQuery(insertIntoTable(table, body, connection), connection).then((base) => {
-			if (base.insertId && entity.translate) {
+			if (base.insertId){
 				body[table.defaultSort] = base.insertId
+			}
+			if (entity.translate) {
 				connection = mysql.createConnection(dbConf)
 				return resolveQuery(updateTranslation(body, connection), connection)
 			} else {
-				return this.updateView()
+				return 
 				//throw utiles.informError(300)
 			}
 		}).then(() => {

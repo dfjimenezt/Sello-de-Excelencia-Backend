@@ -14,16 +14,28 @@ var User = function () {
 	}]
 	BaseModel.apply(this, params)
 	this.getUser = function(email){
-		var query = `SELECT u.*,p.name permission,r.name role,c.id id_category,c.name name_category,t.id id_topic, t.name name_topic
-		FROM user u 
-		LEFT JOIN user_role u_r ON u.id = u_r.id_user 
-		LEFT JOIN role r ON r.id = u_r.id_role 
-		LEFT JOIN permission_role p_r ON p_r.id_role = r.id 
-		LEFT JOIN permission p ON p.id = p_r.id_permission 
-		LEFT JOIN user_category u_c ON u_c.id_user = u.id 
-		LEFT JOIN category c ON u_c.id_category = c.id 
-		LEFT JOIN user_questiontopic u_qt ON u_qt.id_user = u.id 
-		LEFT JOIN questiontopic t ON u_qt.id_topic = t.id 
+		var query = `SELECT u.*,
+			p.name permission,
+			r.name role,
+			c.id id_category,
+			c.name name_category,
+			t.id id_topic, 
+			t.name name_topic,
+			i.id institution_id, 
+			i.name institution_name,
+			i_u.role institution_role,
+			i_u.admin institution_admin
+			FROM user u 
+			LEFT JOIN user_role u_r ON u.id = u_r.id_user 
+			LEFT JOIN role r ON r.id = u_r.id_role 
+			LEFT JOIN permission_role p_r ON p_r.id_role = r.id 
+			LEFT JOIN permission p ON p.id = p_r.id_permission 
+			LEFT JOIN user_category u_c ON u_c.id_user = u.id 
+			LEFT JOIN category c ON u_c.id_category = c.id 
+			LEFT JOIN user_questiontopic u_qt ON u_qt.id_user = u.id 
+			LEFT JOIN questiontopic t ON u_qt.id_topic = t.id 
+			LEFT JOIN institution_user i_u ON i_u.id_user = u.id 
+			LEFT JOIN institution i ON i_u.id_institution = i.id 
 		WHERE u.email = '${email}'`
 		return this.customQuery(query).then(function(data){
 			if(data.length === 0){
@@ -31,9 +43,11 @@ var User = function () {
 			}
 			let	permissions=[]
 			let categories=[];
-			let categories2=[];
-			let topics=[];
-			let topics2=[];
+			let categories2=[]
+			let topics=[]
+			let topics2=[]
+			let institutions =[]
+			let institutions2 =[]
 			for(var i in data){
 				if(data[i].permission && permissions.indexOf(data[i].permission) == -1){
 						permissions.push(data[i].permission)
@@ -49,7 +63,16 @@ var User = function () {
 						topics.push({
 							id:data[i].id_topic,
 							name:data[i].name_topic})
-				}	
+				}
+				if(data[i].institution_id && institutions2.indexOf(data[i].institution_id) == -1){
+					institutions2.push(data[i].institution_id)
+					institutions.push({
+						id: data[i].institution_id,
+						name: data[i].institution_name,
+						role: data[i].institution_role,
+						admin: data[i].institution_admin,
+					})
+			}
 			}
 			var user = data[0]
 			delete user.permission
@@ -57,9 +80,12 @@ var User = function () {
 			delete user.id_topic
 			delete user.name_category
 			delete user.name_topic
+			delete user.institution_id
+			delete user.institution_name
 			user.permissions = permissions
 			user.categories = categories
 			user.topics = topics
+			user.institutions = institutions
 			return user
 		})
 	}

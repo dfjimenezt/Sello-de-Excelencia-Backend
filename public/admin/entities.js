@@ -442,8 +442,8 @@ dmt.entities = {
       },
       {
         type:"1-1",
-        entity:"quesiton",
-        leftKey:"id_quesiton",
+        entity:"question",
+        leftKey:"id_question",
         name:"question",
         foreign_name:"name"
       },
