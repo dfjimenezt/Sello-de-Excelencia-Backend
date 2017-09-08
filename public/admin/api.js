@@ -319,7 +319,7 @@ dmt.api= {
                     entity:"evaluation_request",
                     permissions:{
                         read:"none",
-                        write:"admin_evaluation_request",
+                        write:"create_evaluation_request",
                         update:"admin_evaluation_request",
                         delete:"admin_evaluation_request"
                     }

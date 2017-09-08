@@ -259,6 +259,9 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_entity_user_answer = function (user, params) {
+		if(params.postulate){
+			return model_entity_user_answer.toPostulate(user,params)
+		}
 		return _get(model_entity_user_answer,user,params)
 	}
 	/**
@@ -557,6 +560,16 @@ var question_controller = function () {
  	 * 
 	 */
 	var create_entity_evaluation_request = function (user, body) {
+		if(user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST)==-1){
+			body.id_user = user.id
+			let atime = new Date()
+			atime.setDate(atime.getDate()+20)
+			let ftime = new Date()
+			ftime.setDate(ftime.getDate()+30)
+			body.alert_time = atime
+			body.end_time = ftime
+			body.id_request_status=4
+		}
 		return model_entity_evaluation_request.create(body)
 	}
 	/**
@@ -596,7 +609,7 @@ var question_controller = function () {
 	postMap.set('form', { method: create_entity_form, permits: Permissions.ADMIN_QUESTIONS })
 	postMap.set('user_answer', { method: create_entity_user_answer, permits: Permissions.POSTULATE_SERVICE })
 	postMap.set('status', { method: create_status, permits: Permissions.ADMIN_STATUS })
-	postMap.set('evaluation_request', { method: create_entity_evaluation_request, permits: Permissions.ADMIN_EVALUATION_REQUEST })
+	postMap.set('evaluation_request', { method: create_entity_evaluation_request, permits: Permissions.CREATE_EVALUATION_REQUEST })
 	postMap.set('request_status', { method: create_request_status, permits: Permissions.ADMIN_STATUS })
 	postMap.set('chats', { method: create_chats, permits: Permissions.CREATE_CHAT })
 	/**

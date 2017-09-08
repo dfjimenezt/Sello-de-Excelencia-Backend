@@ -17,6 +17,7 @@
 	"ADMIN_QUESTIONS": "admin_questions",
 	"ADMIN_ANSWERS": "admin_answers",
 	"ADMIN_STATUS": "admin_status",
+	"CREATE_EVALUATION_REQUEST": "create_evaluation_request",
 	"ADMIN_EVALUATION_REQUEST": "admin_evaluation_request",
 	"CREATE_CHAT": "create_chat",
 	"ADMIN_PLATFORM": "admin_platform"

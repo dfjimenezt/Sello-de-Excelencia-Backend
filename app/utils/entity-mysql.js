@@ -58,7 +58,7 @@ var EntityModel = function (info) {
 		let str = [];
 		let table = getTable(relation.entity || relation.table)
 		table.fields.forEach((f) => {
-			str.push('`'+table.name + '_' + relation.name + "`.`" + f.name + "` `" + table.name + '_' + relation.name + "_" + f.name+"`")
+			str.push('`' + table.name + '_' + relation.name + "`.`" + f.name + "` `" + table.name + '_' + relation.name + "_" + f.name + "`")
 		})
 		return str.join(",")
 	}
@@ -93,12 +93,12 @@ var EntityModel = function (info) {
 						baseTable.fields.forEach((f) => {
 							if (f.name !== relation.leftKey) {
 								//fields.push(view + '.' + f.name + ' ' + baseTable.name + '_' + f.name)
-								fields.push('`'+view + '_' + relation.name + '`.`' + f.name + '` `' + baseTable.name + '_' + relation.name + '_' + f.name+'`')
+								fields.push('`' + view + '_' + relation.name + '`.`' + f.name + '` `' + baseTable.name + '_' + relation.name + '_' + f.name + '`')
 							}
 						})
 						translateTable.fields.forEach((f) => {
 							if (f.name !== ety.translate.rightKey) {
-								fields.push('`'+view + '`.`' + translateTable.name + "_" + f.name + '` `' + baseTable.name + '_' + f.name+'`')
+								fields.push('`' + view + '`.`' + translateTable.name + "_" + f.name + '` `' + baseTable.name + '_' + f.name + '`')
 							}
 						})
 						selection += `,${fields.join(',')} `
@@ -166,6 +166,55 @@ var EntityModel = function (info) {
 		queryGet = queryGet.slice(0, -4)
 		var query = 'SELECT * FROM `' + info.table + '` AS list WHERE ' + queryGet + ''
 		return resolveQuery(query, connection)
+	}
+	/**
+			 * From row to json
+			 */
+	this.sintetizeRelation = function (data, relation) {
+		let ety = dmt.entities[relation.entity]
+		let table = getTable(relation.entity)
+		let result = {}
+		table.fields.forEach((f) => {//base data
+			if (f.name === "password") { return } //wont return any password
+			result[f.name] = data[f.name]
+		})
+		if (!ety) {
+			return result
+		}
+		if (ety.translate) {
+			let translate_table = getTable(ety.translate.table)
+			translate_table.fields.forEach((f) => {
+				if (!result[f.name]) {
+					result[f.name] = data[translate_table.name + "_" + f.name]
+				}
+			})
+		}
+		if (ety.relations) {
+			ety.relations.forEach((relation) => {
+				if (relation.type === "1-1") {
+					let object = {}
+					let ety = dmt.entities[relation.entity]
+					let relation_table = getTable(relation.entity || relation.table)
+
+					let fields = relation_table.fields
+					if (ety && ety.translate) {
+						let translate_table = getTable(ety.translate.table)
+						fields = fields.concat(translate_table.fields)
+					}
+					fields.forEach((f) => {
+						if (f.name === "password") { return }
+						if (!object[f.name]) {
+							object[f.name] = data[relation_table.name + '_' + relation.name + '_' + f.name]
+						}
+					})
+					result[relation.name || relation.entity] = object
+				}
+			})
+		}
+		if (relation.intermediate) {
+			result[getTable(info.table).defaultSort] = result[getTable(info.table).defaultSort] || data[relation.intermediate.leftKey]
+		}
+		return result
 	}
 	this.getFiltered = function (params) {
 		var connection = mysql.createConnection(dbConf)
@@ -246,7 +295,7 @@ var EntityModel = function (info) {
 			search = []
 			for (var i in fields) {
 				// TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
-				search.push('`'+fields[i] + "` like " + connection.escape("%" + params.filter.split(" ").join("%") + "%"))
+				search.push('`' + fields[i] + "` like " + connection.escape("%" + params.filter.split(" ").join("%") + "%"))
 			}
 			search = "(" + search.join(" OR ") + ")"
 		}
@@ -257,7 +306,7 @@ var EntityModel = function (info) {
 			for (var f in filters) {
 				conditions += "("
 				for (var v in filters[f]) {
-					conditions += '`'+view +'`.`'+f+'`' + filters[f][v] + " OR "
+					conditions += '`' + view + '`.`' + f + '`' + filters[f][v] + " OR "
 				}
 				conditions = conditions.slice(0, -4)
 				conditions += ") AND "
@@ -367,55 +416,7 @@ var EntityModel = function (info) {
 				}
 			}
 
-			/**
-			 * From row to json
-			 */
-			function sintetizeRelation(data, relation) {
-				let ety = dmt.entities[relation.entity]
-				let table = getTable(relation.entity)
-				let result = {}
-				table.fields.forEach((f) => {//base data
-					if (f.name === "password") { return } //wont return any password
-					result[f.name] = data[f.name]
-				})
-				if (!ety) {
-					return result
-				}
-				if (ety.translate) {
-					let translate_table = getTable(ety.translate.table)
-					translate_table.fields.forEach((f) => {
-						if (!result[f.name]) {
-							result[f.name] = data[translate_table.name + "_" + f.name]
-						}
-					})
-				}
-				if (ety.relations) {
-					ety.relations.forEach((relation) => {
-						if (relation.type === "1-1") {
-							let object = {}
-							let ety = dmt.entities[relation.entity]
-							let relation_table = getTable(relation.entity || relation.table)
 
-							let fields = relation_table.fields
-							if (ety && ety.translate) {
-								let translate_table = getTable(ety.translate.table)
-								fields = fields.concat(translate_table.fields)
-							}
-							fields.forEach((f) => {
-								if (f.name === "password") { return }
-								if (!object[f.name]) {
-									object[f.name] = data[relation_table.name + '_' + relation.name + '_' + f.name]
-								}
-							})
-							result[relation.name || relation.entity] = object
-						}
-					})
-				}
-				if (relation.intermediate) {
-					result[getTable(info.table).defaultSort] = result[getTable(info.table).defaultSort] || data[relation.intermediate.leftKey]
-				}
-				return result
-			}
 			console.log(query)
 			return this.customQuery(query).then((result) => {
 				let data = null
@@ -438,7 +439,7 @@ var EntityModel = function (info) {
 						let table = result[i]
 						for (let j = 0; j < table.length; j++) {
 							let relation = relationlist[i - 1]
-							let entity = sintetizeRelation(table[j], relation)
+							let entity = this.sintetizeRelation(table[j], relation)
 							//let key = entity[getTable(info.table).defaultSort]
 							let key = relation.rightKey
 							if (relation.intermediate) {
@@ -457,7 +458,7 @@ var EntityModel = function (info) {
 				}
 				let results = []
 				for (let i = 0; i < data.length; i++) {
-					let row = sintetizeRelation(data[i], info)
+					let row = this.sintetizeRelation(data[i], info)
 					let key = row[getTable(info.table).defaultSort]
 					if (relations[key]) {
 						for (j in relations[key]) {
@@ -511,7 +512,7 @@ var EntityModel = function (info) {
 		var queryValues = ''
 		var queryWhere = '('
 		table.fields.forEach((f) => {
-			if(f.name == 'timestamp'){
+			if (f.name == 'timestamp') {
 				return
 			}
 			if (!data[f.name]) {
@@ -549,14 +550,14 @@ var EntityModel = function (info) {
 			return this.update(body, { key: body[key] })
 		}*/
 		return resolveQuery(insertIntoTable(table, body, connection), connection).then((base) => {
-			if (base.insertId){
+			if (base.insertId) {
 				body[table.defaultSort] = base.insertId
 			}
 			if (entity.translate) {
 				connection = mysql.createConnection(dbConf)
 				return resolveQuery(updateTranslation(body, connection), connection)
 			} else {
-				return 
+				return
 				//throw utiles.informError(300)
 			}
 		}).then(() => {
@@ -595,7 +596,7 @@ var EntityModel = function (info) {
 				connection = mysql.createConnection(dbConf)
 				return resolveQuery(updateTranslation(body, connection), connection)
 			} else {
-				return 
+				return
 				//throw utiles.informError(300)
 			}
 		}).then(() => {
