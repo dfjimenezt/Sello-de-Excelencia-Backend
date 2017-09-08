@@ -591,8 +591,13 @@ var EntityModel = function (info) {
 		let table = getTable(info.entity)
 
 		return resolveQuery(updateTable(table, body, connection), connection).then(() => {
-			connection = mysql.createConnection(dbConf)
-			return resolveQuery(updateTranslation(body, connection), connection)
+			if (entity.translate) {
+				connection = mysql.createConnection(dbConf)
+				return resolveQuery(updateTranslation(body, connection), connection)
+			} else {
+				return 
+				//throw utiles.informError(300)
+			}
 		}).then(() => {
 			return
 			if (entity.relations) {

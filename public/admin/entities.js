@@ -305,7 +305,7 @@ dmt.entities = {
     ]
   },
   "country":{
-    table:"region",
+    table:"country",
     relations: [
       {
         type: "1-1",

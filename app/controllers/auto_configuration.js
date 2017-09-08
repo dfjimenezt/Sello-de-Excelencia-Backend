@@ -530,7 +530,7 @@ var configuration_controller = function () {
 	}
 	getMap.set('user', { method: get_entity_user, permits: Permissions.ADMIN_USERS })
 	getMap.set('role', { method: get_role, permits: Permissions.NONE })
-	getMap.set('availability', { method: get_availability, permits: Permissions.ADMIN_USERS })
+	getMap.set('availability', { method: get_availability, permits: Permissions.NONE })
 	getMap.set('user_category', { method: get_user_category, permits: Permissions.ADMIN_USERS })
 	getMap.set('user_questiontopic', { method: get_user_questiontopic, permits: Permissions.ADMIN_USERS })
 	getMap.set('permission', { method: get_permission, permits: Permissions.ADMIN_USERS })
@@ -820,10 +820,57 @@ var configuration_controller = function () {
  	 * 
 	 */
 	var update_entity_user = function (user, body) {
+		if(!user){
+			throw utiles.informError(400)
+		}
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_user.update(body,{id:body.id})
+		if(user.id != body.id){
+			if(user.permissions.indexOf(Permissions.ADMIN_USERS)== -1){
+				throw utiles.informError(400)
+			}
+		}
+		let promises = []
+		if(body.categories){
+			promises.push(model_user_category.delete({id_user:user.id}))
+			body.categories.forEach((value)=>{
+				let data = {id_user:body.id,id_category:value.id}
+				promises.push(model_user_category.create(data))
+			},this)
+		}
+		if(body.topics){
+			promises.push(model_user_questiontopic.delete({id_user:user.id}))
+			body.topics.forEach((value)=>{
+				let data = {id_user:body.id,id_topic:value.id}
+				promises.push(model_user_questiontopic.create(data))
+			},this)
+		}
+		return Promise.all(promises)
+		.then((results)=>{
+			return model_entity_user.update(body,{id:body.id})
+		})
+		.then((result)=>{
+			//renew token
+			let User = require('../models/user.js')
+			let userModel = new User() 
+			return userModel.getUser(body.email)
+		}).then((user)=>{
+			delete user.password
+			var now = new Date()
+			var Session = require('../models/session.js')
+			var sessionModel = new Session()
+			now.setDate(now.getDate() + 15) // the token expires in 15 days
+			var session = {
+					token: utiles.sign(user),
+					id_user: user.id,
+					expires: now
+			}
+			sessionModel.create(session)
+			var answer = utiles.informError(0)
+			answer.token = session.token
+			return answer
+		})
 	}
 	/**
 	 * @api {put} api/configuration/role Update role information
@@ -1054,7 +1101,7 @@ var configuration_controller = function () {
 		}
 		return model_hall_of_fame.update(body,{id:body.id})
 	}
-	putMap.set('user', { method: update_entity_user, permits: Permissions.ADMIN_USERS })
+	putMap.set('user', { method: update_entity_user, permits: Permissions.NONE })
 	putMap.set('role', { method: update_role, permits: Permissions.ADMIN_USERS })
 	putMap.set('availability', { method: update_availability, permits: Permissions.ADMIN_USERS })
 	putMap.set('user_category', { method: update_user_category, permits: Permissions.ADMIN_USERS })

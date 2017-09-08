@@ -6,7 +6,9 @@
 var BaseModel = require('../utils/model.js')
 var util = require('util')
 var Country = function () {
-	var params = [{"table":"region","relations":[{"type":"1-1","entity":"region","name":"capital","leftKey":"id_capital","foreign_name":"name"}],"entity":"country","model":"entity"}]
+	var params = [{"table":"country","relations":[
+		{"type":"1-1","entity":"region","name":"capital","leftKey":"id_capital","foreign_name":"name"}
+	],"entity":"country","model":"entity"}]
 	BaseModel.apply(this, params)
 	return this
 };
