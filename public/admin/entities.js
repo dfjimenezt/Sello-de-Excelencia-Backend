@@ -442,6 +442,13 @@ dmt.entities = {
       },
       {
         type:"1-1",
+        entity:"user_answer",
+        leftKey:"id_answer",
+        name:"user_answer",
+        foreign_name:"name"
+      },
+      {
+        type:"1-1",
         entity:"question",
         leftKey:"id_question",
         name:"question",

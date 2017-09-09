@@ -30,7 +30,7 @@ var User_answer = function () {
 			${params['category.id'] ? 'qt.id_category = '+params['category.id'] +' AND ' :''}
 			${params['level'] ? 'q.level = '+params['level'] +' AND ' :''}
 			u_a.id_topic IN (${topics.join(',')}) AND
-			u_a.id NOT IN (SELECT id_question FROM evaluation_request WHERE id_user = '${user.id}')
+			u_a.id NOT IN (SELECT id_answer FROM evaluation_request WHERE id_user = '${user.id}')
 			ORDER BY u_a.${params.order}
 		)
 		LIMIT ${params.limit * (params.page-1)},${params.limit};

@@ -568,7 +568,7 @@ var question_controller = function () {
 			ftime.setDate(ftime.getDate()+30)
 			body.alert_time = atime
 			body.end_time = ftime
-			body.id_request_status=4
+			body.id_request_status=2
 		}
 		return model_entity_evaluation_request.create(body)
 	}
@@ -776,7 +776,18 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_evaluation_request.update(body,{id:body.id})
+		model_entity_evaluation_request.getByUid(""+body.id).then((result)=>{
+			let data = result.data[0]
+			if(user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST)== -1){
+				if(data.id_user != user.id){
+					throw utiles.informError(401)
+				}
+			}
+			if(body.id_request_status == 6){
+				model_entity_user_answer.update({id:data.id_answer,id_status:6})
+			}
+			return model_entity_evaluation_request.update(body,{id:body.id})
+		})
 	}
 	/**
 	 * @api {put} api/question/request_status Update request_status information
@@ -820,7 +831,7 @@ var question_controller = function () {
 	putMap.set('form', { method: update_entity_form, permits: Permissions.ADMIN_QUESTIONS })
 	putMap.set('user_answer', { method: update_entity_user_answer, permits: Permissions.POSTULATE_SERVICE })
 	putMap.set('status', { method: update_status, permits: Permissions.ADMIN_STATUS })
-	putMap.set('evaluation_request', { method: update_entity_evaluation_request, permits: Permissions.ADMIN_EVALUATION_REQUEST })
+	putMap.set('evaluation_request', { method: update_entity_evaluation_request, permits: Permissions.CREATE_EVALUATION_REQUEST })
 	putMap.set('request_status', { method: update_request_status, permits: Permissions.ADMIN_STATUS })
 	putMap.set('chats', { method: update_chats, permits: Permissions.ADMIN_ANSWERS })
 	/**
