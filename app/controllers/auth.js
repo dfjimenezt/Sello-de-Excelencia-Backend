@@ -268,9 +268,9 @@ var Auth = function() {
                     password: pass,
                     tmp_pwd: tmp_pwd_active,
                     points: "0",
-                    active: false,
+                    active: 1,
                     verified: false,
-                    terms: body.terms === "true",
+                    terms: body.terms,
                     newsletter: body.newsletter === "true",
                     id_availability: (body.id_availability) ? parseInt(body.id_availability) : null,
                     id_city: (body.id_city) ? parseInt(body.id_city) : null,
@@ -292,19 +292,19 @@ var Auth = function() {
                             })
                         // add the role manually reduce time
                         user.role = body.role
-
+                        body.id = user.insertId
                         switch (body.role) {
                             case "1":
-                                role = "ciudadano"
+                                role = "Ciudadano"
                                 break
                             case "2":
-                                role = "evaluador"
+                                role = "Evaluador"
                                 break
                             case "3":
-                                role = "administrador"
+                                role = "Administrador"
                                 break
                             case "4":
-                                role = "entidad"
+                                role = "Entidad"
                                 break
                         }
                         // send an email to the user
@@ -320,7 +320,7 @@ var Auth = function() {
                         <p>El equipo del Sello de Excelencia</p>
 												`
                         return utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template).then(() => {
-                            return { message: "Registro Exitoso." }
+                            return login(true,{email:body.email,password:pass_user})
                         })
                     } else {
                         //if there was an error on creating the user
