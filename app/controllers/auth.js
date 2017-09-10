@@ -307,6 +307,17 @@ var Auth = function() {
                                 role = "Entidad"
                                 break
                         }
+                        if(body.role == 4){
+                            var institution_user_model = require("../models/institution_user.js")
+                            var institution_user = new institution_user_model()
+                            institution_user.create({
+                                id_institution: body.institution.id,
+                                id_user: body.id
+                            })
+                            var institution_model = require("../models/entity_institution.js")
+                            var institution = new institution_model()
+                            institution.update(body.institution,{id:body.institution.id})
+                        }
                         // send an email to the user
                         let token = utiles.sign(body.email)
                         let template = `
@@ -409,6 +420,16 @@ var Auth = function() {
         return register(token, body, '3')
     }
 
+    /**
+     * @api {post} /auth/register_entity Register a new Entity
+     * @apiVersion 0.0.1
+     * @apiName registerEntity
+     * @apiGroup Auth
+     * @apiPermission none
+     */
+    var register_entity = function(token, body) {
+        return register(token, body, '4')
+    }
     //-------------------------------------------------------------------------
 
     postMap.set('login', { method: login, permits: Permissions.NONE })
@@ -416,6 +437,7 @@ var Auth = function() {
     postMap.set('recover', { method: recover, permits: Permissions.NONE })
     postMap.set('register_user', { method: register_user, permits: Permissions.NONE })
     postMap.set('register_evaluator', { method: register_evaluator, permits: Permissions.NONE })
+    postMap.set('register_entity', { method: register_entity, permits: Permissions.NONE })
     postMap.set('register_administrator', { method: register_administrator, permits: Permissions.NONE })
 
     var params = [getMap, postMap, putMap, null]
