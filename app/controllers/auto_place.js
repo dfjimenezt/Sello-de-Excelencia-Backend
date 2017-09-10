@@ -267,6 +267,7 @@ var place_controller = function () {
  	 * 
 	 */
 	var create_entity_institution = function (user, body) {
+		body.id_user_creator = user.id
 		return model_entity_institution.create(body)
 	}
 	/**
@@ -374,6 +375,19 @@ var place_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
+		if (!user.institutions) {
+			throw utiles.informError(401)
+		}
+		let forbidden = true
+		user.institutions.forEach((institution)=>{
+			if(institution.id == body.id){
+				forbidden = false
+			}
+		})
+		if(forbidden){
+			throw utiles.informError(401)
+		}
+		body.id_user_creator = user.id
 		return model_entity_institution.update(body,{id:body.id})
 	}
 	/**
@@ -450,7 +464,7 @@ var place_controller = function () {
 		}
 		return model_entity_country.update(body,{id:body.id})
 	}
-	putMap.set('institution', { method: update_entity_institution, permits: Permissions.ADMIN_INSTITUTION })
+	putMap.set('institution', { method: update_entity_institution, permits: Permissions.NONE })
 	putMap.set('institutionType', { method: update_institutionType, permits: Permissions.ADMIN_INSTITUTION })
 	putMap.set('city', { method: update_entity_city, permits: Permissions.ADMIN_CITIES_REGIONS })
 	putMap.set('region', { method: update_entity_region, permits: Permissions.ADMIN_CITIES_REGIONS })
