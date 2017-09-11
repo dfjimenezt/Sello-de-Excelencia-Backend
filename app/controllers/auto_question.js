@@ -783,9 +783,20 @@ var question_controller = function () {
 					throw utiles.informError(401)
 				}
 			}
-			if(body.id_request_status == 6){
+			
+			if(body.id_request_status == 6){//add points
 				model_entity_user_answer.update({id:data.id_answer,id_status:6})
 			}
+			let points = require('../models/points.js')
+			let model_points = new points()
+			model_points.create({
+				prev_points:0,
+				value:10,
+				result:10,
+				justification:'Calificación de Requisito',
+				id_user:user.id,
+				id_motives:1
+			})
 			return model_entity_evaluation_request.update(body,{id:body.id})
 		})
 	}
