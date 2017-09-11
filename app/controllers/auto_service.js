@@ -367,10 +367,20 @@ var service_controller = function () {
 				let data ={
 					id_service:body.id,
 					id_status:body.current_status,
-					valid_to:valid
+					valid_to:valid,
+					level:_old.data[0].level
 				}
 				if(body.level){
 					data.level = body.level
+				}
+				if(body.current_status == 5){
+					//TODO:
+					//get all requisites
+					//foreach requisite bring 3 evaluators who match the topic
+					//create an evaluation_request per evaluator 
+					var user_answer = require('../models/user_answer.js')
+					let model_user_answer = new user_answer()
+					model_user_answer.update({id_status:5},{id_service:body.id})
 				}
 				return create_entity_service_status(user,data)
 			}
