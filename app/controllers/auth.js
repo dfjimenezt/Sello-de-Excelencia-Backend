@@ -33,11 +33,7 @@ var Auth = function() {
 			if (!params.email) { throw utiles.informError(400) }
 			return userModel.getUser(params.email).then((user) => {
 				if (!user) throw utiles.informError(202) // user doesnt exists
-				if (params.active != undefined && parseInt(params.active) >= 0 && parseInt(params.active) <=1){
-					return userModel.update({ active: parseInt(params.active), verified: 1 }, { id: user.id })
-				}else{
-					return { message : "debe tener un argumeto active[0,1][inactivo, activo]" }
-				}
+					return userModel.update({ active: 1, verified: 1 }, { id: user.id })
 			})
     }
 

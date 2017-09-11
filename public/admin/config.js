@@ -3,7 +3,7 @@ if (!dmt) {
 }
 dmt.config = [
 	{
-		section: "Usuarios",
+		section: "Plataforma",
 		path: "usuarios",
 		pages: [
 			{
@@ -26,7 +26,49 @@ dmt.config = [
 						templateUrl: "views/mutuapoly/detail.html"
 					}
 				]
-			}
+			},
+			{
+				name: "Banner",
+				path: "banner",
+				entity: "banner",
+				controller: "listItemExtendedController",
+				templateUrl: "views/mutuapoly/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/mutuapoly/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/mutuapoly/detail.html"
+					}
+				]
+			},
+			{
+				name: "Footer",
+				path: "footer",
+				entity: "footer",
+				controller: "listItemExtendedController",
+				templateUrl: "views/mutuapoly/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/mutuapoly/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/mutuapoly/detail.html"
+					}
+				]
+			},
 		]
 	},
 	{
@@ -74,6 +116,27 @@ dmt.config = [
 				name: "Servicios",
 				path: "servicios",
 				entity: "service",
+				controller: "listItemExtendedController",
+				templateUrl: "views/mutuapoly/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/mutuapoly/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/mutuapoly/detail.html"
+					}
+				]
+			},
+			{
+				name: "Requistos",
+				path: "user_answer",
+				entity: "user_answer",
 				controller: "listItemExtendedController",
 				templateUrl: "views/mutuapoly/list.html",
 				pages: [
