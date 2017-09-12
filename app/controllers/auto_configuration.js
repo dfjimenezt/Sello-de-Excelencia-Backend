@@ -833,11 +833,13 @@ var configuration_controller = function () {
 		}
 		let promises = []
 		if(body.categories){
-			promises.push(model_user_category.delete({id_user:user.id}))
-			body.categories.forEach((value)=>{
-				let data = {id_user:body.id,id_category:value.id}
-				promises.push(model_user_category.create(data))
-			},this)
+			promises.push(model_user_category.delete({id_user:user.id})).then(()=>{
+				body.categories.forEach((value)=>{
+					let data = {id_user:body.id,id_category:value.id}
+					promises.push(model_user_category.create(data))
+				},this)
+			})
+			
 		}
 		if(body.topics){
 			promises.push(model_user_questiontopic.delete({id_user:user.id}))

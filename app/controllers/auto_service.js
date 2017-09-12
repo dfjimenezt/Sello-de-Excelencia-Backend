@@ -322,13 +322,14 @@ var service_controller = function () {
  	 * 
 	 */
 	var create_entity_service_comment = function (user, body) {
+		body.id_user = user.id
 		return model_entity_service_comment.create(body)
 	}
 	postMap.set('service', { method: create_entity_service, permits: Permissions.POSTULATE_SERVICE })
 	postMap.set('category', { method: create_category, permits: Permissions.ADMIN_SERVICES })
 	postMap.set('status', { method: create_status, permits: Permissions.ADMIN_SERVICES })
 	postMap.set('service_status', { method: create_entity_service_status, permits: Permissions.ADMIN_SERVICES })
-	postMap.set('service_comment', { method: create_entity_service_comment, permits: Permissions.POSTULATE_SERVICE })
+	postMap.set('service_comment', { method: create_entity_service_comment, permits: Permissions.NONE })
 	/**
 	 * @api {put} api/service/service Update service information
 	 * @apiName Putservice

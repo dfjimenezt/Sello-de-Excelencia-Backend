@@ -97,6 +97,10 @@ dmt.config = [
 				]
 			},
 			{
+				name: "Instituciones - Usuarios",
+				path: "instituciones_usuarios",
+				entity: "institution_user"
+			},{
 				name: "Ciudades",
 				path: "ciudades",
 				entity: "city"
@@ -174,6 +178,7 @@ dmt.config = [
 				path: "evaluaciones",
 				entity: "evaluation_request"
 			}
+			
 		]
 	},
 	{
@@ -181,15 +186,11 @@ dmt.config = [
 		path: "foro",
 		pages: [
 			{
-				name: "Temas",
-				path: "temas",
-				entity: "topic"
-			},
-			{
-				name: "Sesiones",
-				path: "sessions",
-				entity: "message"
-			}]
+				name: "Aprende",
+				path: "aprende",
+				entity: "hangouts"
+			}
+		]
 	}
 ]
 try {

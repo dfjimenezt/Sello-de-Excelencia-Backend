@@ -273,6 +273,25 @@ dmt.entities = {
       },
     ]
   },
+  "institution_user": {
+    table: "institution_user",
+    relations: [
+      {
+        type: "1-1",
+        entity: "institution",
+        name: "institution",
+        leftKey: "id_institution",
+        foreign_name: "name"
+      },
+      {
+        type: "1-1",
+        entity: "user",
+        name: "user",
+        leftKey: "id_user",
+        foreign_name: "email"
+      }
+    ]
+  },
   "city": {
     table: "city",
     relations: [

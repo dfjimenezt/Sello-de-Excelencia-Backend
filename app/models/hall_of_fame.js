@@ -13,6 +13,21 @@ var Hall_of_fame = function () {
 		model:'mysql'
 	}]
 	BaseModel.apply(this, params)
+	this.updateTop = function(){
+		let q = 'INSERT INTO `stamp`.`hall_of_fame` (`points`,`date`,`name`,`id_user`,`id_role`)  ( '+
+		'SELECT SUM(`p`.`value`) points, CURRENT_DATE() date, `u`.`name`,`u`.`id`,`u_r`.`id_role` '+
+		'FROM `stamp`.`points` `p` '+
+		'LEFT JOIN `stamp`.`user` `u` on `u`.`id` = `p`.`id_user` '+
+		'JOIN `stamp`.`user_role` `u_r` on `u_r`.`id_user` = `u`.`id` '+
+		'WHERE `u_r`.`id_role` = 2 GROUP BY `p`.`id_user` ORDER BY points desc LIMIT 10 );'+
+		'INSERT INTO `stamp`.`hall_of_fame` (`points`,`date`,`name`,`id_user`,`id_role`)  ( '+
+		'SELECT SUM(`p`.`value`) points, CURRENT_DATE() date, `u`.`name`,`u`.`id`,`u_r`.`id_role` '+
+		'FROM `stamp`.`points` `p` '+
+		'LEFT JOIN `stamp`.`user` `u` on `u`.`id` = `p`.`id_user` '+
+		'JOIN `stamp`.`user_role` `u_r` on `u_r`.`id_user` = `u`.`id` '+
+		'WHERE `u_r`.`id_role` = 4 GROUP BY `p`.`id_user` ORDER BY points desc LIMIT 10 );'
+		return this.customQuery(q)
+	}
 	return this
 };
 util.inherits(Hall_of_fame, BaseModel)

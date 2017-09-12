@@ -35,7 +35,7 @@ var question_controller = function () {
 	var model_media = new media()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
-	var _get = function(model,user,params){
+	var _get = function (model, user, params) {
 		let key = model.getPrimaryKey()
 		if (params.filter_field) {
 			if (typeof params.filter_field == 'string') {
@@ -94,7 +94,7 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_entity_question = function (user, params) {
-		return _get(model_entity_question,user,params)
+		return _get(model_entity_question, user, params)
 	}
 	/**
 	 * @api {get} api/question/questiontopic Request questiontopic information
@@ -125,7 +125,7 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_entity_questiontopic = function (user, params) {
-		return _get(model_entity_questiontopic,user,params)
+		return _get(model_entity_questiontopic, user, params)
 	}
 	/**
 	 * @api {get} api/question/usertype Request usertype information
@@ -154,7 +154,7 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_usertype = function (user, params) {
-		return _get(model_usertype,user,params)
+		return _get(model_usertype, user, params)
 	}
 	/**
 	 * @api {get} api/question/category_questions Request category_questions information
@@ -184,7 +184,7 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_category_questions = function (user, params) {
-		return _get(model_category_questions,user,params)
+		return _get(model_category_questions, user, params)
 	}
 	/**
 	 * @api {get} api/question/form Request form information
@@ -215,7 +215,7 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_entity_form = function (user, params) {
-		return _get(model_entity_form,user,params)
+		return _get(model_entity_form, user, params)
 	}
 	/**
 	 * @api {get} api/question/user_answer Request user_answer information
@@ -259,10 +259,10 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_entity_user_answer = function (user, params) {
-		if(params.postulate){
-			return model_entity_user_answer.toPostulate(user,params)
+		if (params.postulate) {
+			return model_entity_user_answer.toPostulate(user, params)
 		}
-		return _get(model_entity_user_answer,user,params)
+		return _get(model_entity_user_answer, user, params)
 	}
 	/**
 	 * @api {get} api/question/status Request status information
@@ -294,7 +294,7 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_status = function (user, params) {
-		return _get(model_status,user,params)
+		return _get(model_status, user, params)
 	}
 	/**
 	 * @api {get} api/question/evaluation_request Request evaluation_request information
@@ -332,7 +332,7 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_entity_evaluation_request = function (user, params) {
-		return _get(model_entity_evaluation_request,user,params)
+		return _get(model_entity_evaluation_request, user, params)
 	}
 	/**
 	 * @api {get} api/question/request_status Request request_status information
@@ -361,7 +361,7 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_request_status = function (user, params) {
-		return _get(model_request_status,user,params)
+		return _get(model_request_status, user, params)
 	}
 	/**
 	 * @api {get} api/question/chats Request chats information
@@ -393,7 +393,7 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_chats = function (user, params) {
-		return _get(model_chats,user,params)
+		return _get(model_chats, user, params)
 	}
 	getMap.set('question', { method: get_entity_question, permits: Permissions.NONE })
 	getMap.set('questiontopic', { method: get_entity_questiontopic, permits: Permissions.NONE })
@@ -509,18 +509,18 @@ var question_controller = function () {
 	var create_entity_user_answer = function (user, body, files) {
 		body.id_user = user.id
 		body.id_status = 1
-		if(files.file){
+		if (files.file) {
 			return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type)
-			.then((url) => {
-				return model_media.create({
-					url: url,
-					type: files.file.type
+				.then((url) => {
+					return model_media.create({
+						url: url,
+						type: files.file.type
+					})
+				}).then((media) => {
+					body.id_media = media.insertId
+					return model_entity_user_answer.create(body)
 				})
-			}).then((media)=>{
-				body.id_media= media.insertId
-				return model_entity_user_answer.create(body)
-			})
-		}else{
+		} else {
 			return model_entity_user_answer.create(body)
 		}
 	}
@@ -560,15 +560,15 @@ var question_controller = function () {
  	 * 
 	 */
 	var create_entity_evaluation_request = function (user, body) {
-		if(user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST)==-1){
+		if (user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST) == -1) {
 			body.id_user = user.id
 			let atime = new Date()
-			atime.setDate(atime.getDate()+20)
+			atime.setDate(atime.getDate() + 20)
 			let ftime = new Date()
-			ftime.setDate(ftime.getDate()+30)
+			ftime.setDate(ftime.getDate() + 30)
 			body.alert_time = atime
 			body.end_time = ftime
-			body.id_request_status=2
+			body.id_request_status = 2
 		}
 		return model_entity_evaluation_request.create(body)
 	}
@@ -599,7 +599,7 @@ var question_controller = function () {
  	 * 
 	 */
 	var create_chats = function (user, body) {
-		body.id_sender= user.id
+		body.id_sender = user.id
 		return model_chats.create(body)
 	}
 	postMap.set('question', { method: create_entity_question, permits: Permissions.ADMIN_QUESTIONS })
@@ -632,7 +632,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_question.update(body,{id:body.id})
+		return model_entity_question.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/question/questiontopic Update questiontopic information
@@ -650,7 +650,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_questiontopic.update(body,{id:body.id})
+		return model_entity_questiontopic.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/question/usertype Update usertype information
@@ -666,7 +666,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_usertype.update(body,{id:body.id})
+		return model_usertype.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/question/category_questions Update category_questions information
@@ -683,7 +683,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_category_questions.update(body,{id:body.id})
+		return model_category_questions.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/question/form Update form information
@@ -701,7 +701,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_form.update(body,{id:body.id})
+		return model_entity_form.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/question/user_answer Update user_answer information
@@ -732,7 +732,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_user_answer.update(body,{id:body.id})
+		return model_entity_user_answer.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/question/status Update status information
@@ -751,7 +751,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_status.update(body,{id:body.id})
+		return model_status.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/question/evaluation_request Update evaluation_request information
@@ -776,35 +776,37 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		model_entity_evaluation_request.getByUid(""+body.id).then((result)=>{
+		model_entity_evaluation_request.getByUid("" + body.id).then((result) => {
 			let data = result.data[0]
-			if(user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST)== -1){
-				if(data.id_user != user.id){
+			if (user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST) == -1) {
+				if (data.id_user != user.id) {
 					throw utiles.informError(401)
 				}
 			}
-			if(body.id_request_status == 6){//add points
-				model_entity_user_answer.update({id:data.id_answer,id_status:6})
+			if (body.id_request_status == 6) {//add points
+				model_entity_user_answer.update({ id: data.id_answer, id_status: 6 })
 			}
-			
+
 			let motives = require('../models/motives.js')
 			let model_motives = new motives()
 
-			model_motives.getByUid('1').then((results)=>{
-				let point = results.data.data[0]
-				let points = require('../models/points.js')
-				let model_points = new points()
-				model_points.create({
-					prev_points:0,
-					value:point.points || 10,
-					result:point.points || 10,
-					justification:'Calificación de Requisito',
-					id_user:user.id,
-					id_motives:1
+			if (body.id_request_status == 4 || body.id_request_status == 5) {//add points
+				model_motives.getByUid('1').then((results) => {
+					let point = results[0]
+					let points = require('../models/points.js')
+					let model_points = new points()
+					model_points.create({
+						prev_points: 0,
+						value: point.points || 10,
+						result: point.points || 10,
+						justification: 'Calificación de Requisito',
+						id_user: user.id,
+						id_motives: 1
+					})
 				})
-			})
-			
-			return model_entity_evaluation_request.update(body,{id:body.id})
+			}
+
+			return model_entity_evaluation_request.update(body, { id: body.id })
 		})
 	}
 	/**
@@ -821,7 +823,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_request_status.update(body,{id:body.id})
+		return model_request_status.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/question/chats Update chats information
@@ -840,7 +842,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_chats.update(body,{id:body.id})
+		return model_chats.update(body, { id: body.id })
 	}
 	putMap.set('question', { method: update_entity_question, permits: Permissions.ADMIN_QUESTIONS })
 	putMap.set('questiontopic', { method: update_entity_questiontopic, permits: Permissions.ADMIN_QUESTIONS })
@@ -872,7 +874,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_question.delete(body,{id:body.id})
+		return model_entity_question.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/question/questiontopic Delete questiontopic information
@@ -890,7 +892,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_questiontopic.delete(body,{id:body.id})
+		return model_entity_questiontopic.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/question/usertype Delete usertype information
@@ -906,7 +908,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_usertype.delete(body,{id:body.id})
+		return model_usertype.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/question/category_questions Delete category_questions information
@@ -923,7 +925,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_category_questions.delete(body,{id:body.id})
+		return model_category_questions.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/question/form Delete form information
@@ -941,7 +943,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_form.delete(body,{id:body.id})
+		return model_entity_form.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/question/user_answer Delete user_answer information
@@ -972,7 +974,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_user_answer.delete(body,{id:body.id})
+		return model_entity_user_answer.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/question/status Delete status information
@@ -991,7 +993,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_status.delete(body,{id:body.id})
+		return model_status.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/question/evaluation_request Delete evaluation_request information
@@ -1016,7 +1018,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_evaluation_request.delete(body,{id:body.id})
+		return model_entity_evaluation_request.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/question/request_status Delete request_status information
@@ -1032,7 +1034,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_request_status.delete(body,{id:body.id})
+		return model_request_status.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/question/chats Delete chats information
@@ -1051,7 +1053,7 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_chats.delete(body,{id:body.id})
+		return model_chats.delete(body, { id: body.id })
 	}
 	deleteMap.set('question', { method: delete_entity_question, permits: Permissions.ADMIN_QUESTIONS })
 	deleteMap.set('questiontopic', { method: delete_entity_questiontopic, permits: Permissions.ADMIN_QUESTIONS })
