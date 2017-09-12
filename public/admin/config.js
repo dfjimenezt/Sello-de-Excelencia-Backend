@@ -69,6 +69,11 @@ dmt.config = [
 					}
 				]
 			},
+			{
+				name: "Logos",
+				path: "logos",
+				entity: "config",
+			}
 		]
 	},
 	{

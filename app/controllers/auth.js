@@ -429,8 +429,30 @@ var Auth = function() {
     }
     //-------------------------------------------------------------------------
 
+    var renewToken = function(user,body){
+        if(!user.id){
+            throw utiles.informError(400)
+        }
+        return userModel.getUser(user.email).then((user)=>{
+			delete user.password
+			var now = new Date()
+			var Session = require('../models/session.js')
+			var sessionModel = new Session()
+			now.setDate(now.getDate() + 15) // the token expires in 15 days
+			var session = {
+					token: utiles.sign(user),
+					id_user: user.id,
+					expires: now
+			}
+			sessionModel.create(session)
+			var answer = utiles.informError(0)
+			answer.token = session.token
+			return answer
+		})
+    }
     postMap.set('login', { method: login, permits: Permissions.NONE })
     postMap.set('login_fb', { method: login, permits: Permissions.NONE })
+    postMap.set('renew', { method: renewToken, permits: Permissions.NONE })
     postMap.set('recover', { method: recover, permits: Permissions.NONE })
     postMap.set('register_user', { method: register_user, permits: Permissions.NONE })
     postMap.set('register_evaluator', { method: register_evaluator, permits: Permissions.NONE })

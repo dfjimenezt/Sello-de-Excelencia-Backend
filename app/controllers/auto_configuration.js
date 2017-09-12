@@ -831,6 +831,7 @@ var configuration_controller = function () {
 				throw utiles.informError(400)
 			}
 		}
+		
 		let promises = []
 		if(body.categories){
 			promises.push(model_user_category.delete({id_user:user.id})).then(()=>{
@@ -842,37 +843,14 @@ var configuration_controller = function () {
 			
 		}
 		if(body.topics){
-			promises.push(model_user_questiontopic.delete({id_user:user.id}))
-			body.topics.forEach((value)=>{
-				let data = {id_user:body.id,id_topic:value.id}
-				promises.push(model_user_questiontopic.create(data))
-			},this)
+			promises.push(model_user_questiontopic.delete({id_user:user.id})).then(()=>{
+				body.topics.forEach((value)=>{
+					let data = {id_user:body.id,id_topic:value.id}
+					promises.push(model_user_questiontopic.create(data))
+				},this)
+			})
 		}
-		return Promise.all(promises)
-		.then((results)=>{
-			return model_entity_user.update(body,{id:body.id})
-		})
-		.then((result)=>{
-			//renew token
-			let User = require('../models/user.js')
-			let userModel = new User() 
-			return userModel.getUser(body.email)
-		}).then((user)=>{
-			delete user.password
-			var now = new Date()
-			var Session = require('../models/session.js')
-			var sessionModel = new Session()
-			now.setDate(now.getDate() + 15) // the token expires in 15 days
-			var session = {
-					token: utiles.sign(user),
-					id_user: user.id,
-					expires: now
-			}
-			sessionModel.create(session)
-			var answer = utiles.informError(0)
-			answer.token = session.token
-			return answer
-		})
+		return model_entity_user.update(body,{id:body.id})
 	}
 	/**
 	 * @api {put} api/configuration/role Update role information
