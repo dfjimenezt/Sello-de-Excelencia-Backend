@@ -441,6 +441,13 @@ var Auth = function() {
     }
     //-------------------------------------------------------------------------
 
+    /**
+     * @api {post} /auth/renew Gets a new token for a given user
+     * @apiVersion 0.0.1
+     * @apiName renew
+     * @apiGroup Auth
+     * @apiPermission none
+     */
     var renewToken = function(user,body){
         if(!user.id){
             throw utiles.informError(400)
@@ -462,9 +469,45 @@ var Auth = function() {
 			return answer
 		})
     }
+
+    /**
+     * @api {post} /auth/password Updates the password of a given user
+     * @apiVersion 0.0.1
+     * @apiName password
+     * @apiGroup Auth
+     * @apiPermission none
+     * @apiDescription Gets an old password and sets a new one
+     *
+     * @apiParam {String} old Old password
+     * @apiParam {String} password New password
+     */
+    var password = function(user,body){
+        if(!user.id){
+            throw utiles.informError(400)
+        }
+        body.id = user.id
+        return userModel.getUser(user.email).then((user)=>{
+			var pass = utiles.createHmac('sha256')
+            pass.update(body.old)
+            pass = pass.digest('hex')
+            if (user.password === pass) {
+                if (user.active === 0) {
+                    throw utiles.informError(203) //user inactive
+                }
+                var pass = utiles.createHmac('sha256')
+                pass.update(body.password)
+                pass = pass.digest('hex')
+                userModel.update({id:body.id,password:pass,tmp_pwd:0},{id:body.id})
+                return utiles.informError(0)
+            }else{
+                throw utiles.informError(200)
+            }
+		})
+    }
     postMap.set('login', { method: login, permits: Permissions.NONE })
     postMap.set('login_fb', { method: login, permits: Permissions.NONE })
     postMap.set('renew', { method: renewToken, permits: Permissions.NONE })
+    postMap.set('password', { method: password, permits: Permissions.NONE })
     postMap.set('recover', { method: recover, permits: Permissions.NONE })
     postMap.set('register_user', { method: register_user, permits: Permissions.NONE })
     postMap.set('register_evaluator', { method: register_evaluator, permits: Permissions.NONE })
