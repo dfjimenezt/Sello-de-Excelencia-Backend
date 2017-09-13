@@ -265,7 +265,7 @@ var Auth = function() {
                     password: pass,
                     tmp_pwd: tmp_pwd_active,
                     points: "0",
-                    active: 1,
+                    active: 0,
                     verified: false,
                     terms: body.terms,
                     newsletter: body.newsletter === "true",
@@ -315,6 +315,18 @@ var Auth = function() {
                             var institution = new institution_model()
                             institution.update(body.institution,{id:body.institution.id})
                         }
+                        if(body.role == 2){
+                            var user_category = require('../models/user_category.js')
+                            var model_user_category = new user_category()
+                            body.categories.forEach((value)=>{
+                                let data = {id_user:body.id,id_category:value.id}
+                                promises.push(model_user_category.create(data))
+                            },this)
+                            body.topics.forEach((value)=>{
+                                let data = {id_user:body.id,id_topic:value.id}
+                                promises.push(model_user_questiontopic.create(data))
+                            },this)
+                        }
                         // send an email to the user
                         let token = utiles.sign(body.email)
                         let template = `
@@ -328,7 +340,7 @@ var Auth = function() {
                         <p>El equipo del Sello de Excelencia</p>
 												`
                         return utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template).then(() => {
-                            return login(true,{email:body.email,password:pass_user})
+                            return {error:utiles.informError(0),data:body}
                         })
                     } else {
                         //if there was an error on creating the user

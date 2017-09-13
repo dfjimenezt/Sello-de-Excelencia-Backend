@@ -831,26 +831,27 @@ var configuration_controller = function () {
 				throw utiles.informError(400)
 			}
 		}
-		
-		let promises = []
-		if(body.categories){
-			promises.push(model_user_category.delete({id_user:user.id})).then(()=>{
+		return model_entity_user.update(body,{id:body.id}).then(()=>{
+			let toppromises = []
+			if(body.categories){
+				toppromises.push(model_user_category.delete({id_user:user.id}))
+			}
+			if(body.topics){
+				toppromises.push(model_user_questiontopic.delete({id_user:user.id}))
+			}
+			return Promise.all(toppromises).then(()=>{
+				let promises = []
 				body.categories.forEach((value)=>{
 					let data = {id_user:body.id,id_category:value.id}
 					promises.push(model_user_category.create(data))
 				},this)
-			})
-			
-		}
-		if(body.topics){
-			promises.push(model_user_questiontopic.delete({id_user:user.id})).then(()=>{
 				body.topics.forEach((value)=>{
 					let data = {id_user:body.id,id_topic:value.id}
 					promises.push(model_user_questiontopic.create(data))
 				},this)
+				return Promise.all(promises)
 			})
-		}
-		return model_entity_user.update(body,{id:body.id})
+		})
 	}
 	/**
 	 * @api {put} api/configuration/role Update role information
