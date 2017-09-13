@@ -39,7 +39,7 @@ pipelines:
             # Finish deploy (--log-http --verbosity=debug) 
             - gcloud config set project ${CLOUDSDK_CORE_PROJECT}        
             - gcloud --quiet --verbosity=error app deploy app.yaml --promote --stop-previous-version -v ${VERSION_UNDERSCORE}            
-            - ./deploy/slack/slack.sh
+            # - ./deploy/slack/slack.sh
     feature/*:
       - step:
           image: java:openjdk-9 # This step uses its own image
