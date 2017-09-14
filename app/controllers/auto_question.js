@@ -562,14 +562,21 @@ var question_controller = function () {
 	 */
 	var create_entity_evaluation_request = function (user, body) {
 		if (user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST) == -1) {
-			body.id_user = user.id
-			let atime = new Date()
-			atime.setDate(atime.getDate() + 20)
-			let ftime = new Date()
-			ftime.setDate(ftime.getDate() + 30)
-			body.alert_time = atime
-			body.end_time = ftime
-			body.id_request_status = 2
+			return model_request_status.getByUid('2')
+				.then((result) => {
+					let _status = result[0]
+					let duration = _status.duration
+					let alarm = duration - _status.pre_end
+					body.id_user = user.id
+					let atime = new Date()
+					atime.setDate(atime.getDate() + alarm)
+					let ftime = new Date()
+					ftime.setDate(ftime.getDate() + duration)
+					body.alert_time = atime
+					body.end_time = ftime
+					body.id_request_status = 2
+					return model_entity_evaluation_request.create(body)
+				})
 		}
 		return model_entity_evaluation_request.create(body)
 	}
@@ -602,19 +609,19 @@ var question_controller = function () {
 	var create_chats = function (user, body) {
 		body.id_sender = user.id
 
-		entity_evaluation_request.getByUid(''+body.id_evaluation_request).then((result)=>{
+		entity_evaluation_request.getByUid('' + body.id_evaluation_request).then((result) => {
 			let request = result.data[0]
-			if(request.id_user != body.id_sender){ //entity
+			if (request.id_user != body.id_sender) { //entity
 				return request.id_user
-			}else{
-				entity_user_answer.getByUid(''+request.id_answer).then((result)=>{
+			} else {
+				entity_user_answer.getByUid('' + request.id_answer).then((result) => {
 					return result.data[0].id_user
 				})
 			}
-		}).then((id_user)=>{
-			return model_user.getByUid(''+id_user)
-		}).then((result)=>{
-			let user = result.data[0]
+		}).then((id_user) => {
+			return model_user.getByUid('' + id_user)
+		}).then((result) => {
+			let user = result[0]
 			let template = `
 			<p>Hola ${user.name} </p>
 			<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
@@ -624,7 +631,7 @@ var question_controller = function () {
 
 			<p>El equipo del Sello de Excelencia</p>`
 
-			utiles.sendEmail(entity.email,null,null,
+			utiles.sendEmail(entity.email, null, null,
 				'Nuevo mensaje - Sello de Excelencia',
 				template)
 		})
@@ -804,36 +811,53 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		model_entity_evaluation_request.getByUid('' + body.id).then((result) => {
-			let data = result.data[0]
-			if (user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST) == -1) {
-				if (data.id_user != user.id) {
-					throw utiles.informError(401)
+		let _status = null
+		return model_request_status.getByUid(body.id_request_status)
+			.then((result) => {
+				_status = result[0]
+				return model_entity_evaluation_request.getByUid('' + body.id)
+			})
+			.then((result) => {
+				let data = result.data[0]
+				if (user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST) == -1) {
+					if (data.id_user != user.id) {
+						throw utiles.informError(401)
+					}
 				}
-			}
-			let evaluator_template = ''
-			let entity_template = ''
-			//5 Rechazado
-			if (body.id_request_status == 5) {//add points
-				evaluator_template = '<p>Has calificado un requisito como NO CUMPLE. Agradecemos tu retroalimentación a la entidad.<p></p>Gracias por tu evaluación</p>'
-				entity_template = '<p>Han Rechazado un requisito de tu postulación</p><p>Gracias por participar en el Sello de Excelencia</p>'
-				model_points.addPoints(user.id,1,'Calificación de Requisito')
-			}
-			//6 Retroalimentación
-			if (body.id_request_status == 6) {
-				evaluator_template = '<p>Has solicitado más información a la entidad.</p><p>Gracias por evaluar</p>'
-				entity_template = '<p>Han solicitado más información sobre tu requisito.</p><p>Gracias por participar</p>'
-				model_entity_user_answer.update({ id: data.id_answer, id_status: 6 })
-			}
-			//7 Cumple
-			if (body.id_request_status == 7) {//add points
-				evaluator_template = '<p>Has calificado un requisito como CUMPLE.</p><p>Gracias por evaluar</p>'
-				entity_template = '<p>Han aprobado tu requisito.</p><p>Gracias por participar</p>'
-				model_points.addPoints(user.id,1,'Calificación de Requisito')
-			}
-			model_user.getByUid(''+answer.id_user).then((result)=>{
-				let evaluator = result.data[0]
-				let template = `
+				if(data.id_request_status != body.id_request_status){
+					let duration = _status.duration
+					let alarm = duration - _status.pre_end
+					body.id_user = user.id
+					let atime = new Date()
+					atime.setDate(atime.getDate() + alarm)
+					let ftime = new Date()
+					ftime.setDate(ftime.getDate() + duration)
+					body.alert_time = atime
+					body.end_time = ftime
+				}
+				let evaluator_template = ''
+				let entity_template = ''
+				//5 Rechazado
+				if (body.id_request_status == 5) {//add points
+					evaluator_template = '<p>Has calificado un requisito como NO CUMPLE. Agradecemos tu retroalimentación a la entidad.<p></p>Gracias por tu evaluación</p>'
+					entity_template = '<p>Han Rechazado un requisito de tu postulación</p><p>Gracias por participar en el Sello de Excelencia</p>'
+					model_points.addPoints(user.id, 1, 'Calificación de Requisito')
+				}
+				//6 Retroalimentación
+				if (body.id_request_status == 6) {
+					evaluator_template = '<p>Has solicitado más información a la entidad.</p><p>Gracias por evaluar</p>'
+					entity_template = '<p>Han solicitado más información sobre tu requisito.</p><p>Gracias por participar</p>'
+					model_entity_user_answer.update({ id: data.id_answer, id_status: 6 })
+				}
+				//7 Cumple
+				if (body.id_request_status == 7) {//add points
+					evaluator_template = '<p>Has calificado un requisito como CUMPLE.</p><p>Gracias por evaluar</p>'
+					entity_template = '<p>Han aprobado tu requisito.</p><p>Gracias por participar</p>'
+					model_points.addPoints(user.id, 1, 'Calificación de Requisito')
+				}
+				model_user.getByUid('' + data.id_user).then((result) => {
+					let evaluator = result[0]
+					let template = `
 				<p>Hola ${evaluator.name} </p>
 				<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
 				${evaluator_template}
@@ -842,34 +866,34 @@ var question_controller = function () {
 
 				<p>El equipo del Sello de Excelencia</p>`
 
-				utiles.sendEmail(entity.email,null,null,
-					'Actualización de Evaluación - Sello de Excelencia',
-					template)
-			})
-			//get entity
-			return model_entity_evaluation_request.update(body, { id: body.id })
-			.then(()=>{
-				return model_entity_user_answer.getByUid(''+body.id_answer)
-			}).then((result)=>{
-				let answer = result.data[0]
-				return model_user.getByUid(''+answer.id_user)
-			}).then((result)=>{
-				let entity = result.data[0]
-				let template = `
-				<p>Hola ${entity.name} </p>
-				<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
-				${entity_template}
-				<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
-				<p>Nuestros mejores deseos,</p>
+					utiles.sendEmail(evaluator.email, null, null,
+						'Actualización de Evaluación - Sello de Excelencia',
+						template)
+				})
+				//get entity
+				return model_entity_evaluation_request.update(body, { id: body.id })
+					.then(() => {
+						return model_entity_user_answer.getByUid('' + body.id_answer)
+					}).then((result) => {
+						let answer = result.data[0]
+						return model_user.getByUid('' + answer.id_user)
+					}).then((result) => {
+						let entity = result[0]
+						let template = `
+							<p>Hola ${entity.name} </p>
+							<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
+							${entity_template}
+							<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
+							<p>Nuestros mejores deseos,</p>
 
-				<p>El equipo del Sello de Excelencia</p>`
+							<p>El equipo del Sello de Excelencia</p>`
 
-				return utiles.sendEmail(entity.email,null,null,
-					'Actualización de Evaluación - Sello de Excelencia',
-					template
-					)
+						return utiles.sendEmail(entity.email, null, null,
+							'Actualización de Evaluación - Sello de Excelencia',
+							template
+						)
+					})
 			})
-		})
 	}
 	/**
 	 * @api {put} api/question/request_status Update request_status information
