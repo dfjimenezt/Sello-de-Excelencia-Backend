@@ -20,7 +20,7 @@ var entity_evaluation_request = require('../models/entity_evaluation_request.js'
 var request_status = require('../models/request_status.js')
 var chats = require('../models/chats.js')
 var media = require('../models/media.js')
-
+var user = require('../models/user.js')
 var question_controller = function () {
 	var model_entity_question = new entity_question()
 	var model_entity_questiontopic = new entity_questiontopic()
@@ -33,6 +33,7 @@ var question_controller = function () {
 	var model_request_status = new request_status()
 	var model_chats = new chats()
 	var model_media = new media()
+	var model_user = new user()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function (model, user, params) {
@@ -600,6 +601,33 @@ var question_controller = function () {
 	 */
 	var create_chats = function (user, body) {
 		body.id_sender = user.id
+
+		entity_evaluation_request.getByUid(''+body.id_evaluation_request).then((result)=>{
+			let request = result.data[0]
+			if(request.id_user != body.id_sender){ //entity
+				return request.id_user
+			}else{
+				entity_user_answer.getByUid(''+request.id_answer).then((result)=>{
+					return result.data[0].id_user
+				})
+			}
+		}).then((id_user)=>{
+			return model_user.getByUid(''+id_user)
+		}).then((result)=>{
+			let user = result.data[0]
+			let template = `
+			<p>Hola ${user.name} </p>
+			<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
+			<p>Has recibido un nuevo mensaje en Sello de Excelencia</p>
+			<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
+			<p>Nuestros mejores deseos,</p>
+
+			<p>El equipo del Sello de Excelencia</p>`
+
+			utiles.sendEmail(entity.email,null,null,
+				'Nuevo mensaje - Sello de Excelencia',
+				template)
+		})
 		return model_chats.create(body)
 	}
 	postMap.set('question', { method: create_entity_question, permits: Permissions.ADMIN_QUESTIONS })
@@ -776,37 +804,71 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		model_entity_evaluation_request.getByUid("" + body.id).then((result) => {
+		model_entity_evaluation_request.getByUid('' + body.id).then((result) => {
 			let data = result.data[0]
 			if (user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST) == -1) {
 				if (data.id_user != user.id) {
 					throw utiles.informError(401)
 				}
 			}
-			if (body.id_request_status == 6) {//add points
+			let evaluator_template = ''
+			let entity_template = ''
+			//5 Rechazado
+			if (body.id_request_status == 5) {//add points
+				evaluator_template = '<p>Has calificado un requisito como NO CUMPLE. Agradecemos tu retroalimentación a la entidad.<p></p>Gracias por tu evaluación</p>'
+				entity_template = '<p>Han Rechazado un requisito de tu postulación</p><p>Gracias por participar en el Sello de Excelencia</p>'
+				model_points.addPoints(user.id,1,'Calificación de Requisito')
+			}
+			//6 Retroalimentación
+			if (body.id_request_status == 6) {
+				evaluator_template = '<p>Has solicitado más información a la entidad.</p><p>Gracias por evaluar</p>'
+				entity_template = '<p>Han solicitado más información sobre tu requisito.</p><p>Gracias por participar</p>'
 				model_entity_user_answer.update({ id: data.id_answer, id_status: 6 })
 			}
-
-			let motives = require('../models/motives.js')
-			let model_motives = new motives()
-
-			if (body.id_request_status == 4 || body.id_request_status == 5) {//add points
-				model_motives.getByUid('1').then((results) => {
-					let point = results[0]
-					let points = require('../models/points.js')
-					let model_points = new points()
-					model_points.create({
-						prev_points: 0,
-						value: point.points || 10,
-						result: point.points || 10,
-						justification: 'Calificación de Requisito',
-						id_user: user.id,
-						id_motives: 1
-					})
-				})
+			//7 Cumple
+			if (body.id_request_status == 7) {//add points
+				evaluator_template = '<p>Has calificado un requisito como CUMPLE.</p><p>Gracias por evaluar</p>'
+				entity_template = '<p>Han aprobado tu requisito.</p><p>Gracias por participar</p>'
+				model_points.addPoints(user.id,1,'Calificación de Requisito')
 			}
+			model_user.getByUid(''+answer.id_user).then((result)=>{
+				let evaluator = result.data[0]
+				let template = `
+				<p>Hola ${evaluator.name} </p>
+				<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
+				${evaluator_template}
+				<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
+				<p>Nuestros mejores deseos,</p>
 
+				<p>El equipo del Sello de Excelencia</p>`
+
+				utiles.sendEmail(entity.email,null,null,
+					'Actualización de Evaluación - Sello de Excelencia',
+					template)
+			})
+			//get entity
 			return model_entity_evaluation_request.update(body, { id: body.id })
+			.then(()=>{
+				return model_entity_user_answer.getByUid(''+body.id_answer)
+			}).then((result)=>{
+				let answer = result.data[0]
+				return model_user.getByUid(''+answer.id_user)
+			}).then((result)=>{
+				let entity = result.data[0]
+				let template = `
+				<p>Hola ${entity.name} </p>
+				<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
+				${entity_template}
+				<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
+				<p>Nuestros mejores deseos,</p>
+
+				<p>El equipo del Sello de Excelencia</p>`
+
+				return utiles.sendEmail(entity.email,null,null,
+					'Actualización de Evaluación - Sello de Excelencia',
+					template
+					)
+			})
 		})
 	}
 	/**

@@ -316,15 +316,17 @@ var Auth = function() {
                             institution.update(body.institution,{id:body.institution.id})
                         }
                         if(body.role == 2){
-                            var user_category = require('../models/user_category.js')
-                            var model_user_category = new user_category()
+                            let user_category = require('../models/user_category.js')
+                            let model_user_category = new user_category()
                             body.categories.forEach((value)=>{
                                 let data = {id_user:body.id,id_category:value.id}
-                                promises.push(model_user_category.create(data))
+                                model_user_category.create(data)
                             },this)
+                            let user_questiontopic = require('../models/user_questiontopic.js')
+                            let model_user_questiontopic = new user_questiontopic()
                             body.topics.forEach((value)=>{
                                 let data = {id_user:body.id,id_topic:value.id}
-                                promises.push(model_user_questiontopic.create(data))
+                                model_user_questiontopic.create(data)
                             },this)
                         }
                         // send an email to the user

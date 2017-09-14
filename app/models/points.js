@@ -8,13 +8,29 @@ var BaseModel = require('../utils/model.js')
 var util = require('util')
 var Points = function () {
 	var params = [{
-		table:'points',
-		fields :[{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"prev_points","Type":"int(11)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"value","Type":"int(11)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"result","Type":"int(11)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"justification","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"id_user","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_motives","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""}],
-		model:'mysql'
+		table: 'points',
+		fields: [{ "Field": "id", "Type": "int(11)", "Null": "NO", "Key": "PRI", "Default": null, "Extra": "auto_increment" }, { "Field": "prev_points", "Type": "int(11)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "value", "Type": "int(11)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "result", "Type": "int(11)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "justification", "Type": "varchar(50)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "id_user", "Type": "int(11)", "Null": "YES", "Key": "MUL", "Default": null, "Extra": "" }, { "Field": "id_motives", "Type": "int(11)", "Null": "YES", "Key": "MUL", "Default": null, "Extra": "" }],
+		model: 'mysql'
 	}]
 	BaseModel.apply(this, params)
-	this.getSumarized = function(id){
+	this.getSumarized = function (id) {
 		let q = `SELECT SUM(\`value\`) \`value\`,\`id_motives\` FROM points WHERE id_user = '${id}' GROUP BY id_motives`
+		return this.customQuery(q)
+	}
+	this.addPoints = function (user, motive, justification) {
+		let q = `
+		INSERT INTO points (\`prev_points\`,\`value\`,\`result\`,
+		\`justification\`,\`id_user\`,\`id_motives\`)
+		SELECT 
+		\`p\`.\`prev_points\`,
+		\`m\`.\`points\` \`value\`,
+		(\`p\`.\`prev_points\` + \`m\`.\`points\`) \`result\`,
+		IFNULL(\`m\`.\`description\`,'${justification}') \`justification\`,
+		${user},
+		${motive} 
+		FROM \`motives\` \`m\`,
+		(SELECT SUM(\`p\`.\`value\`) \`prev_points\` FROM \`points\` \`p\` 
+		WHERE \`p\`.\`id_user\` = ${user}) \`p\` WHERE \`m\`.\`id\` = ${motive}`
 		return this.customQuery(q)
 	}
 	return this
