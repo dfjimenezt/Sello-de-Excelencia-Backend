@@ -91,7 +91,26 @@ var forum_controller = function () {
 	var create_entity_hangouts = function (user, body) {
 		return model_entity_hangouts.create(body)
 	}
+
+	/**
+	 * @api {post} api/forum/view Create hangouts information
+	 * @apiName Postview
+	 * @apiGroup forum
+	 * @apiVersion 1.0.1
+	 * 
+	 * @apiParam {Number} id of the video viewed
+ 	 * 
+	 */
+	var view = function (user, body) {
+		if(!user.id){
+			throw utiles.informError(401)
+		}
+		let points = require('../models/points.js')
+		let model_points = new points()
+		return model_points.addPoints(user.id,3)
+	}
 	postMap.set('hangouts', { method: create_entity_hangouts, permits: Permissions.ADMIN_HANGOUTS })
+	postMap.set('view', { method: view, permits: Permissions.NONE })
 	/**
 	 * @api {put} api/forum/hangouts Update hangouts information
 	 * @apiName Puthangouts

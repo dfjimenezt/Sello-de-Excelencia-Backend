@@ -21,6 +21,7 @@ var request_status = require('../models/request_status.js')
 var chats = require('../models/chats.js')
 var media = require('../models/media.js')
 var user = require('../models/user.js')
+var points = require('../models/points.js')
 var question_controller = function () {
 	var model_entity_question = new entity_question()
 	var model_entity_questiontopic = new entity_questiontopic()
@@ -34,6 +35,7 @@ var question_controller = function () {
 	var model_chats = new chats()
 	var model_media = new media()
 	var model_user = new user()
+	var model_points = new points()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
 	var _get = function (model, user, params) {
