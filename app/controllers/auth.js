@@ -339,9 +339,12 @@ var Auth = function() {
                         <p><a href='http://localhost:3000/api/auth/activate?token=${token}&email=${body.email}&active=1'> Haz click aqui para activar tu cuenta(localhost only dbg) </a> </p>
                         <p>Nuestros mejores deseos,</p>
 
-                        <p>El equipo del Sello de Excelencia</p>
-												`
-                        return utiles.sendEmail(body.email, null, null, "Registro Sello de Excelencia", template).then(() => {
+                        <p>El equipo del Sello de Excelencia</p>`
+                        let cc = null
+                        if(body.institution){
+                            cc = body.institution.email
+                        }
+                        return utiles.sendEmail(body.email, cc, null, "Registro Sello de Excelencia", template).then(() => {
                             return {error:utiles.informError(0),data:body}
                         })
                     } else {

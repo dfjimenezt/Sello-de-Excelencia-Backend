@@ -276,6 +276,73 @@ var platform_controller = function () {
 	var get_config = function (user, params) {
 		return _get(model_config,user,params)
 	}
+
+	
+	/**
+	 * Exports the data to Excel Files
+	 * 
+	 * @param {*} user 
+	 * @param {*} queryParams 
+	 */
+	var get_export = function (user, queryParams) {
+		
+		let tables = [queryParams.table]
+		let BaseModel = require('../utils/model.js')
+		let promises = []
+		tables.forEach(function (t) {
+			let model = {}
+			var params = [{
+				table: t,
+				model: 'mysql'
+			}]
+			BaseModel.apply(model, params)
+			let p = model.getAll({})
+			promises.push(p)
+		})
+		return Promise.all(promises).then((results) => {
+			let sheets = {}
+			let XLSX = require("xlsx")
+			let wopts = { bookType: 'xlsx', bookSST: false, type: 'binary' }
+			for (let i = 0; i < tables.length; i++) {
+				let data = []
+				let result = results[i]
+				result.forEach(function (item) {
+					let row = []
+					let titles = []
+					for (let i in item) {
+						if (i == 'password') {
+							continue;
+						}
+						titles.push(translate['es'][i] || i)
+						if(item[i]===null){
+							row.push('')
+						}else{
+							row.push(item[i])
+						}
+					}
+					if (data.length == 0) {
+						data.push(titles)
+					}
+					data.push(row)
+				})
+				let sname = translate['es'][tables[i]] || tables[i]
+				sname = sname.split(" ").join("").split("/").join("")
+				console.log(data)
+				sheets[sname] = XLSX.utils.aoa_to_sheet(data)
+			}
+			let trans = []
+			tables.forEach((table)=>{
+				let sname = translate['es'][table] || table
+				sname = sname.split(" ").join("").split("/").join("")
+				trans.push(sname)
+			})
+			let workbook = {
+				SheetNames: trans,
+				Sheets: sheets
+			}
+			return XLSX.write(workbook, wopts)
+		})
+	}
 	getMap.set('contact', { method: get_contact, permits: Permissions.NONE })
 	getMap.set('faq', { method: get_faq, permits: Permissions.NONE })
 	getMap.set('social', { method: get_social, permits: Permissions.NONE })
@@ -283,6 +350,7 @@ var platform_controller = function () {
 	getMap.set('banner', { method: get_entity_banner, permits: Permissions.NONE })
 	getMap.set('type_banner', { method: get_type_banner, permits: Permissions.NONE })
 	getMap.set('config', { method: get_config, permits: Permissions.NONE })
+	getMap.set('export', { method: get_export, permits: Permissions.NONE })
 	/**
 	 * @api {post} api/platform/contact Create contact information
 	 * @apiName Postcontact

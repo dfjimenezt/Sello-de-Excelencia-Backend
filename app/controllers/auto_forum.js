@@ -105,9 +105,12 @@ var forum_controller = function () {
 		if(!user.id){
 			throw utiles.informError(401)
 		}
+		if(!body.id){
+			throw utiles.informError(400)
+		}
 		let points = require('../models/points.js')
 		let model_points = new points()
-		return model_points.addPoints(user.id,3)
+		return model_points.addPoints(user.id,3,'',body.id)
 	}
 	postMap.set('hangouts', { method: create_entity_hangouts, permits: Permissions.ADMIN_HANGOUTS })
 	postMap.set('view', { method: view, permits: Permissions.NONE })

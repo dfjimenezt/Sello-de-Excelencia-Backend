@@ -99,6 +99,41 @@ module.exports = {
       })
     })
   },
+  writeExcelFile: function(data){
+    //data = [['titulo','nombre','xx'],['hola','nombre','si']]
+    var d = []
+    data.forEach(function(item){
+      let row = []
+      let titles = []
+      for(let i in item){
+        titles.push(i)
+        row.push(item[i])
+      }
+      if(d.length==0){
+        d.push(titles)
+      }
+      d.push(row)
+    })
+    //return JSON.stringify(d)
+    let XLSX = require("xlsx")
+    let wopts = { bookType:'xlsx', bookSST:false, type:'binary' }
+    let sheet = XLSX.utils.aoa_to_sheet(d)
+    let workbook = {SheetNames:['Hoja 1'],Sheets:{'Hoja 1':sheet}}
+    workbook.Props = {
+      Title: "SheetJS Test",
+      Subject: "Tests",
+      Author: "Devs at SheetJS",
+      Manager: "Sheet Manager",
+      Company: "SheetJS",
+      Category: "Experimentation",
+      Keywords: "Test",
+      Comments: "Nothing to say here",
+      LastAuthor: "Not SheetJS",
+      CreatedDate: new Date(2017,1,19)
+    }
+    let r =  XLSX.write(workbook,wopts)
+    return r
+  },
   parseExcelFile: function (filename) {
     function charArray(charA, charZ) {
       var a = [], i = charA.charCodeAt(0), j = charZ.charCodeAt(0)
@@ -152,28 +187,6 @@ module.exports = {
       }
     })
     return { col_names: col_names, data: data }
-  },
-  getUser: function(email){
-	var query = `SELECT u.*,p.name permission,r.name role,c.id id_category,c.name name_category,t.id id_topic, t.name name_topic
-		FROM user u 
-		LEFT JOIN user_role u_r ON u.id = u_r.id_user 
-		LEFT JOIN role r ON r.id = u_r.id_role 
-		LEFT JOIN permission_role p_r ON p_r.id_role = r.id 
-		LEFT JOIN permission p ON p.id = p_r.id_permission 
-		LEFT JOIN user_category u_c ON u_c.id_user = u.id 
-		LEFT JOIN category c ON u_c.id_category = c.id 
-		LEFT JOIN user_questiontopic u_qt ON u_qt.id_user = u.id 
-		LEFT JOIN questiontopic t ON u_qt.id_topic = t.id 
-		WHERE u.email = '${email}'`
-	return this.customQuery(query).then(function(data){
-		if(data.length === 0){
-			return null
-		}else{
-			console.log("data out")
-			console.log(data[0])
-			return data[0]
-		}
-	})
   },
   uploadFileToGCS : function (folder, file, owner, type) {
     var google_cloud_storage = require('../../gcp/cloud_storage.js')

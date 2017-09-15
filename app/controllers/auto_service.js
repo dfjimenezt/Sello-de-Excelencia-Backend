@@ -41,6 +41,7 @@ var service_controller = function () {
 			filter: params.filter,
 			limit: params.limit,
 			page: params.page,
+			simple: params.simple,
 			order: params.order,
 			filter_fields: params.filter_field,
 			filter_values: params.filter_value,

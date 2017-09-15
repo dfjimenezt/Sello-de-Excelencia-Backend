@@ -26,6 +26,7 @@ var User_answer = function () {
 			LEFT JOIN institution i on i.id = s.id_institution
 			WHERE 
 			${params['institution.id'] ? 's.id_institution = '+params['institution.id'] +' AND ' :''}
+			${params['service.id'] ? 's.id = '+params['service.id'] +' AND ' :''}
 			${params['region.id'] ? 'i.id_region = '+params['region.id'] +' AND ' :''}
 			${params['category.id'] ? 'qt.id_category = '+params['category.id'] +' AND ' :''}
 			${params['level'] ? 'q.level = '+params['level'] +' AND ' :''}
@@ -38,7 +39,7 @@ var User_answer = function () {
 		console.log(query)
 		return this.customQuery(query).then((result)=>{
 			let data = result[0]
-			let total = result[1]
+			let total = result[1][0].total
 			let list = []
 			for (let i = 0; i < data.length; i++) {
 				list.push(this.sintetizeRelation(data[i], {entity:'user_answer'}))
