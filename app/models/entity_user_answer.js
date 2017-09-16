@@ -29,6 +29,7 @@ var User_answer = function () {
 			${params['service.id'] ? 's.id = '+params['service.id'] +' AND ' :''}
 			${params['region.id'] ? 'i.id_region = '+params['region.id'] +' AND ' :''}
 			${params['category.id'] ? 'qt.id_category = '+params['category.id'] +' AND ' :''}
+			${params['topic.id'] ? 'qt.id = '+params['topic.id'] +' AND ' :''}
 			${params['level'] ? 'q.level = '+params['level'] +' AND ' :''}
 			u_a.id_topic IN (${topics.join(',')}) AND
 			u_a.id NOT IN (SELECT id_answer FROM evaluation_request WHERE id_user = '${user.id}')

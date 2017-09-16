@@ -336,7 +336,7 @@ var question_controller = function () {
 	*/
 	var get_entity_evaluation_request = function (user, params) {
 		if(params.activity){
-			//return model_entity_evaluation_request.toActivity(user,params)
+			return model_entity_evaluation_request.toActivity(user,params)
 		}
 		return _get(model_entity_evaluation_request, user, params)
 	}

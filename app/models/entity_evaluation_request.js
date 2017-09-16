@@ -65,7 +65,10 @@ var Evaluation_request = function () {
 		
 		let _filters = {}
 		for(let i = 0 ; i < params.filter_field.length ; i++){
-			_filters[params.filter_field[i]] = params.filter_value[i]
+			if(!_filters[params.filter_field[i]]){
+				_filters[params.filter_field[i]] = []
+			}
+			_filters[params.filter_field[i]].push(params.filter_value[i])
 		}
 
 		let query = `SELECT SQL_CALC_FOUND_ROWS * FROM view_evaluation_request 
@@ -80,19 +83,21 @@ var Evaluation_request = function () {
 			${params['service.id'] ? 's.id = '+params['service.id'] +' AND ' :''}
 			${params['region.id'] ? 'i.id_region = '+params['region.id'] +' AND ' :''}
 			${params['category.id'] ? 'qt.id_category = '+params['category.id'] +' AND ' :''}
+			${params['topic.id'] ? 'qt.id = '+params['topic.id'] +' AND ' :''}
 			${params['level'] ? 'q.level = '+params['level'] +' AND ' :''}
-			u_a.id_request_status IN (${_filters['id_request_status'].join(',')}) 
-			ORDER BY u_a.${params.order}
+			e_r.id_request_status IN (${_filters['id_request_status'].join(',')}) AND 
+			e_r.id_user IN (${_filters['id_user'].join(',')}) 
+			ORDER BY e_r.${params.order}
 		)
 		LIMIT ${params.limit * (params.page-1)},${params.limit};
 		SELECT FOUND_ROWS() as total;`
 		console.log(query)
 		return this.customQuery(query).then((result)=>{
 			let data = result[0]
-			let total = result[1]
+			let total = result[1][0].total
 			let list = []
 			for (let i = 0; i < data.length; i++) {
-				list.push(this.sintetizeRelation(data[i], {entity:'user_answer'}))
+				list.push(this.sintetizeRelation(data[i], {entity:'evaluation_request'}))
 			}
 			return { data: list, total_results: total }
 		})
