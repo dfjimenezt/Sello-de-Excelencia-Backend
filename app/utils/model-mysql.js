@@ -150,9 +150,7 @@ var MysqlModel = function (info) {
 
   this.createMultiple = function (data) {
     let rows = data.data
-		console.log(rows)
     let col_names = data.col_names
-		console.log(col_names)
     var query = "INSERT INTO " + info.table + " (" + col_names.join(",") + ") VALUES "
     for (let i in rows) {
       query += "(" //init
@@ -172,7 +170,6 @@ var MysqlModel = function (info) {
       query += "),"
     }
     query = query.slice(0, -1)
-		console.log(query)
     return this.customQuery(query)
   }
 
