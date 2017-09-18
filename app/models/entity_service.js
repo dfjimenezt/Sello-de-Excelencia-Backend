@@ -5,50 +5,135 @@
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
+var utiles = require('../utils/utiles.js')
 var Service = function () {
 	var params = [{
-	"table": "service",
-	"relations": [
-		{
-			"type": "1-1",
-			"name": "category",
-			"foreign_name": "name",
-			"entity": "category",
-			"leftKey": "id_category"
-		},
-		{
-			"type": "1-1",
-			"name": "institution",
-			"foreign_name": "name",
-			"entity": "institution",
-			"leftKey": "id_institution"
-		},
-		{
-			"type": "1-n",
-			"name": "history",
-			"rightKey": "id_service",
-			"entity": "service_status"
-		},
-		{
-			"type": "1-1",
-			"name": "status",
-			"leftKey": "current_status",
-			"foreign_name": "name",
-			"entity": "status"
-		},
-		{
-			"type": "1-n",
-			"name": "comments",
-			"entity": "service_comment",
-			"rightKey": "id_service"
-		}
-	],
-	"entity": "service",
-	"model": "entity"
-}]
+		"table": "service",
+		"relations": [
+			{
+				"type": "1-1",
+				"name": "category",
+				"foreign_name": "name",
+				"entity": "category",
+				"leftKey": "id_category"
+			},
+			{
+				"type": "1-1",
+				"name": "institution",
+				"foreign_name": "name",
+				"entity": "institution",
+				"leftKey": "id_institution"
+			},
+			{
+				"type": "1-n",
+				"name": "history",
+				"rightKey": "id_service",
+				"entity": "service_status"
+			},
+			{
+				"type": "1-1",
+				"name": "status",
+				"leftKey": "current_status",
+				"foreign_name": "name",
+				"entity": "status"
+			},
+			{
+				"type": "1-n",
+				"name": "comments",
+				"entity": "service_comment",
+				"rightKey": "id_service"
+			}
+		],
+		"entity": "service",
+		"model": "entity"
+	}]
 	BaseModel.apply(this, params)
 
-	this.delete = function(id){
+	this.asignate = function (service) {
+		let q = `SELECT u.id from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
+		return this.customQuery(q).then((_admin)=>{
+			_admin = _admin[0]
+			let q = `SELECT * from request_status WHERE id = 3`
+			return this.customQuery(q).
+				then((_status) => {
+					_status = _status[0]
+					let duration = _status.duration
+					let alarm = duration - _status.pre_end
+					let atime = new Date()
+					atime.setDate(atime.getDate() + alarm)
+					let ftime = new Date()
+					ftime.setDate(ftime.getDate() + duration)
+					let q = `SELECT u.id id_user,
+						u.email email,
+						qt.id id_topic,
+						u_a.id id_answer,
+						u_a.id_question id_question,
+						u.id_availability
+						FROM user_answer u_a
+						JOIN questiontopic qt ON qt.id = u_a.id_topic
+						LEFT JOIN user_questiontopic ON user_questiontopic.id_topic = qt.id
+						LEFT JOIN user u ON u.id = user_questiontopic.id_user
+						WHERE u_a.id_service = ${service.id}
+						ORDER BY u_a.id asc,u.id_availability desc`
+					return this.customQuery(q).then((_users) => {
+						let _couples = {}
+						_users.forEach(function (_user) {
+							if (!_couples[_user.id_answer]) {
+								_couples[_user.id_answer] = []
+							}
+							_couples[_user.id_answer].push(_user)
+						}, this);
+
+						let request= []
+						for (let answer in _couples) {
+							let valid = []
+							_couples[answer].forEach((data)=>{
+								if(data.email != null){
+									valid.push(data)
+								}
+							})
+							let limit = 3
+							let _count = valid.length
+							let difference = limit - _count
+							let index
+							if (difference > 0) {
+								limit = _count
+								for (let i = 0; i < difference; i++) {
+									request.push({
+										id_user: _admin.id,
+										id_answer: answer,
+										id_service: service.id,
+										id_request_status: 3,
+										id_question: _couples[answer][0].id_question,
+										alert_time:atime.toISOString().split('T')[0],
+										end_time:ftime.toISOString().split('T')[0]
+									})
+								}
+							}
+	
+							while (limit--) {
+								index = Math.floor(Math.random() * valid.length)
+								let data = valid.slice(index, index+1)[0]
+								request.push({
+									id_user: data.id_user,
+									id_answer: answer,
+									id_service: service.id,
+									id_request_status: 3,
+									id_question: data.id_question,
+									alert_time:atime.toISOString().split('T')[0],
+									end_time:ftime.toISOString().split('T')[0]
+								})
+								
+								//utiles.sendEmail(data.email,null,null,'Asignación de Requisito',
+								//'<p>Se ha asignado un nuevo requisito en Sello de Excelencia</p>')
+							}
+						}
+						return request
+					})
+				})
+		})
+	}
+	this.delete = function (id) {
 		let q = `SET FOREIGN_KEY_CHECKS = 0;
 		DELETE FROM service_status WHERE id_service = '${id}';
 		DELETE FROM service_comment WHERE id_service = '${id}';

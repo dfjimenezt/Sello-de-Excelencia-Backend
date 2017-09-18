@@ -409,24 +409,40 @@ var service_controller = function () {
 			.then((_old) => {
 				let old = _old.data[0].current_status
 				if (old != body.current_status) {
+					let user_answer = require('../models/user_answer.js')
+					let model_user_answer = new user_answer()
+					let request_status = require('../models/request_status.js')
 					let valid = new Date();
+					
+					let model_request_status = new request_status()
 					valid.setFullYear(valid.getUTCFullYear() + 1)
 					let data = {
 						id_service: body.id,
 						id_status: body.current_status,
 						valid_to: valid,
-						level: _old.data[0].level
+						level: _old.data[0].level || 1
 					}
 					if (body.level) {
 						data.level = body.level
 					}
 					if (body.current_status == 5) {
-						//TODO:
-						//get all requisites
-						//foreach requisite bring 3 evaluators who match the topic
-						//create an evaluation_request per evaluator 
-						var user_answer = require('../models/user_answer.js')
-						let model_user_answer = new user_answer()
+						model_entity_service.asignate(body).then((evaluations)=>{
+							if(evaluations.length == 0){
+								return
+							}
+							let evalution_request = require('../models/evaluation_request.js')
+							let model_evaluation_request = new evalution_request()
+							let data = {
+								col_names:[],
+								data:evaluations
+							}
+							for(let i in evaluations[0]){
+								data.col_names.push(i)
+							}
+							model_evaluation_request.createMultiple(
+								data
+							)
+						})
 						model_user_answer.update({ id_status: 5 }, { id_service: body.id })
 					}
 					return create_entity_service_status(user, data)
@@ -540,21 +556,21 @@ var service_controller = function () {
  	 * 
 	 */
 	var delete_entity_service = function (user, body) {
-		if(!user.id){
+		if (!user.id) {
 			throw utiles.informError(400)
 		}
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_service.getByUid(''+body.id).then((results)=>{
+		return model_entity_service.getByUid('' + body.id).then((results) => {
 			let service = results.data[0]
 			let found = false
-			user.institutions.forEach((institution)=>{
-				if(institution.id == service.id_institution){
+			user.institutions.forEach((institution) => {
+				if (institution.id == service.id_institution) {
 					found = true
 				}
 			})
-			if(!found){
+			if (!found) {
 				throw utiles.informError(100)
 			}
 			return model_entity_service.delete(body.id)

@@ -157,10 +157,15 @@ var MysqlModel = function (info) {
     for (let i in rows) {
       query += "(" //init
       for (let j in col_names) {
-        if (rows[i][col_names.indexOf(col_names[j])] === undefined) {
+        /*if (rows[i][col_names.indexOf(col_names[j])] === undefined) {
           query += "NULL,"
         } else {
           query += "'" + rows[i][col_names.indexOf(col_names[j])] + "',"
+        }*/
+        if (rows[i][col_names[j]] === undefined) {
+          query += "NULL,"
+        } else {
+          query += "'" + rows[i][col_names[j]] + "',"
         }
       }
       query = query.slice(0, -1)
