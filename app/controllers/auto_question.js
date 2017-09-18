@@ -524,10 +524,14 @@ var question_controller = function () {
 					})
 				}).then((media) => {
 					body.id_media = media.insertId
-					return model_entity_user_answer.create(body)
+					return model_entity_user_answer.create(body).then((results)=>{
+						return body
+					})
 				})
 		} else {
-			return model_entity_user_answer.create(body)
+			return model_entity_user_answer.create(body).then((results)=>{
+				return body
+			})
 		}
 	}
 	/**
@@ -768,11 +772,28 @@ var question_controller = function () {
 	 * @apiParam {Boolean} alert 
  	 * 
 	 */
-	var update_entity_user_answer = function (user, body) {
+	var update_entity_user_answer = function (user, body, files) {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_user_answer.update(body, { id: body.id })
+		if (files.file) {
+			return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type)
+				.then((url) => {
+					return model_media.create({
+						url: url,
+						type: files.file.type
+					})
+				}).then((media) => {
+					body.id_media = media.insertId
+					return model_entity_user_answer.update(body, { id: body.id }).then(()=>{
+						model_entity_user_answer.updateView()
+					})
+				})
+		} else {
+			return model_entity_user_answer.update(body, { id: body.id }).then(()=>{
+				model_entity_user_answer.updateView()
+			})
+		}
 	}
 	/**
 	 * @api {put} api/question/status Update status information
