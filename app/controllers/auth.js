@@ -10,7 +10,7 @@ var User_role_model = require('../models/user_role.js')
 /* generador de password random*/
 var pass_generator = require('generate-password')
 
-var Auth = function() {
+var Auth = function () {
     var userModel = new User()
     var sessionModel = new Session()
     var user_role = new User_role_model()
@@ -29,12 +29,12 @@ var Auth = function() {
      * @apiPermission none
      * activates an user email
      */
-    var activate = function(token, params) {
-			if (!params.email) { throw utiles.informError(400) }
-			return userModel.getUser(params.email).then((user) => {
-				if (!user) throw utiles.informError(202) // user doesnt exists
-					return userModel.update({ active: 1, verified: 1 }, { id: user.id })
-			})
+    var activate = function (token, params) {
+        if (!params.email) { throw utiles.informError(400) }
+        return userModel.getUser(params.email).then((user) => {
+            if (!user) throw utiles.informError(202) // user doesnt exists
+            return userModel.update({ active: 1, verified: 1 }, { id: user.id })
+        })
     }
 
     getMap.set("activate", { method: activate, permits: Permissions.NONE })
@@ -53,7 +53,7 @@ var Auth = function() {
      * @apiParam {String} password_new 
      * 
      */
-    var update_password = function(token, body) {
+    var update_password = function (token, body) {
         return userModel.getUser(body.email).then((user) => {
             if (!user) throw utiles.informError(202) // user doesnt exists
             else {
@@ -85,7 +85,7 @@ var Auth = function() {
 
 
     putMap.set("password", { method: update_password, permits: Permissions.NONE })
-        //-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
 
     /**
      * @api {post} /auth/login_fb
@@ -94,64 +94,121 @@ var Auth = function() {
      * @apiPermission none
      * Login FB
      */
-    var login_fb = function(token, body) {
-        return userModel.getUser(body.email).then((user) => {
-            if (!user) {
-                var password = Math.random().toString(36).substring(2, 8)
-                var pass = utiles.createHmac('sha256')
-                pass.update(password)
-                pass = pass.digest('hex')
-                return userModel.create({
-                    name: body.name,
-                    lastname: body.lastname,
-                    email: body.email,
-                    phone: body.phone || "",
-                    active: true,
-                    verified: true,
-                    password: pass,
-                    tmp_pwd: true,
-                    terms: body.terms === "true",
-                    newsletter: body.newsletter === "true"
-                }).then((user) => {
-                    user_role.create({
-                        id_user: user.insertId,
-                        id_role: 1
-                    }).then(() => {
-                        return userModel.getUser(body.email).then((user) => {
-                            delete user.password
-                                // encode
-                            var now = new Date()
-                            now.setDate(now.getDate() + 15) // the token expires in 15 days
-                            var session = {
-                                token: utiles.sign(user),
-                                id_user: user.id,
-                                expires: now
-                            }
-                            sessionModel.create(session)
-                            var answer = utiles.informError(0)
-                            answer.token = session.token
-                            return answer
-                        })
+    var login_fb = function (token, body) {
+        let user = null
+        let p = new Promise((resolve,reject)=>{
+            return new Promise((_resolve,_reject)=>{
+                let https = require('https')
+                const options = {
+                    hostname: 'graph.facebook.com',
+                    port: 443,
+                    path: '/v2.10/me?fields=first_name,last_name,email&access_token='+body.token,
+                    method: 'GET',
+                    headers:{
+                        'content-type':'application/json'
+                    }
+                  };
+                https.get(options, (res)=> {
+                    res.setEncoding('utf8');
+                    let rawData = '';
+                    res.on('data', (chunk) => { rawData += chunk; });
+                    res.on('end', () => {
+                      try {
+                        const parsedData = JSON.parse(rawData);
+                        _resolve(parsedData);
+                      } catch (e) {
+                        _reject(e.message);
+                      }
+                    });
+                }).end();
+            }).then((u)=>{
+                user = u
+                return userModel.getUser(user.email)
+            }).then((_user)=>{
+                if(!_user){
+                    return register(null,{
+                        name:user.first_name,
+                        lastname:user.last_name,
+                        email:user.email,
+                        terms:1
+                    },'1',1).then(()=>{
+                        return login(null,user,1)
                     })
-                })
-            } else {
-                delete user.password
-                    // encode
-                var now = new Date()
-                now.setDate(now.getDate() + 15) // the token expires in 15 days
-                var session = {
-                    token: utiles.sign(user),
-                    id_user: user.id,
-                    expires: now
-                }
-                sessionModel.create(session)
-                var answer = utiles.informError(0)
-                answer.token = session.token
-                return answer
-            }
-        })
+                }return login(null,user,1)
+            }).then((response)=>{
+                resolve(response)
+            })
+        });
+        return p
     }
 
+    /**
+     * 
+     */
+    var login_google = function (_user, body) {
+        let user = null
+        let p = new Promise((resolve,reject)=>{
+            return new Promise((_resolve,_reject)=>{
+                let https = require('https')
+                https.get('https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token='+body.token, (res)=> {
+                    const { statusCode } = res;
+                    const contentType = res.headers['content-type'];
+                  
+                    let error;
+                    if (statusCode !== 200) {
+                      error = new Error('Request Failed.\n' +
+                                        `Status Code: ${statusCode}`);
+                    } else if (!/^application\/json/.test(contentType)) {
+                      error = new Error('Invalid content-type.\n' +
+                                        `Expected application/json but received ${contentType}`);
+                    }
+                    if (error) {
+                      reject(error.message);
+                      // consume response data to free up memory
+                      res.resume();
+                      return;
+                    }
+                  
+                    res.setEncoding('utf8');
+                    let rawData = '';
+                    res.on('data', (chunk) => { rawData += chunk; });
+                    res.on('end', () => {
+                      try {
+                        const parsedData = JSON.parse(rawData);
+                        _resolve(parsedData);
+                      } catch (e) {
+                        _reject(e.message);
+                      }
+                    });
+                }).end();
+            }).then((u)=>{
+                user = u
+                return userModel.getUser(user.email)
+            }).then((_user)=>{
+                if(!_user){
+                    return register(null,{
+                        name:user.given_name,
+                        lastname:user.family_name,
+                        email:user.email,
+                        terms:1
+                    },'1',1).then(()=>{
+                        return login(null,user,1)
+                    })
+                }return login(null,user,1)
+            }).then((response)=>{
+                resolve(response)
+            })
+        });
+        return p
+    }
+
+    /**
+     * 
+     */
+    var login_linkedin = function (user, body) {
+        console.log(body)
+
+    }
 
     /**
      * @api {post} /auth/login Login as a user
@@ -174,14 +231,17 @@ var Auth = function() {
      *
      */
     // TODO: deben validarse que llegan todos los parametros
-    var login = function(token, body) {
+    var login = function (token, body, _force) {
+        _force = _force || false
         return userModel.getUser(body.email).then((user) => {
             if (!user) throw utiles.informError(202) // user doesnt exists
             else {
                 var pass = utiles.createHmac('sha256')
-                pass.update(body.password)
-                pass = pass.digest('hex')
-                if (user.password === pass) {
+                if(!_force){
+                    pass.update(body.password)
+                    pass = pass.digest('hex')
+                }
+                if (user.password === pass || _force) {
                     if (user.active === 0) {
                         throw utiles.informError(203) //user inactive
                     }
@@ -221,16 +281,9 @@ var Auth = function() {
      * @apiUse CreateUserError
      */
     // TODO: deben validarse que llegan todos los parametros
-    var register = function(token, body, role_seguro) {
+    var register = function (token, body, role_seguro,_active) {
         var pass_user = ""
-        var tmp_pwd_active = false
-        switch (role_seguro) {
-            case "1":
-                tmp_pwd_active = false
-                break
-            case "2":
-                tmp_pwd_active = true
-        }
+        _active = _active || '0'
         return userModel.getUser(body.email).then((user) => {
             if (user) throw utiles.informError(201) // user already exists
             else {
@@ -263,9 +316,9 @@ var Auth = function() {
                     ocupation: body.ocupation || null,
                     education_level: body.education_level || null,
                     password: pass,
-                    tmp_pwd: tmp_pwd_active,
+                    tmp_pwd: true,
                     points: "0",
-                    active: 0,
+                    active: _active,
                     verified: false,
                     terms: body.terms,
                     newsletter: body.newsletter === "true",
@@ -275,7 +328,7 @@ var Auth = function() {
                     id_country: (body.id_country) ? parseInt(body.id_country) : null,
                     document: body.document || null,
                     id_type_document: (body.id_type_document) ? parseInt(body.id_type_document) : null
-                }).then(function(user) {
+                }).then(function (user) {
                     // if the user was created sucessfully
                     if (user) {
                         let role = ""
@@ -284,9 +337,9 @@ var Auth = function() {
                         }
                         //create the role assignment
                         user_role.create({
-                                id_user: user.insertId,
-                                id_role: parseInt(body.role)
-                            })
+                            id_user: user.insertId,
+                            id_role: parseInt(body.role)
+                        })
                         // add the role manually reduce time
                         user.role = body.role
                         body.id = user.insertId
@@ -304,7 +357,7 @@ var Auth = function() {
                                 role = "Entidad"
                                 break
                         }
-                        if(body.role == 4){
+                        if (body.role == 4) {
                             var institution_user_model = require("../models/institution_user.js")
                             var institution_user = new institution_user_model()
                             institution_user.create({
@@ -313,21 +366,21 @@ var Auth = function() {
                             })
                             var institution_model = require("../models/entity_institution.js")
                             var institution = new institution_model()
-                            institution.update(body.institution,{id:body.institution.id})
+                            institution.update(body.institution, { id: body.institution.id })
                         }
-                        if(body.role == 2){
+                        if (body.role == 2) {
                             let user_category = require('../models/user_category.js')
                             let model_user_category = new user_category()
-                            body.categories.forEach((value)=>{
-                                let data = {id_user:body.id,id_category:value.id}
+                            body.categories.forEach((value) => {
+                                let data = { id_user: body.id, id_category: value.id }
                                 model_user_category.create(data)
-                            },this)
+                            }, this)
                             let user_questiontopic = require('../models/user_questiontopic.js')
                             let model_user_questiontopic = new user_questiontopic()
-                            body.topics.forEach((value)=>{
-                                let data = {id_user:body.id,id_topic:value.id}
+                            body.topics.forEach((value) => {
+                                let data = { id_user: body.id, id_topic: value.id }
                                 model_user_questiontopic.create(data)
-                            },this)
+                            }, this)
                         }
                         // send an email to the user
                         let token = utiles.sign(body.email)
@@ -341,11 +394,11 @@ var Auth = function() {
 
                         <p>El equipo del Sello de Excelencia</p>`
                         let cc = null
-                        if(body.institution){
+                        if (body.institution) {
                             cc = body.institution.email
                         }
                         return utiles.sendEmail(body.email, cc, null, "Registro Sello de Excelencia", template).then(() => {
-                            return {error:utiles.informError(0),data:body}
+                            return { error: utiles.informError(0), data: body }
                         })
                     } else {
                         //if there was an error on creating the user
@@ -374,7 +427,7 @@ var Auth = function() {
      * @apiUse CreateUserError
      */
     // TODO: deben validarse que llegan todos los parametros
-    var recover = function(token, body) {
+    var recover = function (token, body) {
         return userModel.getUser(body.email).then((user) => {
             if (!user) throw utiles.informError(202) // user doesnt exists
             else {
@@ -408,7 +461,7 @@ var Auth = function() {
      * @apiGroup Auth
      * @apiPermission none
      */
-    var register_user = function(token, body) {
+    var register_user = function (token, body) {
         return register(token, body, '1')
     }
 
@@ -419,7 +472,7 @@ var Auth = function() {
      * @apiGroup Auth
      * @apiPermission none
      */
-    var register_evaluator = function(token, body) {
+    var register_evaluator = function (token, body) {
         return register(token, body, '2')
     }
 
@@ -430,7 +483,7 @@ var Auth = function() {
      * @apiGroup Auth
      * @apiPermission none
      */
-    var register_administrator = function(token, body) {
+    var register_administrator = function (token, body) {
         return register(token, body, '3')
     }
 
@@ -441,7 +494,7 @@ var Auth = function() {
      * @apiGroup Auth
      * @apiPermission none
      */
-    var register_entity = function(token, body) {
+    var register_entity = function (token, body) {
         return register(token, body, '4')
     }
     //-------------------------------------------------------------------------
@@ -453,26 +506,26 @@ var Auth = function() {
      * @apiGroup Auth
      * @apiPermission none
      */
-    var renewToken = function(user,body){
-        if(!user.id){
+    var renewToken = function (user, body) {
+        if (!user.id) {
             throw utiles.informError(400)
         }
-        return userModel.getUser(user.email).then((user)=>{
-			delete user.password
-			var now = new Date()
-			var Session = require('../models/session.js')
-			var sessionModel = new Session()
-			now.setDate(now.getDate() + 15) // the token expires in 15 days
-			var session = {
-					token: utiles.sign(user),
-					id_user: user.id,
-					expires: now
-			}
-			sessionModel.create(session)
-			var answer = utiles.informError(0)
-			answer.token = session.token
-			return answer
-		})
+        return userModel.getUser(user.email).then((user) => {
+            delete user.password
+            var now = new Date()
+            var Session = require('../models/session.js')
+            var sessionModel = new Session()
+            now.setDate(now.getDate() + 15) // the token expires in 15 days
+            var session = {
+                token: utiles.sign(user),
+                id_user: user.id,
+                expires: now
+            }
+            sessionModel.create(session)
+            var answer = utiles.informError(0)
+            answer.token = session.token
+            return answer
+        })
     }
 
     /**
@@ -486,13 +539,13 @@ var Auth = function() {
      * @apiParam {String} old Old password
      * @apiParam {String} password New password
      */
-    var password = function(user,body){
-        if(!user.id){
+    var password = function (user, body) {
+        if (!user.id) {
             throw utiles.informError(400)
         }
         body.id = user.id
-        return userModel.getUser(user.email).then((user)=>{
-			var pass = utiles.createHmac('sha256')
+        return userModel.getUser(user.email).then((user) => {
+            var pass = utiles.createHmac('sha256')
             pass.update(body.old)
             pass = pass.digest('hex')
             if (user.password === pass) {
@@ -502,19 +555,21 @@ var Auth = function() {
                 var pass = utiles.createHmac('sha256')
                 pass.update(body.password)
                 pass = pass.digest('hex')
-                userModel.update({id:body.id,password:pass,tmp_pwd:0},{id:body.id})
+                userModel.update({ id: body.id, password: pass, tmp_pwd: 0 }, { id: body.id })
                 return utiles.informError(0)
-            }else{
+            } else {
                 throw utiles.informError(200)
             }
-		})
+        })
     }
     postMap.set('login', { method: login, permits: Permissions.NONE })
-    postMap.set('login_fb', { method: login, permits: Permissions.NONE })
+    postMap.set('login_fb', { method: login_fb, permits: Permissions.NONE })
+    postMap.set('login_google', { method: login_google, permits: Permissions.NONE })
+    postMap.set('login_linkedin', { method: login_linkedin, permits: Permissions.NONE })
     postMap.set('renew', { method: renewToken, permits: Permissions.NONE })
     postMap.set('password', { method: password, permits: Permissions.NONE })
     postMap.set('recover', { method: recover, permits: Permissions.NONE })
-    postMap.set('register_user', { method: register_user, permits: Permissions.NONE })
+    postMap.set('register', { method: register_user, permits: Permissions.NONE })
     postMap.set('register_evaluator', { method: register_evaluator, permits: Permissions.NONE })
     postMap.set('register_entity', { method: register_entity, permits: Permissions.NONE })
     postMap.set('register_administrator', { method: register_administrator, permits: Permissions.NONE })

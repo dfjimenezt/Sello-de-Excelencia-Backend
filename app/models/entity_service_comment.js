@@ -22,7 +22,7 @@ var Service_comment = function () {
 						SET s.rate = ${average[0].average}
 						WHERE s.id = ${body.id_service};`
 				return this.customQuery(query).then(() => {
-					return { message: "Comentario generado exitosamente" }
+					return average[0].average.toFixed(2)
 				})
 			})
 		})

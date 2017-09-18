@@ -22,7 +22,7 @@ var service_controller = function () {
 	var model_entity_service_comment = new entity_service_comment()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
-	var _get = function(model,user,params){
+	var _get = function (model, user, params) {
 		let key = model.getPrimaryKey()
 		if (params.filter_field) {
 			if (typeof params.filter_field == 'string') {
@@ -90,7 +90,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_entity_service = function (user, params) {
-		return _get(model_entity_service,user,params)
+		return _get(model_entity_service, user, params)
 	}
 	/**
 	 * @api {get} api/service/category Request category information
@@ -119,7 +119,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_category = function (user, params) {
-		return _get(model_category,user,params)
+		return _get(model_category, user, params)
 	}
 	/**
 	 * @api {get} api/service/status Request status information
@@ -151,7 +151,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_status = function (user, params) {
-		return _get(model_status,user,params)
+		return _get(model_status, user, params)
 	}
 	/**
 	 * @api {get} api/service/service_status Request service_status information
@@ -182,7 +182,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_entity_service_status = function (user, params) {
-		return _get(model_entity_service_status,user,params)
+		return _get(model_entity_service_status, user, params)
 	}
 	/**
 	 * @api {get} api/service/service_comment Request service_comment information
@@ -215,7 +215,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_entity_service_comment = function (user, params) {
-		return _get(model_entity_service_comment,user,params)
+		return _get(model_entity_service_comment, user, params)
 	}
 	getMap.set('service', { method: get_entity_service, permits: Permissions.NONE })
 	getMap.set('category', { method: get_category, permits: Permissions.NONE })
@@ -250,18 +250,18 @@ var service_controller = function () {
 		body.current_status = 10
 		body.id_user = user.id
 		return model_entity_service.create(body)
-		.then((result)=>{
-			let valid = new Date();
-			valid.setFullYear(valid.getUTCFullYear()+1)
-			return model_entity_service_status.create({
-				id_service:body.id,
-				id_status:10,
-				level:body.level,
-				valid_to:valid
+			.then((result) => {
+				let valid = new Date();
+				valid.setFullYear(valid.getUTCFullYear() + 1)
+				return model_entity_service_status.create({
+					id_service: body.id,
+					id_status: 10,
+					level: body.level,
+					valid_to: valid
+				})
+			}).then(() => {
+				return body
 			})
-		}).then(()=>{
-			return body
-		})
 	}
 	/**
 	 * @api {post} api/service/category Create category information
@@ -324,7 +324,52 @@ var service_controller = function () {
 	 */
 	var create_entity_service_comment = function (user, body) {
 		body.id_user = user.id
-		return model_entity_service_comment.create(body)
+		let _users = []
+		return model_entity_service_comment.getByParams({ id_user: user.id, id_service: body.id_service })
+			.then((results) => {
+				if (results.length > 0) {
+					throw utiles.informError(400)
+				}
+				return
+			}).then(() => {
+				return model_entity_service_comment.create(body).then((avg) => {
+					if (avg <= 3.5) {
+						let user_role = require('../models/user_role.js')
+						let model_user_role = new user_role()
+						model_user_role.getByParams({ id_role: 3 })
+							.then((users) => {
+								let user = require('../models/user.js')
+								let model_user = new user();
+								let _ids = []
+								users.forEach(function (user) {
+									_ids.push(user.id_user)
+								}, this);
+								let fields = []
+								let values = []
+								_ids.forEach((id) => {
+									fields.push('id')
+									values.push('' + id)
+								})
+								return model_user.getFiltered({
+									filter_fields: fields,
+									filter_values: values
+								})
+							}).then((_u) => {
+								_users = _u.data
+								model_entity_service.getByUid('' + body.id_service).then((_service) => {
+									_users.forEach((u) => {
+										utiles.sendEmail(u.email, 'camila.lombana@domoti-sas.com', null, 'Entidad con puntaje bajo',
+											`<p>El servicio ${_service.data[0].name} tiene una calificación muy baja</p>
+								<p>La calificación del servicio es ${avg}</p>`
+										)
+									})
+								})
+							})
+					}
+				})
+			})
+
+
 	}
 	postMap.set('service', { method: create_entity_service, permits: Permissions.POSTULATE_SERVICE })
 	postMap.set('category', { method: create_category, permits: Permissions.ADMIN_SERVICES })
@@ -360,36 +405,36 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_service.getByUid(""+body.id)
-		.then((_old)=>{
-			let old = _old.data[0].current_status
-			if(old != body.current_status){
-				let valid = new Date();
-				valid.setFullYear(valid.getUTCFullYear()+1)
-				let data ={
-					id_service:body.id,
-					id_status:body.current_status,
-					valid_to:valid,
-					level:_old.data[0].level
+		return model_entity_service.getByUid("" + body.id)
+			.then((_old) => {
+				let old = _old.data[0].current_status
+				if (old != body.current_status) {
+					let valid = new Date();
+					valid.setFullYear(valid.getUTCFullYear() + 1)
+					let data = {
+						id_service: body.id,
+						id_status: body.current_status,
+						valid_to: valid,
+						level: _old.data[0].level
+					}
+					if (body.level) {
+						data.level = body.level
+					}
+					if (body.current_status == 5) {
+						//TODO:
+						//get all requisites
+						//foreach requisite bring 3 evaluators who match the topic
+						//create an evaluation_request per evaluator 
+						var user_answer = require('../models/user_answer.js')
+						let model_user_answer = new user_answer()
+						model_user_answer.update({ id_status: 5 }, { id_service: body.id })
+					}
+					return create_entity_service_status(user, data)
 				}
-				if(body.level){
-					data.level = body.level
-				}
-				if(body.current_status == 5){
-					//TODO:
-					//get all requisites
-					//foreach requisite bring 3 evaluators who match the topic
-					//create an evaluation_request per evaluator 
-					var user_answer = require('../models/user_answer.js')
-					let model_user_answer = new user_answer()
-					model_user_answer.update({id_status:5},{id_service:body.id})
-				}
-				return create_entity_service_status(user,data)
-			}
-			return
-		}).then(()=>{
-			return model_entity_service.update(body,{id:body.id})
-		})
+				return
+			}).then(() => {
+				return model_entity_service.update(body, { id: body.id })
+			})
 	}
 	/**
 	 * @api {put} api/service/category Update category information
@@ -405,7 +450,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_category.update(body,{id:body.id})
+		return model_category.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/service/status Update status information
@@ -424,7 +469,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_status.update(body,{id:body.id})
+		return model_status.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/service/service_status Update service_status information
@@ -443,7 +488,7 @@ var service_controller = function () {
 		if (!body.id_service) {
 			throw utiles.informError(400)
 		}
-		return model_entity_service_status.update(body,{id_service:body.id_service})
+		return model_entity_service_status.update(body, { id_service: body.id_service })
 	}
 	/**
 	 * @api {put} api/service/service_comment Update service_comment information
@@ -463,7 +508,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_service_comment.update(body,{id:body.id})
+		return model_entity_service_comment.update(body, { id: body.id })
 	}
 	putMap.set('service', { method: update_entity_service, permits: Permissions.POSTULATE_SERVICE })
 	putMap.set('category', { method: update_category, permits: Permissions.ADMIN_SERVICES })
@@ -495,10 +540,25 @@ var service_controller = function () {
  	 * 
 	 */
 	var delete_entity_service = function (user, body) {
+		if(!user.id){
+			throw utiles.informError(400)
+		}
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_service.delete(body,{id:body.id})
+		return model_entity_service.getByUid(''+body.id).then((results)=>{
+			let service = results.data[0]
+			let found = false
+			user.institutions.forEach((institution)=>{
+				if(institution.id == service.id_institution){
+					found = true
+				}
+			})
+			if(!found){
+				throw utiles.informError(100)
+			}
+			return model_entity_service.delete(body.id)
+		})
 	}
 	/**
 	 * @api {delete} api/service/category Delete category information
@@ -514,7 +574,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_category.delete(body,{id:body.id})
+		return model_category.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/service/status Delete status information
@@ -533,7 +593,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_status.delete(body,{id:body.id})
+		return model_status.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/service/service_status Delete service_status information
@@ -552,7 +612,7 @@ var service_controller = function () {
 		if (!body.id_service) {
 			throw utiles.informError(400)
 		}
-		return model_entity_service_status.delete(body,{id_service:body.id_service})
+		return model_entity_service_status.delete(body, { id_service: body.id_service })
 	}
 	/**
 	 * @api {delete} api/service/service_comment Delete service_comment information
@@ -572,9 +632,9 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_service_comment.delete(body,{id:body.id})
+		return model_entity_service_comment.delete(body, { id: body.id })
 	}
-	deleteMap.set('service', { method: delete_entity_service, permits: Permissions.ADMIN_SERVICES })
+	deleteMap.set('service', { method: delete_entity_service, permits: Permissions.NONE })
 	deleteMap.set('category', { method: delete_category, permits: Permissions.ADMIN_SERVICES })
 	deleteMap.set('status', { method: delete_status, permits: Permissions.ADMIN_SERVICES })
 	deleteMap.set('service_status', { method: delete_entity_service_status, permits: Permissions.ADMIN_SERVICES })

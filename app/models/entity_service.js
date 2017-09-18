@@ -47,6 +47,21 @@ var Service = function () {
 	"model": "entity"
 }]
 	BaseModel.apply(this, params)
+
+	this.delete = function(id){
+		let q = `SET FOREIGN_KEY_CHECKS = 0;
+		DELETE FROM service_status WHERE id_service = '${id}';
+		DELETE FROM service_comment WHERE id_service = '${id}';
+		DELETE FROM service_comment WHERE id_service = '${id}';
+		DELETE FROM user_answer WHERE id_service = '${id}';
+		DELETE chats FROM chats JOIN evaluation_request on chats.id_evaluation_request = evaluation_request.id WHERE evaluation_request.id_service = ${id};
+		DELETE FROM evaluation_request WHERE id_service = '${id}';
+		DELETE FROM service WHERE id = ${id};
+		SET FOREIGN_KEY_CHECKS = 1;
+		`
+		console.log(q)
+		return this.customQuery(q)
+	}
 	return this
 };
 util.inherits(Service, BaseModel)
