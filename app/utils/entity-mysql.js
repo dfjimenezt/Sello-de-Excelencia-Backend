@@ -224,6 +224,7 @@ var EntityModel = function (info) {
 		params.limit = params.limit || 20
 		params.page = params.page || 1
 		params.lang = params.lang || 1
+		params._join = params._join || 'OR'
 		if (params.simple === undefined) {
 			params.simple = true
 		}
@@ -306,7 +307,7 @@ var EntityModel = function (info) {
 			for (var f in filters) {
 				conditions += "("
 				for (var v in filters[f]) {
-					conditions += '`' + view + '`.`' + f + '`' + filters[f][v] + " OR "
+					conditions += '`' + view + '`.`' + f + '`' + filters[f][v] + " "+params._join+" "
 				}
 				conditions = conditions.slice(0, -4)
 				conditions += ") AND "

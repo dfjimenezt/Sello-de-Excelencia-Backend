@@ -82,6 +82,7 @@ var MysqlModel = function (info) {
     params.order = params.order || this.getPrimaryKey()
     params.limit = params.limit || 200
     params.page = params.page || 1
+    params._joins = params._joins || "OR"
     if (typeof params.filter_fields == "string") {
       params.filter_fields = [params.filter_fields]
       params.filter_values = [params.filter_values]
@@ -121,7 +122,7 @@ var MysqlModel = function (info) {
       for (var f in filters) {
         conditions += "("
         for (var v in filters[f]) {
-          conditions += "list." + f + resolveEqual(connection, filters[f][v]) + " OR "
+          conditions += "list." + f + resolveEqual(connection, filters[f][v]) + " "+params._joins+" "
         }
         conditions = conditions.slice(0, -4)
         conditions += ") AND "

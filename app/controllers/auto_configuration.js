@@ -63,7 +63,8 @@ var configuration_controller = function () {
 			filter_fields: params.filter_field,
 			filter_values: params.filter_value,
 			fields: params.field,
-			lang: params.lang
+			lang: params.lang,
+			_joins:params._joins
 		})
 	}
 	/**
@@ -522,11 +523,19 @@ var configuration_controller = function () {
 		today.setHours(0,0,0)
 		let tomorrow = new Date(today.getFullYear(),today.getMonth(),today.getDate()+1)
 		params.filter_field.push('date')
-		params.filter_value.push('> '+today.toISOString().split('T')[0])
+		params.filter_value.push('>= '+today.toISOString().split('T')[0])
 		params.filter_field.push('date')
-		params.filter_value.push('< '+tomorrow.toISOString().split('T')[0])
+		params.filter_value.push('<= '+tomorrow.toISOString().split('T')[0])
 		params.order='points desc'
-		return _get(model_hall_of_fame,user,params)
+		params._joins = 'AND'
+		return _get(model_hall_of_fame,user,params).then((results)=>{
+			if(results.total_results == 0){
+				return model_hall_of_fame.updateTop().then((results)=>{
+					return _get(model_hall_of_fame,user,params)
+				})
+			}
+			return results
+		})
 	}
 	getMap.set('user', { method: get_entity_user, permits: Permissions.ADMIN_USERS })
 	getMap.set('role', { method: get_role, permits: Permissions.NONE })
