@@ -35,7 +35,8 @@ var Points = function () {
 		WHERE \`p\`.\`id_user\` = ${user}) \`p\` WHERE \`m\`.\`id\` = ${motive}`
 		
 		if(video != 'NULL'){
-			let q = `SELECT count(*) count FROM points WHERE id_hangout = '${video}'`
+			let q = `SELECT count(*) count FROM points WHERE 
+				id_hangout = '${video}' AND id_user = '${user}'`
 			return this.customQuery(q).then((result)=>{
 				return result[0].count == 0 ? this.customQuery(insert) : null
 			})
