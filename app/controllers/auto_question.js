@@ -646,11 +646,12 @@ var question_controller = function () {
 
 			<p>El equipo del Sello de Excelencia</p>`
 
-			utiles.sendEmail(entity.email, null, null,
+			utiles.sendEmail(user.email, null, null,
 				'Nuevo mensaje - Sello de Excelencia',
 				template)
+			return model_chats.create(body)
 		})
-		return model_chats.create(body)
+		
 	}
 	postMap.set('question', { method: create_entity_question, permits: Permissions.ADMIN_QUESTIONS })
 	postMap.set('questiontopic', { method: create_entity_questiontopic, permits: Permissions.ADMIN_QUESTIONS })
