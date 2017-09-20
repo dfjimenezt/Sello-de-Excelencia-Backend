@@ -632,6 +632,12 @@ var question_controller = function () {
 		}).then((result) => {
 			let user = result[0]
 			let template = `
+			<div style="background-color:#a42a5b;height:50px;width:100%">
+			</div>
+			<div style="text-align:center;margin: 10px auto;">
+			<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+			</div>
+			<div>
 			<p>Hola ${user.name} </p>
 			<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
 			<p>Has recibido un nuevo mensaje en Sello de Excelencia</p>
@@ -844,13 +850,19 @@ var question_controller = function () {
 				return model_entity_evaluation_request.getByUid('' + body.id)
 			})
 			.then((result) => {
-				let data = result.data[0]
+				let _erequest = result.data[0]
+				return model_entity_user_answer.getByUid('' + body.id_answer)
+			}).then((result)=>{
+				let _answer = result.data[0]
+				return model_user.getByUid('' + _answer.id_user)
+			}).then((result) => {
+				let _entity = result[0]
 				if (user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST) == -1) {
-					if (data.id_user != user.id) {
+					if (_erequest.id_user != user.id) {
 						throw utiles.informError(401)
 					}
 				}
-				if(data.id_request_status != body.id_request_status){
+				if(_erequest.id_request_status != body.id_request_status){
 					let duration = _status.duration
 					let alarm = duration - _status.pre_end
 					body.id_user = user.id
@@ -863,35 +875,52 @@ var question_controller = function () {
 				}
 				let evaluator_template = ''
 				let entity_template = ''
+				let admin_template = ''
 				//5 Rechazado
-				if (body.id_request_status == 5) {//add points
-					evaluator_template = '<p>Has calificado un requisito como NO CUMPLE. Agradecemos tu retroalimentación a la entidad.<p></p>Gracias por tu evaluación</p>'
-					entity_template = '<p>Han Rechazado un requisito de tu postulación</p><p>Gracias por participar en el Sello de Excelencia</p>'
-					model_points.addPoints(user.id, 1, 'Calificación de Requisito')
+				if (body.id_request_status == 5) {
+					evaluator_template = '<p>Has solicitado más información a la entidad.</p><p>Gracias por evaluar</p>'
+					entity_template = '<p>Han solicitado más información sobre tu requisito.</p><p>Gracias por participar</p>'
+					entity_template = '<p>Se ha rechazado un requisito</p>'
+					model_points.addPoints(user.id,7,'',_erequest.id_user)
 				}
 				//6 Retroalimentación
 				if (body.id_request_status == 6) {
 					evaluator_template = '<p>Has solicitado más información a la entidad.</p><p>Gracias por evaluar</p>'
 					entity_template = '<p>Han solicitado más información sobre tu requisito.</p><p>Gracias por participar</p>'
-					model_entity_user_answer.update({ id: data.id_answer, id_status: 6 })
+					model_entity_user_answer.update({ id: _answer.id, id_status: 6 })
 				}
 				//7 Cumple
 				if (body.id_request_status == 7) {//add points
 					evaluator_template = '<p>Has calificado un requisito como CUMPLE.</p><p>Gracias por evaluar</p>'
 					entity_template = '<p>Han aprobado tu requisito.</p><p>Gracias por participar</p>'
 					model_points.addPoints(user.id, 1, 'Calificación de Requisito')
+					model_points.addPoints(_entity.id, 7, 'Requisito Cumplido')
+				}
+				//8 No Cumple
+				if (body.id_request_status == 8) {//add points
+					evaluator_template = '<p>Has calificado un requisito como NO CUMPLE. Agradecemos tu retroalimentación a la entidad.<p></p>Gracias por tu evaluación</p>'
+					entity_template = '<p>Han Rechazado un requisito de tu postulación</p><p>Gracias por participar en el Sello de Excelencia</p>'
+					model_points.addPoints(user.id, 1, 'Calificación de Requisito')
+					model_points.addPoints(_entity.id, 7, 'Requisito No Cumplido')
 				}
 				model_user.getByUid('' + data.id_user).then((result) => {
 					let evaluator = result[0]
 					let template = `
-				<p>Hola ${evaluator.name} </p>
-				<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
-				${evaluator_template}
-				<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
-				<p>Nuestros mejores deseos,</p>
+					<div style="background-color:#a42a5b;height:50px;width:100%">
+					</div>
+					<div style="text-align:center;margin: 10px auto;">
+					<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+					</div>
+					<div>
+					<p>Hola ${evaluator.name} </p>
+					<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
+					${evaluator_template}
+					<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
+					<p>Nuestros mejores deseos,</p>
 
-				<p>El equipo del Sello de Excelencia</p>`
-
+					<p>El equipo del Sello de Excelencia</p>
+					</div>`
+					
 					utiles.sendEmail(evaluator.email, null, null,
 						'Actualización de Evaluación - Sello de Excelencia',
 						template)
@@ -906,6 +935,12 @@ var question_controller = function () {
 					}).then((result) => {
 						let entity = result[0]
 						let template = `
+							<div style="background-color:#a42a5b;height:50px;width:100%">
+							</div>
+							<div style="text-align:center;margin: 10px auto;">
+							<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+							</div>
+							<div>
 							<p>Hola ${entity.name} </p>
 							<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
 							${entity_template}

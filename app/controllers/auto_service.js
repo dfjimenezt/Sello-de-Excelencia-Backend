@@ -359,8 +359,15 @@ var service_controller = function () {
 								model_entity_service.getByUid('' + body.id_service).then((_service) => {
 									_users.forEach((u) => {
 										utiles.sendEmail(u.email, 'camila.lombana@domoti-sas.com', null, 'Entidad con puntaje bajo',
-											`<p>El servicio ${_service.data[0].name} tiene una calificación muy baja</p>
-								<p>La calificación del servicio es ${avg}</p>`
+											`
+											<div style="background-color:#a42a5b;height:50px;width:100%">
+											</div>
+											<div style="text-align:center;margin: 10px auto;">
+											<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+											</div>
+											<div>
+											<p>El servicio ${_service.data[0].name} tiene una calificación muy baja</p>
+											<p>La calificación del servicio es ${avg}</p>`
 										)
 									})
 								})

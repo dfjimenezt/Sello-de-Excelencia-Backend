@@ -71,7 +71,14 @@ var Auth = function () {
                     else user.password = pass
                 } else throw utiles.informError(200) //login failed
                 return userModel.update({ password: user.password }, { id: user.id }).then(() => {
-                    let template = `<p>Hola ${user.name} <\p>
+                    let template = `
+                    <div style="background-color:#a42a5b;height:50px;width:100%">
+					</div>
+					<div style="text-align:center;margin: 10px auto;">
+					<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+					</div>
+                    <div>
+                    <p>Hola ${user.name} <\p>
                     <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia <\p>
                     <p>Tu nueva contraseña para acceder es: ${body.password_new} <\p>
                     <p>Nuestros mejores deseos,<\p>
@@ -385,6 +392,12 @@ var Auth = function () {
                         // send an email to the user
                         let token = utiles.sign(body.email)
                         let template = `
+                        <div style="background-color:#a42a5b;height:50px;width:100%">
+                        </div>
+                        <div style="text-align:center;margin: 10px auto;">
+                        <img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+                        </div>
+                        <div>
                         <p> Hola ${body.name} </p>
                         <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia </p>
                         <p>Tu nueva contraseña para acceder es: ${pass_user} </p>
@@ -440,7 +453,14 @@ var Auth = function () {
                 pass = pass.digest('hex')
                 user.password = pass
                 return userModel.update({ password: user.password }, { id: user.id }).then(() => {
-                    let template = `<p> Hola ${user.name} <\p>
+                    let template = `
+                    <div style="background-color:#a42a5b;height:50px;width:100%">
+					</div>
+					<div style="text-align:center;margin: 10px auto;">
+					<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+					</div>
+                    <div>
+                    <p> Hola ${user.name} <\p>
                     <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia <\p>
                     <p>Tu nueva contraseña para acceder es: ${pass_user} <\p>
                     <p>Nuestros mejores deseos,<\p>

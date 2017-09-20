@@ -427,6 +427,12 @@ var place_controller = function () {
 				// send an email to the user
 				let token = utiles.sign(email)
 				let template = `
+				<div style="background-color:#a42a5b;height:50px;width:100%">
+				</div>
+				<div style="text-align:center;margin: 10px auto;">
+				<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+				</div>
+				<div>
 				<p>Hola </p>
 				<p>Te has registrado con exito como ${role} en la plataforma del Sello de Excelencia </p>
 				<p>Tu contraseña para acceder es: ${pass_user} </p>
