@@ -618,12 +618,12 @@ var question_controller = function () {
 	var create_chats = function (user, body) {
 		body.id_sender = user.id
 
-		entity_evaluation_request.getByUid('' + body.id_evaluation_request).then((result) => {
+		return model_entity_evaluation_request.getByUid('' + body.id_evaluation_request).then((result) => {
 			let request = result.data[0]
 			if (request.id_user != body.id_sender) { //entity
 				return request.id_user
 			} else {
-				entity_user_answer.getByUid('' + request.id_answer).then((result) => {
+				return model_entity_user_answer.getByUid('' + request.id_answer).then((result) => {
 					return result.data[0].id_user
 				})
 			}
@@ -863,7 +863,7 @@ var question_controller = function () {
 						return model_entity_user_answer.getByUid('' + body.id_answer)
 					})
 				}
-				return model_entity_user_answer.getByUid('' + body.id_answer)
+				return model_entity_user_answer.getByUid('' + _erequest.id_answer)
 			}).then((result)=>{
 				_answer = result.data[0]
 				return model_user.getByUid('' + _answer.id_user)
@@ -941,7 +941,7 @@ var question_controller = function () {
 					<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
 					</div>
 					<div>
-					<p>Hola ${entity.name} </p>
+					<p>Hola ${_entity.name} </p>
 					<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
 					${entity_template}
 					<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
