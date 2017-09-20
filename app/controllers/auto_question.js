@@ -844,19 +844,31 @@ var question_controller = function () {
 			throw utiles.informError(400)
 		}
 		let _status = null
+		let _erequest = null
+		let _evaluator = null
+		let _entity = null
+		let _answer = null
 		return model_request_status.getByUid(body.id_request_status)
 			.then((result) => {
 				_status = result[0]
 				return model_entity_evaluation_request.getByUid('' + body.id)
 			})
 			.then((result) => {
-				let _erequest = result.data[0]
+				_erequest = result.data[0]
+				if(_erequest.id_user == user.id ){
+					_evaluator = user
+				}else{
+					return model_user.getByUid('' + _answer.id_user).then((result)=>{
+						_evaluator = result.data[0]
+						return model_entity_user_answer.getByUid('' + body.id_answer)
+					})
+				}
 				return model_entity_user_answer.getByUid('' + body.id_answer)
 			}).then((result)=>{
-				let _answer = result.data[0]
+				_answer = result.data[0]
 				return model_user.getByUid('' + _answer.id_user)
 			}).then((result) => {
-				let _entity = result[0]
+				_entity = result[0]
 				if (user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST) == -1) {
 					if (_erequest.id_user != user.id) {
 						throw utiles.informError(401)
@@ -903,57 +915,43 @@ var question_controller = function () {
 					model_points.addPoints(user.id, 1, 'Calificación de Requisito')
 					model_points.addPoints(_entity.id, 7, 'Requisito No Cumplido')
 				}
-				model_user.getByUid('' + data.id_user).then((result) => {
-					let evaluator = result[0]
-					let template = `
+				
+				let template = `
+				<div style="background-color:#a42a5b;height:50px;width:100%">
+				</div>
+				<div style="text-align:center;margin: 10px auto;">
+				<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+				</div>
+				<div>
+				<p>Hola ${_evaluator.name} </p>
+				<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
+				${evaluator_template}
+				<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
+				<p>Nuestros mejores deseos,</p>
+
+				<p>El equipo del Sello de Excelencia</p>
+				</div>`
+				
+				utiles.sendEmail(_evaluator.email, null, null,'Actualización de Evaluación - Sello de Excelencia',template)
+
+				template = `
 					<div style="background-color:#a42a5b;height:50px;width:100%">
 					</div>
 					<div style="text-align:center;margin: 10px auto;">
 					<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
 					</div>
 					<div>
-					<p>Hola ${evaluator.name} </p>
+					<p>Hola ${entity.name} </p>
 					<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
-					${evaluator_template}
+					${entity_template}
 					<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
 					<p>Nuestros mejores deseos,</p>
 
-					<p>El equipo del Sello de Excelencia</p>
-					</div>`
-					
-					utiles.sendEmail(evaluator.email, null, null,
-						'Actualización de Evaluación - Sello de Excelencia',
-						template)
-				})
-				//get entity
+					<p>El equipo del Sello de Excelencia</p>`
+
+				utiles.sendEmail(_entity.email, null, null,'Actualización de Evaluación - Sello de Excelencia',
+					template)
 				return model_entity_evaluation_request.update(body, { id: body.id })
-					.then(() => {
-						return model_entity_user_answer.getByUid('' + body.id_answer)
-					}).then((result) => {
-						let answer = result.data[0]
-						return model_user.getByUid('' + answer.id_user)
-					}).then((result) => {
-						let entity = result[0]
-						let template = `
-							<div style="background-color:#a42a5b;height:50px;width:100%">
-							</div>
-							<div style="text-align:center;margin: 10px auto;">
-							<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
-							</div>
-							<div>
-							<p>Hola ${entity.name} </p>
-							<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
-							${entity_template}
-							<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
-							<p>Nuestros mejores deseos,</p>
-
-							<p>El equipo del Sello de Excelencia</p>`
-
-						return utiles.sendEmail(entity.email, null, null,
-							'Actualización de Evaluación - Sello de Excelencia',
-							template
-						)
-					})
 			})
 	}
 	/**
