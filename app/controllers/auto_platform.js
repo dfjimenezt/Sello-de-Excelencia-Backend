@@ -285,7 +285,18 @@ var platform_controller = function () {
 	 * @param {*} queryParams 
 	 */
 	var get_export = function (user, queryParams) {
-		
+		let translate = {
+			"es": {
+				"name": "Nombre",
+				"url": "Url",
+				"category": "Categoría",
+				"institution": "Entidad",
+				"rate":"Calificación",
+				"level":"Nivel",
+				"valid_to":"Vigente Hasta",
+				"timestamp":"Fecha de Certificación"
+			}
+		}
 		let tables = [queryParams.table]
 		let BaseModel = require('../utils/model.js')
 		let promises = []
@@ -296,7 +307,12 @@ var platform_controller = function () {
 				model: 'mysql'
 			}]
 			BaseModel.apply(model, params)
-			let p = model.getAll({})
+			let q = `SELECT s.id,s.name,s.url,c.name category,i.name institution,s.rate,ss.level,ss.valid_to,ss.timestamp FROM service s 
+			JOIN category c on c.id = s.id_category 
+			JOIN institution i on i.id = s.id_institution
+			JOIN service_status ss on ss.id_service = s.id
+			WHERE s.current_status = '8' AND ss.id_status = '8' AND ss.valid_to > NOW()`
+			let p = model_config.customQuery(q)
 			promises.push(p)
 		})
 		return Promise.all(promises).then((results) => {
