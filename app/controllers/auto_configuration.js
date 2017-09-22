@@ -530,7 +530,7 @@ var configuration_controller = function () {
 		params._joins = 'AND'
 		return _get(model_hall_of_fame,user,params).then((results)=>{
 			if(results.total_results == 0){
-				return model_hall_of_fame.updateTop().then((results)=>{
+				return model_hall_of_fame.updateTop(params.filter_value[0]).then((results)=>{
 					return _get(model_hall_of_fame,user,params)
 				})
 			}
