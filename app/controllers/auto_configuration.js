@@ -515,7 +515,13 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_hall_of_fame = function (user, params) {
+		let empty = true
+		if(!params.filter_field){
+			params.filter_field = []
+			params.filter_value = []
+		}
 		if (typeof params.filter_field == 'string') {
+			empty = false
 			params.filter_field = [params.filter_field]
 			params.filter_value = [params.filter_value]
 		}
@@ -530,9 +536,11 @@ var configuration_controller = function () {
 		params._joins = 'AND'
 		return _get(model_hall_of_fame,user,params).then((results)=>{
 			if(results.total_results == 0){
-				return model_hall_of_fame.updateTop(params.filter_value[0]).then((results)=>{
-					return _get(model_hall_of_fame,user,params)
-				})
+				if(!empty){
+					return model_hall_of_fame.updateTop(params.filter_value[0]).then((results)=>{
+						return _get(model_hall_of_fame,user,params)
+					})
+				}
 			}
 			return results
 		})

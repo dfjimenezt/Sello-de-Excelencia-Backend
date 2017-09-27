@@ -3,109 +3,313 @@ if (!dmt) {
 }
 dmt.config = [
 	{
-		section: "Plataforma",
-		path: "usuarios",
-		pages: [
-			{
-				name: "Usuarios",
-				path: "administrar",
-				entity: "user",
-				controller: "listItemExtendedController",
-				templateUrl: "views/mutuapoly/list.html",
-				pages: [
-					{
-						name: "add",
-						path: "add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					},
-					{
-						name: "detail",
-						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					}
-				]
-			},
+		section: "General",
+		path: "general",
+		pages:[
 			{
 				name: "Banner",
 				path: "banner",
 				entity: "banner",
 				controller: "listItemExtendedController",
-				templateUrl: "views/mutuapoly/list.html",
+				templateUrl: "views/extended/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
+						templateUrl: "views/extended/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
+						templateUrl: "views/extended/detail.html"
 					}
 				]
 			},
 			{
-				name: "Footer",
-				path: "footer",
+				name: "Pie de página",
+				path: "pie_pagina/1",
 				entity: "footer",
+				controller: "detailItemSingleController",
+				templateUrl: "views/footer/detail.html",
+			},
+		]
+	},
+	{
+		section: "Usuarios",
+		path: "usuarios",
+		pages:[
+			{
+				name: "Entidades",
+				path: "entidades",
+				entity: "institution",
 				controller: "listItemExtendedController",
-				templateUrl: "views/mutuapoly/list.html",
+				templateUrl: "views/extended/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
+						templateUrl: "views/extended/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
+						templateUrl: "views/extended/detail.html"
 					}
 				]
 			},
 			{
-				name: "Logos",
-				path: "logos",
-				entity: "config",
+				name: "Evaluadores",
+				path: "evaluadores",
+				entity: "user",
+				controller: "listItemExtendedController",
+				templateUrl: "views/extended/list.html",
+				filters:{
+					'roles.id':[2]
+				},
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					}
+				]
+			},
+			{
+				name: "Administradores",
+				path: "administradores",
+				entity: "user",
+				controller: "listItemExtendedController",
+				templateUrl: "views/extended/list.html",
+				filters:{
+					'roles.id':[3]
+				},
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					}
+				]
+			},
+			{
+				name: "Ciudadanos",
+				path: "ciudadanos",
+				entity: "user",
+				controller: "listItemExtendedController",
+				templateUrl: "views/extended/list.html",
+				filters:{
+					'roles.id':[1]
+				},
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					}
+				]
+			},
+		]
+	},
+	{
+		section: "Postulaciones",
+		path: "postulaciones",
+		pages: [
+			{
+				name: "En Postulación",
+				path: "incompletos",
+				entity: "service",
+				filters:{
+					'current_status':[10]
+				},
+				controller: "listItemServiceController",
+				templateUrl: "views/service/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					}
+				]
+			},
+			{
+				name: "Verificación",
+				path: "verificacion",
+				entity: "service",
+				filters:{
+					'current_status':[1]
+				},
+				controller: "listItemServiceController",
+				templateUrl: "views/service/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					}
+				]
+			},
+			{
+				name: "Cumplidos",
+				path: "cumplidos",
+				entity: "service",
+				filters:{
+					'current_status':[8]
+				},
+				controller: "listItemServiceController",
+				templateUrl: "views/service/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					}
+				]
+			},
+			{
+				name: "No Cumplidos",
+				path: "no_cumplidos",
+				entity: "service",
+				filters:{
+					'current_status':[11]
+				},
+				controller: "listItemServiceController",
+				templateUrl: "views/service/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					}
+				]
 			}
 		]
 	},
 	{
-		section: "Lugares",
-		path: "lugares",
+		section: "Administrar",
+		path: "administrar",
 		pages: [
 			{
-				name: "Instituciones",
-				path: "instituciones",
-				entity: "institution",
+				name: "Tipos de Evaluador",
+				path: "tipos_evaluador",
+				entity: "usertype",
+			},
+			{
+				name: "Logos",
+				path: "logos/1",
+				entity: "config",
+				controller: "detailItemSingleController",
+				templateUrl: "views/single/detail.html",
+			},
+			{
+				name: "Categorías",
+				path: "categorias",
+				entity: "category"
+			},
+			{
+				name: "Temáticas de interés",
+				path: "tematicas_interes",
+				entity: "questiontopic"
+			},
+			{
+				name: "Puntaje",
+				path: "puntaje",
+				entity: "motives"
+			},
+			{
+				name: "Tiempos / Requisito",
+				path: "tiempos_requisito",
+				entity: "request_status"
+			},
+			{
+				name: "Tiempos / Servicio",
+				path: "tiempos_servicio",
+				entity: "status"
+			},
+			{
+				name: "Requisitos",
+				path: "requisitos",
+				entity: "question",
 				controller: "listItemExtendedController",
-				templateUrl: "views/mutuapoly/list.html",
+				templateUrl: "views/extended/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
+						templateUrl: "views/extended/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
+						templateUrl: "views/extended/detail.html"
 					}
 				]
 			},
 			{
-				name: "Instituciones - Usuarios",
-				path: "instituciones_usuarios",
-				entity: "institution_user"
-			},{
+				name: "Aprende y Enseña",
+				path: "aprende_ensena",
+				entity: "hangouts"
+			},
+			{
+				name: "Preguntas Ciudadano",
+				path: "preguntas",
+				entity: "category_questions"
+			},
+			{
 				name: "Ciudades",
 				path: "ciudades",
 				entity: "city"
@@ -114,87 +318,7 @@ dmt.config = [
 				name: "Regiones",
 				path: "regiones",
 				entity: "region"
-			}
-		]
-	},
-	{
-		section: "Sello de Excelencia",
-		path: "sello_de_excelencia",
-		pages: [
-			{
-				name: "Servicios",
-				path: "servicios",
-				entity: "service",
-				controller: "listItemExtendedController",
-				templateUrl: "views/mutuapoly/list.html",
-				pages: [
-					{
-						name: "add",
-						path: "add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					},
-					{
-						name: "detail",
-						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					}
-				]
 			},
-			{
-				name: "Requistos",
-				path: "user_answer",
-				entity: "user_answer",
-				controller: "listItemExtendedController",
-				templateUrl: "views/mutuapoly/list.html",
-				pages: [
-					{
-						name: "add",
-						path: "add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					},
-					{
-						name: "detail",
-						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/mutuapoly/detail.html"
-					}
-				]
-			},
-			{
-				name: "Categorías",
-				path: "categorias",
-				entity: "category"
-			},
-			{
-				name: "Temas",
-				path: "temas",
-				entity: "questiontopic"
-			},
-			{
-				name: "Etapas",
-				path: "etapas",
-				entity: "form"
-			},
-			{
-				name: "Evaluaciones",
-				path: "evaluaciones",
-				entity: "evaluation_request"
-			}
-			
-		]
-	},
-	{
-		section: "Foro",
-		path: "foro",
-		pages: [
-			{
-				name: "Aprende",
-				path: "aprende",
-				entity: "hangouts"
-			}
 		]
 	}
 ]

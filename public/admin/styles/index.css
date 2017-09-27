@@ -1,0 +1,30 @@
+
+@-webkit-keyframes fade-in { 0% {opacity: 0;}50%{opacity:0;}100%{opacity:1;}}
+
+text-angular .ta-toolbar{
+  background: #fff;
+  padding: 10px;
+}
+
+text-angular .btn-group{
+  display: inline;
+}
+text-angular .btn-group .btn{
+  cursor: pointer;
+  display: inline-block;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  text-align: center;
+  padding: 0px;
+}
+text-angular .btn-group .btn:hover{
+  background: #eee;
+}
+text-angular .ta-bind{
+  background: #fff;
+  border: 1px solid #ddd;
+}

@@ -18,7 +18,7 @@ angular.module('dmt-back').controller('deleteItemController', function ($mdDialo
 
 
     var query = "?" + fields.join("&");
-    var promise = $http.delete(base + ctrl.currentEntity.table + query);
+    var promise = $http.delete(base + query);
     promise.then(function () {
       items.splice(index, 1);
     });

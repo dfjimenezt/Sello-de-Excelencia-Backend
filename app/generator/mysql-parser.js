@@ -208,8 +208,15 @@ var mySqlGen = function () {
         getTables(tables).then((promises) => {
             return Promise.all(promises)
         }).then((info) => {
-            let str = tables_template.replace(new RegExp("{{TABLES}}", "g"), JSON.stringify(tables,null,'\t'));
-            fs.writeFileSync('./public/admin/tables.js', str);
+            let file_name = './public/admin/tables.js'
+            let write = !fs.existsSync(file_name)
+            write = write || this.override
+            if (!write) {
+                console.log(file_name + " already exists")
+            } else {
+                let str = tables_template.replace(new RegExp("{{TABLES}}", "g"), JSON.stringify(tables,null,'\t'));
+                fs.writeFileSync(file_name, str)
+            }
             //check permissions
             return getEntities(tables);
         }).then(() => {

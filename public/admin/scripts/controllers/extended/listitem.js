@@ -1,19 +1,13 @@
-angular.module('dmt-back').filter('linkvalue', function () {
-    return function (items, field, item) {
-        for (i in items) {
-            let it = items[i];
-            if (item[field.name] === it[field.foreign_key]) {
-                return it[field.foreign_name];
-            }
-        }
-    }
-});
 angular.module('dmt-back').controller('listItemExtendedController', function ($scope, $mdDialog, $location, page, $http) {
     var ctrl = this;
     ctrl.page = page;
     ctrl.entity = dmt.entities[page.entity];
     ctrl.breadcrum = buildBreadcrum($location.path(),page);
     ctrl.language = 1;
+    ctrl.sibling = page.parent.pages;
+    this.selectPage = function (page) {
+		$location.path(page.parent.path + "/" + page.path);
+	};
     /**
      * Manipulate items
      */
@@ -87,7 +81,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
         order: page ? ctrl.entity.defaultSort : "name",
         limit: 20,
         page: 1,
-        filters: {}
+        filters: ctrl.page.filters || {}
     };
 
     $scope.getSuccess = function (results) {
@@ -124,7 +118,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
         str.push("lang="+ctrl.language);
         let filter = str.join("&");
 
-        $scope.promise = $http.get(ctrl.entity.endpoint + page.entity + "?" + filter);
+        $scope.promise = $http.get(ctrl.entity.endpoint + "?" + filter);
         $scope.promise.then($scope.getSuccess).catch(function (response) {
             window.location.href = "/admin/login";
         });
@@ -139,7 +133,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
         if (!base) {
             base = ctrl.entity.endpoint;
         }
-        $http.get(base + item.table).then(function (results) {
+        $http.get(base).then(function (results) {
             ctrl.options[item.name] = results.data.data;
         });
     }
@@ -191,7 +185,7 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
         if (!base) {
             base = ctrl.entity.endpoint;
         }
-        $http.get(base + item.table).then(function (results) {
+        $http.get(base).then(function (results) {
             item.options = results.data.data;
         });
     }

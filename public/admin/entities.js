@@ -171,6 +171,12 @@ dmt.entities = {
         name: "comments",
         entity: "service_comment",
         rightKey: "id_service"
+      },
+      {
+        type: "1-n",
+        name: "requisites",
+        rightKey: "id_service",
+        entity: "user_answer"
       }
     ]
   },

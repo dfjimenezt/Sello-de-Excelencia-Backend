@@ -1,4 +1,4 @@
-angular.module('dmt-back').controller('detailItemExtendedController', function ($mdDialog, $mdEditDialog, $routeParams, page, $location, $http, $filter) {
+angular.module('dmt-back').controller('detailItemSingleController', function ($mdDialog, $mdEditDialog, $routeParams, page, $location, $http, $filter) {
 	var ctrl = this;
 	ctrl.data = {};
 	ctrl.breadcrum = buildBreadcrum($location.path(), page);
@@ -9,6 +9,7 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 	ctrl.options = {};
 	ctrl.page = page;
 	ctrl.tab = null;
+	ctrl.id = $location.path().substring($location.path().lastIndexOf("/")+1);
 	ctrl.currentEntity = dmt.entities[page.entity || page.parent.entity];
 	ctrl.currentEntity.relations.forEach((relation) => {
 		ctrl.entities[relation.entity] = {
@@ -60,7 +61,7 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 			var url = entity.endpoint
 			var data = {}
 			data[relation.intermediate.rightKey] = selection
-			data[relation.intermediate.leftKey] = $routeParams.id
+			data[relation.intermediate.leftKey] = ctrl.id
 			$http.post(url, data)
 		}
 	}
@@ -71,7 +72,7 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 		}
 		if (relation.type === 'n-n') {
 			var entity = dmt.entities[relation.intermediate.entity]
-			var url = entity.endpoint + '?' + relation.intermediate.rightKey + '=' + selection + '&' + relation.intermediate.leftKey + '=' + $routeParams.id
+			var url = entity.endpoint + '?' + relation.intermediate.rightKey + '=' + selection + '&' + relation.intermediate.leftKey + '=' + ctrl.id
 			$http.delete(url)
 		}
 	}
@@ -197,11 +198,11 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 		}
 		if (relation.rightKey) { //1-n
 			str.push("filter_field=" + relation.rightKey);
-			str.push("filter_value=" + $routeParams.id);
+			str.push("filter_value=" + ctrl.id);
 		} else if (relation.intermediate && ctrl.entities[relation.entity].selected.length === 0) {
 			let intermediate = []
 			intermediate.push("filter_field=" + relation.intermediate.leftKey);
-			intermediate.push("filter_value=" + $routeParams.id);
+			intermediate.push("filter_value=" + ctrl.id);
 			intermediate.push("lang=" + ctrl.language)
 			let ety_intermediate = dmt.entities[relation.intermediate.entity];
 			if (!ety_intermediate) {
@@ -250,7 +251,7 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 		let str = [];
 		for (let p in ctrl.currentEntity.fields) {
 			if (ctrl.currentEntity.fields[p].key) {
-				str.push(ctrl.currentEntity.fields[p].name + "=" + $routeParams.id);
+				str.push(ctrl.currentEntity.fields[p].name + "=" + ctrl.id);
 			}
 		}
 		if (str.length == 0) {
@@ -264,7 +265,7 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 			window.location.href = "/admin/login";
 		});
 	};
-	if ($routeParams.id) {
+	if (ctrl.id) {
 		ctrl.getData();
 	}
 

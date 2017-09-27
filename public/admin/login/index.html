@@ -46,6 +46,7 @@
         <form class="login-form">
           <input ng-model="user.email" type="text" placeholder="username" />
           <input ng-model="user.password" type="password" placeholder="password" />
+          <span class="error">{{error}}</span>
           <button ng-click="login()">login</button>
         </form>
       </div>

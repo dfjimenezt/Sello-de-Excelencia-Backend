@@ -18,23 +18,25 @@
 if (!localStorage.getItem("token")) {
 	window.location.href = "/admin/login";
 }
-var app = angular.module('dmt-back', ['ngRoute', 'ngMaterial', 'ngSanitize', 'md.data.table']);
+var app = angular.module('dmt-back', [
+'ngRoute', 
+'ngMaterial', 
+'ngSanitize', 
+'md.data.table',
+'textAngular',
+'ngFileUpload']);
 /**
  * Configuration of the application from config.js
  */
-app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
+app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $provide) {
 	$mdThemingProvider.theme('default')
-		.primaryPalette('indigo')
-		.accentPalette('yellow');
-	$mdThemingProvider.theme('dark', 'default')
-      .primaryPalette('grey')
-	  .accentPalette('blue-grey');
-
+	
+	
 	for (var name in dmt.entities) {
 		dmt.api.endpoints.forEach(function (endpoint) {
 			endpoint.entities.forEach(function (ety) {
 				if (ety.entity == name) {
-					dmt.entities[name].endpoint = '/api/' + endpoint.controller + '/'
+					dmt.entities[name].endpoint = '/api/' + endpoint.controller + '/' + ety.entity
 				}
 			})
 		})
@@ -52,7 +54,7 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 		dmt.api.endpoints.forEach(function (endpoint) {
 			endpoint.entities.forEach(function (ety) {
 				if (ety.entity == name) {
-					entity.endpoint = '/api/' + endpoint.controller + '/'
+					entity.endpoint = '/api/' + endpoint.controller + '/' + ety.entity
 				}
 			})
 		})
@@ -69,6 +71,7 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 		}
 
 		let entity = dmt.entities[name];
+		
 		if (entity) {
 			entity.table = entity.table
 			entity.fields = dmt.tables[entity.table].fields
@@ -78,11 +81,13 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 					if (f.name == entity.translate.rightKey || f.name === "id_lang") {
 						return
 					}
+					f.prefix = entity.translate.table+'_'
 					entity.fields.push(f);
 				})
 			}
 			entity.defaultSort = dmt.tables[entity.table].defaultSort
 		}
+		console.log(name);
 		entity.relations = entity.relations || []
 		entity.relations.forEach((relation) => {
 			if (relation.leftKey) {
@@ -122,7 +127,6 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 			}
 		};
 		var _path = path + "/" + page.path;
-		console.log(_path);
 		$routeProvider.when(_path, route);
 		if (page.pages) {
 			page.pages.forEach((child) => {
@@ -144,6 +148,9 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 		redirectTo: '/'
 	});
 	//$locationProvider.html5Mode(true);
+	/*$provide.decorator('taOptions', ['taRegisterTool', '$delegate', function(taRegisterTool, taOptions) {
+		console.log(taOptions.toolbar);
+	}]);*/
 });
 
 app.controller('backCtrl', function ($mdSidenav, $location, $http) {
@@ -153,7 +160,7 @@ app.controller('backCtrl', function ($mdSidenav, $location, $http) {
 	this.logout = function () {
 		delete $http.defaults.headers.common.Authorization;
 		localStorage.removeItem("token");
-		$location.path("/login");
+		window.location.href = "/admin/login";
 	}
 	this.menu = function () {
 		$mdSidenav("menu").toggle();

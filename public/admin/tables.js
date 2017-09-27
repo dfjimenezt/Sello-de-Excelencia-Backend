@@ -2,76 +2,7 @@ if(!dmt){
 	var dmt = {}
 }
 dmt.tables = {
-	"category": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"chats": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "id_evaluation_request",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_sender",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "text",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "timestamp",
-				"type": "datetime",
-				"disabled": true,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"availability": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"country": {
+	"city": {
 		"fields": [
 			{
 				"name": "id",
@@ -86,154 +17,27 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "nacionalidad",
+				"name": "code",
 				"type": "string",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "id_capital",
+				"name": "latitude",
+				"type": "number",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "longitude",
+				"type": "number",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_region",
 				"type": "int",
 				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"questiontopic": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "description",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_usertype",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_category",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"paises": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "name",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"institution_user": {
-		"fields": [
-			{
-				"name": "id_institution",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_user",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "role",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "admin",
-				"type": "boolean",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "certificate",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id_institution"
-	},
-	"institutionType": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"faq": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "question",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "answer",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "active",
-				"type": "boolean",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "timestamp",
-				"type": "datetime",
-				"disabled": true,
 				"key": false
 			}
 		],
@@ -286,7 +90,7 @@ dmt.tables = {
 		],
 		"defaultSort": "id"
 	},
-	"message_votes": {
+	"footer": {
 		"fields": [
 			{
 				"name": "id",
@@ -295,27 +99,21 @@ dmt.tables = {
 				"key": true
 			},
 			{
-				"name": "id_user",
-				"type": "int",
+				"name": "title",
+				"type": "string",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "id_message",
-				"type": "int",
+				"name": "text",
+				"type": "text",
 				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "timestamp",
-				"type": "datetime",
-				"disabled": true,
 				"key": false
 			}
 		],
 		"defaultSort": "id"
 	},
-	"motives": {
+	"request_status": {
 		"fields": [
 			{
 				"name": "id",
@@ -330,7 +128,19 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "points",
+				"name": "duration",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "pre_end",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "alert",
 				"type": "int",
 				"disabled": false,
 				"key": false
@@ -344,7 +154,7 @@ dmt.tables = {
 		],
 		"defaultSort": "id"
 	},
-	"city": {
+	"category": {
 		"fields": [
 			{
 				"name": "id",
@@ -355,54 +165,13 @@ dmt.tables = {
 			{
 				"name": "name",
 				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "code",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "latitude",
-				"type": "number",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "longitude",
-				"type": "number",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_region",
-				"type": "int",
 				"disabled": false,
 				"key": false
 			}
 		],
 		"defaultSort": "id"
 	},
-	"ciudades": {
-		"fields": [
-			{
-				"name": "id_region",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "name",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id_region"
-	},
-	"banner": {
+	"form": {
 		"fields": [
 			{
 				"name": "id",
@@ -415,41 +184,6 @@ dmt.tables = {
 				"type": "string",
 				"disabled": false,
 				"key": false
-			},
-			{
-				"name": "text",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "directory",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_type_banner",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "position",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"category_questions": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
 			},
 			{
 				"name": "id_category",
@@ -458,15 +192,15 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "text",
-				"type": "text",
-				"disabled": false,
+				"name": "timestamp",
+				"type": "datetime",
+				"disabled": true,
 				"key": false
 			}
 		],
 		"defaultSort": "id"
 	},
-	"config": {
+	"institution": {
 		"fields": [
 			{
 				"name": "id",
@@ -475,14 +209,115 @@ dmt.tables = {
 				"key": true
 			},
 			{
-				"name": "header",
+				"name": "name",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "nit",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "address",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "website",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "email",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "second_email",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "phone",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "extension_phone",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_city",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_region",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_country",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_institution_type",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "timestamp",
+				"type": "datetime",
+				"disabled": true,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"questiontopic": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "name",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "description",
 				"type": "text",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "footer",
-				"type": "text",
+				"name": "id_usertype",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_category",
+				"type": "int",
 				"disabled": false,
 				"key": false
 			}
@@ -566,7 +401,123 @@ dmt.tables = {
 		],
 		"defaultSort": "id"
 	},
-	"institution": {
+	"category_questions": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "id_category",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "text",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"availability": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "name",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"chats": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "id_evaluation_request",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_sender",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "text",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "timestamp",
+				"type": "datetime",
+				"disabled": true,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"message": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "text",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "url",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_topic",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_user",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "timestamp",
+				"type": "datetime",
+				"disabled": true,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"service": {
 		"fields": [
 			{
 				"name": "id",
@@ -581,49 +532,43 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "nit",
+				"name": "rate",
+				"type": "number",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "url",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_category",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_institution",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "test_user",
 				"type": "string",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "address",
+				"name": "test_password",
 				"type": "string",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "website",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "email",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "second_email",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "phone",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "extension_phone",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "head_sector",
+				"name": "is_active",
 				"type": "boolean",
 				"disabled": false,
 				"key": false
@@ -635,73 +580,94 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "designation_act",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "legalrep_name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "legalrep_secondname",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "legalrep_lastname",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "legalrep_secondlastname",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "legalrep_document",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "legalrep_typedoc",
+				"name": "current_status",
 				"type": "int",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "legalrep_email",
+				"name": "datetime",
+				"type": "datetime",
+				"disabled": true,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"usertype": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "name",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"status": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "name",
 				"type": "string",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "legalrep_phone",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "legalrep_mobile",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_city",
+				"name": "duration",
 				"type": "int",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "id_region",
+				"name": "pre_end",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "alert",
+				"type": "boolean",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "description",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"region": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "name",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_capital",
 				"type": "int",
 				"disabled": false,
 				"key": false
@@ -713,86 +679,15 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "id_user_creator",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_institution_type",
-				"type": "int",
+				"name": "code",
+				"type": "string",
 				"disabled": false,
 				"key": false
 			}
 		],
 		"defaultSort": "id"
 	},
-	"gobierno_en_linea_requisitos_participacion": {
-		"fields": [
-			{
-				"name": "Etapa",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Requisito",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Criterio",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Evidencia",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Sustento legal o técnico",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Ayuda",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Nivel",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Perfil",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Area Tematica",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Preguntas",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "Etapa"
-	},
-	"media": {
+	"hall_of_fame": {
 		"fields": [
 			{
 				"name": "id",
@@ -801,14 +696,173 @@ dmt.tables = {
 				"key": true
 			},
 			{
-				"name": "url",
+				"name": "name",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "ranking",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "points",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "date",
+				"type": "datetime",
+				"disabled": true,
+				"key": false
+			},
+			{
+				"name": "id_user",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_institution",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_role",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"type": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "name",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"permission": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "name",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"banner": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "title",
 				"type": "string",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "type",
+				"name": "summary",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "position",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "active",
+				"type": "boolean",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "video",
+				"type": "file",
+				"disabled": false,
+				"key": false
+			},
+
+			{
+				"name": "text",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "background",
+				"type": "file",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_type_banner",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"contact": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "name",
 				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "lastname",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "topic",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "message",
+				"type": "text",
 				"disabled": false,
 				"key": false
 			},
@@ -898,7 +952,7 @@ dmt.tables = {
 		],
 		"defaultSort": "id"
 	},
-	"service_comment": {
+	"role": {
 		"fields": [
 			{
 				"name": "id",
@@ -907,7 +961,41 @@ dmt.tables = {
 				"key": true
 			},
 			{
-				"name": "id_service",
+				"name": "name",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"config": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "header",
+				"type": "file",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "footer",
+				"type": "file",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"institution_user": {
+		"fields": [
+			{
+				"name": "id_institution",
 				"type": "int",
 				"disabled": false,
 				"key": false
@@ -919,27 +1007,44 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "text",
+				"name": "role",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "admin",
+				"type": "boolean",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "certificate",
 				"type": "text",
 				"disabled": false,
 				"key": false
-			},
+			}
+		],
+		"defaultSort": "id_institution"
+	},
+	"user_category": {
+		"fields": [
 			{
-				"name": "rate",
-				"type": "number",
+				"name": "id_user",
+				"type": "int",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "timestamp",
-				"type": "datetime",
-				"disabled": true,
+				"name": "id_category",
+				"type": "int",
+				"disabled": false,
 				"key": false
 			}
 		],
-		"defaultSort": "id"
+		"defaultSort": "id_user"
 	},
-	"hall_of_fame": {
+	"country": {
 		"fields": [
 			{
 				"name": "id",
@@ -954,32 +1059,31 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "ranking",
-				"type": "int",
+				"name": "nacionalidad",
+				"type": "string",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "points",
+				"name": "id_capital",
 				"type": "int",
 				"disabled": false,
 				"key": false
-			},
+			}
+		],
+		"defaultSort": "id"
+	},
+	"type_banner": {
+		"fields": [
 			{
-				"name": "date",
-				"type": "datetime",
+				"name": "id",
+				"type": "int",
 				"disabled": true,
-				"key": false
+				"key": true
 			},
 			{
-				"name": "id_user",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_role",
-				"type": "int",
+				"name": "name",
+				"type": "string",
 				"disabled": false,
 				"key": false
 			}
@@ -1021,7 +1125,7 @@ dmt.tables = {
 		],
 		"defaultSort": "id_user"
 	},
-	"type_document": {
+	"institutionType": {
 		"fields": [
 			{
 				"name": "id",
@@ -1038,89 +1142,24 @@ dmt.tables = {
 		],
 		"defaultSort": "id"
 	},
-	"permission_role": {
+	"user_role": {
 		"fields": [
+			{
+				"name": "id_user",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
 			{
 				"name": "id_role",
 				"type": "int",
 				"disabled": false,
 				"key": false
-			},
-			{
-				"name": "id_permission",
-				"type": "int",
-				"disabled": false,
-				"key": false
 			}
 		],
-		"defaultSort": "id_role"
+		"defaultSort": "id_user"
 	},
-	"gobierno_en_linea_datos_abiertos": {
-		"fields": [
-			{
-				"name": "Etapa",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Requisito",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Criterio",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Evidencia",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Sustento legal o técnico",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Ayuda",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Nivel",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Perfil",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Area Tematica",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Preguntas",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "Etapa"
-	},
-	"footer": {
+	"media": {
 		"fields": [
 			{
 				"name": "id",
@@ -1129,66 +1168,14 @@ dmt.tables = {
 				"key": true
 			},
 			{
-				"name": "title",
+				"name": "url",
 				"type": "string",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "text",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"role": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
+				"name": "type",
 				"type": "string",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"contact": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "lastname",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "topic",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "message",
-				"type": "text",
 				"disabled": false,
 				"key": false
 			},
@@ -1196,59 +1183,6 @@ dmt.tables = {
 				"name": "timestamp",
 				"type": "datetime",
 				"disabled": true,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"question": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "id_topic",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "level",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "text",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "criteria",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "evidence",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "legal_support",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "help",
-				"type": "text",
-				"disabled": false,
 				"key": false
 			}
 		],
@@ -1271,7 +1205,7 @@ dmt.tables = {
 		],
 		"defaultSort": "id_media"
 	},
-	"type_banner": {
+	"social": {
 		"fields": [
 			{
 				"name": "id",
@@ -1281,6 +1215,18 @@ dmt.tables = {
 			},
 			{
 				"name": "name",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "icon",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "link",
 				"type": "string",
 				"disabled": false,
 				"key": false
@@ -1288,7 +1234,7 @@ dmt.tables = {
 		],
 		"defaultSort": "id"
 	},
-	"region": {
+	"motives": {
 		"fields": [
 			{
 				"name": "id",
@@ -1303,21 +1249,56 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "id_capital",
+				"name": "points",
 				"type": "int",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "id_country",
+				"name": "description",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"service_comment": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "id_service",
 				"type": "int",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "code",
-				"type": "string",
+				"name": "id_user",
+				"type": "int",
 				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "text",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "rate",
+				"type": "number",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "timestamp",
+				"type": "datetime",
+				"disabled": true,
 				"key": false
 			}
 		],
@@ -1372,6 +1353,99 @@ dmt.tables = {
 				"type": "int",
 				"disabled": false,
 				"key": false
+			},
+			{
+				"name": "id_institution",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"topic": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "name",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_parent",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "private",
+				"type": "boolean",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "timestamp",
+				"type": "datetime",
+				"disabled": true,
+				"key": false
+			}
+		],
+		"defaultSort": "id"
+	},
+	"user_questiontopic": {
+		"fields": [
+			{
+				"name": "id_user",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_topic",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id_user"
+	},
+	"faq": {
+		"fields": [
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
+				"name": "question",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "answer",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "active",
+				"type": "boolean",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "timestamp",
+				"type": "datetime",
+				"disabled": true,
+				"key": false
 			}
 		],
 		"defaultSort": "id"
@@ -1411,374 +1485,6 @@ dmt.tables = {
 		],
 		"defaultSort": "id_service"
 	},
-	"message": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "text",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "url",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_topic",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_user",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "timestamp",
-				"type": "datetime",
-				"disabled": true,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"permission": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"form": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_category",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "timestamp",
-				"type": "datetime",
-				"disabled": true,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"type": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"usertype": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"user_role": {
-		"fields": [
-			{
-				"name": "id_user",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_role",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id_user"
-	},
-	"servicios_en_linea": {
-		"fields": [
-			{
-				"name": "Etapa",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Requisito",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Criterio",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Evidencia",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Sustento legal o técnico",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Ayuda",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Nivel",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Perfil",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Area Tematica",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "Preguntas",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "Etapa"
-	},
-	"regiones": {
-		"fields": [
-			{
-				"name": "name",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_country",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "name"
-	},
-	"request_status": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "duration",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "pre_end",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "alert",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "description",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"service": {
-		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "url",
-				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_category",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_institution",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_user",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "hash",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "rate",
-				"type": "number",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "test_user",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "test_password",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "is_active",
-				"type": "boolean",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "is_product",
-				"type": "boolean",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "is_service",
-				"type": "boolean",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "timestamp",
-				"type": "datetime",
-				"disabled": true,
-				"key": false
-			},
-			{
-				"name": "current_status",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "datetime",
-				"type": "datetime",
-				"disabled": true,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
 	"user": {
 		"fields": [
 			{
@@ -1786,12 +1492,6 @@ dmt.tables = {
 				"type": "int",
 				"disabled": true,
 				"key": true
-			},
-			{
-				"name": "picture",
-				"type": "string",
-				"disabled": false,
-				"key": false
 			},
 			{
 				"name": "name",
@@ -1819,12 +1519,6 @@ dmt.tables = {
 			},
 			{
 				"name": "email",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "second_email",
 				"type": "string",
 				"disabled": false,
 				"key": false
@@ -1958,7 +1652,24 @@ dmt.tables = {
 		],
 		"defaultSort": "id"
 	},
-	"topic": {
+	"permission_role": {
+		"fields": [
+			{
+				"name": "id_role",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_permission",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			}
+		],
+		"defaultSort": "id_role"
+	},
+	"message_votes": {
 		"fields": [
 			{
 				"name": "id",
@@ -1967,20 +1678,14 @@ dmt.tables = {
 				"key": true
 			},
 			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_parent",
+				"name": "id_user",
 				"type": "int",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "private",
-				"type": "boolean",
+				"name": "id_message",
+				"type": "int",
 				"disabled": false,
 				"key": false
 			},
@@ -1993,7 +1698,7 @@ dmt.tables = {
 		],
 		"defaultSort": "id"
 	},
-	"status": {
+	"type_document": {
 		"fields": [
 			{
 				"name": "id",
@@ -2006,96 +1711,62 @@ dmt.tables = {
 				"type": "string",
 				"disabled": false,
 				"key": false
-			},
-			{
-				"name": "duration",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "pre_end",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "alert",
-				"type": "boolean",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "description",
-				"type": "text",
-				"disabled": false,
-				"key": false
 			}
 		],
 		"defaultSort": "id"
 	},
-	"social": {
+	"question": {
 		"fields": [
 			{
 				"name": "id",
 				"type": "int",
 				"disabled": true,
 				"key": true
-			},
-			{
-				"name": "name",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "icon",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "link",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			}
-		],
-		"defaultSort": "id"
-	},
-	"user_questiontopic": {
-		"fields": [
-			{
-				"name": "id_user",
-				"type": "int",
-				"disabled": false,
-				"key": false
 			},
 			{
 				"name": "id_topic",
 				"type": "int",
 				"disabled": false,
 				"key": false
-			}
-		],
-		"defaultSort": "id_user"
-	},
-	"user_category": {
-		"fields": [
+			},
 			{
-				"name": "id_user",
+				"name": "level",
 				"type": "int",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "id_category",
-				"type": "int",
+				"name": "text",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "criteria",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "evidence",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "legal_support",
+				"type": "text",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "help",
+				"type": "text",
 				"disabled": false,
 				"key": false
 			}
 		],
-		"defaultSort": "id_user"
+		"defaultSort": "id"
 	}
 };
 try {

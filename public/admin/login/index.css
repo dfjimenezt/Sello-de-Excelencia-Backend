@@ -85,7 +85,8 @@
   color: #000000;
   text-decoration: none;
 }
-.container .info span .fa {
+.container .info span .fa,
+.error {
   color: #EF3B3A;
 }
 body {
