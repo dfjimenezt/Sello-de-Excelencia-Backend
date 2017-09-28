@@ -119,6 +119,10 @@ dmt.translate={
         "id_media":"Adjunto",
         "requisites":"Requisitos",
         "id_order":"Posición",
-        "comment":"Comentario"
+        "comment":"Comentario",
+        "value":"Valor",
+        "result":"Total",
+        "id_motives":"Motivo",
+        "id_hangout":"Live"
     },
 }

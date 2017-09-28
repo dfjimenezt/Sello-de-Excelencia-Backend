@@ -13,6 +13,10 @@ var User = function () {
 		model:'mysql'
 	}]
 	BaseModel.apply(this, params)
+	this.getAdmin = function(){
+		let q = `SELECT u.id from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
+		return this.customQuery(q)
+	}
 	this.getUser = function(email){
 		var query = `SELECT u.*,
 			p.name permission,

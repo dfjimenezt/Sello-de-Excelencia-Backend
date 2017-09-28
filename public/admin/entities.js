@@ -80,10 +80,24 @@ dmt.entities = {
       },
       {
         type: "1-1",
+        name: "region",
+        entity: "region",
+        leftKey: "id_region",
+        foreign_name: "name"
+      },
+      {
+        type: "1-1",
+        name: "country",
+        entity: "country",
+        leftKey: "id_country",
+        foreign_name: "name"
+      },
+      {
+        type: "1-1",
         name: "type_document",
         entity: "type_document",
         leftKey: "id_type_document",
-        foreign_name: "document"
+        foreign_name: "name"
       },
       {
         type: "n-n",
@@ -95,7 +109,100 @@ dmt.entities = {
           rightKey: "id_institution",
 
         }
-      }
+      },
+      {
+        type: "1-n",
+        name: "points",
+        rightKey: "id_user",
+        entity: "points"
+      },
+    ]
+  },
+  "evaluator": {
+    table: "user",
+    relations: [
+      {
+        type: "n-n",
+        entity: "category",
+        name: "categories",
+        intermediate: {
+          entity: "user_category",
+          leftKey: "id_user",
+          rightKey: "id_category"
+        }
+      },
+      {
+        type: "n-n",
+        entity: "questiontopic",
+        name: "topics",
+        intermediate: {
+          entity: "user_questiontopic",
+          leftKey: "id_user",
+          rightKey: "id_topic",
+        }
+      },
+      {
+        type: "1-1",
+        name: "availability",
+        entity: "availability",
+        leftKey: "id_availability",
+        foreign_name: "name"
+      },
+      {
+        type: "1-1",
+        name: "city",
+        entity: "city",
+        leftKey: "id_city",
+        foreign_name: "name"
+      },
+      {
+        type: "1-1",
+        name: "region",
+        entity: "region",
+        leftKey: "id_region",
+        foreign_name: "name"
+      },
+      {
+        type: "1-1",
+        name: "country",
+        entity: "country",
+        leftKey: "id_country",
+        foreign_name: "name"
+      },
+      {
+        type: "1-1",
+        name: "type_document",
+        entity: "type_document",
+        leftKey: "id_type_document",
+        foreign_name: "name"
+      },
+      {
+        type: "1-n",
+        name: "points",
+        rightKey: "id_user",
+        entity: "points"
+      },
+      {
+        type: "1-n",
+        name: "requests",
+        rightKey: "id_user",
+        entity: "evaluation_request"
+      },
+    ]
+  },
+  "role":{
+    table: "role",
+    relations: [
+      {
+        type: "n-n",
+        entity: "permission",
+        name: "permissions",
+        intermediate: {
+          entity: "permission_role",
+          leftKey: "id_role",
+          rightKey: "id_permission"
+        }
+      },
     ]
   },
   "user_role": {
@@ -177,7 +284,7 @@ dmt.entities = {
         name: "requisites",
         rightKey: "id_service",
         entity: "user_answer"
-      }
+      },
     ]
   },
   "service_comment": {
@@ -276,6 +383,12 @@ dmt.entities = {
         name: "service",
         rightKey: "id_institution",
         entity: "service"
+      },
+      {
+        type: "1-n",
+        name: "points",
+        rightKey: "id_institution",
+        entity: "points"
       },
     ]
   },

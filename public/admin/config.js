@@ -44,29 +44,29 @@ dmt.config = [
 				name: "Entidades",
 				path: "entidades",
 				entity: "institution",
-				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
+				controller: "listItemEntityController",
+				templateUrl: "views/entity/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "detailItemEntityController",
+						templateUrl: "views/entity/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "detailItemEntityController",
+						templateUrl: "views/entity/detail.html"
 					}
 				]
 			},
 			{
 				name: "Evaluadores",
 				path: "evaluadores",
-				entity: "user",
-				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
+				entity: "evaluator",
+				controller: "listItemEvaluatorController",
+				templateUrl: "views/user/list.html",
 				filters:{
 					'roles.id':[2]
 				},
@@ -74,14 +74,14 @@ dmt.config = [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "detailItemEvaluatorController",
+						templateUrl: "views/user/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "detailItemEvaluatorController",
+						templateUrl: "views/user/detail.html"
 					}
 				]
 			},
@@ -89,8 +89,8 @@ dmt.config = [
 				name: "Administradores",
 				path: "administradores",
 				entity: "user",
-				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
+				controller: "listItemUserController",
+				templateUrl: "views/user/list.html",
 				filters:{
 					'roles.id':[3]
 				},
@@ -98,14 +98,14 @@ dmt.config = [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "detailItemUserController",
+						templateUrl: "views/user/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "detailItemUserController",
+						templateUrl: "views/user/detail.html"
 					}
 				]
 			},
@@ -113,8 +113,8 @@ dmt.config = [
 				name: "Ciudadanos",
 				path: "ciudadanos",
 				entity: "user",
-				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
+				controller: "listItemUserController",
+				templateUrl: "views/user/list.html",
 				filters:{
 					'roles.id':[1]
 				},
@@ -122,14 +122,14 @@ dmt.config = [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "detailItemUserController",
+						templateUrl: "views/user/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "detailItemUserController",
+						templateUrl: "views/user/detail.html"
 					}
 				]
 			},
@@ -318,6 +318,27 @@ dmt.config = [
 				name: "Regiones",
 				path: "regiones",
 				entity: "region"
+			},
+			{
+				name: "Roles",
+				path: "roles",
+				entity: "role",
+				controller: "listItemExtendedController",
+				templateUrl: "views/extended/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					}
+				]
 			},
 		]
 	}

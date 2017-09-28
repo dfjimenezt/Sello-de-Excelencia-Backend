@@ -1,4 +1,4 @@
-angular.module('dmt-back').controller('detailItemServiceController', function ($mdDialog, $mdEditDialog, $routeParams, page, $location, $http, $filter) {
+angular.module('dmt-back').controller('detailItemEntityController', function ($mdDialog, $mdEditDialog, $routeParams, page, $location, $http, $filter) {
 	var ctrl = this;
 	ctrl.data = {};
 	ctrl.breadcrum = buildBreadcrum($location.path(), page);
@@ -120,7 +120,6 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 		})*/
 		var request = new XMLHttpRequest();
 		request.open("PUT", entity.endpoint);
-		request.setRequestHeader('Authorization',localStorage.getItem("token"))
 		request.send(fd);
 	};
 	ctrl.delete = function (event, relation) {
@@ -222,7 +221,7 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 
 		$http.get(entity.endpoint + "?" + str.join("&")).then((response) => {
 			let _table = table;
-			if(relation.entity === 'user_answer'){
+			if(relation.entity === 'points'){
 				_table.fields = [
 					{
 						"name": "id",
@@ -231,35 +230,23 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 						"key": true
 					},
 					{
-						"name": "id_question",
+						"name": "value",
 						"type": "int",
 						"disabled": false,
 						"key": false
 					},
 					{
-						"name": "comment",
-						"type": "text",
-						"disabled": false,
-						"key": false
-					},
-					{
-						"name": "id_media",
-						"type": "media",
-						"disabled": false,
-						"key": false
-					},
-					{
-						"name": "id_status",
+						"name": "result",
 						"type": "int",
 						"disabled": false,
 						"key": false
 					},
 					{
-						"name": "timestamp",
-						"type": "datetime",
+						"name": "id_motives",
+						"type": "int",
 						"disabled": true,
 						"key": false
-					},
+					}
 				]
 			}
 			ctrl.entities[relation.entity].table = _table;
@@ -391,7 +378,20 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 	function error(err) {
 		window.location.href = "/admin/login";
 	}
-
+	this.sendMessage = function(){
+		$mdDialog.show({
+			clickOutsideToClose: true,
+			controller: entity.delete ? entity.delete.controller || 'sendMessageController' : 'sendMessageController',
+			controllerAs: 'ctrl',
+			focusOnOpen: false,
+			targetEvent: event,
+			locals: {
+				user: ctrl.data,
+				entity: true,
+			},
+			templateUrl: entity.delete ? entity.delete.templateUrl || 'views/user/message-dialog.html' : 'views/user/message-dialog.html',
+		}).then(ctrl.getData);
+	}
 	this.saveItem = function () {
 		ctrl.form.$setSubmitted();
 		if (ctrl.form.$valid) {

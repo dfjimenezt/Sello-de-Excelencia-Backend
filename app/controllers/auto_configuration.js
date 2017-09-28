@@ -787,6 +787,33 @@ var configuration_controller = function () {
 	var create_hall_of_fame = function (user, body) {
 		return model_hall_of_fame.create(body)
 	}
+
+	/**
+	 * 
+	 * @param {user} user 
+	 * @param {body} body 
+	 */
+	var send_mail = function(user,body){
+		if(!body.entity){
+			model_entity_user.getByUid(''+body.id).then((user)=>{
+				user = user.data[0]
+				return utiles.sendEmail(user.email,null,null,'Contacto desde Sello de Excelencia',body.message)
+			})
+		}else{
+			let institution = require('../models/institution.js');
+			let model_institution = new institution();
+			let _institution = null
+			model_institution.getByUid(''+body.id).then((results)=>{
+				_institution = results[0]
+				return model_institution.getUser(body.id).then((user)=>{
+					user = user[0]
+					return utiles.sendEmail(user.email,_institution.email,null,'Contacto desde Sello de Excelencia',body.message)
+				})
+			})
+			
+		}
+	}
+
 	postMap.set('user', { method: create_entity_user, permits: Permissions.ADMIN_USERS })
 	postMap.set('role', { method: create_role, permits: Permissions.ADMIN_USERS })
 	postMap.set('availability', { method: create_availability, permits: Permissions.ADMIN_USERS })
@@ -801,6 +828,7 @@ var configuration_controller = function () {
 	postMap.set('points', { method: create_points, permits: Permissions.ADMIN_POINTS })
 	postMap.set('motives', { method: create_motives, permits: Permissions.ADMIN_MOTIVES })
 	postMap.set('hall_of_fame', { method: create_hall_of_fame, permits: Permissions.ADMIN_HALL })
+	postMap.set('send',{method: send_mail, permits: Permissions.ADMIN_USERS})
 	/**
 	 * @api {put} api/configuration/user Update user information
 	 * @apiName Putuser

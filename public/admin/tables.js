@@ -221,13 +221,13 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "address",
+				"name": "website",
 				"type": "string",
 				"disabled": false,
 				"key": false
 			},
 			{
-				"name": "website",
+				"name": "address",
 				"type": "string",
 				"disabled": false,
 				"key": false
@@ -585,12 +585,6 @@ dmt.tables = {
 				"disabled": false,
 				"key": false
 			},
-			{
-				"name": "datetime",
-				"type": "datetime",
-				"disabled": true,
-				"key": false
-			}
 		],
 		"defaultSort": "id"
 	},

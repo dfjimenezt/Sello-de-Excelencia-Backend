@@ -124,14 +124,14 @@ var Service = function () {
 									end_time:ftime.toISOString().split('T')[0]
 								})
 								
-								utiles.sendEmail(data.email,null,null,'Asignación de Requisito',
+								/*utiles.sendEmail(data.email,null,null,'Asignación de Requisito',
 								`<div style="background-color:#a42a5b;height:50px;width:100%">
 								</div>
 								<div style="text-align:center;margin: 10px auto;">
 								<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
 								</div>
 								<div>
-								<p>Se ha asignado un nuevo requisito en Sello de Excelencia</p>`)
+								<p>Se ha asignado un nuevo requisito en Sello de Excelencia</p>`)*/
 							}
 						}
 						return request

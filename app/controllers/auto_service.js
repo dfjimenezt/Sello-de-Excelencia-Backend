@@ -412,15 +412,18 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_service.getByUid("" + body.id)
-			.then((_old) => {
+		let model_user = require('../models/user.js')()
+		let _admin = null
+		return model_user.getAdmin().then((result)=>{
+			_admin = result[0]
+			return model_entity_service.getByUid("" + body.id)
+		}).then((_old) => {
 				let old = _old.data[0].current_status
 				if (old != body.current_status) {
 					let user_answer = require('../models/user_answer.js')
 					let model_user_answer = new user_answer()
 					let request_status = require('../models/request_status.js')
 					let valid = new Date();
-					
 					let model_request_status = new request_status()
 					valid.setFullYear(valid.getUTCFullYear() + 1)
 					let data = {
@@ -431,6 +434,9 @@ var service_controller = function () {
 					}
 					if (body.level) {
 						data.level = body.level
+					}
+					if (body.current_status == 1) { // verification
+						utiles.sendEmail(_admin.email,null,null,'Hay un nuevo servicio para verficar','Hola Hay un nuevo servicio para verificar en el administrador de Sello de Excelencia')
 					}
 					if (body.current_status == 5) {
 						model_entity_service.asignate(body).then((evaluations)=>{
@@ -450,8 +456,9 @@ var service_controller = function () {
 								data
 							)
 						})
-						model_user_answer.update({ id_status: 5 }, { id_service: body.id })
+						model_user_answer.update({ id_status: 2 }, { id_service: body.id })
 					}
+
 					return create_entity_service_status(user, data)
 				}
 				return

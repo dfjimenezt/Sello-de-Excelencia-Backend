@@ -792,13 +792,34 @@ var question_controller = function () {
 					})
 				}).then((media) => {
 					body.id_media = media.insertId
-					return model_entity_user_answer.update(body, { id: body.id }).then(()=>{
-						model_entity_user_answer.updateView()
-					})
+					return model_entity_user_answer.update(body, { id: body.id })
 				})
 		} else {
-			return model_entity_user_answer.update(body, { id: body.id }).then(()=>{
-				model_entity_user_answer.updateView()
+			let _admin = null
+			let _user = null
+			let _old = null
+			let service = require('../models/service.js')()
+			return model_user.getAdmin().then((result)=>{
+				_admin = result[0]
+				return model_entity_user_answer.getByUid("" + body.id)
+			}).then((result) => {
+				_old = result.data[0]
+				return model_user.getByUid(''+_old.id_user)
+			}).then((result)=>{
+				_user = result[0]
+				if (_old.id_status != body.id_status){
+					if(body.id_status == 10){ // rejected by admin
+						utiles.sendEmail(_user.email,null,null,'Han rechazado un requisito en Sello de Excelencia','Hola se ha rechazado un requisito en la plataforma Sello de Excelencia')
+						return service.update({current_status:10},{id:_old.id_service})
+					}
+					if(body.id_status == 2){ //accepted by admin
+						return 
+					}
+				}
+			}).then(()=>{
+				delete body.id_order
+				delete body.datetime
+				return model_entity_user_answer.update(body, { id: body.id })
 			})
 		}
 	}
