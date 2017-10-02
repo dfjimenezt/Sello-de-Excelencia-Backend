@@ -315,7 +315,6 @@ var Auth = function () {
                     lastname: body.lastname || "",
                     secondlastname: body.secondlastname || "",
                     email: body.email,
-                    second_email: body.second_email || '',
                     phone: body.phone || "",
                     extension: body.extension || "",
                     mobile: body.mobile || "",

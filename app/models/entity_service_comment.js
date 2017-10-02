@@ -14,11 +14,11 @@ var Service_comment = function () {
 		.then(() => {
 			query = `
 					SELECT AVG(sc.rate) AS average
-					FROM stamp.service_comment as sc
+					FROM service_comment as sc
 					WHERE sc.id_service = ${body.id_service}`
 			return this.customQuery(query).then((average) => {
 				query = `
-						UPDATE stamp.service AS s
+						UPDATE service AS s
 						SET s.rate = ${average[0].average}
 						WHERE s.id = ${body.id_service};`
 				return this.customQuery(query).then(() => {

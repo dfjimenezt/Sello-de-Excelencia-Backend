@@ -94,7 +94,7 @@ var User = function () {
 		})
 	}
 	this.getUserAll = function(email){
-		var query = `SELECT * FROM stamp.user WHERE email = "${email}" ;`
+		var query = `SELECT * FROM user WHERE email = "${email}" ;`
 		return this.customQuery(query).then(function(data){
 			if(data.length === 0){
 				return null

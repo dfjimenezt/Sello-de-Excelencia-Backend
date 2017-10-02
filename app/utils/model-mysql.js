@@ -179,7 +179,7 @@ var MysqlModel = function (info) {
     for (var i in data[0]) {
       col_names.push(i)
     }
-    var query = "INSERT INTO stamp." + info.table + " (" + col_names.join(",") + ") VALUES "
+    var query = "INSERT INTO " + info.table + " (" + col_names.join(",") + ") VALUES "
     for (let i in data) {
       query += "(" //init
       for (let j in col_names) {
