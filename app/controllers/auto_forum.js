@@ -10,6 +10,7 @@ var Errors = require('../utils/errors.js')
 var Permissions = require('../utils/permissions.js')
 var Auth_ctrl = require('./auth.js')
 var entity_hangouts = require('../models/entity_hangouts.js')
+var emiter = require('../events/emiter.js').instance
 var forum_controller = function () {
 	var model_entity_hangouts = new entity_hangouts()
 	//---------------------------------------------------------------
@@ -108,6 +109,7 @@ var forum_controller = function () {
 		if(!body.id){
 			throw utiles.informError(400)
 		}
+		emiter.emit('user.point',user,3,body.id) //motive
 		let points = require('../models/points.js')
 		let model_points = new points()
 		return model_points.addPoints(user.id,3,'',body.id)

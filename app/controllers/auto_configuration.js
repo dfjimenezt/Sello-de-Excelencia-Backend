@@ -23,6 +23,7 @@ var type_document = require('../models/type_document.js')
 var points = require('../models/points.js')
 var motives = require('../models/motives.js')
 var hall_of_fame = require('../models/hall_of_fame.js')
+var emiter = require('../events/emiter.js').instance
 var configuration_controller = function () {
 	var model_entity_user = new entity_user()
 	var model_role = new role()

@@ -38,10 +38,6 @@ The structure of a config JSON must be:
 */
 var Backend = function (configJSON) {
   var config = configJSON || require('./config.json')
-  var Generator = require('./app/generator/mysql-parser.js')
-  var generator = new Generator()
-  generator.parse(false)
-
   var verbose = config.verbose === true
 
   // If we are using Google app engine to deploy the app
@@ -78,6 +74,7 @@ var Backend = function (configJSON) {
   // Enabling CORS Pre-Flight, for DELETE
   app.options('*', cors())
 
+  require('./app/events/events.js')()
   // The routing logic of the app will be on this file.
   require('./app/routes.js')(app)
 
