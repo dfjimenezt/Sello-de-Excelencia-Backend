@@ -6,7 +6,7 @@ var Permissions = require('../utils/permissions.js')
 var User = require('../models/user.js')
 var Session = require('../models/session.js')
 var User_role_model = require('../models/user_role.js')
-
+var emiter = require('../events/emiter.js').instance
 /* generador de password random*/
 var pass_generator = require('generate-password')
 
@@ -346,72 +346,9 @@ var Auth = function () {
                             id_user: user.insertId,
                             id_role: parseInt(body.role)
                         })
-                        // add the role manually reduce time
-                        user.role = body.role
                         body.id = user.insertId
-                        switch (body.role) {
-                            case "1":
-                                role = "Ciudadano"
-                                break
-                            case "2":
-                                role = "Evaluador"
-                                break
-                            case "3":
-                                role = "Administrador"
-                                break
-                            case "4":
-                                role = "Entidad"
-                                break
-                        }
-                        if (body.role == 4) {
-                            var institution_user_model = require("../models/institution_user.js")
-                            var institution_user = new institution_user_model()
-                            institution_user.create({
-                                id_institution: body.institution.id,
-                                id_user: body.id
-                            })
-                            var institution_model = require("../models/entity_institution.js")
-                            var institution = new institution_model()
-                            institution.update(body.institution, { id: body.institution.id })
-                        }
-                        if (body.role == 2) {
-                            let user_category = require('../models/user_category.js')
-                            let model_user_category = new user_category()
-                            body.categories.forEach((value) => {
-                                let data = { id_user: body.id, id_category: value.id }
-                                model_user_category.create(data)
-                            }, this)
-                            let user_questiontopic = require('../models/user_questiontopic.js')
-                            let model_user_questiontopic = new user_questiontopic()
-                            body.topics.forEach((value) => {
-                                let data = { id_user: body.id, id_topic: value.id }
-                                model_user_questiontopic.create(data)
-                            }, this)
-                        }
-                        // send an email to the user
-                        let token = utiles.sign(body.email)
-                        let template = `
-                        <div style="background-color:#a42a5b;height:50px;width:100%">
-                        </div>
-                        <div style="text-align:center;margin: 10px auto;">
-                        <img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
-                        </div>
-                        <div>
-                        <p> Hola ${body.name} </p>
-                        <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia </p>
-                        <p>Tu nueva contraseña para acceder es: ${pass_user} </p>
-                        <p><a href='http://www.sellodeexcelencia.gov.co/#!/activar-cuenta?token=${token}&email=${body.email}&active=1'>Haz click aquí para activar tu cuenta </a></p>
-                        <p><a href='http://localhost:3000/api/auth/activate?token=${token}&email=${body.email}&active=1'> Haz click aqui para activar tu cuenta(localhost only dbg) </a> </p>
-                        <p>Nuestros mejores deseos,</p>
-
-                        <p>El equipo del Sello de Excelencia</p>`
-                        let cc = null
-                        if (body.institution) {
-                            cc = body.institution.email
-                        }
-                        return utiles.sendEmail(body.email, cc, null, "Registro Sello de Excelencia", template).then(() => {
-                            return { error: utiles.informError(0), data: body }
-                        })
+                        emiter.emit('user.created',body,pass_user);
+                        return { error: utiles.informError(0), data: user }
                     } else {
                         //if there was an error on creating the user
                         throw utiles.informError(300)
