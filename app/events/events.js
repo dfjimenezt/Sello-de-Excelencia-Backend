@@ -255,7 +255,7 @@ var Events = function () {
 	emiter.on('evaluation_request.asignation',(email)=>{
 		utiles.sendEmail(email,null,null,'Asignación de Requisito',`
 		<div style="text-align:center;margin: 10px auto;">
-		<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+		<img width="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
 		</div>
 		<div>
 		<p>Se ha asignado un nuevo requisito en Sello de Excelencia</p>`)
