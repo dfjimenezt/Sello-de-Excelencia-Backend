@@ -109,10 +109,7 @@ var forum_controller = function () {
 		if(!body.id){
 			throw utiles.informError(400)
 		}
-		emiter.emit('user.point',user,3,body.id) //motive
-		let points = require('../models/points.js')
-		let model_points = new points()
-		return model_points.addPoints(user.id,3,'',body.id)
+		emiter.emit('video.view',user,body.id) //motive
 	}
 	postMap.set('hangouts', { method: create_entity_hangouts, permits: Permissions.ADMIN_HANGOUTS })
 	postMap.set('view', { method: view, permits: Permissions.NONE })

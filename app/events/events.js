@@ -1,8 +1,16 @@
 let emiter = require('./emiter.js').instance
 var utiles = require('../utils/utiles.js')
+let CONSTANTS = require('./constants.js')
 var Events = function () {
-	emiter.on('video.view', (user, motive, description, id_hangout) => {
-
+	emiter.on('video.view', (user,id_hangout) => {
+		let model_points = require('../models/points.js')()
+		if(user.institutions.length>0){
+			return model_points.addInstitutionPoints(user.institutions[0].id,
+				CONSTANTS.MOTIVES.ENTITY.VER_VIDEO.id,'',body.id)
+		}else{
+			return model_points.addUserPoints(user.id,
+				CONSTANTS.MOTIVES.EVALUATOR.VER_VIDEO.id,'',body.id)
+		}
 	})
 	emiter.on('requisitie.calification', (user, requisite, status) => {
 

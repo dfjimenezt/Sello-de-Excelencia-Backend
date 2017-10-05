@@ -17,7 +17,34 @@ var Points = function () {
 		let q = `SELECT SUM(\`value\`) \`value\`,\`id_motives\` FROM points WHERE id_user = '${id}' GROUP BY id_motives`
 		return this.customQuery(q)
 	}
-	this.addPoints = function (user, motive, justification,video) {
+	this.addInstitutionPoints = function (institution, motive, justification,video) {
+		video = video || 'NULL'
+		let insert = `
+		INSERT INTO points (\`prev_points\`,\`value\`,\`result\`,
+		\`justification\`,\`id_institution\`,\`id_motives\`,\`id_hangout\`)
+		SELECT 
+		\`p\`.\`prev_points\`,
+		\`m\`.\`points\` \`value\`,
+		(\`p\`.\`prev_points\` + \`m\`.\`points\`) \`result\`,
+		IFNULL(\`m\`.\`description\`,'${justification}') \`justification\`,
+		${institution},
+		${motive},
+		${video}
+		FROM \`motives\` \`m\`,
+		(SELECT SUM(\`p\`.\`value\`) \`prev_points\` FROM \`points\` \`p\` 
+		WHERE \`p\`.\`id_institution\` = ${institution}) \`p\` WHERE \`m\`.\`id\` = ${motive}`
+		
+		if(video != 'NULL'){
+			let q = `SELECT count(*) count FROM points WHERE 
+				id_hangout = '${video}' AND id_institution = '${institution}'`
+			return this.customQuery(q).then((result)=>{
+				return result[0].count == 0 ? this.customQuery(insert) : null
+			})
+		}else{
+			return this.customQuery(insert)
+		}
+	}
+	this.addUserPoints = function (user, motive, justification,video) {
 		video = video || 'NULL'
 		let insert = `
 		INSERT INTO points (\`prev_points\`,\`value\`,\`result\`,
