@@ -22,6 +22,7 @@ var chats = require('../models/chats.js')
 var media = require('../models/media.js')
 var user = require('../models/user.js')
 var points = require('../models/points.js')
+var emiter = require('../events/emiter.js').instance
 var question_controller = function () {
 	var model_entity_question = new entity_question()
 	var model_entity_questiontopic = new entity_questiontopic()
@@ -617,7 +618,6 @@ var question_controller = function () {
 	 */
 	var create_chats = function (user, body) {
 		body.id_sender = user.id
-
 		return model_entity_evaluation_request.getByUid('' + body.id_evaluation_request).then((result) => {
 			let request = result.data[0]
 			if (request.id_user != body.id_sender) { //entity
@@ -630,25 +630,7 @@ var question_controller = function () {
 		}).then((id_user) => {
 			return model_user.getByUid('' + id_user)
 		}).then((result) => {
-			let user = result[0]
-			let template = `
-			<div style="background-color:#a42a5b;height:50px;width:100%">
-			</div>
-			<div style="text-align:center;margin: 10px auto;">
-			<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
-			</div>
-			<div>
-			<p>Hola ${user.name} </p>
-			<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
-			<p>Has recibido un nuevo mensaje en Sello de Excelencia</p>
-			<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
-			<p>Nuestros mejores deseos,</p>
-
-			<p>El equipo del Sello de Excelencia</p>`
-
-			utiles.sendEmail(user.email, null, null,
-				'Nuevo mensaje - Sello de Excelencia',
-				template)
+			emiter.emit('chat.created',result[0])
 			return model_chats.create(body)
 		})
 		

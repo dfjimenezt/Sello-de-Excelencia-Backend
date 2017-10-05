@@ -16,6 +16,7 @@ var footer = require('../models/footer.js')
 var entity_banner = require('../models/entity_banner.js')
 var type_banner = require('../models/type_banner.js')
 var config = require('../models/config.js')
+var emiter = require('../events/emiter.js').instance
 var platform_controller = function () {
 	var model_contact = new contact()
 	var model_faq = new faq()

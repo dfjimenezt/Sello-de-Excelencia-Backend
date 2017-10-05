@@ -14,6 +14,7 @@ var institutionType = require('../models/institutionType.js')
 var entity_city = require('../models/entity_city.js')
 var entity_region = require('../models/entity_region.js')
 var entity_country = require('../models/entity_country.js')
+var emiter = require('../events/emiter.js').instance
 var place_controller = function () {
 	var model_entity_institution = new entity_institution()
 	var model_institutionType = new institutionType()

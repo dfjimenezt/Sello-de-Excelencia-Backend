@@ -60,32 +60,16 @@ var Auth = function () {
                 var pass = utiles.createHmac('sha256')
                 pass.update(body.password_old)
                 pass = pass.digest('hex')
-                if (body.password_old === body.password_new) return { message: "La contraseña nueva es la misma que la anterior." }
                 if (user.password === pass) {
                     if (user.active === 0) throw utiles.informError(203) //user inactive
                     delete user.password
                     pass = utiles.createHmac('sha256')
                     pass.update(body.password_new)
                     pass = pass.digest('hex')
-                    if (user.password === pass) return { message: "La contraseña nueva no es diferente a la existente" }
-                    else user.password = pass
+                    user.password = pass
                 } else throw utiles.informError(200) //login failed
-                return userModel.update({ password: user.password }, { id: user.id }).then(() => {
-                    let template = `
-                    <div style="background-color:#a42a5b;height:50px;width:100%">
-					</div>
-					<div style="text-align:center;margin: 10px auto;">
-					<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
-					</div>
-                    <div>
-                    <p>Hola ${user.name} <\p>
-                    <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia <\p>
-                    <p>Tu nueva contraseña para acceder es: ${body.password_new} <\p>
-                    <p>Nuestros mejores deseos,<\p>
-                    <p>El equipo del Sello de Excelencia<\p>`
-                    utiles.sendEmail(user.email, null, null, "Cambio de Contraseña", template)
-                    return utiles.informError(0)
-                })
+                emiter.emit('user.updatepassword',user,body.password_new)
+                return userModel.update({ password: user.password }, { id: user.id })
             }
         })
     }
@@ -347,6 +331,31 @@ var Auth = function () {
                             id_role: parseInt(body.role)
                         })
                         body.id = user.insertId
+                        if (body.role == 4) {
+                            var institution_user_model = require("../models/institution_user.js")
+                            var institution_user = new institution_user_model()
+                            institution_user.create({
+                                id_institution: body.institution.id,
+                                id_user: user.id
+                            })
+                            var institution_model = require("../models/entity_institution.js")
+                            var institution = new institution_model()
+                            institution.update(body.institution, { id: body.institution.id })
+                        }
+                        if (body.role == 2) {
+                            let user_category = require('../models/user_category.js')
+                            let model_user_category = new user_category()
+                            body.categories.forEach((value) => {
+                                let data = { id_user: body.id, id_category: value.id }
+                                model_user_category.create(data)
+                            }, this)
+                            let user_questiontopic = require('../models/user_questiontopic.js')
+                            let model_user_questiontopic = new user_questiontopic()
+                            body.topics.forEach((value) => {
+                                let data = { id_user: body.id, id_topic: value.id }
+                                model_user_questiontopic.create(data)
+                            }, this)
+                        }
                         emiter.emit('user.created',body,pass_user);
                         return { error: utiles.informError(0), data: user }
                     } else {
@@ -388,22 +397,8 @@ var Auth = function () {
                 pass.update(pass_user)
                 pass = pass.digest('hex')
                 user.password = pass
-                return userModel.update({ password: user.password }, { id: user.id }).then(() => {
-                    let template = `
-                    <div style="background-color:#a42a5b;height:50px;width:100%">
-					</div>
-					<div style="text-align:center;margin: 10px auto;">
-					<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
-					</div>
-                    <div>
-                    <p> Hola ${user.name} <\p>
-                    <p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia <\p>
-                    <p>Tu nueva contraseña para acceder es: ${pass_user} <\p>
-                    <p>Nuestros mejores deseos,<\p>
-                    <p>El equipo del Sello de Excelencia <\p>`
-                    utiles.sendEmail(user.email, null, null, "Cambio de Contraseña", template)
-                    return utiles.informError(0)
-                })
+                emiter.emit('user.updatepassword',user, pass_user)
+                return userModel.update({ password: user.password }, { id: user.id })
             }
         })
     }

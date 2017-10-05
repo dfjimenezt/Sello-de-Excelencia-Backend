@@ -7,9 +7,6 @@ var Events = function () {
 	emiter.on('requisitie.calification', (user, requisite, status) => {
 
 	})
-	emiter.on('service.calification', (user, requisite, status) => {
-
-	})
 	emiter.on('user_answer.updated', (user, old, body) => {
 		if (old.id_status == body.id_status) {
 			return
@@ -92,8 +89,6 @@ var Events = function () {
 					}
 
 					let template = `
-				<div style="background-color:#a42a5b;height:50px;width:100%">
-				</div>
 				<div style="text-align:center;margin: 10px auto;">
 				<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
 				</div>
@@ -103,93 +98,159 @@ var Events = function () {
 				${evaluator_template}
 				<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
 				<p>Nuestros mejores deseos,</p>
-
 				<p>El equipo del Sello de Excelencia</p>
 				</div>`
 
-					utiles.sendEmail(_evaluator.email, null, null, 'Actualización de Evaluación - Sello de Excelencia', template)
+					utiles.sendEmail(_evaluator.email, null, null, 'Actualización de Evaluación - Sello de Excelencia Gobierno Digital Colombia', template)
 
 					template = `
-					<div style="background-color:#a42a5b;height:50px;width:100%">
-					</div>
 					<div style="text-align:center;margin: 10px auto;">
 					<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
 					</div>
 					<div>
 					<p>Hola ${_entity.name} </p>
-					<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
+					<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia Gobierno Digital Colombia</p>
 					${entity_template}
 					<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
 					<p>Nuestros mejores deseos,</p>
+					<p>El equipo del Sello de Excelencia Gobierno Digital Colombia</p>`
 
-					<p>El equipo del Sello de Excelencia</p>`
-
-					utiles.sendEmail(_entity.email, null, null, 'Actualización de Evaluación - Sello de Excelencia',
+					utiles.sendEmail(_entity.email, null, null, 'Actualización de Evaluación - Sello de Excelencia Gobierno Digital Colombia',
 						template)
 				})
 		}
 	})
 	emiter.on('user.created', (user,pass_user) => {
-		switch (user.role) {
-			case "1":
-				role = "Ciudadano"
-				break
-			case "2":
-				role = "Evaluador"
-				break
-			case "3":
-				role = "Administrador"
-				break
-			case "4":
-				role = "Entidad"
-				break
-		}
-		if (user.role == 4) {
-			var institution_user_model = require("../models/institution_user.js")
-			var institution_user = new institution_user_model()
-			institution_user.create({
-				id_institution: user.institution.id,
-				id_user: user.id
-			})
-			var institution_model = require("../models/entity_institution.js")
-			var institution = new institution_model()
-			institution.update(user.institution, { id: user.institution.id })
-		}
-		if (user.role == 2) {
-			let user_category = require('../models/user_category.js')
-			let model_user_category = new user_category()
-			user.categories.forEach((value) => {
-				let data = { id_user: user.id, id_category: value.id }
-				model_user_category.create(data)
-			}, this)
-			let user_questiontopic = require('../models/user_questiontopic.js')
-			let model_user_questiontopic = new user_questiontopic()
-			user.topics.forEach((value) => {
-				let data = { id_user: user.id, id_topic: value.id }
-				model_user_questiontopic.create(data)
-			}, this)
-		}
 		// send an email to the user
 		let token = utiles.sign(user.email)
 		let template = `
-	<div style="background-color:#a42a5b;height:50px;width:100%">
-	</div>
-	<div style="text-align:center;margin: 10px auto;">
-	<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
-	</div>
-	<div>
-	<p> Hola ${user.name} </p>
-	<p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia </p>
-	<p>Tu nueva contraseña para acceder es: ${pass_user} </p>
-	<p><a href='https://prueba-dot-domoti-sellodeexcelencia.appspot.com/activar-cuenta?token=${token}&email=${user.email}&active=1'>Haz click aquí para activar tu cuenta </a></p>
-	<p>Nuestros mejores deseos,</p>
-
-	<p>El equipo del Sello de Excelencia</p>`
+		<div style="text-align:center;margin: 10px auto;">
+		<img width="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+		</div>
+		<div>
+		<p> Hola ${user.name} </p>
+		<p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
+		<p>Tu nueva contraseña para acceder es: ${pass_user} </p>
+		<p><a href='https://prueba-dot-domoti-sellodeexcelencia.appspot.com/activar-cuenta?token=${token}&email=${user.email}&active=1'>
+			Haz click aquí para activar tu cuenta </a>
+		</p>
+		<p>Nuestros mejores deseos,</p>
+		<p>El equipo del Sello de Excelencia Gobierno Digital Colombia</p>`
 		let cc = null
 		if (user.institution) {
 			cc = user.institution.email
 		}
 		utiles.sendEmail(user.email, cc, null, "Registro Sello de Excelencia", template)
+	})
+	emiter.on('user.updatepassword',(user,password)=>{
+		let template = `
+		<div style="text-align:center;margin: 10px auto;">
+		<img width="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+		</div>
+		<div>
+		<p>Hola ${user.name} <\p>
+		<p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia  Gobierno Digital Colombia.<\p>
+		<p>Tu nueva contraseña para acceder es: ${password} <\p>
+		<p>Nuestros mejores deseos,<\p>
+		<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`
+		utiles.sendEmail(user.email, null, null, "Cambio de Contraseña", template)
+	})
+	emiter.on('chat.created',(user)=>{
+		let template = `
+		<div style="text-align:center;margin: 10px auto;">
+		<img witdh="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+		</div>
+		<div>
+		<p>Hola ${user.name} </p>
+		<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia Gobierno Digital Colombia</p>
+		<p>Has recibido un nuevo mensaje en Sello de Excelencia Gobierno Digital Colombia</p>
+		<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
+		<p>Nuestros mejores deseos,</p>
+
+		<p>El equipo del Sello de Excelencia Gobierno Digital Colombia</p>`
+
+		utiles.sendEmail(user.email, null, null,
+			'Nuevo mensaje - Sello de Excelencia Gobierno Digital Colombia',
+			template)
+	})
+	emiter.on('service.rated',(id_service,avg)=>{
+		if (avg <= 3.5) {
+			let model_user = require('../models/user.js')()
+			let service = require('../models/service.js')()
+			let _service = null
+			service.getByUid(''+id_service).then((result)=>{
+				_service = result[0]
+				return model_user.getAdmin()
+			})
+			.then((result) => {
+				_admin = result[0]
+				utiles.sendEmail(_admin.email, 'camila.lombana@domoti-sas.com', null, 'Entidad con puntaje bajo',`
+				<div style="text-align:center;margin: 10px auto;">
+				<img width="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+				</div>
+				<div>
+				<p>El servicio ${_service.name} tiene una calificación muy baja</p>
+				<p>La calificación del servicio es ${avg}</p>`
+			)
+		})	
+		}
+	})
+	emiter.on('service.updated',(old,body)=>{
+		let model_user = require('../models/user.js')()
+		let model_entity_service_status = require('../models/entity_service_status.js')()
+		let _admin = null
+		model_user.getAdmin().then((result)=>{
+			_admin = result[0]
+			if (old != body.current_status) {
+				let user_answer = require('../models/user_answer.js')
+				let model_user_answer = new user_answer()
+				let request_status = require('../models/request_status.js')
+				let valid = new Date()
+				let model_request_status = new request_status()
+				valid.setFullYear(valid.getUTCFullYear() + 1)
+				let data = {
+					id_service: body.id,
+					id_status: body.current_status,
+					valid_to: valid,
+					level: _old.data[0].level || 1
+				}
+				if (body.level) {
+					data.level = body.level
+				}
+				if (body.current_status == 1) { // verification
+					utiles.sendEmail(_admin.email,null,null,'Hay un nuevo servicio para verficar','Hola Hay un nuevo servicio para verificar en el administrador de Sello de Excelencia')
+				}
+				if (body.current_status == 5) {
+					model_entity_service.asignate(body).then((evaluations)=>{
+						if(evaluations.length == 0){
+							return
+						}
+						let evalution_request = require('../models/evaluation_request.js')
+						let model_evaluation_request = new evalution_request()
+						let data = {
+							col_names:[],
+							data:evaluations
+						}
+						for(let i in evaluations[0]){
+							data.col_names.push(i)
+						}
+						model_evaluation_request.createMultiple(
+							data
+						)
+					})
+					model_user_answer.update({ id_status: 2 }, { id_service: body.id })
+				}
+				return model_entity_service_status.create(data)
+			}
+		})
+	})
+	emiter.on('evaluation_request.asignation',(email)=>{
+		utiles.sendEmail(email,null,null,'Asignación de Requisito',`
+		<div style="text-align:center;margin: 10px auto;">
+		<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+		</div>
+		<div>
+		<p>Se ha asignado un nuevo requisito en Sello de Excelencia</p>`)
 	})
 }
 module.exports = Events

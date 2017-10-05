@@ -14,6 +14,7 @@ var category = require('../models/category.js')
 var status = require('../models/status.js')
 var entity_service_status = require('../models/entity_service_status.js')
 var entity_service_comment = require('../models/entity_service_comment.js')
+var emiter = require('../events/emiter.js').instance
 var service_controller = function () {
 	var model_entity_service = new entity_service()
 	var model_category = new category()
@@ -333,46 +334,7 @@ var service_controller = function () {
 				return
 			}).then(() => {
 				return model_entity_service_comment.create(body).then((avg) => {
-					if (avg <= 3.5) {
-						let user_role = require('../models/user_role.js')
-						let model_user_role = new user_role()
-						model_user_role.getByParams({ id_role: 3 })
-							.then((users) => {
-								let user = require('../models/user.js')
-								let model_user = new user();
-								let _ids = []
-								users.forEach(function (user) {
-									_ids.push(user.id_user)
-								}, this);
-								let fields = []
-								let values = []
-								_ids.forEach((id) => {
-									fields.push('id')
-									values.push('' + id)
-								})
-								return model_user.getFiltered({
-									filter_fields: fields,
-									filter_values: values
-								})
-							}).then((_u) => {
-								_users = _u.data
-								model_entity_service.getByUid('' + body.id_service).then((_service) => {
-									_users.forEach((u) => {
-										utiles.sendEmail(u.email, 'camila.lombana@domoti-sas.com', null, 'Entidad con puntaje bajo',
-											`
-											<div style="background-color:#a42a5b;height:50px;width:100%">
-											</div>
-											<div style="text-align:center;margin: 10px auto;">
-											<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
-											</div>
-											<div>
-											<p>El servicio ${_service.data[0].name} tiene una calificación muy baja</p>
-											<p>La calificación del servicio es ${avg}</p>`
-										)
-									})
-								})
-							})
-					}
+					emiter.on('service.rated',body.id_service,avg);
 				})
 			})
 
@@ -412,59 +374,16 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		let model_user = require('../models/user.js')()
-		let _admin = null
+		
+		return model_entity_service.getByUid("" + body.id).then((_old)=>{
+			let old = _old.data[0].current_status
+			emiter.emit('service.updated',old,body)
+			return model_entity_service.update(body, { id: body.id })
+		})
 		return model_user.getAdmin().then((result)=>{
 			_admin = result[0]
 			return model_entity_service.getByUid("" + body.id)
-		}).then((_old) => {
-				let old = _old.data[0].current_status
-				if (old != body.current_status) {
-					let user_answer = require('../models/user_answer.js')
-					let model_user_answer = new user_answer()
-					let request_status = require('../models/request_status.js')
-					let valid = new Date();
-					let model_request_status = new request_status()
-					valid.setFullYear(valid.getUTCFullYear() + 1)
-					let data = {
-						id_service: body.id,
-						id_status: body.current_status,
-						valid_to: valid,
-						level: _old.data[0].level || 1
-					}
-					if (body.level) {
-						data.level = body.level
-					}
-					if (body.current_status == 1) { // verification
-						utiles.sendEmail(_admin.email,null,null,'Hay un nuevo servicio para verficar','Hola Hay un nuevo servicio para verificar en el administrador de Sello de Excelencia')
-					}
-					if (body.current_status == 5) {
-						model_entity_service.asignate(body).then((evaluations)=>{
-							if(evaluations.length == 0){
-								return
-							}
-							let evalution_request = require('../models/evaluation_request.js')
-							let model_evaluation_request = new evalution_request()
-							let data = {
-								col_names:[],
-								data:evaluations
-							}
-							for(let i in evaluations[0]){
-								data.col_names.push(i)
-							}
-							model_evaluation_request.createMultiple(
-								data
-							)
-						})
-						model_user_answer.update({ id_status: 2 }, { id_service: body.id })
-					}
-
-					return create_entity_service_status(user, data)
-				}
-				return
-			}).then(() => {
-				return model_entity_service.update(body, { id: body.id })
-			})
+		})
 	}
 	/**
 	 * @api {put} api/service/category Update category information

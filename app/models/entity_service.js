@@ -5,7 +5,7 @@
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
-var utiles = require('../utils/utiles.js')
+let emiter = require('./emiter.js').instance
 var Service = function () {
 	var params = [{
 		"table": "service",
@@ -73,7 +73,7 @@ var Service = function () {
 						JOIN questiontopic qt ON qt.id = u_a.id_topic
 						LEFT JOIN user_questiontopic ON user_questiontopic.id_topic = qt.id
 						LEFT JOIN user u ON u.id = user_questiontopic.id_user
-						WHERE u_a.id_service = ${service.id}
+						WHERE u_a.id_service = '${service.id}' 
 						ORDER BY u_a.id asc,u.id_availability desc`
 					return this.customQuery(q).then((_users) => {
 						let _couples = {}
@@ -123,15 +123,7 @@ var Service = function () {
 									alert_time:atime.toISOString().split('T')[0],
 									end_time:ftime.toISOString().split('T')[0]
 								})
-								
-								/*utiles.sendEmail(data.email,null,null,'Asignación de Requisito',
-								`<div style="background-color:#a42a5b;height:50px;width:100%">
-								</div>
-								<div style="text-align:center;margin: 10px auto;">
-								<img src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
-								</div>
-								<div>
-								<p>Se ha asignado un nuevo requisito en Sello de Excelencia</p>`)*/
+								emiter.emit('evaluation_request.asignation',data.email)
 							}
 						}
 						return request

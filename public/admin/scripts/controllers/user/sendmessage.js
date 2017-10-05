@@ -2,8 +2,7 @@ angular.module('dmt-back').controller('sendMessageController', function ($mdDial
   var ctrl = this;
   ctrl.user = user;
   ctrl.entity = entity
-  ctrl.message = `<div style="background-color:#a42a5b;height:50px;width:100%">
-  </div>
+  ctrl.message = `
   <div style="text-align:center;margin: 10px auto;">
   <img width="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
   </div>
