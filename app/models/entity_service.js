@@ -5,7 +5,7 @@
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
-let emiter = require('./emiter.js').instance
+let emiter = require('../events/emiter.js').instance
 var Service = function () {
 	var params = [{
 		"table": "service",
