@@ -239,12 +239,6 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "second_email",
-				"type": "string",
-				"disabled": false,
-				"key": false
-			},
-			{
 				"name": "phone",
 				"type": "string",
 				"disabled": false,
@@ -277,6 +271,12 @@ dmt.tables = {
 			{
 				"name": "id_institution_type",
 				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "active",
+				"type": "boolean",
 				"disabled": false,
 				"key": false
 			},

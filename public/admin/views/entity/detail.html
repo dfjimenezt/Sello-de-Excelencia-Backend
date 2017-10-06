@@ -3,15 +3,6 @@
   <!--div class="breadcrum" ng-bind-html="ctrl.breadcrum"></div-->
   <!-- one columns -->
   <!-- -->
-  <md-toolbar layout="row" flex layout-padding ng-if="ctrl.languages.length">
-    <span flex></span>
-    <div flex>
-      <md-select flex ng-model="ctrl.language" ng-change="ctrl.getData()">
-        <md-option ng-repeat="lang in ctrl.languages" value="{{lang.id}}">
-          <md-icon md-svg-src="{{lang.icon}}"></md-icon>{{lang.name}}</md-option>
-      </md-select>
-    </div>
-  </md-toolbar>
   <md-tabs md-dynamic-height md-border-bottom>
     <md-tab label="datos básicos" md-on-select="ctrl.selectTab(null)">
       <md-content class="md-padding" layout-spacing="center">
@@ -22,7 +13,7 @@
         </div>
         <form name="ctrl.form" layout="row" flex>
           <div layout="row" layout-wrap class="input-row" layout-padding flex>
-            <md-input-container ng-repeat="f in ctrl.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="100">
+            <md-input-container ng-repeat="f in ctrl.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="50">
               <label ng-if="f.type!=='boolean' && f.type !=='file'">{{f.name | translate}}</label>
               <input type="number" ng-if="f.type=='int'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
               <input type="text" ng-if="f.type=='string'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
@@ -47,10 +38,64 @@
 
       </md-content>
     </md-tab>
-    <md-tab label="{{relation.name | translate}}" md-on-select="ctrl.selectTab(relation)" ng-if="relation.type !== '1-1' && ctrl.data[ctrl.currentEntity.defaultSort]"
+    <md-tab label="Servicios">
+      <md-content>
+          <div layout="column" flex>
+              <table md-table ng-model="ctrl.entities.service.selected" md-progress="ctrl.entities.service.promise">
+                <thead md-head>
+                  <tr md-row>
+                    <th md-column ng-repeat="f in ctrl.entities.service.table.fields" ng-if="f.name !== relation.rightKey">
+                      <span>{{f.name | translate}}</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody md-body>
+                  <tr md-row md-auto-select ng-repeat="item in ctrl.entities.service.data">
+                    <td md-cell ng-repeat="f in ctrl.entities.service.table.fields" ng-if="f.name !== relation.rightKey">
+                      <span ng-if="f.type !== 'link'">{{ item[f.name] }}</span>
+                      <span ng-if="f.type === 'link'">{{ item[f.table][f.foreign_name] }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <md-table-pagination md-limit="ctrl.entities.service.query.limit" md-limit-options="[10, 15, 20]" md-page="ctrl.entities.service.query.page"
+                md-label="{page: 'Página:', rowsPerPage: 'Filas por página:', of: 'de'}" md-total="{{ctrl.entities.service.total_results}}" md-on-paginate="ctrl.entities.service.getData"
+                md-page-select></md-table-pagination>
+            </div>
+      </md-content>
+    </md-tab>
+    <md-tab label="Puntos">
+        <md-content>
+            <div layout="column" flex>
+                <table md-table md-row-select multiple ng-model="ctrl.entities.points.selected" md-progress="ctrl.entities.points.promise">
+                  <thead md-head>
+                    <tr md-row>
+                      <th md-column ng-repeat="f in ctrl.entities.points.table.fields" ng-if="f.name !== relation.rightKey">
+                        <span>{{f.name | translate}}</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody md-body>
+                    <tr md-row md-on-select="ctrl.select" md-on-deselect="ctrl.unselect" md-select="item[ctrl.entities.points.table.defaultSort]"
+                      md-auto-select ng-repeat="item in ctrl.entities.points.data">
+                      <td md-cell ng-repeat="f in ctrl.entities.points.table.fields" ng-click="ctrl.editField($event,item,f,relation)"
+                        ng-if="f.name !== relation.rightKey">
+                        <span ng-if="f.type !== 'link'">{{ item[f.name] }}</span>
+                        <span ng-if="f.type === 'link'">{{ item[f.table][f.foreign_name] }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <md-table-pagination md-limit="ctrl.entities.points.query.limit" md-limit-options="[10, 15, 20]" md-page="ctrl.entities.points.query.page"
+                  md-label="{page: 'Página:', rowsPerPage: 'Filas por página:', of: 'de'}" md-total="{{ctrl.entities.points.total_results}}" md-on-paginate="ctrl.entities.points.getData"
+                  md-page-select></md-table-pagination>
+              </div>
+        </md-content>
+      </md-tab>
+    <!--md-tab label="{{relation.name | translate}}" md-on-select="ctrl.selectTab(relation)" ng-if="relation.type !== '1-1' && ctrl.data[ctrl.currentEntity.defaultSort]"
       ng-repeat="relation in ctrl.currentEntity.relations">
       <md-content class="md-padding" layout-spacing="center">
-        <!-- Relation 1-n & n-n -->
+        <!-- Relation 1-n & n-n ->
         <md-toolbar class="md-table-toolbar md-default" ng-hide="(ctrl.entities[relation.entity].selected.length && relation.type === '1-n') || ctrl.entities[relation.entity].filter.show">
           <div class="md-toolbar-tools">
             <div flex></div>
@@ -107,6 +152,6 @@
         </div>
 
       </md-content>
-    </md-tab>
+    </md-tab-->
   </md-tabs>
 </div>

@@ -91,6 +91,7 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_entity_service = function (user, params) {
+		params.order = 'id desc'
 		return _get(model_entity_service, user, params)
 	}
 	/**
@@ -376,7 +377,7 @@ var service_controller = function () {
 		}
 		
 		return model_entity_service.getByUid("" + body.id).then((_old)=>{
-			let old = _old.data[0].current_status
+			let old = _old.data[0]
 			emiter.emit('service.updated',old,body)
 			return model_entity_service.update(body, { id: body.id })
 		})

@@ -356,6 +356,13 @@ dmt.entities = {
       },
       {
         type: "1-1",
+        entity: "country",
+        name: "country",
+        leftKey: "id_country",
+        foreign_name: "name"
+      },
+      {
+        type: "1-1",
         entity: "user",
         name: "creator",
         leftKey: "id_user_creator",
@@ -366,7 +373,7 @@ dmt.entities = {
         entity: "institutionType",
         name: "type",
         leftKey: "id_institution_type",
-        foreign_name: "id"
+        foreign_name: "name"
       },
       {
         type: "n-n",

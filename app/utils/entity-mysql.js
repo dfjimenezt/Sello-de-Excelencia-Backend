@@ -381,7 +381,7 @@ var EntityModel = function (info) {
 				//query += `HAVING COUNT(\`${name + '`.`' + k}\`) = ${relation_filters[r][k].length} `
 			}
 		}
-		query += "LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
+		query += "ORDER BY `" + resolveViewName(info.entity, params.lang) + "`." + params.order + " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
 		query += "SELECT FOUND_ROWS() as total"
 		console.log(query)
 		return this.customQuery(query).then((result) => {
@@ -394,7 +394,7 @@ var EntityModel = function (info) {
 				return { data: [], total_results: 0 }
 			}
 			keys = keys.join(",")
-			query = "SELECT * FROM `" + resolveViewName(info.entity, params.lang) + "` WHERE `" + getTable(info.table).defaultSort + "` IN (" + keys + ") ORDER BY " + params.order + ";"
+			query = "SELECT * FROM `" + resolveViewName(info.entity, params.lang) + "` WHERE `" + getTable(info.table).defaultSort + "` IN (" + keys + ") ;"
 			let count = 0;
 			if (params.simple === false) {
 				if (info.relations) {

@@ -336,7 +336,7 @@ var Auth = function () {
                             var institution_user = new institution_user_model()
                             institution_user.create({
                                 id_institution: body.institution.id,
-                                id_user: user.id
+                                id_user: body.id
                             })
                             var institution_model = require("../models/entity_institution.js")
                             var institution = new institution_model()

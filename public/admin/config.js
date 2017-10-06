@@ -16,14 +16,14 @@ dmt.config = [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "detailBannerController",
+						templateUrl: "views/banner/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "detailBannerController",
+						templateUrl: "views/banner/detail.html"
 					}
 				]
 			},
@@ -139,30 +139,6 @@ dmt.config = [
 		section: "Postulaciones",
 		path: "postulaciones",
 		pages: [
-			{
-				name: "En Postulación",
-				path: "incompletos",
-				entity: "service",
-				filters:{
-					'current_status':[10]
-				},
-				controller: "listItemServiceController",
-				templateUrl: "views/service/list.html",
-				pages: [
-					{
-						name: "add",
-						path: "add",
-						controller: "detailItemServiceController",
-						templateUrl: "views/service/detail.html"
-					},
-					{
-						name: "detail",
-						path: "detail/:id",
-						controller: "detailItemServiceController",
-						templateUrl: "views/service/detail.html"
-					}
-				]
-			},
 			{
 				name: "Verificación",
 				path: "verificacion",

@@ -28,9 +28,11 @@ var Events = function () {
 			return model_user.getByUid('' + old.id_user)
 		}).then((result) => {
 			_user = results[0]
-			if (body.id_status == 10) { // rejected by admin
-				utiles.sendEmail(_user.email, null, null, 'Han rechazado un requisito en Sello de Excelencia', 'Hola se ha rechazado un requisito en la plataforma Sello de Excelencia')
-				return service.update({ current_status: 10 }, { id: _old.id_service })
+			if (body.id_status == CONSTANTS.SERVICE.INCOMPLETO) { // rejected by admin
+				utiles.sendEmail(_user.email, null, null, 
+					'Han rechazado un requisito en Sello de Excelencia', 
+					'Hola se ha rechazado un requisito en la plataforma Sello de Excelencia')
+				return service.update({ current_status: CONSTANTS.SERVICE.INCOMPLETO }, { id: _old.id_service })
 			}
 		})
 	})
@@ -204,29 +206,67 @@ var Events = function () {
 		}
 	})
 	emiter.on('service.updated',(old,body)=>{
-		let model_user = require('../models/user.js')()
-		let model_entity_service_status = require('../models/entity_service_status.js')()
-		let _admin = null
-		model_user.getAdmin().then((result)=>{
+		var model_user = require('../models/user.js')
+		model_user = new model_user()
+		var model_status = require('../models/status.js')
+		model_status = new model_status()
+		var model_user_answer = require('../models/user_answer.js')
+		model_user_answer = new model_user_answer()
+		var model_request_status = require('../models/request_status.js')
+		model_request_status = new model_request_status()
+		var model_service_status = require('../models/service_status.js')
+		model_service_status = new model_service_status()
+		var _admin = null
+		var _status = null
+		var _laststatus = null
+		model_user.getAdmin()
+		.then((result)=>{
 			_admin = result[0]
-			if (old != body.current_status) {
-				let user_answer = require('../models/user_answer.js')
-				let model_user_answer = new user_answer()
-				let request_status = require('../models/request_status.js')
-				let valid = new Date()
-				let model_request_status = new request_status()
-				valid.setFullYear(valid.getUTCFullYear() + 1)
+			return model_status.getByUid(''+body.current_status || old.current_status)
+		}).then((result)=>{
+			_status = result[0]
+			return model_service_status.getFiltered({
+				filter_fields:['id_service'],
+				filter_values:[''+body.id],
+				page:1,
+				limit:1,
+				order:'timestamp desc'
+			})
+		}).then((result)=>{
+			let _laststatus = result.data[0]
+			if (old.current_status != body.current_status) {
+				let duration = _status.duration
+				let alarm = duration - _status.pre_end
+				let atime = new Date()
+				atime.setDate(atime.getDate() + alarm)
+				let ftime = new Date()
+				ftime.setDate(ftime.getDate() + duration)
+				body.alert_time = atime
+				body.end_time = ftime
 				let data = {
 					id_service: body.id,
 					id_status: body.current_status,
-					valid_to: valid,
-					level: _old.data[0].level || 1
+					valid_to: ftime,
+					alarm: atime,
+					level: _laststatus.level || 1
 				}
 				if (body.level) {
 					data.level = body.level
 				}
-				if (body.current_status == 1) { // verification
-					utiles.sendEmail(_admin.email,null,null,'Hay un nuevo servicio para verficar','Hola Hay un nuevo servicio para verificar en el administrador de Sello de Excelencia')
+				if (body.current_status == CONSTANTS.SERVICE.VERIFICACION) { // verification
+					utiles.sendEmail(_admin.email,null,null,
+						'Hay un servicio disponible para verficar',`
+						<div style="text-align:center;margin: 10px auto;">
+						<img width="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+						</div>
+						<p>Hola el servicio:</p>
+						<p>${old.id} - ${old.name}</p>
+						<p>Está disponible para verificación</p>`
+					)
+					model_user_answer.update({ id_status: CONSTANTS.SERVICE.VERIFICACION }, { id_service: body.id })
+				}
+				if (body.current_status == CONSTANTS.SERVICE.VERIFICACION) { // verification
+
 				}
 				if (body.current_status == 5) {
 					model_entity_service.asignate(body).then((evaluations)=>{
@@ -248,7 +288,10 @@ var Events = function () {
 					})
 					model_user_answer.update({ id_status: 2 }, { id_service: body.id })
 				}
-				return model_entity_service_status.create(data)
+				if(old.current_status == CONSTANTS.SERVICE.VERIFICACION && body.current_status === CONSTANTS.SERVICE.INCOMPLETO){
+					return
+				}
+				return model_service_status.create(data)
 			}
 		})
 	})
@@ -257,7 +300,6 @@ var Events = function () {
 		<div style="text-align:center;margin: 10px auto;">
 		<img width="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
 		</div>
-		<div>
 		<p>Se ha asignado un nuevo requisito en Sello de Excelencia</p>`)
 	})
 }
