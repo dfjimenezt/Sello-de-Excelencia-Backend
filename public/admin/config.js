@@ -132,7 +132,7 @@ dmt.config = [
 						templateUrl: "views/user/detail.html"
 					}
 				]
-			},
+			}
 		]
 	},
 	{

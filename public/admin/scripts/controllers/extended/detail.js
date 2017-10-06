@@ -10,6 +10,9 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 	ctrl.page = page;
 	ctrl.tab = null;
 	ctrl.currentEntity = dmt.entities[page.entity || page.parent.entity];
+	if(!ctrl.currentEntity.relations){
+		ctrl.currentEntity.relations = []
+	}
 	ctrl.currentEntity.relations.forEach((relation) => {
 		ctrl.entities[relation.entity] = {
 			filter: {
@@ -325,6 +328,14 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 
 	function addOptions(item, index) {
 		var base = item.endpoint;
+		if (!base) {
+			let entity = dmt.entities[item.table];
+			let table = null
+			if (!entity) {
+				entity = dmt.tables[item.table];
+			} 
+			base = entity.endpoint
+		}
 		if (!base) {
 			base = ctrl.currentEntity.endpoint;
 		}

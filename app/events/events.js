@@ -21,18 +21,20 @@ var Events = function () {
 		}
 		let _admin = null
 		let _user = null
-		let model_user = require('../models/user.js')()
-		let user_answer = require('../models/entity_user_answer.js')()
+		let model_user = require('../models/user.js')
+		model_user = new model_user()
+		let user_answer = require('../models/entity_user_answer.js')
+		user_answer = new user_answer()
 		model_user.getAdmin().then((result) => {
 			_admin = result[0]
-			return model_user.getByUid('' + old.id_user)
-		}).then((result) => {
-			_user = results[0]
+			_user = old.user
 			if (body.id_status == CONSTANTS.SERVICE.INCOMPLETO) { // rejected by admin
 				utiles.sendEmail(_user.email, null, null, 
 					'Han rechazado un requisito en Sello de Excelencia', 
 					'Hola se ha rechazado un requisito en la plataforma Sello de Excelencia')
-				return service.update({ current_status: CONSTANTS.SERVICE.INCOMPLETO }, { id: _old.id_service })
+					let service = require('../models/service.js')
+					service = new service()
+				return service.update({ current_status: CONSTANTS.SERVICE.INCOMPLETO }, { id: old.id_service })
 			}
 		})
 	})

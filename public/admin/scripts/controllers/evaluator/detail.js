@@ -357,6 +357,14 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 	function addOptions(item, index) {
 		var base = item.endpoint;
 		if (!base) {
+			let entity = dmt.entities[item.table];
+			let table = null
+			if (!entity) {
+				entity = dmt.tables[item.table];
+			} 
+			base = entity.endpoint
+		}
+		if (!base) {
 			base = ctrl.currentEntity.endpoint;
 		}
 		$http.get(base+'?limit=5000').then(function (results) {

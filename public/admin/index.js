@@ -29,10 +29,29 @@ var app = angular.module('dmt-back', [
  * Configuration of the application from config.js
  */
 app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $provide) {
+	let primary = $mdThemingProvider
+	.extendPalette('pink',{
+		'400':'a42a5b',
+		'900':'b34f75'
+	})
+	let accent = $mdThemingProvider
+	.extendPalette('cyan',{
+		'400':'00c8d1'
+	})
+	$mdThemingProvider.definePalette('stampBrown', primary)
 	$mdThemingProvider.theme('default')
-	
+	.primaryPalette('stampBrown',{
+		'default':'400',
+		'hue-1':'900',
+	})
+	.accentPalette('cyan',{
+		'default':'400'
+	})
+	.backgroundPalette('grey')
+
 	
 	for (var name in dmt.entities) {
+		let entity = dmt.entities[name]
 		dmt.api.endpoints.forEach(function (endpoint) {
 			endpoint.entities.forEach(function (ety) {
 				if (ety.entity == name) {
@@ -40,7 +59,31 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 				}
 			})
 		})
+		entity.relations = entity.relations || []
+		entity.relations.forEach((relation) => {
+			if (relation.leftKey) {
+				let table = dmt.tables[entity.table]
+				table.fields.forEach((f) => {
+					if (f.name == relation.leftKey) {
+						let foreign_entity = dmt.entities[relation.entity]
+						let foreign_table = null
+						if (foreign_entity) {
+							foreign_table = dmt.tables[foreign_entity.table]
+							f.table = foreign_entity.table
+							f.endpoint = foreign_entity.endpoint
+						} else {
+							foreign_table = dmt.tables[relation.entity]
+							f.table = relation.entity
+						}
+						f.type = "link"
+						f.foreign_key = foreign_table.defaultSort
+						f.foreign_name = relation.foreign_name
+					}
+				})
+			}
+		})
 	}
+
 	for(var name in dmt.tables){
 		if(dmt.entities[name]){
 			continue;
@@ -88,29 +131,6 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 			entity.defaultSort = dmt.tables[entity.table].defaultSort
 		}
 		console.log(name);
-		entity.relations = entity.relations || []
-		entity.relations.forEach((relation) => {
-			if (relation.leftKey) {
-				let table = dmt.tables[entity.table]
-				table.fields.forEach((f) => {
-					if (f.name == relation.leftKey) {
-						let foreign_entity = dmt.entities[relation.entity]
-						let foreign_table = null
-						if (foreign_entity) {
-							foreign_table = dmt.tables[foreign_entity.table]
-							f.table = foreign_entity.table
-							f.endpoint = foreign_entity.endpoint
-						} else {
-							foreign_table = dmt.tables[relation.entity]
-							f.table = relation.entity
-						}
-						f.type = "link"
-						f.foreign_key = foreign_table.defaultSort
-						f.foreign_name = relation.foreign_name
-					}
-				})
-			}
-		})
 	}
 
 	function addPage(path, page, parent) {

@@ -10,6 +10,9 @@ angular.module('dmt-back').controller('detailBannerController', function ($mdDia
 	ctrl.page = page;
 	ctrl.tab = null;
 	ctrl.currentEntity = dmt.entities[page.entity || page.parent.entity];
+	if(!ctrl.currentEntity.relations){
+		ctrl.currentEntity.relations = []
+	}
 	ctrl.currentEntity.relations.forEach((relation) => {
 		ctrl.entities[relation.entity] = {
 			filter: {

@@ -306,7 +306,7 @@ dmt.entities = {
         type: "1-1",
         name: "status",
         foreign_name: "name",
-        entity: "category",
+        entity: "status",
         leftKey: "id_status"
       }
     ]
@@ -524,6 +524,18 @@ dmt.entities = {
         name: "topic",
         entity: "questiontopic",
         leftKey: "id_topic",
+        foreign_name: "name"
+      },
+    ]
+  },
+  "category_question": {
+    table: "category_questions",
+    relations: [
+      {
+        type: "1-1",
+        name: "category",
+        entity: "category",
+        leftKey: "id_category",
         foreign_name: "name"
       },
     ]

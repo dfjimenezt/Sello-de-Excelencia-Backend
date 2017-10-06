@@ -1,7 +1,6 @@
 angular.module('dmt-back').controller('detailItemEntityController', function ($mdDialog, $mdEditDialog, $routeParams, page, $location, $http, $filter) {
 	var ctrl = this;
 	ctrl.data = {};
-	ctrl.breadcrum = buildBreadcrum($location.path(), page);
 	ctrl.language = 1;
 	ctrl.entities = {};
 	ctrl.languages = [];
@@ -10,6 +9,9 @@ angular.module('dmt-back').controller('detailItemEntityController', function ($m
 	ctrl.page = page;
 	ctrl.tab = null;
 	ctrl.currentEntity = dmt.entities[page.entity || page.parent.entity];
+	if(!ctrl.currentEntity.relations){
+		ctrl.currentEntity.relations = []
+	}
 	ctrl.currentEntity.relations.forEach((relation) => {
 		ctrl.entities[relation.entity] = {
 			filter: {
@@ -45,11 +47,6 @@ angular.module('dmt-back').controller('detailItemEntityController', function ($m
 		}
 	})
 
-	$http.get("/api/configuration/lang").then((response) => {
-		ctrl.languages = response.data.data;
-	}).catch((e) => {
-		console.log("no languages available")
-	})
 	ctrl.select = function (selection) {
 		var relation = ctrl.tab
 		if (!relation) {
@@ -354,6 +351,14 @@ angular.module('dmt-back').controller('detailItemEntityController', function ($m
 
 	function addOptions(item, index) {
 		var base = item.endpoint;
+		if (!base) {
+			let entity = dmt.entities[item.table];
+			let table = null
+			if (!entity) {
+				entity = dmt.tables[item.table];
+			} 
+			base = entity.endpoint
+		}
 		if (!base) {
 			base = ctrl.currentEntity.endpoint;
 		}

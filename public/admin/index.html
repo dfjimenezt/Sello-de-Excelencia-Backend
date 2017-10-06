@@ -39,7 +39,7 @@
 </head>
 
 <body ng-app="dmt-back" ng-cloak ng-controller="backCtrl as ctrl">
-  <md-toolbar layout="row" flex layout-align="start center" class="md-accent md-hue-2">
+  <md-toolbar layout="row" flex layout-align="start center" class="md-primary md-hue-1">
     <md-button ng-click="ctrl.menu()">
       <md-icon class="material-icons">menu</md-icon>
       </md-icon>
@@ -56,7 +56,9 @@
       <md-content layout-padding>
         <div ng-repeat="x in ctrl.leftMenu" layout="column">
           <b>{{x.section}}</b>
-          <md-button ng-repeat="p in x.pages" class="md-primary md-raised" ng-click="ctrl.selectPage(x,p);">
+          <md-button ng-repeat="p in x.pages" 
+            class="md-primary md-raised" 
+            ng-click="ctrl.selectPage(x,p);">
             {{p.name}}
           </md-button>
         </div>

@@ -9,7 +9,11 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 	ctrl.options = {};
 	ctrl.page = page;
 	ctrl.tab = null;
+	ctrl.user_answer_relation = null;
 	ctrl.currentEntity = dmt.entities[page.entity || page.parent.entity];
+	if(!ctrl.currentEntity.relations){
+		ctrl.currentEntity.relations = []
+	}
 	ctrl.currentEntity.relations.forEach((relation) => {
 		ctrl.entities[relation.entity] = {
 			filter: {
@@ -45,11 +49,6 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 		}
 	})
 
-	$http.get("/api/configuration/lang").then((response) => {
-		ctrl.languages = response.data.data;
-	}).catch((e) => {
-		console.log("no languages available")
-	})
 	ctrl.select = function (selection) {
 		var relation = ctrl.tab
 		if (!relation) {
@@ -223,6 +222,7 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 		$http.get(entity.endpoint + "?" + str.join("&")).then((response) => {
 			let _table = table;
 			if(relation.entity === 'user_answer'){
+				ctrl.user_answer_relation = relation
 				_table.fields = [
 					{
 						"name": "id",
@@ -250,15 +250,12 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 					},
 					{
 						"name": "id_status",
-						"type": "int",
+						"type": "link",
 						"disabled": false,
-						"key": false
-					},
-					{
-						"name": "timestamp",
-						"type": "datetime",
-						"disabled": true,
-						"key": false
+						"key": false,
+						"foreign_key":"id",
+						"table":"status",
+						"foreign_name":"name"
 					},
 				]
 			}
@@ -367,6 +364,14 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 
 	function addOptions(item, index) {
 		var base = item.endpoint;
+		if (!base) {
+			let entity = dmt.entities[item.table];
+			let table = null
+			if (!entity) {
+				entity = dmt.tables[item.table];
+			} 
+			base = entity.endpoint
+		}
 		if (!base) {
 			base = ctrl.currentEntity.endpoint;
 		}

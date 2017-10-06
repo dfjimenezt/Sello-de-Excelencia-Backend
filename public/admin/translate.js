@@ -46,7 +46,7 @@ dmt.translate={
         "comments":"Comentarios",
         "id_status":"Estado",
         "level":"Nivel",
-        "valid_to":"Valido Hasta",
+        "valid_to":"Estado Válido Hasta",
         "id_city":"Ciudad",
         "id_availability":"Disponibilidad",
         "categories":"Categorías",

@@ -21,7 +21,7 @@
         </div>
         <form name="ctrl.form" layout="row" flex>
           <div layout="row" layout-wrap class="input-row" layout-padding flex>
-            <md-input-container ng-repeat="f in ctrl.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="100">
+            <md-input-container ng-repeat="f in ctrl.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="50">
               <label ng-if="f.type!=='boolean' && f.type !=='file'">{{f.name | translate}}</label>
               <input type="number" ng-if="f.type=='int'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
               <input type="text" ng-if="f.type=='string'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
@@ -46,7 +46,10 @@
 
       </md-content>
     </md-tab>
-    <md-tab label="{{relation.name | translate}}" md-on-select="ctrl.selectTab(relation)" ng-if="relation.type !== '1-1' && ctrl.data[ctrl.currentEntity.defaultSort]"
+    <md-tab label="{{relation.name | translate}}" md-on-select="ctrl.selectTab(relation)" 
+      ng-if="relation.type !== '1-1' 
+      && ctrl.data[ctrl.currentEntity.defaultSort] 
+      && relation.entity != 'user_answer'"
       ng-repeat="relation in ctrl.currentEntity.relations">
       <md-content class="md-padding" layout-spacing="center">
         <!-- Relation 1-n & n-n -->
@@ -95,8 +98,9 @@
                 <td md-cell ng-repeat="f in ctrl.entities[relation.entity].table.fields" ng-click="ctrl.editField($event,item,f,relation)"
                   ng-if="f.name !== relation.rightKey">
                   <span ng-if="f.type === 'media'"><a href="{{item.media.url}}">Adjunto</a></span>
-                  <span ng-if="f.type !== 'link' && f.type != 'media'">{{ item[f.name] }}</span>
+                  <span ng-if="f.type !== 'link' && f.type != 'media' && f.type != 'datetime'">{{ item[f.name] }}</span>
                   <span ng-if="f.type === 'link'">{{ item[f.table][f.foreign_name] }}</span>
+                  <span ng-if="f.type === 'datetime'">{{ item[f.name] | date}}</span>
                 </td>
               </tr>
             </tbody>
@@ -108,5 +112,89 @@
 
       </md-content>
     </md-tab>
+    <md-tab label="Requisitos">
+    <md-content class="md-padding" layout-spacing="center">
+      <!-- Relation 1-n & n-n -->
+      <md-toolbar class="md-table-toolbar md-default" ng-hide="(ctrl.entities.user_answer.selected.length && relation.type === '1-n') || ctrl.entities[relation.entity].filter.show">
+        <div class="md-toolbar-tools">
+          <div flex></div>
+          <md-button class="md-icon-button" ng-click="ctrl.entities.user_answer.filter.show = true">
+            <md-icon>search</md-icon>
+          </md-button>
+          <md-button class="md-raised md-primary" ng-if="!ctrl.page.readOnly" ng-click="ctrl.create($event,relation)">CREAR</md-button>
+        </div>
+      </md-toolbar>
+      <md-toolbar class="md-table-toolbar md-default" ng-show="ctrl.entities.user_answer.filter.show && (!ctrl.entities.user_answer.selected.length || relation.type !== '1-n')">
+        <div class="md-toolbar-tools">
+          <md-icon class="material-icons">search</md-icon>
+          <form flex name="ctrl.entities.user_answer.filter.form" layout="row">
+            <input type="text" flex="100" ng-model="ctrl.entities.user_answer.query.filter" ng-model-options="ctrl.entities.user_answer.filter.options"
+              placeholder="Buscar" ng-change="ctrl.entities.user_answer.search()">
+          </form>
+          <md-button class="md-icon-button" ng-click="ctrl.removeFilter(relation)">
+            <md-icon class="material-icons">close</md-icon>
+          </md-button>
+        </div>
+      </md-toolbar>
+      <md-toolbar class="md-table-toolbar alternate" ng-show="ctrl.entities.user_answer.selected.length && relation.type === '1-n'">
+        <div class="md-toolbar-tools" layout-align="space-between">
+          <div>{{ctrl.entities.user_answer.selected.length}} {{ctrl.entities.user_answer.selected.length > 1 ? 'items
+            seleccionados' : 'item seleccionado'}}</div>
+          <md-button class="md-icon-button" ng-click="ctrl.delete($event,relation)">
+            <md-icon class="material-icons">delete</md-icon>
+          </md-button>
+        </div>
+      </md-toolbar>
+      <div layout="column" flex>
+        <table md-table ng-model="ctrl.entities.user_answer.selected" md-progress="ctrl.entities.user_answer.promise">
+          <thead md-head>
+            <tr md-row>
+              <th md-column>
+                <span>{{id_question | translate}}</span>
+              </th>
+              <th md-column>
+                <span>{{comment | translate}}</span>
+              </th>
+              <th md-column>
+                <span>{{id_media | translate}}</span>
+              </th>
+              <th md-column>
+                <span>{{id_status | translate}}</span>
+              </th>
+              <th md-column>
+                <span>Acciones</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody md-body>
+            <tr md-row ng-repeat="item in ctrl.entities.user_answer.data">
+              <td md-cell>
+                  <span>{{ item.id_question }}</span>
+              </td>
+              <td md-cell>
+                  <span>{{ item.comment }}</span>
+              </td>
+              <td md-cell>
+                  <span><a ng-if="item.media.url" href="{{item.media.url}}">Adjunto</a></span>
+              </td>
+              <td md-cell>
+                  <span>{{ item.status.name }}</span>
+              </td>
+              <td md-cell>
+                <div ng-if="item.id_status == 1">
+                    <md-button aria-label="accept" ng-click="item.id_status = 2;ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-raised"> Aprobar </md-button>
+                    <md-button aria-label="reject" ng-click="item.id_status = 10;ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-hue-1 md-raised"> Rechazar </md-button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <md-table-pagination md-limit="ctrl.entities.user_answer.query.limit" md-limit-options="[10, 15, 20]" md-page="ctrl.entities.user_answer.query.page"
+          md-label="{page: 'Página:', rowsPerPage: 'Filas por página:', of: 'de'}" md-total="{{ctrl.entities.user_answer.total_results}}" md-on-paginate="ctrl.entities.user_answer.getData"
+          md-page-select></md-table-pagination>
+      </div>
+
+    </md-content>
+  </md-tab>
   </md-tabs>
 </div>

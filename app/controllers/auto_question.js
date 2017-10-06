@@ -779,8 +779,9 @@ var question_controller = function () {
 		} else {
 			return model_entity_user_answer.getByUid("" + body.id)
 			.then((result) => {
-				_old = result.data[0]
-				emiter.emit('user_answer.statusupdate',user,_old,body)
+				let _old = result.data[0]
+				emiter.emit('user_answer.updated',user,_old,body)
+				delete body.id_media
 				delete body.id_order
 				delete body.datetime
 				return model_entity_user_answer.update(body, { id: body.id })
