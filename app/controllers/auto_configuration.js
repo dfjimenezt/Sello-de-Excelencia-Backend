@@ -20,7 +20,7 @@ var entity_user_role = require('../models/entity_user_role.js')
 var institution_user = require('../models/institution_user.js')
 var config = require('../models/config.js')
 var type_document = require('../models/type_document.js')
-var points = require('../models/points.js')
+var entity_points = require('../models/entity_points.js')
 var motives = require('../models/motives.js')
 var hall_of_fame = require('../models/hall_of_fame.js')
 var emiter = require('../events/emiter.js').instance
@@ -36,7 +36,7 @@ var configuration_controller = function () {
 	var model_institution_user = new institution_user()
 	var model_config = new config()
 	var model_type_document = new type_document()
-	var model_points = new points()
+	var model_entity_points = new entity_points()
 	var model_motives = new motives()
 	var model_hall_of_fame = new hall_of_fame()
 	//---------------------------------------------------------------
@@ -450,9 +450,9 @@ var configuration_controller = function () {
 	*/
 	var get_points = function (user, params) {
 		if(params.sumarized){
-			return model_points.getSumarized(user.id)
+			return model_entity_points.getSumarized(user.id)
 		}
-		return _get(model_points,user,params)
+		return _get(model_entity_points,user,params)
 	}
 	/**
 	 * @api {get} api/configuration/motives Request motives information
@@ -754,7 +754,13 @@ var configuration_controller = function () {
  	 * 
 	 */
 	var create_points = function (user, body) {
-		return model_points.create(body)
+		if(body.id_institution){
+			return model_entity_points.addInstitutionPoints(body.id_institution,body.id_motives,body.justification,body.id_hangout,body.value)
+		}
+		if(body.id_user){
+			return model_entity_points.addUserPoints(body.id_user,body.id_motives,body.justification,body.id_hangout,body.value)
+		}
+		return model_entity_points.create(body)
 	}
 	/**
 	 * @api {post} api/configuration/motives Create motives information
@@ -1088,7 +1094,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_points.update(body,{id:body.id})
+		return model_entity_points.update(body,{id:body.id})
 	}
 	/**
 	 * @api {put} api/configuration/motives Update motives information
@@ -1372,7 +1378,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_points.delete(body,{id:body.id})
+		return model_entity_points.delete(body,{id:body.id})
 	}
 	/**
 	 * @api {delete} api/configuration/motives Delete motives information

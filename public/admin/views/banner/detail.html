@@ -1,12 +1,12 @@
 <div layout="column" flex>
   <md-tabs md-dynamic-height md-border-bottom>
     <md-tab label="Detalle del Banner" md-on-select="ctrl.selectTab(null)">
-      <md-content class="md-padding" layout-spacing="center">
-        <div class="md-actions" layout="row" flex>
+      <md-content layout-spacing="center">
+        <md-toolbar class="md-hue-1" layout="row" flex>
           <span flex></span>
-          <md-button class="md-primary md-raised" ng-click="ctrl.saveItem()" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
-        </div>
-        <form name="ctrl.form" layout="column" flex>
+          <md-button class="md-accent md-raised" ng-click="ctrl.saveItem()" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
+        </md-toolbar>
+        <form class="md-padding" name="ctrl.form" layout="column" flex>
           <div layout="row" layout-wrap class="input-row" layout-padding flex>
             <md-input-container flex="50">
               <label>id</label>

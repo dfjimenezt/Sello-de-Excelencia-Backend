@@ -121,7 +121,7 @@ dmt.translate={
         "id_order":"Posición",
         "comment":"Comentario",
         "value":"Valor",
-        "result":"Total",
+        "result":"Total Acumulado",
         "id_motives":"Motivo",
         "id_hangout":"Live"
     },

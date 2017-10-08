@@ -3,7 +3,7 @@ var utiles = require('../utils/utiles.js')
 let CONSTANTS = require('./constants.js')
 var Events = function () {
 	emiter.on('video.view', (user,id_hangout) => {
-		let model_points = require('../models/points.js')()
+		let model_points = require('../models/entity_points.js')()
 		if(user.institutions.length>0){
 			return model_points.addInstitutionPoints(user.institutions[0].id,
 				CONSTANTS.MOTIVES.ENTITY.VER_VIDEO.id,'',body.id)
@@ -35,6 +35,24 @@ var Events = function () {
 					let service = require('../models/service.js')
 					service = new service()
 				return service.update({ current_status: CONSTANTS.SERVICE.INCOMPLETO }, { id: old.id_service })
+			}else if(body.id_status == CONSTANTS.SERVICE.ASIGNACION){
+				user_answer.getByParams({id_service:body.id_service,id_status:CONSTANTS.SERVICE.INCOMPLETO}).then((results)=>{
+					let ready = false
+					if(results.length){
+						if(results.length == 0){
+							ready = true
+						}else
+						if(results.length == 1){
+							if(results[0].id == body.id){
+								ready = true
+							}else{
+								ready = fasle
+							}
+						}else{
+							ready = false
+						}
+					}
+				})
 			}
 		})
 	})
@@ -143,7 +161,7 @@ var Events = function () {
 		<p> Hola ${user.name} </p>
 		<p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
 		<p>Tu nueva contraseña para acceder es: ${pass_user} </p>
-		<p><a href='https://prueba-dot-domoti-sellodeexcelencia.appspot.com/activar-cuenta?token=${token}&email=${user.email}&active=1'>
+		<p><a href='http://sellodeexcelencia.gov.co/activar-cuenta?token=${token}&email=${user.email}&active=1'>
 			Haz click aquí para activar tu cuenta </a>
 		</p>
 		<p>Nuestros mejores deseos,</p>
@@ -270,7 +288,7 @@ var Events = function () {
 				if (body.current_status == CONSTANTS.SERVICE.VERIFICACION) { // verification
 
 				}
-				if (body.current_status == 5) {
+				if (body.current_status == CONSTANTS.SERVICE.EVALUACION) {
 					model_entity_service.asignate(body).then((evaluations)=>{
 						if(evaluations.length == 0){
 							return
@@ -288,7 +306,7 @@ var Events = function () {
 							data
 						)
 					})
-					model_user_answer.update({ id_status: 2 }, { id_service: body.id })
+					model_user_answer.update({ id_status: CONSTANTS.SERVICE.ASIGNACION }, { id_service: body.id })
 				}
 				if(old.current_status == CONSTANTS.SERVICE.VERIFICACION && body.current_status === CONSTANTS.SERVICE.INCOMPLETO){
 					return

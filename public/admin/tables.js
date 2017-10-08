@@ -1584,19 +1584,7 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "alert",
-				"type": "boolean",
-				"disabled": false,
-				"key": false
-			},
-			{
 				"name": "terms",
-				"type": "boolean",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "newsletter",
 				"type": "boolean",
 				"disabled": false,
 				"key": false

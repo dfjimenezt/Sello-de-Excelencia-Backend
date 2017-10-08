@@ -49,7 +49,6 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 	})
 	.backgroundPalette('grey')
 
-	
 	for (var name in dmt.entities) {
 		let entity = dmt.entities[name]
 		dmt.api.endpoints.forEach(function (endpoint) {
@@ -82,6 +81,18 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 				})
 			}
 		})
+		entity.fields = dmt.tables[entity.table].fields
+		if (entity.translate) {
+			let translatefields = dmt.tables[entity.translate.table].fields
+			translatefields.forEach((f) => {
+				if (f.name == entity.translate.rightKey || f.name === "id_lang") {
+					return
+				}
+				f.prefix = entity.translate.table+'_'
+				entity.fields.push(f);
+			})
+		}
+		entity.defaultSort = dmt.tables[entity.table].defaultSort
 	}
 
 	for(var name in dmt.tables){
@@ -102,42 +113,9 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 			})
 		})
 	}
-	/**
-	 * Check if the page has an entity, and load the main table, if there is any 1-1 relation if the entity is not in the entities.js file then asume it is a single table.
-	 */
-	function processEntity(name, section) {
-		/**
-		 * Support full entities tree
-		 */
-		while (section.parent) {
-			section = section.parent
-		}
-
-		let entity = dmt.entities[name];
-		
-		if (entity) {
-			entity.table = entity.table
-			entity.fields = dmt.tables[entity.table].fields
-			if (entity.translate) {
-				let translatefields = dmt.tables[entity.translate.table].fields
-				translatefields.forEach((f) => {
-					if (f.name == entity.translate.rightKey || f.name === "id_lang") {
-						return
-					}
-					f.prefix = entity.translate.table+'_'
-					entity.fields.push(f);
-				})
-			}
-			entity.defaultSort = dmt.tables[entity.table].defaultSort
-		}
-		console.log(name);
-	}
-
+	
 	function addPage(path, page, parent) {
 		page.parent = parent;
-		if (page.entity) {
-			processEntity(page.entity, parent)
-		}
 		var route = {
 			controller: page.controller || "listItemController",
 			controllerAs: page.controllerAs || "ctrl",

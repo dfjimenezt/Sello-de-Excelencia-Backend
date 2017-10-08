@@ -14,15 +14,15 @@
   </md-toolbar>
   <md-tabs md-dynamic-height md-border-bottom>
     <md-tab label="datos básicos" md-on-select="ctrl.selectTab(null)">
-      <md-content class="md-padding" layout-spacing="center">
-        <div class="md-actions" layout="row" flex>
+      <md-content layout-spacing="center">
+        <md-toolbar class="md-hue-1" layout="row" flex>
           <span flex></span>
           <md-button class="md-accent md-raised" ng-click="ctrl.sendMessage()" ng-disabled="ctrl.form.$invalid">Enviar Mensaje</md-button>
-          <md-button class="md-primary md-raised" ng-click="ctrl.saveItem()" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
-        </div>
-        <form name="ctrl.form" layout="row" flex>
+          <md-button class="md-accent md-raised" ng-click="ctrl.saveItem()" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
+        </md-toolbar>
+        <form class="md-padding" name="ctrl.form" layout="row" flex>
           <div layout="row" layout-wrap class="input-row" layout-padding flex>
-            <md-input-container ng-repeat="f in ctrl.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="100">
+            <md-input-container ng-repeat="f in ctrl.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="50">
               <label ng-if="f.type!=='boolean' && f.type !=='file'">{{f.name | translate}}</label>
               <input type="number" ng-if="f.type=='int'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
               <input type="text" ng-if="f.type=='string'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />

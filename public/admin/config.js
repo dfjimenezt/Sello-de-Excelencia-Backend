@@ -62,9 +62,33 @@ dmt.config = [
 				]
 			},
 			{
+				name: "Representantes",
+				path: "representantes",
+				entity: "user",
+				controller: "listItemEvaluatorController",
+				templateUrl: "views/user/list.html",
+				filters:{
+					'roles.id':[4]
+				},
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemEvaluatorController",
+						templateUrl: "views/evaluator/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemEvaluatorController",
+						templateUrl: "views/evaluator/detail.html"
+					}
+				]
+			},
+			{
 				name: "Evaluadores",
 				path: "evaluadores",
-				entity: "evaluator",
+				entity: "user",
 				controller: "listItemEvaluatorController",
 				templateUrl: "views/user/list.html",
 				filters:{
@@ -75,13 +99,13 @@ dmt.config = [
 						name: "add",
 						path: "add",
 						controller: "detailItemEvaluatorController",
-						templateUrl: "views/user/detail.html"
+						templateUrl: "views/evaluator/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "detailItemEvaluatorController",
-						templateUrl: "views/user/detail.html"
+						templateUrl: "views/evaluator/detail.html"
 					}
 				]
 			},

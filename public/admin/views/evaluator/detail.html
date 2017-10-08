@@ -3,12 +3,21 @@
   <!--div class="breadcrum" ng-bind-html="ctrl.breadcrum"></div-->
   <!-- one columns -->
   <!-- -->
+  <md-toolbar layout="row" flex layout-padding ng-if="ctrl.languages.length">
+    <span flex></span>
+    <div flex>
+      <md-select flex ng-model="ctrl.language" ng-change="ctrl.getData()">
+        <md-option ng-repeat="lang in ctrl.languages" value="{{lang.id}}">
+          <md-icon md-svg-src="{{lang.icon}}"></md-icon>{{lang.name}}</md-option>
+      </md-select>
+    </div>
+  </md-toolbar>
   <md-tabs md-dynamic-height md-border-bottom>
     <md-tab label="datos básicos" md-on-select="ctrl.selectTab(null)">
       <md-content layout-spacing="center">
         <md-toolbar class="md-hue-1" layout="row" flex>
           <span flex></span>
-          <md-button class="md-accent md-raised" ng-click="ctrl.sendMessage()" ng-disabled="!ctrl.data">Enviar Mensaje</md-button>
+          <md-button class="md-accent md-raised" ng-click="ctrl.sendMessage()" ng-disabled="ctrl.form.$invalid">Enviar Mensaje</md-button>
           <md-button class="md-accent md-raised" ng-click="ctrl.saveItem()" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
         </md-toolbar>
         <form class="md-padding" name="ctrl.form" layout="row" flex>
@@ -36,95 +45,64 @@
           <i class="material-icons">error_outline</i>
           <span>&nbsp; Todos los campos son necesarios</span>
         </p>
-
       </md-content>
     </md-tab>
-    <md-tab label="Representante">
-      <md-content>
-        <div layout="column" flex layout-padding>
-          <md-autocomplete md-items="item in ctrl.entities.user.data" 
-            md-item-text="item.name + ' ' + item.secondname + ' '+item.lastname + ' '+item.secondlastname + ' <' + item.email +'> '"
-            md-selected-item="ctrl.entities.user.selectedUser" 
-            md-search-text-change="ctrl.entities.user.search()" 
-            md-search-text="ctrl.entities.user.query.filter"
-            md-select-on-match="true" 
-            md-input-name="representant"
-            md-autofocus="true" 
-            md-autoselect="true" 
-            placeholder="Seleccione un Representante">
-            <md-item-template>
-              <span md-highlight-text="ctrl.entities.user.query.filter" md-highlight-flags="^i">{{item.name}} - {{item.email}}</span>
-            </md-item-template>
-          </md-autocomplete>
-          <md-card>
-            <div layout="row" layout-wrap class="input-row" layout-padding flex>
-              <md-input-container flex="50">
-                <label>Nombre</label>
-                <input type="text" ng-model="ctrl.entities.user.selectedUser.name" ng-disabled="true">
-              </md-input-container>
-              <md-input-container flex="50">
-                <label>Segundo Nombre</label>
-                <input type="text" ng-model="ctrl.entities.user.selectedUser.secondname" ng-disabled="true">
-              </md-input-container>
-              <md-input-container flex="50">
-                <label>Apellido</label>
-                <input type="text" ng-model="ctrl.entities.user.selectedUser.lastname" ng-disabled="true">
-              </md-input-container>
-              <md-input-container flex="50">
-                <label>Segundo Apellido</label>
-                <input type="text" ng-model="ctrl.entities.user.selectedUser.secondlastname" ng-disabled="true">
-              </md-input-container>
-              <md-input-container flex="50">
-                  <label>Correo electrónico</label>
-                  <input type="text" ng-model="ctrl.entities.user.selectedUser.email" ng-disabled="true">
-                </md-input-container>
-                <md-input-container flex="50">
-                    <label>Célular</label>
-                    <input type="text" ng-model="ctrl.entities.user.selectedUser.mobile" ng-disabled="true">
-                  </md-input-container>
-            </div>
-            <div layout="row" layout-align="center">
-              <md-button class="md-primary md-raised" 
-              ng-disabled="ctrl.entities.user.originalUser == ctrl.entities.user.selectedUser.id"
-              ng-click="ctrl.updateRepresentant()"
-              >Actualizar</md-button>
-            </div>
-          </md-card>
-        </div>
-      </md-content>
-    </md-tab>
-    <md-tab label="Servicios">
+    <md-tab label="Categorías">
       <md-content>
         <div layout="column" flex>
-          <table md-table ng-model="ctrl.entities.service.selected" md-progress="ctrl.entities.service.promise">
+          <table md-table md-row-select multiple ng-model="ctrl.entities.category.selected" md-progress="ctrl.entities.category.promise">
             <thead md-head>
               <tr md-row>
-                <th md-column ng-repeat="f in ctrl.entities.service.table.fields" ng-if="f.name !== relation.rightKey">
+                <th md-column ng-repeat="f in ctrl.entities.category.table.fields" ng-if="f.name !== relation.rightKey">
                   <span>{{f.name | translate}}</span>
                 </th>
               </tr>
             </thead>
             <tbody md-body>
-              <tr md-row md-auto-select ng-repeat="item in ctrl.entities.service.data">
-                <td md-cell ng-repeat="f in ctrl.entities.service.table.fields" ng-if="f.name !== relation.rightKey">
+              <tr md-row md-on-select="ctrl.select" md-on-deselect="ctrl.unselect" md-select="item[ctrl.entities.category.table.defaultSort]"
+                md-auto-select ng-repeat="item in ctrl.entities.category.data">
+                <td md-cell ng-repeat="f in ctrl.entities.category.table.fields" ng-click="ctrl.editField($event,item,f,relation)" ng-if="f.name !== relation.rightKey">
                   <span ng-if="f.type !== 'link'">{{ item[f.name] }}</span>
                   <span ng-if="f.type === 'link'">{{ item[f.table][f.foreign_name] }}</span>
                 </td>
               </tr>
             </tbody>
           </table>
-          <md-table-pagination md-limit="ctrl.entities.service.query.limit" md-limit-options="[10, 15, 20]" md-page="ctrl.entities.service.query.page"
-            md-label="{page: 'Página:', rowsPerPage: 'Filas por página:', of: 'de'}" md-total="{{ctrl.entities.service.total_results}}"
-            md-on-paginate="ctrl.entities.service.getData" md-page-select></md-table-pagination>
+          <md-table-pagination md-limit="ctrl.entities.category.query.limit" md-limit-options="[10, 15, 20]" md-page="ctrl.entities.category.query.page"
+            md-label="{page: 'Página:', rowsPerPage: 'Filas por página:', of: 'de'}" md-total="{{ctrl.entities.category.total_results}}"
+            md-on-paginate="ctrl.entities.category.getData" md-page-select></md-table-pagination>
         </div>
       </md-content>
+    </md-tab>
+    <md-tab label="Temáticas de Interés">
+      <div layout="column" flex>
+        <table md-table md-row-select multiple ng-model="ctrl.entities.questiontopic.selected" md-progress="ctrl.entities.questiontopic.promise">
+          <thead md-head>
+            <tr md-row>
+              <th md-column ng-repeat="f in ctrl.entities.questiontopic.table.fields" ng-if="f.name !== relation.rightKey">
+                <span>{{f.name | translate}}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody md-body>
+            <tr md-row md-on-select="ctrl.select" md-on-deselect="ctrl.unselect" md-select="item[ctrl.entities.questiontopic.table.defaultSort]"
+              md-auto-select ng-repeat="item in ctrl.entities.questiontopic.data">
+              <td md-cell ng-repeat="f in ctrl.entities.questiontopic.table.fields" ng-click="ctrl.editField($event,item,f,relation)" ng-if="f.name !== relation.rightKey">
+                <span ng-if="f.type !== 'link'">{{ item[f.name] }}</span>
+                <span ng-if="f.type === 'link'">{{ item[f.table][f.foreign_name] }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <md-table-pagination md-limit="ctrl.entities.questiontopic.query.limit" md-limit-options="[10, 15, 20]" md-page="ctrl.entities.questiontopic.query.page"
+          md-label="{page: 'Página:', rowsPerPage: 'Filas por página:', of: 'de'}" md-total="{{ctrl.entities.questiontopic.total_results}}"
+          md-on-paginate="ctrl.entities.questiontopic.getData" md-page-select></md-table-pagination>
+      </div>
     </md-tab>
     <md-tab label="Puntos">
       <md-toolbar class="md-hue-1" layout="row" flex>
         <span flex></span>
-          <md-button 
-          class="md-raised md-accent" 
-          ng-click="ctrl.createPoints($event)">AGREGAR PUNTOS</md-button>
+        <md-button class="md-raised md-accent" ng-click="ctrl.createPoints($event)">AGREGAR PUNTOS</md-button>
       </md-toolbar>
       <md-content>
         <div layout="column" flex>
@@ -151,7 +129,59 @@
         </div>
       </md-content>
     </md-tab>
-    <!--md-tab label="{{relation.name | translate}}" md-on-select="ctrl.selectTab(relation)" ng-if="relation.type !== '1-1' && ctrl.data[ctrl.currentEntity.defaultSort]"
+    <md-tab label="Requisitos">
+      <md-content>
+        <div layout="column" flex>
+          <table md-table md-progress="ctrl.entities.evaluation_request.promise">
+              <thead md-head>
+                  <tr md-row>
+                    <th md-column>
+                      <span> - </span>
+                    </th>
+                    <th md-column>
+                      <span>Requisito</span>
+                    </th>
+                    <th md-column>
+                      <span>Servicio</span>
+                    </th>
+                    <th md-column>
+                      <md-select multiple="true" ng-model="ctrl.entities.evaluation_request.query.filters.id_request_status" placeholder="Estado"
+                        ng-change="ctrl.entities.evaluation_request.getData()">
+                        <md-option ng-repeat="o in ctrl.entities.evaluation_request.options.id_request_status" value="{{o.id}}">{{o.name}}</md-option>
+                      </md-select>
+                    </th>
+                    <th md-column>
+                      <span>Tiempo Limite</span>
+                    </th>
+                  </tr>
+                </thead>
+            <tbody md-body>
+              <tr md-row ng-repeat="item in ctrl.entities.evaluation_request.data" >
+                <td md-cell>
+                    <md-icon class="material-icons" ng-if="item.alert_time < ctrl.today && item.status.id < 7">warning</md-icon>
+                </td>
+                <td md-cell style="max-width:200px">
+                    <span>{{ item.question.id }} - {{item.question.text}}</span>
+                </td>
+                <td md-cell style="max-width:200px">
+                    <span>{{ item.service.id }} - {{ item.service.name }}</span>
+                </td>
+                <td md-cell>
+                    <span>{{ item.status.name }}</span>
+                </td>
+                <td md-cell>
+                    <span>{{ item.end_time | date }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <md-table-pagination md-limit="ctrl.entities.evaluation_request.query.limit" md-limit-options="[10, 15, 20]" md-page="ctrl.entities.evaluation_request.query.page"
+            md-label="{page: 'Página:', rowsPerPage: 'Filas por página:', of: 'de'}" md-total="{{ctrl.entities.evaluation_request.total_results}}"
+            md-on-paginate="ctrl.entities.evaluation_request.getData" md-page-select></md-table-pagination>
+        </div>
+      </md-content>
+    </md-tab>
+    <!--md-tab label="{{relation.name | translate}}" md-on-select="ctrl.selectTab(relation)" ng-if="relation.name !== 'institutions' && relation.type !== '1-1' && ctrl.data[ctrl.currentEntity.defaultSort]"
       ng-repeat="relation in ctrl.currentEntity.relations">
       <md-content class="md-padding" layout-spacing="center">
         <!-- Relation 1-n & n-n ->

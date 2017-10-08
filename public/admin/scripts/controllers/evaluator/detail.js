@@ -9,19 +9,25 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 	ctrl.options = {};
 	ctrl.page = page;
 	ctrl.tab = null;
+	ctrl.today = new Date()
 
 	ctrl.currentEntity = dmt.entities[page.entity || page.parent.entity];
 	ctrl.currentEntity.endpoint = '/api/configuration/user'
 
 	ctrl.currentEntity.relations.forEach((relation) => {
+		if(relation.entity == 'points'){
+			ctrl.points_relation = relation
+		}
 		ctrl.entities[relation.entity] = {
 			filter: {
 				options: {
 					debounce: 500
 				}
 			},
+			filters:{},
 			bookmark: null,
 			selected: [],
+			options:{},
 			query: {
 				filter: '',
 				limit: 10,
@@ -46,6 +52,7 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 				},
 			}
 		}
+
 	})
 
 	ctrl.select = function (selection) {
@@ -76,7 +83,25 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 	ctrl.selectTab = function (tab) {
 		ctrl.tab = tab
 	}
-
+	ctrl.createPoints = function(event){
+		$mdDialog.show({
+			clickOutsideToClose: true,
+			controller: 'addEvaluatorPointsController',
+			controllerAs: 'ctrl',
+			focusOnOpen: false,
+			targetEvent: event,
+			templateUrl: 'views/entity/add-points.html',
+			locals: {
+				entity: ctrl.points_relation.entity,
+				lang: ctrl.language,
+				relation: ctrl.points_relation,
+				parent: {
+					data: ctrl.data,
+					entity: ctrl.currentEntity
+				}
+			},
+		}).then(ctrl.getData);
+	}
 	ctrl.create = function (event, relation) {
 		let entity = dmt.entities[relation.entity];
 		$mdDialog.show({
@@ -197,6 +222,12 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 				}
 			})
 		}
+		for (let key in ctrl.entities[relation.entity].query.filters) {
+			ctrl.entities[relation.entity].query.filters[key].forEach((value) => {
+						str.push("filter_field=" + key);
+						str.push("filter_value=" + value);
+			})
+	}
 		if (relation.rightKey) { //1-n
 			str.push("filter_field=" + relation.rightKey);
 			str.push("filter_value=" + $routeParams.id);
@@ -245,14 +276,34 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 					},
 					{
 						"name": "id_motives",
-						"type": "int",
+						"type": "link",
+						"table": "motives",
 						"disabled": true,
+						"key": false,
+						"foreign_key":"id",
+						"foreign_name":"name"
+					},
+					{
+						"name": "justification",
+						"type": "string",
+						"disabled": false,
 						"key": false
-					}
+					},
 				]
 			}
 			ctrl.entities[relation.entity].table = _table;
 			ctrl.entities[relation.entity].data = response.data.data;
+			ctrl.entities[relation.entity].data.forEach((item)=>{
+				for (let p in table.fields){
+					if (table.fields[p].type === "boolean") {
+						item[table.fields[p].name] = item[table.fields[p].name] === 1;
+					}
+					if (table.fields[p].type === "datetime" ||
+					table.fields[p].type === "timestamp") {
+						item[table.fields[p].name] = new Date(item[table.fields[p].name]);
+					}
+				}		
+			})
 			ctrl.entities[relation.entity].total_results = response.data.total_results
 		})
 	}
@@ -262,7 +313,8 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 			if (ctrl.currentEntity.fields[p].type === "boolean") {
 				ctrl.data[ctrl.currentEntity.fields[p].name] = ctrl.data[ctrl.currentEntity.fields[p].name] === 1;
 			}
-			if (ctrl.currentEntity.fields[p].type === "datetime") {
+			if (ctrl.currentEntity.fields[p].type === "datetime" ||
+			ctrl.currentEntity.fields[p].type === "timestamp") {
 				ctrl.data[ctrl.currentEntity.fields[p].name] = new Date(ctrl.data[ctrl.currentEntity.fields[p].name]);
 			}
 		}
@@ -369,6 +421,7 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 		}
 		$http.get(base+'?limit=5000').then(function (results) {
 			ctrl.options[item.name] = results.data.data;
+			
 		});
 	}
 	var opts = [];
@@ -378,7 +431,31 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 			opts.push(f);
 		}
 	}
+	
 	opts.forEach(addOptions);
+
+	function addEntityOptions(item, index) {
+		var entity = dmt.entities[item.entity]
+		var field = item.f
+		var base = dmt.entities[field.table].endpoint;
+		if (!base) {
+			base = ctrl.currentEntity.endpoint;
+		}
+		$http.get(base+'?limit=5000').then(function (results) {
+				ctrl.entities[item.entity].options[field.name] = results.data.data
+		});
+	}
+	let eopts = []
+	for(var name in this.entities){
+		for (var i in dmt.entities[name].fields) {
+			var f = dmt.entities[name].fields[i];
+			if (f.type === 'link') {
+				eopts.push({f:f,entity:name});
+			}
+		}
+	}
+	eopts.forEach(addEntityOptions);
+
 	if (ctrl.currentEntity.filters) {
 		ctrl.currentEntity.filters.forEach(addFilters);
 	}

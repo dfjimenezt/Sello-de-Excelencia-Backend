@@ -250,10 +250,19 @@ angular.module('dmt-back').controller('detailItemUserController', function ($mdD
 					},
 					{
 						"name": "id_motives",
-						"type": "int",
+						"type": "link",
+						"table": "motives",
 						"disabled": true,
+						"key": false,
+						"foreign_key":"id",
+						"foreign_name":"name"
+					},
+					{
+						"name": "justification",
+						"type": "string",
+						"disabled": false,
 						"key": false
-					}
+					},
 				]
 			}
 			ctrl.entities[relation.entity].table = _table;
