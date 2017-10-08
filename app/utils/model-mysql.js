@@ -1,6 +1,6 @@
 var config = require('../../config.json')
 var verbose = config.verbose === true
-
+var emiter = require('../events/emiter.js').instance
 var mysql = require('mysql')
 
 var dbConf = null;
@@ -29,9 +29,6 @@ var MysqlModel = function (info) {
         key = f.Field
       }
     })
-    if(!key){
-      return info.fields[0].Field
-    }
     return key
   }
 
@@ -47,6 +44,9 @@ var MysqlModel = function (info) {
   this.getByUid = function (uid) {
     var connection = mysql.createConnection(dbConf)
     let key = this.getPrimaryKey()
+    if(!key){
+      key = info.fields[0].Field
+    }
     var query = 'SELECT * FROM ' + info.table + ' AS list WHERE list.'+key+' = ' + connection.escape(uid) + ''
     return resolveQuery(query, connection)
   }
@@ -80,6 +80,9 @@ var MysqlModel = function (info) {
     params.filter_fields = params.filter_fields || []
     params.filter_values = params.filter_values || []
     params.order = params.order || this.getPrimaryKey()
+    if(!params.order){
+      params.order = info.fields[0].Field
+    }
     params.limit = params.limit || 200
     params.page = params.page || 1
     params._joins = params._joins || "OR"
@@ -111,6 +114,9 @@ var MysqlModel = function (info) {
       search += ")"
     }
     function resolveEqual(connection, value) {
+      if(typeof value == 'number'){
+				return '= ' + connection.escape(value);
+			}
 			let array = value.split(" ");
 			if (array.length > 1) {
 				return array[0] + connection.escape(array[1]);
@@ -204,7 +210,14 @@ var MysqlModel = function (info) {
     queryFields = queryFields.slice(0, -1) + ')'
     queryValues = queryValues.slice(0, -1) + ')'
     var query = 'INSERT INTO ' + info.table + ' ' + queryFields + ' VALUES ' + queryValues + ''
-		return resolveQuery(query, connection)
+		return resolveQuery(query, connection).then((result)=>{
+      let key = this.getPrimaryKey()
+      if(key){
+        body[key] = result.insertId
+      }
+      emiter.$emit(info.table+'.created',body)
+      return result
+    })
   }
 
   this.update = function (body, condition) {
@@ -219,11 +232,23 @@ var MysqlModel = function (info) {
     }
     queryUpdate = queryUpdate.slice(0, -1)
     queryCondition = queryCondition.slice(0, -4)
+    var query0 = 'SELECT * FROM ' + info.table + ' AS list WHERE ' + queryCondition + ''
     var query1 = 'UPDATE ' + info.table + ' SET ' + queryUpdate + ' WHERE ' + queryCondition + ''
     var query2 = 'SELECT * FROM ' + info.table + ' AS list WHERE ' + queryCondition + ''
-		return resolveQuery(query1, connection).then(() => {
+
+    let old = null
+    return resolveQuery(query0,connection)
+    .then((results)=>{
+      old = results
+      connection = mysql.createConnection(dbConf)
+      return resolveQuery(query1, connection)
+    })
+    .then(() => {
 			connection = mysql.createConnection(dbConf)
 			return resolveQuery(query2, connection)
+    }).then((results)=>{
+      emiter.$emit(info.table+'.updated',old,results)
+      return results
     })
   }
 
@@ -234,8 +259,14 @@ var MysqlModel = function (info) {
       queryCondition += i + ' = ' + connection.escape(condition[i]) + ' AND '
     }
     queryCondition = queryCondition.slice(0, -4)
-    var query = 'DELETE FROM ' + info.table + ' WHERE ' + queryCondition + ''
-    return resolveQuery(query, connection)
+    var query0 = 'SELECT * FROM ' + info.table + ' WHERE ' + queryCondition + ''
+    var query1 = 'DELETE FROM ' + info.table + ' WHERE ' + queryCondition + ''
+    let old = null
+    return resolveQuery(query0, connection).then((results)=>{
+      emiter.$emit(info.table+'.deleted',old)
+      connection = mysql.createConnection(dbConf)
+      return resolveQuery(query1, connection)
+    })
   }
 
   this.customQuery = function (query) {

@@ -15,7 +15,7 @@ var Events = function () {
 	emiter.on('requisitie.calification', (user, requisite, status) => {
 
 	})
-	emiter.on('user_answer.updated', (user, old, body) => {
+	emiter.on('user_answer.updated', (old, body) => {
 		if (old.id_status == body.id_status) {
 			return
 		}
@@ -51,12 +51,17 @@ var Events = function () {
 						}else{
 							ready = false
 						}
+
 					}
+					if(ready){
+						return service.update({ current_status: CONSTANTS.SERVICE.EVALUACION }, { id: old.id_service })
+					}
+					return 
 				})
 			}
 		})
 	})
-	emiter.on('evaluation_request.updated', (user, old, body) => {
+	emiter.on('evaluation_request.updated', (old, body) => {
 		if (old.id_request_status != body.id_request_status) {
 			let request_status = require('../models/request_status.js')()
 			let model_user = require('../models/user.js')()
@@ -95,7 +100,7 @@ var Events = function () {
 						evaluator_template = '<p>Has solicitado más información a la entidad.</p><p>Gracias por evaluar</p>'
 						entity_template = '<p>Han solicitado más información sobre tu requisito.</p><p>Gracias por participar</p>'
 						entity_template = '<p>Se ha rechazado un requisito</p>'
-						model_points.addPoints(user.id, 7, '', old.id_user)
+						model_points.addPoints(_evaluator.id, 7, '', old.id_user)
 					}
 					//6 Retroalimentación
 					if (body.id_request_status == 6) {
@@ -107,14 +112,14 @@ var Events = function () {
 					if (body.id_request_status == 7) {//add points
 						evaluator_template = '<p>Has calificado un requisito como CUMPLE.</p><p>Gracias por evaluar</p>'
 						entity_template = '<p>Han aprobado tu requisito.</p><p>Gracias por participar</p>'
-						model_points.addPoints(user.id, 1, 'Calificación de Requisito')
+						model_points.addPoints(_evaluator.id, 1, 'Calificación de Requisito')
 						model_points.addPoints(_entity.id, 7, 'Requisito Cumplido')
 					}
 					//8 No Cumple
 					if (body.id_request_status == 8) {//add points
 						evaluator_template = '<p>Has calificado un requisito como NO CUMPLE. Agradecemos tu retroalimentación a la entidad.<p></p>Gracias por tu evaluación</p>'
 						entity_template = '<p>Han Rechazado un requisito de tu postulación</p><p>Gracias por participar en el Sello de Excelencia</p>'
-						model_points.addPoints(user.id, 1, 'Calificación de Requisito')
+						model_points.addPoints(_evaluator.id, 1, 'Calificación de Requisito')
 						model_points.addPoints(_entity.id, 7, 'Requisito No Cumplido')
 					}
 
@@ -282,11 +287,7 @@ var Events = function () {
 						<p>Hola el servicio:</p>
 						<p>${old.id} - ${old.name}</p>
 						<p>Está disponible para verificación</p>`
-					)
-					model_user_answer.update({ id_status: CONSTANTS.SERVICE.VERIFICACION }, { id_service: body.id })
-				}
-				if (body.current_status == CONSTANTS.SERVICE.VERIFICACION) { // verification
-
+					)					
 				}
 				if (body.current_status == CONSTANTS.SERVICE.EVALUACION) {
 					model_entity_service.asignate(body).then((evaluations)=>{

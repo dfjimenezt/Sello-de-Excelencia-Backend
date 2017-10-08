@@ -618,17 +618,17 @@ var question_controller = function () {
 	 */
 	var create_chats = function (user, body) {
 		body.id_sender = user.id
-		return model_entity_evaluation_request.getByUid('' + body.id_evaluation_request).then((result) => {
+		return model_entity_evaluation_request.getByUid(body.id_evaluation_request).then((result) => {
 			let request = result.data[0]
 			if (request.id_user != body.id_sender) { //entity
 				return request.id_user
 			} else {
-				return model_entity_user_answer.getByUid('' + request.id_answer).then((result) => {
+				return model_entity_user_answer.getByUid(request.id_answer).then((result) => {
 					return result.data[0].id_user
 				})
 			}
 		}).then((id_user) => {
-			return model_user.getByUid('' + id_user)
+			return model_user.getByUid(id_user)
 		}).then((result) => {
 			emiter.emit('chat.created',result[0])
 			return model_chats.create(body)
@@ -777,15 +777,10 @@ var question_controller = function () {
 					return model_entity_user_answer.update(body, { id: body.id })
 				})
 		} else {
-			return model_entity_user_answer.getByUid("" + body.id)
-			.then((result) => {
-				let _old = result.data[0]
-				emiter.emit('user_answer.updated',user,_old,body)
-				delete body.id_media
-				delete body.id_order
-				delete body.datetime
-				return model_entity_user_answer.update(body, { id: body.id })
-			})
+			delete body.id_media
+			delete body.id_order
+			delete body.datetime
+			return model_entity_user_answer.update(body, { id: body.id })
 		}
 	}
 	/**
@@ -835,7 +830,7 @@ var question_controller = function () {
 		let _evaluator = null
 		let _entity = null
 		let _answer = null
-		return model_entity_evaluation_request.getByUid('' + body.id)
+		return model_entity_evaluation_request.getByUid( body.id)
 		.then((result)=>{
 			let old = result.data[0]
 			if (user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST) == -1) {
@@ -843,7 +838,6 @@ var question_controller = function () {
 					throw utiles.informError(401)
 				}
 			}
-			emiter.emit('evaluation_request.updated',user,old,body)
 			return model_entity_evaluation_request.update(body, { id: body.id })
 		})
 	}

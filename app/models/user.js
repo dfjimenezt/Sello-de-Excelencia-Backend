@@ -14,7 +14,7 @@ var User = function () {
 	}]
 	BaseModel.apply(this, params)
 	this.getAdmin = function(){
-		let q = `SELECT u.id from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
+		let q = `SELECT * from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
 		return this.customQuery(q)
 	}
 	this.getUser = function(email){

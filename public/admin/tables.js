@@ -1566,19 +1566,7 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "points",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
 				"name": "active",
-				"type": "boolean",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "verified",
 				"type": "boolean",
 				"disabled": false,
 				"key": false

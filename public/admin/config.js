@@ -158,11 +158,59 @@ dmt.config = [
 		path: "postulaciones",
 		pages: [
 			{
+				name: "En Postulación",
+				path: "postulacion",
+				entity: "service",
+				filters:{
+					'current_status':[10]
+				},
+				controller: "listItemServiceController",
+				templateUrl: "views/service/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					}
+				]
+			},
+			{
 				name: "Verificación",
 				path: "verificacion",
 				entity: "service",
 				filters:{
 					'current_status':[1]
+				},
+				controller: "listItemServiceController",
+				templateUrl: "views/service/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemServiceController",
+						templateUrl: "views/service/detail.html"
+					}
+				]
+			},
+			{
+				name: "En Evaluación",
+				path: "evaluación",
+				entity: "service",
+				filters:{
+					'current_status':[5]
 				},
 				controller: "listItemServiceController",
 				templateUrl: "views/service/list.html",

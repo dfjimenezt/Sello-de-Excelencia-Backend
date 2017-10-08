@@ -375,16 +375,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		
-		return model_entity_service.getByUid("" + body.id).then((_old)=>{
-			let old = _old.data[0]
-			emiter.emit('service.updated',old,body)
-			return model_entity_service.update(body, { id: body.id })
-		})
-		return model_user.getAdmin().then((result)=>{
-			_admin = result[0]
-			return model_entity_service.getByUid("" + body.id)
-		})
+		return model_entity_service.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/service/category Update category information

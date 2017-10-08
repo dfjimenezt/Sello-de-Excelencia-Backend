@@ -1,6 +1,6 @@
 var config = require('../../config.json')
 var verbose = config.verbose === true
-
+var emiter = require('../events/emiter.js').instance
 var mysql = require('mysql')
 
 var dbConf = null;
@@ -37,7 +37,7 @@ var EntityModel = function (info) {
 		} else {
 			table = dmt.tables[name]
 			if (!table) {
-				console.log(name)
+				console.error(name)
 			}
 			table.name = name
 			return table
@@ -123,7 +123,6 @@ var EntityModel = function (info) {
 				langs.forEach((l) => {
 					query += generateGetQuery(getBase(l.id), l.id)
 				})
-				console.log(query)
 				return this.customQuery(query)
 			})
 		} else {
@@ -158,14 +157,17 @@ var EntityModel = function (info) {
 		return resolveQuery(query, connection)
 	}
 	this.getByParams = function (params) {
+
 		var connection = mysql.createConnection(dbConf)
-		var queryGet = ''
-		for (var i in params) {
-			queryGet += '`list`.`' + i + '` = ' + connection.escape(params[i]) + ' AND '
+		let _params = {
+			filter_fields: [],
+			filter_values: [],
 		}
-		queryGet = queryGet.slice(0, -4)
-		var query = 'SELECT * FROM `' + info.table + '` AS list WHERE ' + queryGet + ''
-		return resolveQuery(query, connection)
+		for (var i in params){
+			_params.filter_fields.push(i)
+			_params.filter_values.push(params[i])	
+		}
+		return this.getFiltered(_params)
 	}
 	/**
 			 * From row to json
@@ -241,6 +243,9 @@ var EntityModel = function (info) {
 			params.fields = [params.fields]
 		}
 		function resolveEqual(connection, value) {
+			if(typeof value == 'number'){
+				return '= ' + connection.escape(value);
+			}
 			let array = value.split(" ");
 			if (array.length > 1) {
 				return array[0] + connection.escape(array[1]);
@@ -509,7 +514,7 @@ var EntityModel = function (info) {
 		var query = 'INSERT INTO `' + table.name + '` ' + queryFields + ' VALUES ' + queryValues + ''
 		return query
 	}
-	function updateTable(table, data, connection) {
+	function updateTable(table, data, connection, condition) {
 		var queryValues = ''
 		var queryWhere = '('
 		table.fields.forEach((f) => {
@@ -520,10 +525,15 @@ var EntityModel = function (info) {
 				return
 			}
 			queryValues += '`' + f.name + '`' + '=' + connection.escape(data[f.name]) + ','
-			if (f.key) {
+			if (f.key && !condition) {
 				queryWhere += '`' + f.name + '`=' + connection.escape(data[f.name]) + ' AND '
 			}
 		})
+		if(condition){
+			for (var j in condition) {
+				queryWhere += '`' + j + '`=' + connection.escape(condition[j]) + ' AND '
+			}	
+		}
 		queryValues = queryValues.slice(0, -1)
 		queryWhere = queryWhere.slice(0, -5) + ')'
 		var query = 'UPDATE `' + table.name + '` SET ' + queryValues + ' WHERE ' + queryWhere
@@ -561,6 +571,7 @@ var EntityModel = function (info) {
 				return
 				//throw utiles.informError(300)
 			}
+			emiter.$emit(info.entity+'.crated',body)
 		}).then(() => {
 			return this.updateView()
 		})
@@ -588,11 +599,15 @@ var EntityModel = function (info) {
 		return query
 	}
 	this.update = function (body, condition) {
-		let connection = mysql.createConnection(dbConf)
 		let entity = dmt.entities[info.entity]
 		let table = getTable(info.entity)
-
-		return resolveQuery(updateTable(table, body, connection), connection).then(() => {
+		let old = null
+		return this.getByParams(condition).then((result)=>{
+			old = result.data[0]
+			let connection = mysql.createConnection(dbConf)
+			return resolveQuery(updateTable(table, body, connection, condition), connection)
+		})
+		.then((results) => {
 			if (entity.translate) {
 				connection = mysql.createConnection(dbConf)
 				return resolveQuery(updateTranslation(body, connection), connection)
@@ -601,46 +616,7 @@ var EntityModel = function (info) {
 				//throw utiles.informError(300)
 			}
 		}).then(() => {
-			return
-			if (entity.relations) {
-				let key = body[getTable(info.entity).defaultSort]
-				entity.relations.forEach((relation) => {
-					if (!body[relation.name]) {
-						return
-					}
-					let relationdata = body[relation.name]
-					let relationtable = getTable(relation.entity || relation.table)
-					if (typeof relationdata === "array") {
-						let intermediates = {}
-						relationdata.forEach((data) => {
-							if (relationdata[relationtable.defaultSort]) {
-								return updateTable(relationtable, data).then(() => {
-									if (relation.intermediate) {
-										intermediates[key].push(data[relation.rightKey])
-									}
-								})
-							} else {
-								return insertIntoTable(relationtable, data).then((result) => {
-									if (relation.intermediate) {
-										intermediates[key].push(result.insertId)
-									}
-								})
-							}
-						})
-						updateIntermediates(relation.intermediate, key, intermediates)
-					} else { //
-						if (relationdata[relationtable.defaultSort]) {
-							//update
-							return updateTable(relationtable, data)
-						} else {
-							return insertIntoTable(relationtable, data)
-						}
-					}
-				})
-			} else {
-				return
-			}
-		}).then(() => {
+			emiter.$emit(info.entity+'.updated',old,body)
 			this.updateView()
 		})
 	}
@@ -658,8 +634,13 @@ var EntityModel = function (info) {
 			queryCondition += i + ' = ' + connection.escape(data[i]) + ' AND '
 		}
 		queryCondition = queryCondition.slice(0, -4)
-		var query = 'DELETE FROM ' + info.table + ' WHERE ' + queryCondition + ''
-		return resolveQuery(query, connection).then(() => {
+		var query0 = 'SELECT * FROM ' + info.table + ' WHERE ' + queryCondition + ''
+		var query1 = 'DELETE FROM ' + info.table + ' WHERE ' + queryCondition + ''
+		return resolveQuery(query0, connection).then((results)=>{
+      emiter.$emit(info.entity+'.deleted',old)
+      connection = mysql.createConnection(dbConf)
+      return resolveQuery(query1, connection)
+    }).then(() => {
 			return updateView()
 		})
 	}

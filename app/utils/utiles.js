@@ -80,6 +80,9 @@ module.exports = {
   },
   sendEmail: function (to, cc, bcc, subject, body, attachment) {
     return new Promise((resolve, reject) => {
+      if(!to){
+        reject("no receipt")
+      }
       var transporter = Nodemailer.createTransport(Config.smtp.protocol + '://' + Config.smtp.sender + ':' + Config.smtp.password + '@' + Config.smtp.server)
       var mailOptions = {
         from: Config.smtp.from, // sender address

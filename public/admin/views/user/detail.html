@@ -47,10 +47,10 @@
 
       </md-content>
     </md-tab>
-    <md-tab label="{{relation.name | translate}}" md-on-select="ctrl.selectTab(relation)" ng-if="relation.name !== 'institutions' && relation.type !== '1-1' && ctrl.data[ctrl.currentEntity.defaultSort]"
+    <!--md-tab label="{{relation.name | translate}}" md-on-select="ctrl.selectTab(relation)" ng-if="relation.name !== 'institutions' && relation.type !== '1-1' && ctrl.data[ctrl.currentEntity.defaultSort]"
       ng-repeat="relation in ctrl.currentEntity.relations">
       <md-content class="md-padding" layout-spacing="center">
-        <!-- Relation 1-n & n-n -->
+        <!-- Relation 1-n & n-n ->
         <md-toolbar class="md-table-toolbar md-default" ng-hide="(ctrl.entities[relation.entity].selected.length && relation.type === '1-n') || ctrl.entities[relation.entity].filter.show">
           <div class="md-toolbar-tools">
             <div flex></div>
@@ -107,6 +107,6 @@
         </div>
 
       </md-content>
-    </md-tab>
+    </md-tab-->
   </md-tabs>
 </div>
