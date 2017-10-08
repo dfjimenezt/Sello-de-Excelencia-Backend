@@ -72,16 +72,10 @@ dmt.config = [
 				},
 				pages: [
 					{
-						name: "add",
-						path: "add",
-						controller: "detailItemEvaluatorController",
-						templateUrl: "views/evaluator/detail.html"
-					},
-					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemEvaluatorController",
-						templateUrl: "views/evaluator/detail.html"
+						controller: "detailItemRepresentantController",
+						templateUrl: "views/representant/detail.html"
 					}
 				]
 			},
