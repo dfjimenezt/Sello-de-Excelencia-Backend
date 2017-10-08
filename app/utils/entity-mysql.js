@@ -571,7 +571,7 @@ var EntityModel = function (info) {
 				return
 				//throw utiles.informError(300)
 			}
-			emiter.$emit(info.entity+'.crated',body)
+			emiter.emit(info.entity+'.crated',body)
 		}).then(() => {
 			return this.updateView()
 		})
@@ -616,7 +616,7 @@ var EntityModel = function (info) {
 				//throw utiles.informError(300)
 			}
 		}).then(() => {
-			emiter.$emit(info.entity+'.updated',old,body)
+			emiter.emit(info.entity+'.updated',old,body)
 			this.updateView()
 		})
 	}
@@ -637,7 +637,7 @@ var EntityModel = function (info) {
 		var query0 = 'SELECT * FROM ' + info.table + ' WHERE ' + queryCondition + ''
 		var query1 = 'DELETE FROM ' + info.table + ' WHERE ' + queryCondition + ''
 		return resolveQuery(query0, connection).then((results)=>{
-      emiter.$emit(info.entity+'.deleted',old)
+      emiter.emit(info.entity+'.deleted',old)
       connection = mysql.createConnection(dbConf)
       return resolveQuery(query1, connection)
     }).then(() => {

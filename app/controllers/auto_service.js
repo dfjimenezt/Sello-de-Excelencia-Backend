@@ -335,7 +335,7 @@ var service_controller = function () {
 				return
 			}).then(() => {
 				return model_entity_service_comment.create(body).then((avg) => {
-					emiter.on('service.rated',body.id_service,avg);
+					emiter.emit('service.rated',body.id_service,avg);
 				})
 			})
 

@@ -215,7 +215,7 @@ var MysqlModel = function (info) {
       if(key){
         body[key] = result.insertId
       }
-      emiter.$emit(info.table+'.created',body)
+      emiter.emit(info.table+'.created',body)
       return result
     })
   }
@@ -247,7 +247,7 @@ var MysqlModel = function (info) {
 			connection = mysql.createConnection(dbConf)
 			return resolveQuery(query2, connection)
     }).then((results)=>{
-      emiter.$emit(info.table+'.updated',old,results)
+      emiter.emit(info.table+'.updated',old,results)
       return results
     })
   }
@@ -263,7 +263,7 @@ var MysqlModel = function (info) {
     var query1 = 'DELETE FROM ' + info.table + ' WHERE ' + queryCondition + ''
     let old = null
     return resolveQuery(query0, connection).then((results)=>{
-      emiter.$emit(info.table+'.deleted',old)
+      emiter.emit(info.table+'.deleted',old)
       connection = mysql.createConnection(dbConf)
       return resolveQuery(query1, connection)
     })
