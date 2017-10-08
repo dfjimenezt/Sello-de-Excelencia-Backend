@@ -332,14 +332,10 @@ var service_controller = function () {
 				if (results.length > 0) {
 					throw utiles.informError(400)
 				}
-				return
-			}).then(() => {
-				return model_entity_service_comment.create(body).then((avg) => {
-					emiter.emit('service.rated',body.id_service,avg);
-				})
+				return model_entity_service_comment.create(body)
+			}).then((avg) => {
+				emiter.emit('service.rated',body.id_service,avg);
 			})
-
-
 	}
 	postMap.set('service', { method: create_entity_service, permits: Permissions.POSTULATE_SERVICE })
 	postMap.set('category', { method: create_category, permits: Permissions.ADMIN_SERVICES })

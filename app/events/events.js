@@ -12,9 +12,6 @@ var Events = function () {
 				CONSTANTS.MOTIVES.EVALUATOR.VER_VIDEO.id,'',body.id)
 		}
 	})
-	emiter.on('requisitie.calification', (user, requisite, status) => {
-
-	})
 	emiter.on('user_answer.updated', (old, body) => {
 		if (old.id_status == body.id_status) {
 			return
@@ -156,6 +153,9 @@ var Events = function () {
 		}
 	})
 	emiter.on('user.created', (user,pass_user) => {
+		if(!pass_user){
+			return
+		}
 		// send an email to the user
 		let token = utiles.sign(user.email)
 		let template = `

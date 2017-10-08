@@ -388,7 +388,6 @@ var EntityModel = function (info) {
 		}
 		query += "ORDER BY `" + resolveViewName(info.entity, params.lang) + "`." + params.order + " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
 		query += "SELECT FOUND_ROWS() as total"
-		console.log(query)
 		return this.customQuery(query).then((result) => {
 			let keys = []
 			for (let i in result[0]) {
@@ -399,7 +398,7 @@ var EntityModel = function (info) {
 				return { data: [], total_results: 0 }
 			}
 			keys = keys.join(",")
-			query = "SELECT * FROM `" + resolveViewName(info.entity, params.lang) + "` WHERE `" + getTable(info.table).defaultSort + "` IN (" + keys + ") ;"
+			query = "SELECT * FROM `" + resolveViewName(info.entity, params.lang) + "` WHERE `" + getTable(info.table).defaultSort + "` IN (" + keys + ") ORDER BY "+ params.order+ ";"
 			let count = 0;
 			if (params.simple === false) {
 				if (info.relations) {
@@ -421,9 +420,6 @@ var EntityModel = function (info) {
 					}
 				}
 			}
-
-
-			console.log(query)
 			return this.customQuery(query).then((result) => {
 				let data = null
 				if (count == 0) {
