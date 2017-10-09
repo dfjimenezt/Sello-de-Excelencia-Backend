@@ -49,11 +49,6 @@ angular.module('dmt-back').controller('detailItemSingleController', function ($m
 		}
 	})
 
-	$http.get("/api/configuration/lang").then((response) => {
-		ctrl.languages = response.data.data;
-	}).catch((e) => {
-		console.log("no languages available")
-	})
 	ctrl.select = function (selection) {
 		var relation = ctrl.tab
 		if (!relation) {

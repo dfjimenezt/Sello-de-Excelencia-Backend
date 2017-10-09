@@ -518,6 +518,13 @@ dmt.entities = {
         name:"status",
         leftKey:"id_status",
         foreign_name:"name"
+      },
+      {
+        type:"1-n",
+        entity:"evaluation_request",
+        name:"evaluators",
+        rightKey:"id_answer",
+        foreign_name:"id_user"
       }
     ]
   },

@@ -48,6 +48,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
         event.stopPropagation();
         if (ctrl.entity.readOnly) { return; }
         if (field.type === "link") { return; }
+        if (field.type === "datetime") { return; }
         if (field.disabled) { return; }
 
         var promise = $mdEditDialog.large({
@@ -130,7 +131,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
             if (ctrl.entity.fields[p].type === "boolean") {
                 booleans.push(ctrl.entity.fields[p].name)
             }
-            if (ctrl.entity.fields[p].type === "datetime") {
+            if (ctrl.entity.fields[p].type === "datetime" || ctrl.entity.fields[p].type === "timestamp") {
                 dates.push(ctrl.entity.fields[p].name)
             }
         }
@@ -139,7 +140,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
                 item[booleans[i]] = item[booleans[i]] === 1;
             }
             for (let i in dates) { //mysql boolean 1 / 0 to true / false            
-                item[dates[i]] = new Date(item[booleans[i]]);
+                item[dates[i]] = new Date(item[dates[i]]);
             }
         });
     };

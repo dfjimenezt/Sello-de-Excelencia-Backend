@@ -1,0 +1,103 @@
+<md-dialog flex-grow flex ng-cloak>
+	<md-toolbar>
+		<div class="md-toolbar-tools">
+			<h2>Detalle de Respuesta</h2>
+			<span flex></span>
+			<md-button class="md-icon-button" ng-click="ctrl.cancel()">
+				<md-icon class="material-icons" aria-label="Close dialog">close</md-icon>
+			</md-button>
+		</div>
+	</md-toolbar>
+	<md-dialog-content ng-cloak>
+		<md-tabs md-dynamic-height>
+			<md-tab label="Detalles del Requisito">
+				<md-content>
+					<div layout="row" layout-wrap class="input-row" layout-padding flex>
+						<md-input-container flex="50">
+							<label>Requisito</label>
+							<textarea ng-model="ctrl.data.question.text" ng-disabled="true"></textarea>
+						</md-input-container>
+						<md-input-container flex="50">
+							<label>Criterio</label>
+							<textarea ng-model="ctrl.data.question.criteria" ng-disabled="true"></textarea>
+						</md-input-container>
+						<md-input-container flex="50">
+							<label>Soporte Legal</label>
+							<textarea ng-model="ctrl.data.question.legal_support" ng-disabled="true"></textarea>
+						</md-input-container>
+						<md-input-container flex="50">
+							<label>Comentario de la Entidad</label>
+							<textarea ng-model="ctrl.data.comment" ng-disabled="true"></textarea>
+						</md-input-container>
+						<div flex="100" layout="row" layout-align="center" ng-if="ctrl.data.media.url">
+							<md-button class="md-accent md-raised" href="{{ctrl.data.media.url}}">DESCARGAR ADJUNTO</md-button>
+						</div>
+					</div>
+				</md-content>
+			</md-tab>
+			<md-tab label="Evaluaciones">
+				<md-card ng-repeat="request in ctrl.entities.evaluation_request.data" layout="column" flex layout-padding>
+					<md-content>
+						<div layout="row">
+							<md-input-container flex="50">
+									<label>Estado</label>
+									<md-select ng-model="request.id_request_status">
+										<md-option ng-repeat="o in ctrl.entities.evaluation_request.options.id_request_status" value="{{o.id}}">{{o.name}}</md-option>
+									</md-select>
+								</md-input-container>
+								<md-input-container flex="50">
+									<label>Fecha Limite de Evaluación</label>
+									<md-datepicker type="text" ng-model="request.end_time" ng-disabled="true"></md-datepicker>
+								</md-input-container>
+						</div>
+						<md-autocomplete ng-if="request.showAutocomplete"
+						md-items="item in ctrl.entities.user.data" 
+						md-item-text="item.name + ' ' + item.secondname + ' '+item.lastname + ' '+item.secondlastname + ' <' + item.email +'> '"
+						md-selected-item="request.user" 
+						 md-search-text-change="ctrl.entities.user.search()" 
+						 md-search-text="ctrl.entities.user.query.filter"
+						 md-selected-item-change="ctrl.evaluatorSelected(request)"
+						 placeholder="Seleccionar un Evaluador">
+						 <md-item-template>
+								<span md-highlight-text="ctrl.entities.user.query.filter" md-highlight-flags="^i">{{item.name}} - {{item.email}}</span>
+							</md-item-template>
+							</md-autocomplete>
+						<div layout="row" layout-wrap class="input-row" layout-padding flex>
+							<md-input-container flex="50">
+								<label>Nombre</label>
+								<input type="text" ng-model="request.user.name" ng-disabled="true">
+							</md-input-container>
+							<md-input-container flex="50">
+								<label>Segundo Nombre</label>
+								<input type="text" ng-model="request.user.secondname" ng-disabled="true">
+							</md-input-container>
+							<md-input-container flex="50">
+								<label>Apellido</label>
+								<input type="text" ng-model="request.user.lastname" ng-disabled="true">
+							</md-input-container>
+							<md-input-container flex="50">
+								<label>Segundo Apellido</label>
+								<input type="text" ng-model="request.user.secondlastname" ng-disabled="true">
+							</md-input-container>
+							<md-input-container flex="50">
+								<label>Correo electrónico</label>
+								<input type="text" ng-model="request.user.email" ng-disabled="true">
+							</md-input-container>
+							<md-input-container flex="50">
+								<label>Célular</label>
+								<input type="text" ng-model="request.user.mobile" ng-disabled="true">
+							</md-input-container>
+						</div>
+						<div layout="row" layout-align="center">
+							<md-button class="md-accent md-raised" ng-click="ctrl.reasignate(request)">Re-asignar</md-button>
+							<md-button class="md-primary md-raised" ng-click="ctrl.updateItem(request,null,ctrl.evaluation_request_relation)">Guardar</md-button>
+						</div>
+					</md-content>
+				</md-card>
+			</md-tab>
+		</md-tabs>
+	</md-dialog-content>
+	<md-dialog-actions>
+		<md-button ng-click="ctrl.cancel()" class="md-primary">Cerrar</md-button>
+	</md-dialog-actions>
+</md-dialog>

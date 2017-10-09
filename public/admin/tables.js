@@ -84,7 +84,7 @@ dmt.tables = {
 			{
 				"name": "activation_date",
 				"type": "datetime",
-				"disabled": true,
+				"disabled": false,
 				"key": false
 			}
 		],

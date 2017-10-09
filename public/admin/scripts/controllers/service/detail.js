@@ -25,7 +25,7 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 			selected: [],
 			query: {
 				filter: '',
-				limit: 10,
+				limit: 20,
 				page: 1,
 			},
 			getData: function () { ctrl.getEntityData(relation) },
@@ -42,7 +42,7 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 				selected: [],
 				query: {
 					filter: '',
-					limit: 10,
+					limit: 20,
 					page: 1,
 				},
 			}
@@ -78,6 +78,23 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 		ctrl.tab = tab
 	}
 
+	ctrl.openAnswerDetail = function(answer){
+		$mdDialog.show({
+			clickOutsideToClose: true,
+			controller: 'answerController',
+			controllerAs: 'ctrl',
+			focusOnOpen: false,
+			targetEvent: event,
+			templateUrl: 'views/answer/detail.html',
+			locals: {
+				answer:answer,
+				parent: {
+					data: ctrl.data,
+					entity: ctrl.currentEntity
+				}
+			},
+		}).then(ctrl.getData);
+	}
 	ctrl.create = function (event, relation) {
 		let entity = dmt.entities[relation.entity];
 		$mdDialog.show({
@@ -120,6 +137,9 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 		var request = new XMLHttpRequest();
 		request.open("PUT", entity.endpoint);
 		request.setRequestHeader('Authorization',localStorage.getItem("token"))
+		request.onload = function(){
+			ctrl.getEntityData(relation)
+		}
 		request.send(fd);
 	};
 	ctrl.delete = function (event, relation) {

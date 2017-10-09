@@ -239,7 +239,7 @@ var MysqlModel = function (info) {
     let old = null
     return resolveQuery(query0,connection)
     .then((results)=>{
-      old = results
+      old = results[0]
       connection = mysql.createConnection(dbConf)
       return resolveQuery(query1, connection)
     })
@@ -247,7 +247,7 @@ var MysqlModel = function (info) {
 			connection = mysql.createConnection(dbConf)
 			return resolveQuery(query2, connection)
     }).then((results)=>{
-      emiter.emit(info.table+'.updated',old,results)
+      emiter.emit(info.table+'.updated',old,results[0])
       return results
     })
   }

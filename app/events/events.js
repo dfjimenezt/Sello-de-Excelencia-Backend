@@ -33,24 +33,17 @@ var Events = function () {
 					service = new service()
 				return service.update({ current_status: CONSTANTS.SERVICE.INCOMPLETO }, { id: old.id_service })
 			}else if(body.id_status == CONSTANTS.SERVICE.ASIGNACION){
-				user_answer.getByParams({id_service:body.id_service,id_status:CONSTANTS.SERVICE.INCOMPLETO}).then((results)=>{
-					let ready = false
-					if(results.length){
-						if(results.length == 0){
-							ready = true
-						}else
-						if(results.length == 1){
-							if(results[0].id == body.id){
-								ready = true
-							}else{
-								ready = fasle
-							}
-						}else{
+				user_answer.getByParams(
+					{id_service:body.id_service}).then((results)=>{
+					let ready = true
+					results.data.forEach((answer)=>{
+						if(answer.id_status == CONSTANTS.SERVICE.INCOMPLETO || answer.id_status == CONSTANTS.SERVICE.VERIFICACION){
 							ready = false
 						}
-
-					}
+					})
+					
 					if(ready){
+						let service = require('../models/service.js')()
 						return service.update({ current_status: CONSTANTS.SERVICE.EVALUACION }, { id: old.id_service })
 					}
 					return 
@@ -241,6 +234,8 @@ var Events = function () {
 		model_request_status = new model_request_status()
 		var model_service_status = require('../models/service_status.js')
 		model_service_status = new model_service_status()
+		var model_entity_service = require('../models/entity_service.js')
+		model_entity_service = new model_entity_service()
 		var _admin = null
 		var _status = null
 		var _laststatus = null
@@ -307,7 +302,7 @@ var Events = function () {
 							data
 						)
 					})
-					model_user_answer.update({ id_status: CONSTANTS.SERVICE.ASIGNACION }, { id_service: body.id })
+					model_user_answer.update({ id_status: CONSTANTS.SERVICE.EVALUACION }, { id_service: body.id })
 				}
 				if(old.current_status == CONSTANTS.SERVICE.VERIFICACION && body.current_status === CONSTANTS.SERVICE.INCOMPLETO){
 					return
@@ -317,11 +312,12 @@ var Events = function () {
 		})
 	})
 	emiter.on('evaluation_request.asignation',(email)=>{
-		utiles.sendEmail(email,null,null,'Asignación de Requisito',`
+		console.log('evaluation_request' + email)
+		/*utiles.sendEmail(email,null,null,'Asignación de Requisito',`
 		<div style="text-align:center;margin: 10px auto;">
 		<img width="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
 		</div>
-		<p>Se ha asignado un nuevo requisito en Sello de Excelencia</p>`)
+		<p>Se ha asignado un nuevo requisito en Sello de Excelencia</p>`)*/
 	})
 }
 module.exports = Events

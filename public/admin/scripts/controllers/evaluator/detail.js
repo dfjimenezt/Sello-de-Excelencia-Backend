@@ -12,8 +12,7 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 	ctrl.today = new Date()
 
 	ctrl.currentEntity = dmt.entities[page.entity || page.parent.entity];
-	ctrl.currentEntity.endpoint = '/api/configuration/user'
-
+	
 	ctrl.currentEntity.relations.forEach((relation) => {
 		if(relation.entity == 'points'){
 			ctrl.points_relation = relation
@@ -45,6 +44,7 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 				},
 				bookmark: null,
 				selected: [],
+				options:{},
 				query: {
 					filter: '',
 					limit: 10,

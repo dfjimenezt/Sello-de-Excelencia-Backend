@@ -59,6 +59,8 @@ var question_controller = function () {
 			limit: params.limit,
 			page: params.page,
 			order: params.order,
+			simple: params.simple,
+			_join: params._join,
 			filter_fields: params.filter_field,
 			filter_values: params.filter_value,
 			fields: params.field,

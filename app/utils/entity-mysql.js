@@ -242,17 +242,16 @@ var EntityModel = function (info) {
 		if (typeof params.fields == "string") {
 			params.fields = [params.fields]
 		}
-		function resolveEqual(connection, value) {
+		function resolveEqual(connection, value, equal) {
 			if(typeof value == 'number'){
-				return '= ' + connection.escape(value);
+				return equal + connection.escape(value);
 			}
 			let array = value.split(" ");
 			if (array.length > 1) {
 				return array[0] + connection.escape(array[1]);
 			}
-			return '= ' + connection.escape(value);
+			return equal + connection.escape(value);
 		}
-
 
 		//group fields by name
 		params.filter_fields.forEach((key, i) => {
@@ -266,12 +265,13 @@ var EntityModel = function (info) {
 				if (!relation_filters[rel_name][rel_field]) {
 					relation_filters[rel_name][rel_field] = []
 				}
-				relation_filters[rel_name][rel_field].push(connection.escape(params.filter_values[i]))
+				//relation_filters[rel_name][rel_field].push(connection.escape(params.filter_values[i]))
+				relation_filters[rel_name][rel_field].push(resolveEqual(connection,params.filter_values[i],''))
 			} else {
 				if (!filters[key]) {
 					filters[key] = []
 				}
-				filters[key].push(resolveEqual(connection, params.filter_values[i]))
+				filters[key].push(resolveEqual(connection, params.filter_values[i],'= '))
 			}
 
 		})
@@ -332,7 +332,6 @@ var EntityModel = function (info) {
 			let relation = null
 			console.warn("Doing relation filters can reduce the performance")
 			for (let i = 0; i < info.relations.length; i++) {
-				console.log(info.relations[i].entity + " " + r)
 				if (info.relations[i].name === r) {
 					relation = info.relations[i]
 					break
@@ -345,7 +344,11 @@ var EntityModel = function (info) {
 			let name = resolveViewName(relation.entity, params.lang)
 			let rwhere = '('
 			for (let k in relation_filters[r]) {
-				rwhere += `\`${name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
+				if(relation_filters[r][k][0].indexOf('\'') == 0){
+					rwhere += `\`${name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
+				}else{
+					rwhere += `\`${name + '`.`' + k}\` ${relation_filters[r][k][0]} AND `
+				}
 			}
 			rwhere = rwhere.slice(0, -4) + ')'
 			if (relation.intermediate) { // n-n relation 
