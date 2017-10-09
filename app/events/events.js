@@ -6,10 +6,10 @@ var Events = function () {
 		let model_points = require('../models/entity_points.js')()
 		if(user.institutions.length>0){
 			return model_points.addInstitutionPoints(user.institutions[0].id,
-				CONSTANTS.MOTIVES.ENTITY.VER_VIDEO.id,'',body.id)
+				CONSTANTS.MOTIVES.ENTITY.VER_VIDEO,'',body.id)
 		}else{
 			return model_points.addUserPoints(user.id,
-				CONSTANTS.MOTIVES.EVALUATOR.VER_VIDEO.id,'',body.id)
+				CONSTANTS.MOTIVES.EVALUATOR.VER_VIDEO,'',body.id)
 		}
 	})
 	emiter.on('user_answer.updated', (old, body) => {
@@ -86,31 +86,35 @@ var Events = function () {
 					let entity_template = ''
 					let admin_template = ''
 					//5 Rechazado
-					if (body.id_request_status == 5) {
+					if (body.id_request_status == CONSTANTS.EVALUATION_REQUEST.RECHAZADO) {
 						evaluator_template = '<p>Has solicitado más información a la entidad.</p><p>Gracias por evaluar</p>'
 						entity_template = '<p>Han solicitado más información sobre tu requisito.</p><p>Gracias por participar</p>'
 						entity_template = '<p>Se ha rechazado un requisito</p>'
-						model_points.addPoints(_evaluator.id, 7, '', old.id_user)
+						model_points.addUserPoints(_evaluator.id, CONSTANTS.MOTIVES.EVALUATOR.RECHAZAR, '', old.id_user)
 					}
 					//6 Retroalimentación
-					if (body.id_request_status == 6) {
+					if (body.id_request_status == CONSTANTS.EVALUATION_REQUEST.RETROALIMENTACION) {
 						evaluator_template = '<p>Has solicitado más información a la entidad.</p><p>Gracias por evaluar</p>'
 						entity_template = '<p>Han solicitado más información sobre tu requisito.</p><p>Gracias por participar</p>'
-						model_entity_user_answer.update({ id: _answer.id, id_status: 6 })
+						model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.SERVICE.RETROALIMENTACION })
 					}
 					//7 Cumple
-					if (body.id_request_status == 7) {//add points
+					if (body.id_request_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE) {//add points
 						evaluator_template = '<p>Has calificado un requisito como CUMPLE.</p><p>Gracias por evaluar</p>'
 						entity_template = '<p>Han aprobado tu requisito.</p><p>Gracias por participar</p>'
-						model_points.addPoints(_evaluator.id, 1, 'Calificación de Requisito')
-						model_points.addPoints(_entity.id, 7, 'Requisito Cumplido')
+						let motive = old.question.level == 1 ? CONSTANTS.MOTIVES.ENTITY.PASAR_REQUISITO_NIVEL_1:
+						old.question.level == 2 ? CONSTANTS.MOTIVES.ENTITY.PASAR_REQUISITO_NIVEL_2:
+						CONSTANTS.MOTIVES.ENTITY.PASAR_REQUISITO_NIVEL_3
+						model_points.addUserPoints(_evaluator.id, CONSTANTS.MOTIVES.EVALUATOR.CALIFICAR_REQUISITO, 'Calificación de Requisito')
+						//model_points.addInstitutionPoints(_entity.id, motive, 'Requisito Cumplido')
+						
 					}
 					//8 No Cumple
-					if (body.id_request_status == 8) {//add points
+					if (body.id_request_status == CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE) {//add points
 						evaluator_template = '<p>Has calificado un requisito como NO CUMPLE. Agradecemos tu retroalimentación a la entidad.<p></p>Gracias por tu evaluación</p>'
 						entity_template = '<p>Han Rechazado un requisito de tu postulación</p><p>Gracias por participar en el Sello de Excelencia</p>'
-						model_points.addPoints(_evaluator.id, 1, 'Calificación de Requisito')
-						model_points.addPoints(_entity.id, 7, 'Requisito No Cumplido')
+						model_points.addUserPoints(_evaluator.id, CONSTANTS.MOTIVES.EVALUATOR.CALIFICAR_REQUISITO, 'Calificación de Requisito')
+						//model_points.addInstitutionPoints(_entity.id, CONSTANTS.MOTIVES.ENTITY.PERDER_REQUISITO, 'Requisito No Cumplido')
 					}
 
 					let template = `
@@ -121,7 +125,6 @@ var Events = function () {
 				<p>Hola ${_evaluator.name} </p>
 				<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia</p>
 				${evaluator_template}
-				<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
 				<p>Nuestros mejores deseos,</p>
 				<p>El equipo del Sello de Excelencia</p>
 				</div>`
@@ -136,7 +139,6 @@ var Events = function () {
 					<p>Hola ${_entity.name} </p>
 					<p>Hay una actualización de un requisito en la plataforma de Sello de Excelencia Gobierno Digital Colombia</p>
 					${entity_template}
-					<p><a href='http://www.sellodeexcelencia.gov.co'>Haz click aquí para activar tu cuenta</a></p>
 					<p>Nuestros mejores deseos,</p>
 					<p>El equipo del Sello de Excelencia Gobierno Digital Colombia</p>`
 

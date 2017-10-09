@@ -445,7 +445,21 @@ var platform_controller = function () {
  	 * 
 	 */
 	var create_entity_banner = function (user, body) {
-		return model_entity_banner.create(body)
+		if (files.background) {
+			return utiles.uploadFileToGCS(user.id, files.background, user.id, files.background.type)
+			.then((url)=>{
+				body.background = url
+				return model_entity_banner.create(body)
+			})
+		}else if (files.video) {
+			return utiles.uploadFileToGCS(user.id, files.video, user.id, files.video.type)
+			.then((url)=>{
+				body.video = url
+				return model_entity_banner.create(body)
+			})
+		}else{
+			return model_entity_banner.create(body)
+		}
 	}
 	/**
 	 * @api {post} api/platform/type_banner Create type_banner information
@@ -579,7 +593,21 @@ var platform_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_banner.update(body,{id:body.id})
+		if (files.background) {
+			return utiles.uploadFileToGCS(user.id, files.background, user.id, files.background.type)
+				.then((url) => {
+					body.background = url
+					return model_entity_banner.update(body,{id:body.id})
+				})
+		}else if(files.video){
+			return utiles.uploadFileToGCS(user.id, files.video, user.id, files.video.type)
+			.then((url) => {
+				body.video = url
+				return model_entity_banner.update(body,{id:body.id})
+			})
+		}else{
+			return model_entity_banner.update(body,{id:body.id})
+		}
 	}
 	/**
 	 * @api {put} api/platform/type_banner Update type_banner information

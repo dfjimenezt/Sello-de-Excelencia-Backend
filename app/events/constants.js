@@ -1,62 +1,21 @@
 module.exports = {
 	MOTIVES: {
 		'EVALUATOR': {
-			'ACEPTAR_REQUISITO': {
-				id:1,
-				points:1
-			},
-			'CALIFICAR_REQUISITO': {
-				id:2,
-				points:1
-			},
-			'VER_VIDEO': {
-				id:3,
-				points:1
-			},
-			'POSTULARSE_EVALUAR': {
-				id:4,
-				points:1
-			},
-			'EVENTOS': {
-				id:5,
-				points:1
-			},
-			'NO_EVALUAR': {
-				id:6,
-				points:1
-			},
-			'RECHAZAR': {
-				id:7,
-				points:1
-			}
+			'ACEPTAR_REQUISITO': 1,
+			'CALIFICAR_REQUISITO': 2,
+			'VER_VIDEO': 3,
+			'POSTULARSE_EVALUAR': 4,
+			'EVENTOS': 5,
+			'NO_EVALUAR': 6,
+			'RECHAZAR': 7
 		},
 		'ENTITY': {
-			'PASAR_REQUISITO': {
-				id:1,
-				points:{
-					levels:{
-						1:1,
-						2:2,
-						3:3
-					}
-				}
-			},
-			'VER_VIDEO': {
-				id:1,
-				points:1
-			},
-			'EVENTOS': {
-				id:1,
-				points:1
-			},
-			'PERDER_REQUISITO': {
-				id:1,
-				points:1
-			},
-			'PERDER_SERVICIO': {
-				id:1,
-				points:1
-			}
+			'VER_VIDEO': 3,
+			'EVENTOS': 5,
+			'PASAR_REQUISITO_NIVEL_1': 8,
+			'PASAR_REQUISITO_NIVEL_2': 9,
+			'PASAR_REQUISITO_NIVEL_3': 10,
+			'PERDER_REQUISITO': 11,
 		}
 	},
 	SERVICE: {
