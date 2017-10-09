@@ -141,8 +141,8 @@ var Events = function () {
 						model_evaluation_request.getByParams({id_answer:_answer.id}).then((results)=>{
 							let approved = 0
 							let rejected = 0
-							let total = results.total_results
-							results.data.forEach((request)=>{
+							let total = results.length
+							results.forEach((request)=>{
 								if(request.id_request_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE){
 									approved += 1
 								}
@@ -164,8 +164,8 @@ var Events = function () {
 						model_evaluation_request.getByParams({id_answer:_answer.id}).then((results)=>{
 							let approved = 0
 							let rejected = 0
-							let total = results.total_results
-							results.data.forEach((request)=>{
+							let total = results.length
+							results.forEach((request)=>{
 								if(request.id_request_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE){
 									approved += 1
 								}
