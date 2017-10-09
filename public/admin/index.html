@@ -57,8 +57,10 @@
         <div ng-repeat="x in ctrl.leftMenu" layout="column">
           <b>{{x.section}}</b>
           <md-button ng-repeat="p in x.pages" 
-            class="md-primary md-raised" 
+            class="md-primary" 
+            ng-class="{'md-raised': ctrl.location.path().indexOf(x.path +'/'+ p.path) === 1}"
             ng-click="ctrl.selectPage(x,p);">
+            
             {{p.name}}
           </md-button>
         </div>

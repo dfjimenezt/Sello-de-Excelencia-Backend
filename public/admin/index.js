@@ -165,6 +165,8 @@ app.controller('backCtrl', function ($mdSidenav, $location, $http) {
 	};
 	this.leftMenu = dmt.config;
 
+	this.location = $location
+
 	this.selectPage = function (section, page) {
 		$location.path(section.path + "/" + page.path);
 	};

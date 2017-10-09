@@ -14,12 +14,12 @@
   </md-toolbar>
   <md-tabs md-dynamic-height md-border-bottom>
     <md-tab label="datos básicos" md-on-select="ctrl.selectTab(null)">
-      <md-content class="md-padding" layout-spacing="center">
-        <div class="md-actions" layout="row" flex>
+      <md-content layout-spacing="center">
+        <md-toolbar class="md-hue-1" layout="row" flex>
           <span flex></span>
-          <md-button class="md-primary md-raised" ng-click="ctrl.saveItem()" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
-        </div>
-        <form name="ctrl.form" layout="row" flex>
+          <md-button class="md-accent md-raised" ng-click="ctrl.saveItem()" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
+        </md-toolbar>
+        <form class="md-padding" name="ctrl.form" layout="row" flex>
           <div layout="row" layout-wrap class="input-row" layout-padding flex>
             <md-input-container ng-repeat="f in ctrl.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="50">
               <label ng-if="f.type!=='boolean' && f.type !=='file'">{{f.name | translate}}</label>
@@ -114,52 +114,21 @@
     </md-tab>
     <md-tab label="Requisitos">
     <md-content class="md-padding" layout-spacing="center">
-      <!-- Relation 1-n & n-n -->
-      <md-toolbar class="md-table-toolbar md-default" ng-hide="(ctrl.entities.user_answer.selected.length && relation.type === '1-n') || ctrl.entities[relation.entity].filter.show">
-        <div class="md-toolbar-tools">
-          <div flex></div>
-          <md-button class="md-icon-button" ng-click="ctrl.entities.user_answer.filter.show = true">
-            <md-icon>search</md-icon>
-          </md-button>
-          <md-button class="md-raised md-primary" ng-if="!ctrl.page.readOnly" ng-click="ctrl.create($event,relation)">CREAR</md-button>
-        </div>
-      </md-toolbar>
-      <md-toolbar class="md-table-toolbar md-default" ng-show="ctrl.entities.user_answer.filter.show && (!ctrl.entities.user_answer.selected.length || relation.type !== '1-n')">
-        <div class="md-toolbar-tools">
-          <md-icon class="material-icons">search</md-icon>
-          <form flex name="ctrl.entities.user_answer.filter.form" layout="row">
-            <input type="text" flex="100" ng-model="ctrl.entities.user_answer.query.filter" ng-model-options="ctrl.entities.user_answer.filter.options"
-              placeholder="Buscar" ng-change="ctrl.entities.user_answer.search()">
-          </form>
-          <md-button class="md-icon-button" ng-click="ctrl.removeFilter(relation)">
-            <md-icon class="material-icons">close</md-icon>
-          </md-button>
-        </div>
-      </md-toolbar>
-      <md-toolbar class="md-table-toolbar alternate" ng-show="ctrl.entities.user_answer.selected.length && relation.type === '1-n'">
-        <div class="md-toolbar-tools" layout-align="space-between">
-          <div>{{ctrl.entities.user_answer.selected.length}} {{ctrl.entities.user_answer.selected.length > 1 ? 'items
-            seleccionados' : 'item seleccionado'}}</div>
-          <md-button class="md-icon-button" ng-click="ctrl.delete($event,relation)">
-            <md-icon class="material-icons">delete</md-icon>
-          </md-button>
-        </div>
-      </md-toolbar>
       <div layout="column" flex>
         <table md-table ng-model="ctrl.entities.user_answer.selected" md-progress="ctrl.entities.user_answer.promise">
           <thead md-head>
             <tr md-row>
               <th md-column>
-                <span>{{id_question | translate}}</span>
+                <span>Requisito</span>
               </th>
               <th md-column>
-                <span>{{comment | translate}}</span>
+                <span>Comentario</span>
               </th>
               <th md-column>
-                <span>{{id_media | translate}}</span>
+                <span>Adjunto</span>
               </th>
               <th md-column>
-                <span>{{id_status | translate}}</span>
+                <span>Estado</span>
               </th>
               <th md-column>
                 <span>Acciones</span>
@@ -184,6 +153,9 @@
                 <div ng-if="item.id_status == 1">
                     <md-button aria-label="accept" ng-click="item.id_status = 2;ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-raised"> Aprobar </md-button>
                     <md-button aria-label="reject" ng-click="item.id_status = 10;ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-hue-1 md-raised"> Rechazar </md-button>
+                </div>
+                <div ng-if="item.id_status == 2">
+                  <md-button aria-label="accept" ng-click="ctrl.openAnswerDetail(item);" class="md-primary md-raised"> Ver</md-button>
                 </div>
               </td>
             </tr>

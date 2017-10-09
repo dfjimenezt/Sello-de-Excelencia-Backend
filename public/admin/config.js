@@ -207,7 +207,7 @@ dmt.config = [
 			},
 			{
 				name: "En Evaluación",
-				path: "evaluación",
+				path: "evaluacion",
 				entity: "service",
 				filters:{
 					'current_status':[5]
