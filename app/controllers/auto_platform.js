@@ -445,21 +445,21 @@ var platform_controller = function () {
  	 * 
 	 */
 	var create_entity_banner = function (user, body,files) {
-		if (files.background) {
-			return utiles.uploadFileToGCS(user.id, files.background, user.id, files.background.type)
-			.then((url)=>{
-				body.background = url
-				return model_entity_banner.create(body)
-			})
-		}else if (files.video) {
-			return utiles.uploadFileToGCS(user.id, files.video, user.id, files.video.type)
-			.then((url)=>{
-				body.video = url
-				return model_entity_banner.create(body)
-			})
-		}else{
-			return model_entity_banner.create(body)
+		let promises = []
+		let order =[]
+		for(var i in files){
+			order.push(i)
+			promises.push(utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type))
 		}
+		if(promises.length){
+			return Promise.all(promises).then((urls)=>{
+				for(var i in urls){
+					body[order[i]] = urls[i]
+				}
+				return model_entity_banner.create(body)
+			})
+		}
+		return model_entity_banner.create(body)
 	}
 	/**
 	 * @api {post} api/platform/type_banner Create type_banner information
@@ -491,8 +491,21 @@ var platform_controller = function () {
 	 * @apiParam {String} schedulle 
  	 * 
 	 */
-	var create_config = function (user, body) {
-		return model_config.create(body)
+	var create_config = function (user, body, files) {
+		for(var i in files){
+			order.push(i)
+			promises.push(utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type))
+		}
+		if(promises.length){
+			return Promise.all(promises).then((urls)=>{
+				for(var i in urls){
+					body[order[i]] = urls[i]
+				}
+				return model_config.create(body)
+			})
+		}else{
+			return model_config.create(body)
+		}
 	}
 	postMap.set('contact', { method: create_contact, permits: Permissions.ADMIN_PLATFORM })
 	postMap.set('faq', { method: create_faq, permits: Permissions.ADMIN_PLATFORM })
@@ -593,21 +606,21 @@ var platform_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		if (files.background) {
-			return utiles.uploadFileToGCS(user.id, files.background, user.id, files.background.type)
-				.then((url) => {
-					body.background = url
-					return model_entity_banner.update(body,{id:body.id})
-				})
-		}else if(files.video){
-			return utiles.uploadFileToGCS(user.id, files.video, user.id, files.video.type)
-			.then((url) => {
-				body.video = url
+		let promises = []
+		let order =[]
+		for(var i in files){
+			order.push(i)
+			promises.push(utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type))
+		}
+		if(promises.length){
+			return Promise.all(promises).then((urls)=>{
+				for(var i in urls){
+					body[order[i]] = urls[i]
+				}
 				return model_entity_banner.update(body,{id:body.id})
 			})
-		}else{
-			return model_entity_banner.update(body,{id:body.id})
 		}
+		return model_entity_banner.update(body,{id:body.id})
 	}
 	/**
 	 * @api {put} api/platform/type_banner Update type_banner information
@@ -642,9 +655,23 @@ var platform_controller = function () {
 	 * @apiParam {String} schedulle 
  	 * 
 	 */
-	var update_config = function (user, body) {
+	var update_config = function (user, body, files) {
 		if (!body.id) {
 			throw utiles.informError(400)
+		}
+		let promises = []
+		let order =[]
+		for(var i in files){
+			order.push(i)
+			promises.push(utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type))
+		}
+		if(promises.length){
+			return Promise.all(promises).then((urls)=>{
+				for(var i in urls){
+					body[order[i]] = urls[i]
+				}
+				return model_config.update(body,{id:body.id})
+			})
 		}
 		return model_config.update(body,{id:body.id})
 	}
