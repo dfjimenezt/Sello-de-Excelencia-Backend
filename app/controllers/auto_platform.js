@@ -444,7 +444,7 @@ var platform_controller = function () {
 	 * @apiParam {Number} position 
  	 * 
 	 */
-	var create_entity_banner = function (user, body) {
+	var create_entity_banner = function (user, body,files) {
 		if (files.background) {
 			return utiles.uploadFileToGCS(user.id, files.background, user.id, files.background.type)
 			.then((url)=>{
@@ -589,7 +589,7 @@ var platform_controller = function () {
 	 * @apiParam {Number} position 
  	 * 
 	 */
-	var update_entity_banner = function (user, body) {
+	var update_entity_banner = function (user, body,files) {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}

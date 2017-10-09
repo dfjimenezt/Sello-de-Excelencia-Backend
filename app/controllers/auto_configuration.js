@@ -722,8 +722,23 @@ var configuration_controller = function () {
 	 * @apiParam {String} schedulle 
  	 * 
 	 */
-	var create_config = function (user, body) {
-		return model_config.create(body)
+	var create_config = function (user, body,files) {
+		let promises = []
+		let order =[]
+		for(var i in files){
+			order.push(i)
+			promises.push(utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type))
+		}
+		if(promises.length){
+			return Promise.all(promises).then((urls)=>{
+				for(var i in urls){
+					body[order[i]] = urls[i]
+				}
+				return model_config.create(body)
+			})
+		}else{
+			return model_config.create(body)
+		}
 	}
 	/**
 	 * @api {post} api/configuration/type_document Create type_document information
@@ -1053,9 +1068,23 @@ var configuration_controller = function () {
 	 * @apiParam {String} schedulle 
  	 * 
 	 */
-	var update_config = function (user, body) {
+	var update_config = function (user, body, files) {
 		if (!body.id) {
 			throw utiles.informError(400)
+		}
+		let promises = []
+		let order =[]
+		for(var i in files){
+			order.push(i)
+			promises.push(utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type))
+		}
+		if(promises.length){
+			return Promise.all(promises).then((urls)=>{
+				for(var i in urls){
+					body[order[i]] = urls[i]
+				}
+				return model_config.update(body,{id:body.id})
+			})
 		}
 		return model_config.update(body,{id:body.id})
 	}
