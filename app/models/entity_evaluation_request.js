@@ -91,7 +91,6 @@ var Evaluation_request = function () {
 		)
 		LIMIT ${params.limit * (params.page-1)},${params.limit};
 		SELECT FOUND_ROWS() as total;`
-		console.log(query)
 		return this.customQuery(query).then((result)=>{
 			let data = result[0]
 			let total = result[1][0].total

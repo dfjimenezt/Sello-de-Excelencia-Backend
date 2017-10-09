@@ -403,7 +403,6 @@ angular.module('dmt-back').controller('detailBannerController', function ($mdDia
 						p = p.parent;
 						url = p.path + '/' + url;
 					}
-					console.log(url);
 					$location.path(url);
 				};
 				request.send(data);

@@ -497,7 +497,6 @@ angular.module('dmt-back').controller('detailItemEntityController', function ($m
 						p = p.parent;
 						url = p.path + '/' + url;
 					}
-					console.log(url);
 					$location.path(url);
 				};
 				request.send(data);

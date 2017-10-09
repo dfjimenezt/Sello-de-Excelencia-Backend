@@ -57,7 +57,6 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 					ctrl.options[item.name] = results.data;
 				})
 			})*/
-			console.log(ctrl.filters);
 
 		}
 	}

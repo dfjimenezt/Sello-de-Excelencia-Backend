@@ -76,7 +76,6 @@ function sendUploadToGCS (req, folder) {
       req.file.cloudStoragePublicUrl = getPublicUrl(gcsname)
       req.file.file_name = req.file.originalname
       req.file.folderId = uuid
-      console.log('create file' + req.file.cloudStoragePublicUrl)
       resolve(req)
     })
 

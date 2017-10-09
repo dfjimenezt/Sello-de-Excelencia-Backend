@@ -60,7 +60,6 @@ angular.module('dmt-back').controller('addEntityPointsController', function ($md
 					ctrl.options[item.name] = results.data;
 				})
 			})*/
-			console.log(ctrl.filters);
 
 		}
 	}

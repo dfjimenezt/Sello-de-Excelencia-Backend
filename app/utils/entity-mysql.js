@@ -113,7 +113,6 @@ var EntityModel = function (info) {
 		}
 		get_query = get_query.replace(new RegExp("{{SELECTION}}", "g"), selection);
 		let query = `CREATE OR REPLACE VIEW view_${info.table}${lang ? "_" + lang : ""} AS ${get_query};`;
-		console.log(query)
 		return query
 	}
 	this.updateView = function () {
@@ -362,7 +361,6 @@ var EntityModel = function (info) {
 				joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation_table.defaultSort}\` = \`${subtable}\`.\`${relation.leftKey}\` AND (${rwhere})`)
 			}
 			subtable = '`' + subtable + '` ' + joins.join(' ')
-			console.log(subtable)
 		}
 
 		var query = "SELECT SQL_CALC_FOUND_ROWS `" + resolveViewName(info.entity, params.lang) + "`.`" + getTable(info.table).defaultSort + "` `key` FROM " + subtable + " "
@@ -370,13 +368,11 @@ var EntityModel = function (info) {
 			query += "WHERE " + where
 		}
 		query += "GROUP BY `key` "
-		console.log(query)
 		for (let r in relation_filters) {
 			for (let k in relation_filters[r]) {
 				let relation = null
 				console.warn("Doing relation filters can reduce the performance")
 				for (let i = 0; i < info.relations.length; i++) {
-					console.log(info.relations[i].entity + " " + r)
 					if (info.relations[i].name === r) {
 						relation = info.relations[i]
 						break
@@ -547,7 +543,6 @@ var EntityModel = function (info) {
 			}
 			values = values.slice(0, -1)
 			let query = "INSERT INTO `" + relation.table + "` (" + relation.leftKey + "," + relation.rightKey + ") VALUES (" + values + ")"
-			console.log(query)
 			return this.customQuery(query)
 		})
 	}

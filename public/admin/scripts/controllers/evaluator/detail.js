@@ -527,7 +527,6 @@ angular.module('dmt-back').controller('detailItemEvaluatorController', function 
 						p = p.parent;
 						url = p.path + '/' + url;
 					}
-					console.log(url);
 					$location.path(url);
 				};
 				request.send(data);

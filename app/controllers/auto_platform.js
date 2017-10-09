@@ -344,7 +344,6 @@ var platform_controller = function () {
 				})
 				let sname = translate['es'][tables[i]] || tables[i]
 				sname = sname.split(" ").join("").split("/").join("")
-				console.log(data)
 				sheets[sname] = XLSX.utils.aoa_to_sheet(data)
 			}
 			let trans = []

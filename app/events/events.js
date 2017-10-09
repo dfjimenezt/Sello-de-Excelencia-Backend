@@ -94,9 +94,9 @@ var Events = function () {
 					return model_user.getAdmin()
 				}).then((result) => {
 					_admin = result[0]
-					return model_entity_user_answer.getByUid('' + old.id_answer)
+					return model_entity_user_answer.getByUid(old.id_answer)
 				}).then((result) => {
-					_answer = result[0]
+					_answer = result.data[0]
 					return model_user.getByUid('' + old.id_user)
 				}).then((result) => {
 					_evaluator = result[0]
@@ -425,7 +425,6 @@ var Events = function () {
 		})
 	})
 	emiter.on('evaluation_request.asignation',(email)=>{
-		console.log('evaluation_request' + email)
 		/*utiles.sendEmail(email,null,null,'Asignación de Requisito',`
 		<div style="text-align:center;margin: 10px auto;">
 		<img width="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>

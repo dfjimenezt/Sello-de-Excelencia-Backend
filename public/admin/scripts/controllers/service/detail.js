@@ -464,7 +464,6 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 						p = p.parent;
 						url = p.path + '/' + url;
 					}
-					console.log(url);
 					$location.path(url);
 				};
 				request.send(data);
