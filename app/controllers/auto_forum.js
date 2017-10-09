@@ -89,7 +89,21 @@ var forum_controller = function () {
 	 * @apiParam {Date} activation_date 
  	 * 
 	 */
-	var create_entity_hangouts = function (user, body) {
+	var create_entity_hangouts = function (user, body, files) {
+		let promises = []
+		let order =[]
+		for(var i in files){
+			order.push(i)
+			promises.push(utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type))
+		}
+		if(promises.length){
+			return Promise.all(promises).then((urls)=>{
+				for(var i in urls){
+					body[order[i]] = urls[i]
+				}
+				return model_entity_hangouts.create(body)
+			})
+		}
 		return model_entity_hangouts.create(body)
 	}
 
