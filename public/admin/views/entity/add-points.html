@@ -1,6 +1,14 @@
 <md-dialog flex-grow flex>
+		<md-toolbar>
+				<div class="md-toolbar-tools">
+					<h2>Agregar Puntos a esta entidad</h2>
+					<span flex></span>
+					<md-button class="md-icon-button" ng-click="ctrl.cancel()">
+						<md-icon class="material-icons" aria-label="Close dialog">close</md-icon>
+					</md-button>
+				</div>
+			</md-toolbar>
   <md-dialog-content class="md-dialog-content" flex>
-    <h2 class="md-title">Agregar puntos a esta Entidad</h2>
 
     
     <form name="ctrl.form" ng-submit="ctrl.addItem()" flex>
@@ -22,9 +30,9 @@
       </div>
     </form>
   </md-dialog-content>
-  <div class="md-actions">
+  <md-dialog-actions>
     <md-button class="md-primary md-raised" ng-click="ctrl.addItem()" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
     <md-button class="md-primary" ng-click="ctrl.cancel()">Cancel</md-button>
-  </div>
+	</md-dialog-actions>
 
 </md-dialog>
