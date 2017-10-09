@@ -259,8 +259,8 @@ dmt.config = [
 				entity: "user_answer",
 				filters:{
 					'evaluators.id_request_status':['< 7'],
-					//'alert_time': ['< '+(new Date().toISOString().substring(0,10))],
-					'evaluators.alert_time': ['< 2018-10-10'],
+					'evaluators.alert_time': ['< '+(new Date().toISOString().substring(0,10))],
+					//'evaluators.alert_time': ['< 2018-10-10'],
 				},
 				controller: "urgentAnswerController",
 				templateUrl: "views/answer/urgent.html",
