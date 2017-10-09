@@ -636,7 +636,7 @@ var EntityModel = function (info) {
 		var query0 = 'SELECT * FROM ' + info.table + ' WHERE ' + queryCondition + ''
 		var query1 = 'DELETE FROM ' + info.table + ' WHERE ' + queryCondition + ''
 		return resolveQuery(query0, connection).then((results)=>{
-      emiter.emit(info.entity+'.deleted',old)
+      emiter.emit(info.entity+'.deleted',results[0])
       connection = mysql.createConnection(dbConf)
       return resolveQuery(query1, connection)
     }).then(() => {

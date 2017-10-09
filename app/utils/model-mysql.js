@@ -263,7 +263,7 @@ var MysqlModel = function (info) {
     var query1 = 'DELETE FROM ' + info.table + ' WHERE ' + queryCondition + ''
     let old = null
     return resolveQuery(query0, connection).then((results)=>{
-      emiter.emit(info.table+'.deleted',old)
+      emiter.emit(info.table+'.deleted',results[0])
       connection = mysql.createConnection(dbConf)
       return resolveQuery(query1, connection)
     })
