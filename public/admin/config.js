@@ -272,6 +272,27 @@ dmt.config = [
 		path: "administrar",
 		pages: [
 			{
+				name: "Aprende y Enseña",
+				path: "aprende_ensena",
+				entity: "hangouts",
+				controller: "listItemExtendedController",
+				templateUrl: "views/extended/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					}
+				]
+			},
+			{
 				name: "Tipos de Evaluador",
 				path: "tipos_evaluador",
 				entity: "usertype",
@@ -328,11 +349,6 @@ dmt.config = [
 						templateUrl: "views/extended/detail.html"
 					}
 				]
-			},
-			{
-				name: "Aprende y Enseña",
-				path: "aprende_ensena",
-				entity: "hangouts"
 			},
 			{
 				name: "Preguntas Ciudadano",

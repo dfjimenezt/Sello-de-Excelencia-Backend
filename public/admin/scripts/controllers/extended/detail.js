@@ -365,6 +365,11 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 			ctrl.currentEntity.fields.forEach(function (field) {
 				if (field.type !== 'file') {
 					if (typeof ctrl.data[field.name] === 'object' || typeof ctrl.data[field.name] === 'array') {
+						if( (ctrl.data[field.name] instanceof Date)){
+							let _d = ctrl.data[field.name].toISOString()
+							_d = _d.split('T').join(' ').split('.')[0]
+							data.append(field.name, _d)	
+						}
 						return;
 					}
 					if (field.name === 'timestamp') {

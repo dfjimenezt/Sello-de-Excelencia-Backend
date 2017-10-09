@@ -59,7 +59,7 @@ dmt.tables = {
 			},
 			{
 				"name": "image",
-				"type": "text",
+				"type": "file",
 				"disabled": false,
 				"key": false
 			},
@@ -71,7 +71,7 @@ dmt.tables = {
 			},
 			{
 				"name": "description",
-				"type": "text",
+				"type": "string",
 				"disabled": false,
 				"key": false
 			},
