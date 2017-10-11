@@ -465,17 +465,18 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 						return;
 					}
 				}
+				if (field.type === 'boolean') {
+					data.append(field.name, ctrl.data[field.name] === true ? 1 : 0)
+					return;
+				}
 				if (!ctrl.data[field.name]) {
 					return;
 				}
 				if (field.name === ctrl.currentEntity.defaultSort) {
 					update = true;
 				}
-				if (field.type === 'boolean') {
-					data.append(field.name, ctrl.data[field.name] === true ? 1 : 0)
-				} else {
 					data.append(field.name, ctrl.data[field.name])
-				}
+				
 			})
 			if (ctrl.currentEntity.translate) {
 				data.append("language", ctrl.language);

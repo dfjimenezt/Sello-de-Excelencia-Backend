@@ -90,9 +90,226 @@ var service_controller = function () {
 	 * 	total_results:1
 	 * }
 	*/
-	var get_entity_service = function (user, params) {
-		params.order = 'id desc'
-		return _get(model_entity_service, user, params)
+	var get_entity_service = function (user, params, req, res) {
+		if (params.certificate) {
+			let CONSTANTS = require('../events/constants.js')
+			let _service = null
+			return model_entity_service.getByUid(params.id).
+				then((result)=>{
+					_service = result.data[0]
+					return model_entity_service_status.getByParams({
+						id_service:_service.id,
+						id_status:CONSTANTS.SERVICE.CUMPLE
+					})
+				}).
+				then((results) => {
+					let _status = null
+					let now = new Date()
+					results.data.forEach((status)=>{
+						if(status.valid_to > now){
+							if(_status == null){
+								_status = status
+							}else{
+								if(status.valid_to > _status.valid_to){
+									_status = status
+								}
+							}
+						}
+					})
+					res.writeHead(200, { 'Content-Type': 'application/pdf' });
+					var hummus = require('hummus');
+					var pdfWriter = hummus.createWriter(new hummus.PDFStreamForResponse(res));
+					let page = pdfWriter.createPage(0, 0, 842, 595)
+					var cxt = pdfWriter.startPageContentContext(page)
+					let font = pdfWriter.getFontForFile('./app/assets/UniversCondensed.ttf')
+					cxt.drawImage(0, 0, './app/assets/diploma.png')
+					let _y = 480
+					let size = font.calculateTextDimensions('CERTIFICADO',60);
+					let center = 424 - size.width / 2
+					cxt.writeText('CERTIFICADO', center,_y,
+						{
+							font: font,
+							size: 60,
+							colorspace: 'rgb',
+							color: 0x694a8b
+						}
+					)
+					_y -= 25
+					size = font.calculateTextDimensions('DE RECONOCIMIENTO',30);
+					center = 424 - size.width / 2
+					cxt.writeText('DE RECONOCIMIENTO', center, _y,
+						{
+							font: font,
+							size: 30,
+							colorspace: 'rgb',
+							color: 0x694a8b
+						}
+					)
+					_y -= 50
+					size = font.calculateTextDimensions('EL MINISTERIO DE TECNOLOGÍAS DE LA INFORMACIÓN Y LAS',16);
+					center = 424 - size.width / 2
+					cxt.writeText('EL MINISTERIO DE TECNOLOGÍAS DE LA INFORMACIÓN Y LAS', center, _y,
+						{
+							font: font,
+							size: 16,
+							colorspace: 'rgb',
+							color: 0X5f676a
+						}
+					)
+					_y -= 20
+					size = font.calculateTextDimensions('COMUNICACIONES A TRAVÉS DE LA DIRECCIÓN DE GOBIERNO DIGITAL',16);
+					center = 424 - size.width / 2
+					cxt.writeText('COMUNICACIONES A TRAVÉS DE LA DIRECCIÓN DE GOBIERNO DIGITAL', center, _y,
+						{
+							font: font,
+							size: 16,
+							colorspace: 'rgb',
+							color: 0X5f676a
+						}
+					)
+					_y -= 20
+					size = font.calculateTextDimensions('CERTIFICA QUE',13);
+					center = 424 - size.width / 2
+					cxt.writeText('CERTIFICA QUE', center, _y,
+						{
+							font: font,
+							size: 13,
+							colorspace: 'rgb',
+							color: 0X5f676a
+						}
+					)
+					_y -= 30
+					size = font.calculateTextDimensions(_service.institution.name,24);
+					center = 424 - size.width / 2
+					cxt.writeText(_service.institution.name.toUpperCase(), center, _y,
+						{
+							font: font,
+							size: 24,
+							colorspace: 'rgb',
+							color: 0X5f676a,
+							underline: true
+						}
+					)
+					_y -= 20
+					size = font.calculateTextDimensions('SE POSTULÓ Y CUMPLIÓ CON LOS REQUISITOS DE CALIDAD EXIGIDOS POR',13);
+					center = 424 - size.width / 2
+					cxt.writeText('SE POSTULÓ Y CUMPLIÓ CON LOS REQUISITOS DE CALIDAD EXIGIDOS POR', center, _y,
+						{
+							font: font,
+							size: 13,
+							colorspace: 'rgb',
+							color: 0X5f676a
+						}
+					)
+					_y -= 20
+					size = font.calculateTextDimensions('EL MINISTERIO TIC, PARA EL NIVEL ___ Y LE OTORGA EL SELLO DE EXCELENCIA',13);
+					center = 424 - size.width / 2
+					cxt.writeText('EL MINISTERIO TIC, PARA EL NIVEL ', center, _y,
+						{
+							font: font,
+							size: 13,
+							colorspace: 'rgb',
+							color: 0X5f676a
+						}
+					)
+					size = font.calculateTextDimensions('EL MINISTERIO TIC, PARA EL NIVEL_',13);
+					center += size.width
+					cxt.writeText(''+_status.level, center, _y,
+						{
+							font: font,
+							size: 16,
+							colorspace: 'rgb',
+							color: 0X5f676a,
+							underline: true
+						}
+					)
+					size = font.calculateTextDimensions(' '+_status.level+' ',16);
+					center += size.width
+					cxt.writeText(' Y LE OTORGA EL SELLO DE EXCELENCIA', center, _y,
+						{
+							font: font,
+							size: 13,
+							colorspace: 'rgb',
+							color: 0X5f676a
+						}
+					)
+					_y -= 20
+					size = font.calculateTextDimensions('GOBIERNO DIGITAL AL PRODUCTO ',15);
+					center = 424 - size.width / 2
+					cxt.writeText('GOBIERNO DIGITAL AL PRODUCTO', center, _y,
+						{
+							font: font,
+							size: 13,
+							colorspace: 'rgb',
+							color: 0X5f676a
+						}
+					)
+					size = font.calculateTextDimensions(_service.name,16);
+					let lines = 1
+					let _names = []
+					if(size.width > 400){
+						lines = Math.ceil(size.width / 400)
+						let names = _service.name.split(" ")
+						let glue = names.length / lines
+						let count = 0
+						let current = []
+						while(names.length){
+							if(count < glue){
+								current.push(names.splice(0,1))
+								count++;
+							}
+							if(count == glue){
+								let n = current.join(' ')
+								_names.push(n)
+								current = []						
+								count = 0		
+							}
+						}
+					}else{
+						_names.push(_service.name)
+					}
+					
+					while (_names.length){
+						_y -= 22
+						_t = _names.splice(0,1)[0]
+						size = font.calculateTextDimensions(_t,16);
+						center = 424 - size.width / 2
+						cxt.writeText(_t.toUpperCase(), center, _y,
+							{
+								font: font,
+								size: 16,
+								colorspace: 'rgb',
+								color: 0X5f676a,
+								underline: true
+							}
+						)
+					}
+					cxt.writeText('DIRECTORA DE GOBIERNO DIGITAL', 338, 595-488,
+						{
+							font: font,
+							size: 16,
+							colorspace: 'rgb',
+							color: 0x694a8b
+						}
+					)
+					let date = _status.timestamp.toISOString().substr(0,10);
+					size = font.calculateTextDimensions(date,15);
+					center = 424 - size.width / 2
+					cxt.writeText(date, center, 595-525,
+						{
+							font: font,
+							size: 11,
+							colorspace: 'rgb',
+							color: 0X5f676a
+						}
+					)
+					pdfWriter.writePage(page)
+					pdfWriter.end()
+				})
+		} else {
+			params.order = 'id desc'
+			return _get(model_entity_service, user, params)
+		}
 	}
 	/**
 	 * @api {get} api/service/category Request category information
@@ -334,7 +551,7 @@ var service_controller = function () {
 				}
 				return model_entity_service_comment.create(body)
 			}).then((avg) => {
-				emiter.emit('service.rated',body.id_service,avg);
+				emiter.emit('service.rated', body.id_service, avg);
 			})
 	}
 	postMap.set('service', { method: create_entity_service, permits: Permissions.POSTULATE_SERVICE })

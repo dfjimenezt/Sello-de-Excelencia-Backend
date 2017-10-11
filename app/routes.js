@@ -80,12 +80,16 @@ var Routes = function(app) {
 
         if (controller) {
             let method
-            if (req.originalMethod === 'GET') method = controller.get(req.params, req.headers.authorization, req.query)
+            if (req.originalMethod === 'GET') method = controller.get(req.params, req.headers.authorization, req.query, req, res)
             else if (req.originalMethod === 'DELETE') method = controller.delete(req.params, req.headers.authorization, req.query)
 
             method.then((data) => {
-                if (data.error && data.error.htmlCode) res.status(data.error.htmlCode).send(data)
-                else res.send(data)
+                if(data){
+                    if (data.error && data.error.htmlCode) res.status(data.error.htmlCode).send(data)
+                    else res.send(data)
+                }else{
+                    res.end()
+                }
             }).catch((err2) => {
                 if (err2.error && err2.error.htmlCode) res.status(err2.error.htmlCode).send(err2)
                 else res.send(err2)

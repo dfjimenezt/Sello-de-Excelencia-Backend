@@ -376,19 +376,21 @@ var place_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		if (!user.institutions) {
-			throw utiles.informError(401)
-		}
-		let forbidden = true
-		user.institutions.forEach((institution)=>{
-			if(institution.id == body.id){
-				forbidden = false
+		if(user.permissions.indexOf(Permissions.ADMIN_INSTITUTION)== -1){
+			if (!user.institutions) {
+				throw utiles.informError(401)
 			}
-		})
-		if(forbidden){
-			throw utiles.informError(401)
+			let forbidden = true
+			user.institutions.forEach((institution)=>{
+				if(institution.id == body.id){
+					forbidden = false
+				}
+			})
+			if(forbidden){
+				throw utiles.informError(401)
+			}
+			body.id_user_creator = user.id
 		}
-		body.id_user_creator = user.id
 		return model_entity_institution.update(body,{id:body.id})
 	}
 	/**

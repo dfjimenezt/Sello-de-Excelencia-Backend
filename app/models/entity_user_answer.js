@@ -65,6 +65,10 @@ var User_answer = function () {
 		}
 	]
 	BaseModel.apply(this, params)
+	this.clearMedia = function(id){
+		let q = `UPDATE user_answer SET id_media = NULL WHERE id= '${id}'`
+		return this.customQuery(q)
+	}
 	this.toPostulate = function (user, params) {
 		params = params || {}
 		params.limit = params.limit || 20

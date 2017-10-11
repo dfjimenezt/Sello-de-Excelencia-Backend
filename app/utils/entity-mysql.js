@@ -516,8 +516,14 @@ var EntityModel = function (info) {
 			if (f.name == 'timestamp') {
 				return
 			}
-			if (!data[f.name]) {
+			if (data[f.name] === null) {
 				return
+			}
+			if (data[f.name] === undefined) {
+				return
+			}
+			if (data[f.name] === false) {
+				data[f.name] = 0
 			}
 			queryValues += '`' + f.name + '`' + '=' + connection.escape(data[f.name]) + ','
 			if (f.key && !condition) {
