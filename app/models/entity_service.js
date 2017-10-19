@@ -146,6 +146,69 @@ var Service = function () {
 		console.log(q)
 		return this.customQuery(q)
 	}
+	this.getByPostulateCertificationDate = function(params){
+		params = params || {}
+		params.limit = params.limit || 20
+		params.page = params.page || 1
+		params.order = params.order || 'id asc'
+		
+		let _filters = {}
+		for(let i = 0 ; i < params.filter_field.length ; i++){
+			if(!_filters[params.filter_field[i]]){
+				_filters[params.filter_field[i]] = []
+			}
+			_filters[params.filter_field[i]].push(params.filter_value[i])
+		}
+		let query = `SELECT s.id FROM service s
+		JOIN service_status ss ON  (
+			ss.id_service = s.id 
+			${_filters['certification'] ? 'AND DATE(ss.timestamp) =  \''+_filters['certification'][0] +'\' AND ss.id_status = 8' :''}
+		)
+		JOIN institution i on s.id_institution = i.id
+		WHERE 
+		${_filters['postulation'] ? 'DATE(s.timestamp) = \''+_filters['postulation'][0] +'\' AND ' :''}
+		${_filters['institution.id'] ? 'i.id = \''+_filters['institution.id'][0] +'\' AND ' :''}
+		${_filters['id'] ? 's.id = \''+_filters['id'][0] +'\' AND ' :''}
+		${_filters['id_category'] ? 's.id_category = \''+_filters['id_category'][0] +'\' AND ' :''}
+		s.current_status = 8 
+		ORDER BY s.id desc`
+		let keys = []
+		return this.customQuery(query).then((results)=>{
+			results.forEach((result)=>{
+				keys.push(result.id)
+			})
+			if(keys.length == 0){
+				return [[],[{total:0}],[]]
+			}
+			let query = `SELECT SQL_CALC_FOUND_ROWS * FROM view_service 
+			WHERE id IN (${keys.join(',')}) ORDER BY id desc
+			LIMIT ${params.limit * (params.page-1)},${params.limit};
+			SELECT FOUND_ROWS() as total;
+			SELECT * FROM view_service_status WHERE id_service IN (${keys.join(',')}) AND id_status = 8 ORDER BY timestamp desc;`	
+			return this.customQuery(query)
+		}).then((result)=>{
+			let data = result[0]
+			let total = result[1][0].total
+			let history = result[2]
+			let list = []
+			
+			let _history = {}
+			for (let i = 0; i < history.length; i++) {
+				let status = this.sintetizeRelation(history[i], {entity:'service_status'})
+				if(!_history[status.id_service]){
+					_history[status.id_service] = []
+				}
+				_history[status.id_service].push(status)
+			}
+
+			for (let i = 0; i < data.length; i++) {
+				let item = this.sintetizeRelation(data[i], {entity:'service'})
+				item.history = _history[item.id]
+				list.push(item)
+			}
+			return { data: list, total_results: total }
+		})
+	}
 	return this
 };
 util.inherits(Service, BaseModel)

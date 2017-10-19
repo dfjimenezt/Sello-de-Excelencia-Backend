@@ -307,6 +307,9 @@ var service_controller = function () {
 					pdfWriter.end()
 				})
 		} else {
+			if(params.certified){
+				return model_entity_service.getByPostulateCertificationDate(params)
+			}
 			params.order = 'id desc'
 			return _get(model_entity_service, user, params)
 		}
