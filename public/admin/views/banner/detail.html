@@ -4,7 +4,7 @@
       <md-content layout-spacing="center">
         <md-toolbar class="md-hue-1" layout="row" flex>
           <span flex></span>
-          <md-button class="md-accent md-raised" ng-click="ctrl.saveItem()" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
+          <md-button class="md-accent md-raised" ng-click="ctrl.saveItem($event)" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
         </md-toolbar>
         <form class="md-padding" name="ctrl.form" layout="column" flex>
           <div layout="row" layout-wrap class="input-row" layout-padding flex>

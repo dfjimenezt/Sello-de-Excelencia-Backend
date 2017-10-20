@@ -357,7 +357,7 @@ angular.module('dmt-back').controller('detailItemSingleController', function ($m
 		window.location.href = "/admin/login";
 	}
 
-	this.saveItem = function () {
+	this.saveItem = function (ev) {
 		ctrl.form.$setSubmitted();
 		if (ctrl.form.$valid) {
 			var base = ctrl.currentEntity.endpoint;
@@ -393,20 +393,34 @@ angular.module('dmt-back').controller('detailItemSingleController', function ($m
 				//$http.put(base, data).then(ctrl.getData).catch(error);
 				request.open("PUT", base);
 				request.setRequestHeader("Authorization", localStorage.getItem("token"));
-				request.onload = ctrl.getData;
+				request.onload = function(){
+					$mdDialog.show($mdDialog.alert()
+					.parent(angular.element(document.body))
+					.clickOutsideToClose(true)
+					.title('Guardado')
+					.textContent('Se ha guardado exitosamente')
+					.ariaLabel('Guardado exitosamente')
+					.ok('Aceptar')
+					.targetEvent(ev))
+					ctrl.getData();
+				}
 				request.send(data);
 			} else {
 				request.open("POST", base);
 				request.setRequestHeader("Authorization", localStorage.getItem("token"));
 				request.onload = function () {
-					var p = page.parent
-					var url = p.path;
-					while (p.parent) {
-						p = p.parent;
-						url = p.path + '/' + url;
-					}
-					console.log(url);
-					$location.path(url);
+					$mdDialog.show($mdDialog.alert()
+						.parent(angular.element(document.body))
+						.clickOutsideToClose(true)
+						.title('Guardado')
+						.textContent('Se ha guardado exitosamente')
+						.ariaLabel('Guardado exitosamente')
+						.ok('Aceptar')
+						.targetEvent(ev)).then(()=>{
+							var url = $location.path()
+							url = url.substr(0,url.lastIndexOf("/"))
+							$location.path(url);
+						})
 				};
 				request.send(data);
 

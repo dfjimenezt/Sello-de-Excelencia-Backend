@@ -429,7 +429,7 @@ angular.module('dmt-back').controller('answerController', function ($mdDialog, p
 			templateUrl: entity.delete ? entity.delete.templateUrl || 'views/user/message-dialog.html' : 'views/user/message-dialog.html',
 		}).then(ctrl.getData);
 	}
-	this.saveItem = function () {
+	this.saveItem = function (ev) {
 		ctrl.form.$setSubmitted();
 		if (ctrl.form.$valid) {
 			var base = ctrl.currentEntity.endpoint;
@@ -465,12 +465,34 @@ angular.module('dmt-back').controller('answerController', function ($mdDialog, p
 				//$http.put(base, data).then(ctrl.getData).catch(error);
 				request.open("PUT", base);
 				request.setRequestHeader("Authorization", localStorage.getItem("token"));
-				request.onload = ctrl.getData;
+				request.onload = function(){
+					$mdDialog.show($mdDialog.alert()
+					.parent(angular.element(document.body))
+					.clickOutsideToClose(true)
+					.title('Guardado')
+					.textContent('Se ha guardado exitosamente')
+					.ariaLabel('Guardado exitosamente')
+					.ok('Aceptar')
+					.targetEvent(ev))
+					ctrl.getData();
+				}
 				request.send(data);
 			} else {
 				request.open("POST", base);
 				request.setRequestHeader("Authorization", localStorage.getItem("token"));
 				request.onload = function () {
+					$mdDialog.show($mdDialog.alert()
+						.parent(angular.element(document.body))
+						.clickOutsideToClose(true)
+						.title('Guardado')
+						.textContent('Se ha guardado exitosamente')
+						.ariaLabel('Guardado exitosamente')
+						.ok('Aceptar')
+						.targetEvent(ev)).then(()=>{
+							var url = $location.path()
+							url = url.substr(0,url.lastIndexOf("/"))
+							$location.path(url);
+						})
 				};
 				request.send(data);
 			}

@@ -1,4 +1,4 @@
-angular.module('dmt-back').controller('detailItemExtendedController', function ($mdDialog, $mdEditDialog, $routeParams, page, $location, $http, $filter) {
+angular.module('dmt-back').controller('detailLearnExtendedController', function ($mdDialog, $mdEditDialog, $routeParams, page, $location, $http, $filter) {
 	var ctrl = this;
 	ctrl.data = {};
 	ctrl.breadcrum = buildBreadcrum($location.path(), page);
