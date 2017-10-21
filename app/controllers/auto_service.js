@@ -186,8 +186,7 @@ var service_controller = function () {
 							font: font,
 							size: 24,
 							colorspace: 'rgb',
-							color: 0X5f676a,
-							underline: true
+							color: 0X5f676a
 						}
 					)
 					_y -= 20
@@ -219,8 +218,7 @@ var service_controller = function () {
 							font: font,
 							size: 16,
 							colorspace: 'rgb',
-							color: 0X5f676a,
-							underline: true
+							color: 0X5f676a
 						}
 					)
 					size = font.calculateTextDimensions(' '+_status.level+' ',16);
@@ -279,8 +277,7 @@ var service_controller = function () {
 								font: font,
 								size: 16,
 								colorspace: 'rgb',
-								color: 0X5f676a,
-								underline: true
+								color: 0X5f676a
 							}
 						)
 					}

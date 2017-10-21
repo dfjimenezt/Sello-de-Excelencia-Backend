@@ -238,7 +238,7 @@ var Auth = function () {
                     }
                     delete user.password // encode
                     var now = new Date()
-                    now.setDate(now.getDate() + 15) // the token expires in 15 days
+                    now.setDate(now.getDate() + 1) // the token expires in 15 days
                     var session = {
                         token: utiles.sign(user),
                         id_user: user.id,
