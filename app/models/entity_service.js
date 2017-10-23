@@ -81,8 +81,15 @@ var Service = function () {
 							if (!_couples[_user.id_answer]) {
 								_couples[_user.id_answer] = []
 							}
-
-							_couples[_user.id_answer].push(_user)
+							let found = false
+							_couples[_user.id_answer].forEach((user)=>{
+								if(user.id_user == _user.id_user){
+									found = true
+								}
+							})
+							if(!found){
+								_couples[_user.id_answer].push(_user)
+							}
 						}, this);
 
 						let request= []

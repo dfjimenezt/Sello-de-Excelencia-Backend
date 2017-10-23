@@ -34,12 +34,12 @@
 	},
 	"smtp":{
   	"protocol"    : "smtps",
-    "sender"      : "sellodeexcelencia%40mintic.gov.co",
-    "password"    : "Juanfelipe2012",
-    "server"      : "smtp.office365.com",
-    "from"        : "Sello de Excelencia <sellodeexcelencia@mintic.gov.co>",
+    "sender"      : "no-reply%40domoti-sas.com",
+    "password"    : "E<mYm5<n",
+    "server"      : "smtp.gmail.com",
+    "from"        : "Sello de Excelencia <no-reply@domoti-sas.com>",
     "bcc"         : "",
-    "admin"       : "sellodeexcelencia@mintic.gov.co"
+    "admin"       : "jorge.contreras@domoti-sas.com"
 	},
 	"secret": "1234567890",
     "gcloud": {

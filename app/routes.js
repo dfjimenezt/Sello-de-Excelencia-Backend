@@ -97,6 +97,12 @@ var Routes = function(app) {
         } else res.sendStatus(404)
     }
 
+    app.get('/testmail', (req, res) => { 
+        var utiles = require('./utils/utiles.js')
+        utiles.sendEmail("daniel.jimenez@domoti-sas.com",null,null,"Temática","Body")
+        res.sendStatus(200) 
+    })
+
     app.get('/health', (req, res) => { res.sendStatus(200) })
 
     /* ---------------- CREATE ---------------- */
