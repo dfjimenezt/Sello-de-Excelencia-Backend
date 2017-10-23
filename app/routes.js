@@ -99,8 +99,12 @@ var Routes = function(app) {
 
     app.get('/testmail', (req, res) => { 
         var utiles = require('./utils/utiles.js')
-        utiles.sendEmail("daniel.jimenez@domoti-sas.com",null,null,"Temática","Body")
-        res.sendStatus(200) 
+        utiles.sendEmail(req.params.email,null,null,"Temática","Body").then((response)=>{
+            res.send(response)
+        }).catch((err)=>{
+            res.send(err)
+        })
+        
     })
 
     app.get('/health', (req, res) => { res.sendStatus(200) })
