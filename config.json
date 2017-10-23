@@ -32,20 +32,11 @@
 			"encrypt": true
 		}
 	},
-	/*"smtp":{
-  	"protocol"    : "smtps",
-    "sender"      : "no-reply%40domoti-sas.com",
-    "password"    : "E<mYm5<n",
-    "server"      : "smtp.gmail.com",
-    "from"        : "Sello de Excelencia <no-reply@domoti-sas.com>",
-    "bcc"         : "",
-    "admin"       : "jorge.contreras@domoti-sas.com"
-	},*/
 	"smtp":{
   	"protocol"    : "smtps",
     "sender"      : "sellodeexcelencia%40mintic.gov.co",
     "password"    : "Juanfelipe2012",
-    "server"      : "smtp.gmail.com",
+    "server"      : "smtp.office365.com",
     "from"        : "Sello de Excelencia <sellodeexcelencia@mintic.gov.co>",
     "bcc"         : "",
     "admin"       : "sellodeexcelencia@mintic.gov.co"
