@@ -398,7 +398,7 @@ var Auth = function () {
                 pass = pass.digest('hex')
                 user.password = pass
                 emiter.emit('user.updatepassword',user, pass_user)
-                return userModel.update({ password: user.password }, { id: user.id })
+                return userModel.update({ password: user.password, tmp_pwd: 1 }, { id: user.id })
             }
         })
     }
