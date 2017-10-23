@@ -311,6 +311,7 @@ angular.module('dmt-back').controller('detailLearnExtendedController', function 
 			}
 		}
 	}
+	
 	function addFilters(item, index) {
 		var base = item.endpoint;
 		if (!base) {
@@ -359,6 +360,24 @@ angular.module('dmt-back').controller('detailLearnExtendedController', function 
 	this.saveItem = function (ev) {
 		ctrl.form.$setSubmitted();
 		if (ctrl.form.$valid) {
+
+			function getYouTubeId(url) {
+				var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+				var match = url.match(regExp);
+		
+				if (match && match[2].length == 11) {
+						return match[2];
+				} else {
+						return 'error';
+				}
+		}
+			var id = getYouTubeId(ctrl.data.url);
+			if(id!='error'){
+				ctrl.data.url = 'https://www.youtube.com/embed/'+id
+			}else{
+				
+			}
+
 			var base = ctrl.currentEntity.endpoint;
 			var data = new FormData();
 			var update = false;

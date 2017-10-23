@@ -571,7 +571,7 @@ var EntityModel = function (info) {
 				return
 				//throw utiles.informError(300)
 			}
-			emiter.emit(info.entity+'.crated',body)
+			emiter.emit(info.entity+'.created',body)
 		}).then(() => {
 			return this.updateView()
 		})

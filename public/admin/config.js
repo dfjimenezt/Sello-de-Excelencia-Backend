@@ -281,13 +281,13 @@ dmt.config = [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemExtendedController",
+						controller: "detailLearnExtendedController",
 						templateUrl: "views/extended/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemExtendedController",
+						controller: "detailLearnExtendedController",
 						templateUrl: "views/extended/detail.html"
 					}
 				]
