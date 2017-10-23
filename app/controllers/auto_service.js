@@ -546,7 +546,7 @@ var service_controller = function () {
 		let _users = []
 		return model_entity_service_comment.getByParams({ id_user: user.id, id_service: body.id_service })
 			.then((results) => {
-				if (results.length > 0) {
+				if (results.data.length > 0) {
 					throw utiles.informError(400)
 				}
 				return model_entity_service_comment.create(body)
