@@ -17,7 +17,7 @@ var Hall_of_fame = function () {
 		let q = null
 		if(type == 2){
 			q = 'INSERT INTO `hall_of_fame` (`points`,`date`,`name`,`id_user`,`id_role`)  ( '+
-			'SELECT SUM(`p`.`value`) points, CURRENT_DATE() date, `u`.`name`,`u`.`id`,`u_r`.`id_role` '+
+			'SELECT SUM(`p`.`value`) points, CURRENT_DATE() date, CONCAT(`u`.`name`," ",`u`.`secondname`," ",`u`.`lastname`," ",`u`.`secondlastname`),`u`.`id`,`u_r`.`id_role` '+
 			'FROM `points` `p` '+
 			'LEFT JOIN `user` `u` on `u`.`id` = `p`.`id_user` '+
 			'JOIN `user_role` `u_r` on `u_r`.`id_user` = `u`.`id` '+
