@@ -775,23 +775,35 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
+		let url = null
 		if (files.file) {
 			return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type)
-				.then((url) => {
+				.then((_url) => {
+					url = _url
 					return model_media.create({
 						url: url,
 						type: files.file.type
 					})
 				}).then((media) => {
 					body.id_media = media.insertId
-					return model_entity_user_answer.update(body, { id: body.id })
+					body.media = {
+						id:media.insertId,
+						url:url,
+						type: files.file.type,
+						timestamp: new Date()
+					}
+					return model_entity_user_answer.update(body, { id: body.id }).then((results)=>{
+						return body
+					})
 				})
 		} else {
 			delete body.id_media
 			delete body.id_order
 			delete body.datetime
 			model_entity_user_answer.clearMedia(body.id)
-			return model_entity_user_answer.update(body, { id: body.id })
+			return model_entity_user_answer.update(body, { id: body.id }).then((results)=>{
+				return body
+			})
 		}
 	}
 	/**
