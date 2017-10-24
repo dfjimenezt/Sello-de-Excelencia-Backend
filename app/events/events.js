@@ -228,6 +228,9 @@ var Events = function () {
 		if(!pass_user){
 			return
 		}
+		if(user.role == 1){
+			return
+		}
 		// send an email to the user
 		let token = utiles.sign(user.email)
 		let template = `
@@ -237,7 +240,7 @@ var Events = function () {
 		<div>
 		<p> Hola ${user.name} </p>
 		<p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
-		${user.role == 1 ? '': '<p>Tu nueva contraseña para acceder es: '+pass_user+' </p>'}
+		<p>Tu nueva contraseña para acceder es: ${pass_user} </p>
 		<p><a href='http://sellodeexcelencia.gov.co/activar-cuenta?token=${token}&email=${user.email}&active=1'>
 			Haz click aquí para activar tu cuenta </a>
 		</p>
