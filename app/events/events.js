@@ -391,7 +391,15 @@ var Events = function () {
 					entity = new entity()
 					entity.getByUid(old.id_institution).then((result)=>{
 						let institution = result[0]
-						entity_template = '<p>Felicitaciones has recibido el Sello de Excelencia.</p><p>Hola hemos otorgado el sello de excelencia a tu servicio</p>'
+						entity_template = `
+						<p>Felicitaciones has recibido el Sello de Excelencia.</p>
+						<p>Hola hemos otorgado el sello de excelencia a tu servicio</p>
+						<p>Te invitamos a que agregues este código en tu página web</p>
+						<code>
+							<pre>
+								<embed width="400" height="800" src="https://prueba-dot-domoti-sellodeexcelencia.appspot.com/embeded/${body.id}"></embed>
+							</pre>
+						</code>`
 						utiles.sendEmail(institution.email, null, null, 
 							'Felicitaciones has recibido el Sello de Excelencia', 
 							entity_template)
