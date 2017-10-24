@@ -438,11 +438,14 @@ var Events = function () {
 		})
 	})
 	emiter.on('evaluation_request.asignation',(email)=>{
-		/*utiles.sendEmail(email,null,null,'Asignación de Requisito',`
-		<div style="text-align:center;margin: 10px auto;">
-		<img width="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
-		</div>
-		<p>Se ha asignado un nuevo requisito en Sello de Excelencia</p>`)*/
+		let tout = Math.floor(Math.random() * 1000) + 100
+		window.setTimeout(()=>{
+			utiles.sendEmail(email,null,null,'Asignación de Requisito',`
+			<div style="text-align:center;margin: 10px auto;">
+			<img width="100" src="http://sellodeexcelencia.gov.co/assets/img/sell_gel.png"/>
+			</div>
+			<p>Se ha asignado un nuevo requisito en Sello de Excelencia</p>`)
+		},tout)
 	})
 }
 module.exports = Events
