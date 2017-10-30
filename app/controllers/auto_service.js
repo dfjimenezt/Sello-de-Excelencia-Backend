@@ -522,12 +522,13 @@ var service_controller = function () {
 							}
 						}
 					})
-					if(_service.category.diploma == 1){
-						diplomaB(_service,_status,res)
-					}else{
-						diplomaA(_service,_status,res)
+					if(_status){
+						if(_service.category.diploma == 1){
+							diplomaB(_service,_status,res)
+						}else{
+							diplomaA(_service,_status,res)
+						}
 					}
-					
 				})
 		} else {
 			if(params.certified){

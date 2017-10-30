@@ -169,7 +169,7 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "id",
+				"name": "diploma",
 				"type": "diploma",
 				"disabled": false,
 				"key": false
