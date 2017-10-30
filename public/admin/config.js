@@ -317,7 +317,23 @@ dmt.config = [
 			{
 				name: "Puntaje",
 				path: "puntaje",
-				entity: "motives"
+				entity: "motives",
+				controller: "listItemExtendedController",
+				templateUrl: "views/extended/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemExtendedController",
+						templateUrl: "views/extended/detail.html"
+					}
+				]
 			},
 			{
 				name: "Tiempos / Requisito",

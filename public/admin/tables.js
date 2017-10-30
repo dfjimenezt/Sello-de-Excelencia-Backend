@@ -1249,12 +1249,6 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "points",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
 				"name": "id_category",
 				"type": "int",
 				"disabled": false,
@@ -1273,8 +1267,20 @@ dmt.tables = {
 				"key": false
 			},
 			{
+				"name": "points",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
 				"name": "public",
 				"type": "boolean",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "description",
+				"type": "string",
 				"disabled": false,
 				"key": false
 			},
