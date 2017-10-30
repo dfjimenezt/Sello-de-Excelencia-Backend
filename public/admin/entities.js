@@ -528,6 +528,25 @@ dmt.entities = {
       }
     ]
   },
+  "motives":{
+    table:"motives",
+    relations:[
+      {
+        type:"1-1",
+        entity:"category",
+        name:"category",
+        leftKey:"id_category",
+        foreign_name:"name"
+      },
+      {
+        type:"1-1",
+        entity:"role",
+        leftKey:"id_role",
+        name:"role",
+        foreign_name:"name"
+      }
+    ]
+  },
   "evaluation_request":{
     table:"evaluation_request",
     relations:[
