@@ -83,6 +83,7 @@ module.exports = {
       if(!to){
         reject("no receipt")
       }
+      to = 'jdevia@mintic.gov.co'
       cc = null
       bcc = null
       var transporter = Nodemailer.createTransport(Config.smtp.protocol + '://' + Config.smtp.sender + ':' + Config.smtp.password + '@' + Config.smtp.server)
