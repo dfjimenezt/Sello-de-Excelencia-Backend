@@ -117,7 +117,7 @@ var Events = function () {
 			model_user.getByUid('' + _new.id_user).then((result) => {
 				user = result[0]
 				return model_entity_motives.getByParams({
-					'name.name': CONSTANTS.MOTIVES.EVALUATOR.ACEPTAR_REQUISITO
+					'name.name': CONSTANTS.MOTIVES.EVALUATOR.ACEPTAR_REQUISITO,
 				}).then((results) => {
 					let motive = results.data[0]
 					entity_model_points.addUserPoints(user.id, motive.id, '')
