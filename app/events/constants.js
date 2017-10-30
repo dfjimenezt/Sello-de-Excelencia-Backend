@@ -12,10 +12,10 @@ module.exports = {
 		'ENTITY': {
 			'VER_VIDEO': 3,
 			'EVENTOS': 5,
-			'PASAR_REQUISITO_NIVEL_1': 8,
-			'PASAR_REQUISITO_NIVEL_2': 9,
-			'PASAR_REQUISITO_NIVEL_3': 10,
-			'PERDER_REQUISITO': 11,
+			'POSTULAR': 8,
+			'RECHAZAR': 8,
+			'CUMPLE': 8,
+			'NO_CUMPLE': 8,
 		}
 	},
 	SERVICE: {

@@ -109,6 +109,13 @@ var Events = function () {
 			}
 		})
 	})
+	emiter.on('evaluation_request.created', (_new) =>{
+		if(_new.id_request_status === CONSTANTS.EVALUATION_REQUEST.SOLICITADO){
+			 model_user.getByUid('' + old.id_user).then((result) => {
+				entity_model_points.addUserPoints(result[0].id, CONSTANTS.MOTIVES.EVALUATOR.ACEPTAR_REQUISITO, '', null)
+			 })
+		}
+	})
 	emiter.on('evaluation_request.updated', (old, _new) => {
 		if (old.id_request_status != _new.id_request_status || _new.id_request_status === CONSTANTS.EVALUATION_REQUEST.RECHAZADO) {
 			let _status = null
@@ -148,6 +155,9 @@ var Events = function () {
 					ftime.setDate(ftime.getDate() + duration)
 					_new.alert_time = atime
 					_new.end_time = ftime
+					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.ACEPTADO) {
+						entity_model_points.addUserPoints(_evaluator.id, CONSTANTS.MOTIVES.EVALUATOR.ACEPTAR_REQUISITO, '')
+					}
 					//5 Rechazado
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.RECHAZADO) {
 						if(_new.branch >= 3){
@@ -387,7 +397,7 @@ var Events = function () {
 							<p>Nuestros mejores deseos,<\p>
 							<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
 					})
-					
+					model_entity_points.addInstitutionPoints(old.id_institution,CONSTANTS.MOTIVES.ENTITY.POSTULAR)
 				}
 				if (_new.current_status == CONSTANTS.SERVICE.EVALUACION) {
 					model_entity_service.asignate(_new).then((evaluations)=>{
@@ -421,6 +431,9 @@ var Events = function () {
 					})
 				}
 				if (_new.current_status == CONSTANTS.SERVICE.CUMPLE){
+					model_entity_points.addInstitutionPoints(
+						old.id_institution,CONSTANTS.MOTIVES.ENTITY.CUMPLE
+					)
 					model_entity_institution.getUser(old.id_institution).then((result)=>{
 						let user = result[0]
 						utiles.sendEmail(user.email, null, null, 
@@ -443,6 +456,9 @@ var Events = function () {
 					})
 				}
 				if (_new.current_status == CONSTANTS.SERVICE.NO_CUMPLE){
+					model_entity_points.addInstitutionPoints(
+						old.id_institution,CONSTANTS.MOTIVES.ENTITY.NO_CUMPLE
+					)
 					model_entity_institution.getUser(old.id_institution).then((result)=>{
 						let user = result[0]
 						
@@ -459,6 +475,7 @@ var Events = function () {
 					})
 				}
 				if(old.current_status == CONSTANTS.SERVICE.VERIFICACION && _new.current_status === CONSTANTS.SERVICE.INCOMPLETO){
+					model_entity_points.addInstitutionPoints(old.id_institution,CONSTANTS.MOTIVES.ENTITY.RECHAZAR)
 					return
 				}
 				return model_entity_service_status.create(data)
