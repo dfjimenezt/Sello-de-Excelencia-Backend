@@ -252,7 +252,7 @@ var service_controller = function () {
 					if(size.width > 400){
 						lines = Math.ceil(size.width / 400)
 						let names = _service.name.split(" ")
-						let glue = names.length / lines
+						let glue = Math.floor(names.length / lines)
 						let count = 0
 						let current = []
 						while(names.length){
