@@ -8,6 +8,13 @@ var util = require('util')
 var Institution = function () {
 	var params = [{"table":"institution","relations":[{"type":"1-1","entity":"city","name":"city","leftKey":"id_city","foreign_name":"name"},{"type":"1-1","entity":"region","name":"region","leftKey":"id_region","foreign_name":"name"},{"type":"1-1","entity":"user","name":"creator","leftKey":"id_user_creator","foreign_name":"email"},{"type":"1-1","entity":"institutionType","name":"type","leftKey":"id_institution_type","foreign_name":"id"},{"type":"n-n","name":"users","entity":"user","intermediate":{"entity":"institution_user","leftKey":"id_institution","rightKey":"id_user"}},{"type":"1-n","name":"service","rightKey":"id_institution","entity":"service"}],"entity":"institution","model":"entity"}]
 	BaseModel.apply(this, params)
+	this.getUser = function(id){
+		let q = `SELECT u.* FROM user u 
+		JOIN institution_user u_i on u_i.id_user = u.id
+		JOIN institution i on i.id = u_i.id_institution
+		WHERE i.id = '${id}'`
+		return this.customQuery(q)
+	}
 	return this
 };
 util.inherits(Institution, BaseModel)

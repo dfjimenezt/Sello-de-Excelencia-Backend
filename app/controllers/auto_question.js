@@ -519,7 +519,7 @@ var question_controller = function () {
 		body.id_user = user.id
 		body.id_status = 1
 		let url = null
-		if (files.file) {
+		if (files && files.file) {
 			return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type)
 				.then((_url) => {
 					url = _url
@@ -628,8 +628,9 @@ var question_controller = function () {
 	 */
 	var create_chats = function (user, body) {
 		body.id_sender = user.id
+		let request = null
 		return model_entity_evaluation_request.getByUid(body.id_evaluation_request).then((result) => {
-			let request = result.data[0]
+			request = result.data[0]
 			if (request.id_user != body.id_sender) { //entity
 				return request.id_user
 			} else {
@@ -640,7 +641,7 @@ var question_controller = function () {
 		}).then((id_user) => {
 			return model_user.getByUid(id_user)
 		}).then((result) => {
-			emiter.emit('chat.created',result[0])
+			emiter.emit('chat.created',result[0],request)
 			return model_chats.create(body)
 		})
 		
@@ -776,7 +777,7 @@ var question_controller = function () {
 			throw utiles.informError(400)
 		}
 		let url = null
-		if (files.file) {
+		if (files && files.file) {
 			return utiles.uploadFileToGCS(user.id, files.file, user.id, files.file.type)
 				.then((_url) => {
 					url = _url

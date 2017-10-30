@@ -822,12 +822,12 @@ var configuration_controller = function () {
 				return utiles.sendEmail(user.email,null,null,'Contacto desde Sello de Excelencia',body.message)
 			})
 		}else{
-			let institution = require('../models/institution.js');
-			let model_institution = new institution();
+			let institution = require('../models/entity_institution.js');
+			let model_entity_institution = new institution();
 			let _institution = null
-			model_institution.getByUid(''+body.id).then((results)=>{
+			model_entity_institution.getByUid(''+body.id).then((results)=>{
 				_institution = results[0]
-				return model_institution.getUser(body.id).then((user)=>{
+				return model_entity_institution.getUser(body.id).then((user)=>{
 					user = user[0]
 					return utiles.sendEmail(user.email,_institution.email,null,'Contacto desde Sello de Excelencia',body.message)
 				})

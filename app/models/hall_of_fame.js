@@ -19,7 +19,7 @@ var Hall_of_fame = function () {
 			q = 'INSERT INTO `hall_of_fame` (`points`,`date`,`name`,`id_user`,`id_role`)  ( '+
 			'SELECT SUM(`p`.`value`) points, CURRENT_DATE() date, CONCAT(`u`.`name`," ",`u`.`secondname`," ",`u`.`lastname`," ",`u`.`secondlastname`),`u`.`id`,`u_r`.`id_role` '+
 			'FROM `points` `p` '+
-			'LEFT JOIN `user` `u` on `u`.`id` = `p`.`id_user` '+
+			'JOIN `user` `u` on `u`.`id` = `p`.`id_user` '+
 			'JOIN `user_role` `u_r` on `u_r`.`id_user` = `u`.`id` '+
 			'WHERE `u_r`.`id_role` = 2 GROUP BY `p`.`id_user` ORDER BY points desc LIMIT 10 );';
 
@@ -28,7 +28,7 @@ var Hall_of_fame = function () {
 			 q = 'INSERT INTO `hall_of_fame` (`points`,`date`,`name`,`id_institution`,`id_role`)  ( '+
 			'SELECT SUM(`p`.`value`) points, CURRENT_DATE() date, `i`.`name`,`i`.`id`,4 '+
 			'FROM `points` `p` '+
-			'LEFT JOIN `institution` `i` on `i`.`id` = `p`.`id_institution` '+
+			'JOIN `institution` `i` on `i`.`id` = `p`.`id_institution` '+
 			'GROUP BY `p`.`id_institution` ORDER BY points desc LIMIT 10 );'
 		}
 		

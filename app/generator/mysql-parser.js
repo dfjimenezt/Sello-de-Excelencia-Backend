@@ -205,7 +205,7 @@ var mySqlGen = function () {
         //Load file into database
         var tables = {}
         var permissions = {}
-        getTables(tables).then((promises) => {
+        return getTables(tables).then((promises) => {
             return Promise.all(promises)
         }).then((info) => {
             let file_name = './public/admin/tables.js'
@@ -227,6 +227,7 @@ var mySqlGen = function () {
              * This are the permissions discovered accross the platform
              */
             module.exports = ${str}`);
+            return true
         }).catch((e) => {
             console.log(e);
         })

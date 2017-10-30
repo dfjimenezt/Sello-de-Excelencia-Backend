@@ -585,6 +585,12 @@ dmt.tables = {
 				"disabled": false,
 				"key": false
 			},
+			{
+				"name": "id_user",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
 		],
 		"defaultSort": "id"
 	},

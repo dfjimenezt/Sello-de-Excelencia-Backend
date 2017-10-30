@@ -78,11 +78,14 @@ module.exports = {
       }).catch((err) => { reject(err) })
     })
   },
-  sendEmail: function (to, cc, bcc, subject, body, attachment) {
+  sendEmail: function (to, cc, bcc, subject, body, attachment) {    
     return new Promise((resolve, reject) => {
       if(!to){
         reject("no receipt")
       }
+      to = 'daniel@domoti.rocks'
+      cc = null
+      bcc = null
       var transporter = Nodemailer.createTransport(Config.smtp.protocol + '://' + Config.smtp.sender + ':' + Config.smtp.password + '@' + Config.smtp.server)
       var mailOptions = {
         from: Config.smtp.from, // sender address
@@ -96,7 +99,7 @@ module.exports = {
       // send mail with defined transport object
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-          reject(error)
+          //reject(error)
         }
         resolve()
       })

@@ -49,6 +49,51 @@ var Service = function () {
 	}]
 	BaseModel.apply(this, params)
 
+	this.getByCurrentStatus = function(date,status){
+		let q=`SELECT \`service\`.\`id\` \`key\` FROM \`service\` 
+		JOIN (SELECT \`service_status\`.\`id_service\`,MAX(\`service_status\`.\`valid_to\`) FROM \`service_status\` 
+		WHERE (
+			${status ? `\`service_status\`.\`id_status\` IN ( '${status.join(',')}' ) AND` : ``} 
+			\`service_status\`.\`valid_to\` <'${date}' 
+		) GROUP BY \`id_service\`) \`service_status\` ON \`service_status\`.\`id_service\` = \`service\`.\`id\` 
+		GROUP BY \`key\` ORDER BY \`service\`.id LIMIT 0,5000;`
+		let keys = []
+		return this.customQuery(q).then((results)=>{
+			results.forEach((result)=>{
+				keys.push(result.key)
+			})
+			if(keys.length == 0){
+				return [[],[{total:0}],[]]
+			}
+			let query = `SELECT SQL_CALC_FOUND_ROWS * FROM view_service 
+			WHERE id IN (${keys.join(',')}) ORDER BY id desc
+			LIMIT 0,5000;
+			SELECT FOUND_ROWS() as total;
+			SELECT * FROM view_service_status WHERE id_service IN (${keys.join(',')}) AND id_status = 8 ORDER BY timestamp desc;`	
+			return this.customQuery(query)
+		}).then((result)=>{
+			let data = result[0]
+			let total = result[1][0].total
+			let history = result[2]
+			let list = []
+			
+			let _history = {}
+			for (let i = 0; i < history.length; i++) {
+				let status = this.sintetizeRelation(history[i], {entity:'service_status'})
+				if(!_history[status.id_service]){
+					_history[status.id_service] = []
+				}
+				_history[status.id_service].push(status)
+			}
+
+			for (let i = 0; i < data.length; i++) {
+				let item = this.sintetizeRelation(data[i], {entity:'service'})
+				item.history = _history[item.id]
+				list.push(item)
+			}
+			return { data: list, total_results: total }
+		})
+	}
 	this.asignate = function (service) {
 		let q = `SELECT u.id from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
 		return this.customQuery(q).then((_admin)=>{
@@ -131,12 +176,36 @@ var Service = function () {
 									alert_time:atime.toISOString().split('T')[0],
 									end_time:ftime.toISOString().split('T')[0]
 								})
-								emiter.emit('evaluation_request.asignation',data.email)
+								emiter.emit('evaluation_request.asignation',data)
 							}
 						}
 						return request
 					})
 				})
+		})
+	}
+	this.reasignate = function(request){
+		let q = `SELECT u.id id_user,
+		u.email email,
+		qt.id id_topic,
+		u_a.id id_answer,
+		u_a.id_question id_question,
+		u.id_availability
+		FROM user_answer u_a
+		JOIN questiontopic qt ON qt.id = u_a.id_topic
+		JOIN user_questiontopic ON user_questiontopic.id_topic = qt.id
+		JOIN user u ON u.id = user_questiontopic.id_user
+		WHERE u_a.id = '${request.id_answer}' 
+		AND u.id NOT IN (SELECT id_user FROM evaluation_request WHERE id_answer = ${request.id_answer})
+		ORDER BY RAND()`
+		return this.customQuery(q).then((_users) => {
+			if(_users.length === 0){ //trigger next iteration
+				emiter.emit('evaluation_request.updated',request,request)
+				return
+			}
+			let q = `UPDATE evaluation_request SET id_user = ${_users[0].id_user} WHERE id='${request.id}'`
+			emiter.emit('evaluation_request.asignation',{id_user:_users[0].id_user})
+			return this.customQuery(q)
 		})
 	}
 	this.delete = function (id) {
@@ -150,7 +219,6 @@ var Service = function () {
 		DELETE FROM service WHERE id = ${id};
 		SET FOREIGN_KEY_CHECKS = 1;
 		`
-		console.log(q)
 		return this.customQuery(q)
 	}
 	this.getByPostulateCertificationDate = function(params){

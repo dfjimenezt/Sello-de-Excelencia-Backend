@@ -7,6 +7,7 @@ var dbConf = null;
 var env = "db_" + config.enviroment;
 dbConf = config[env]
 dbConf.multipleStatements = true
+var pool = mysql.createPool(dbConf)
 
 var EntityModel = function (info) {
 	let dmt_entities = require('../../public/admin/entities.js');
@@ -65,12 +66,11 @@ var EntityModel = function (info) {
 	function resolveQuery(query, connection) {
 		return new Promise((resolve, reject) => {
 			if (verbose) console.log(query)
-			connection.connect()
 			connection.query(query, (err, result, fields) => {
 				if (err) reject(err)
 				else resolve(result)
+				connection.release()
 			})
-			connection.end({ timeout: 60000 })
 		})
 	}
 	function getBase(lang) {
@@ -137,7 +137,6 @@ var EntityModel = function (info) {
 		return this.getFiltered(params)
 	}
 	this.getByUid = function (uid) {
-		var connection = mysql.createConnection(dbConf)
 		let table = getTable(info.entity)
 		let params = {
 			filter_fields: [table.defaultSort],
@@ -146,25 +145,27 @@ var EntityModel = function (info) {
 		return this.getFiltered(params)
 	}
 	this.getByUids = function (uids) {
-		var connection = mysql.createConnection(dbConf)
-		var queryGet = ''
-		for (var i in uids) {
-			queryGet += 'list.Uid = ' + connection.escape(uids[i]) + ' AND '
-		}
-		queryGet = queryGet.slice(0, -4)
-		var query = 'SELECT * FROM `' + info.table + '` AS list WHERE ' + queryGet + ''
-		return resolveQuery(query, connection)
+		return new Promise((resolve, reject) => {
+			pool.getConnection((err, connection) => {
+				if(err){reject(err)}
+				var queryGet = ''
+				for (var i in uids) {
+					queryGet += 'list.Uid = ' + connection.escape(uids[i]) + ' AND '
+				}
+				queryGet = queryGet.slice(0, -4)
+				var query = 'SELECT * FROM `' + info.table + '` AS list WHERE ' + queryGet + ''
+				resolveQuery(query, connection).then(resolve, reject)
+			})
+		})
 	}
 	this.getByParams = function (params) {
-
-		var connection = mysql.createConnection(dbConf)
 		let _params = {
 			filter_fields: [],
 			filter_values: [],
 		}
-		for (var i in params){
+		for (var i in params) {
 			_params.filter_fields.push(i)
-			_params.filter_values.push(params[i])	
+			_params.filter_values.push(params[i])
 		}
 		return this.getFiltered(_params)
 	}
@@ -218,262 +219,265 @@ var EntityModel = function (info) {
 		return result
 	}
 	this.getFiltered = function (params) {
-		var connection = mysql.createConnection(dbConf)
-		let filters = {}
-		var relation_filters = {}
-		var where = ""
-		params.limit = params.limit || 20
-		params.page = params.page || 1
-		params.lang = params.lang || 1
-		params._join = params._join || 'OR'
-		if (params.simple === undefined) {
-			params.simple = true
-		}
-		params.simple = JSON.parse(params.simple)
-		params.order = params.order || getTable(info.entity).defaultSort
-		params.filter_fields = params.filter_fields || []
-		params.filter_values = params.filter_values || []
-		if (typeof params.filter_fields == "string") {
-			params.filter_fields = [params.filter_fields]
-			params.filter_values = [params.filter_values]
-		}
-		params.fields = params.fields || []
-		if (typeof params.fields == "string") {
-			params.fields = [params.fields]
-		}
-		function resolveEqual(connection, value, equal) {
-			if(typeof value == 'number'){
-				return equal + connection.escape(value);
-			}
-			let array = value.split(" ");
-			if (array.length > 1) {
-				return array[0] + connection.escape(array[1]);
-			}
-			return equal + connection.escape(value);
-		}
-
-		//group fields by name
-		params.filter_fields.forEach((key, i) => {
-			if (key.indexOf(".") !== -1) {
-				let rel = key.split(".")
-				let rel_name = rel[0]
-				let rel_field = rel[1]
-				if (!relation_filters[rel_name]) {
-					relation_filters[rel_name] = {}
+		return new Promise((resolve, reject) => {
+			pool.getConnection((err, connection) => {
+				if(err){reject(err)}
+				let filters = {}
+				var relation_filters = {}
+				var where = ""
+				params.limit = params.limit || 20
+				params.page = params.page || 1
+				params.lang = params.lang || 1
+				params._join = params._join || 'OR'
+				if (params.simple === undefined) {
+					params.simple = true
 				}
-				if (!relation_filters[rel_name][rel_field]) {
-					relation_filters[rel_name][rel_field] = []
+				params.simple = JSON.parse(params.simple)
+				params.order = params.order || getTable(info.entity).defaultSort
+				params.filter_fields = params.filter_fields || []
+				params.filter_values = params.filter_values || []
+				if (typeof params.filter_fields == "string") {
+					params.filter_fields = [params.filter_fields]
+					params.filter_values = [params.filter_values]
 				}
-				//relation_filters[rel_name][rel_field].push(connection.escape(params.filter_values[i]))
-				relation_filters[rel_name][rel_field].push(resolveEqual(connection,params.filter_values[i],''))
-			} else {
-				if (!filters[key]) {
-					filters[key] = []
+				params.fields = params.fields || []
+				if (typeof params.fields == "string") {
+					params.fields = [params.fields]
 				}
-				filters[key].push(resolveEqual(connection, params.filter_values[i],'= '))
-			}
-
-		})
-
-		let search = ""
-		if (params.filter && params.filter.length > 0) {
-			let ety = dmt.entities[info.entity]
-			let view = resolveViewName(info.entity, params.lang)
-			let baseTable = getTable(info.entity)
-			let translateTable = null
-			if (ety && ety.translate)
-				translateTable = getTable(ety.translate.table)
-			let fields = []
-			baseTable.fields.forEach((f) => {
-				if (f.type === "string" || f.type === "text") {
-					fields.push(f.name)
-				}
-			})
-			if (translateTable) {
-				translateTable.fields.forEach((f) => {
-					if (f.name !== ety.translate.rightKey && (f.type === "string" || f.type === "text")) {
-						fields.push(translateTable.name + '_' + f.name)
+				function resolveEqual(connection, value, equal) {
+					if (typeof value != 'string') {
+						return equal + connection.escape(value);
 					}
+					let array = value.split(" ");
+					if (array.length > 1) {
+						return array[0] + connection.escape(array[1]);
+					}
+					return equal + connection.escape(value);
+				}
+
+				//group fields by name
+				params.filter_fields.forEach((key, i) => {
+					if (key.indexOf(".") !== -1) {
+						let rel = key.split(".")
+						let rel_name = rel[0]
+						let rel_field = rel[1]
+						if (!relation_filters[rel_name]) {
+							relation_filters[rel_name] = {}
+						}
+						if (!relation_filters[rel_name][rel_field]) {
+							relation_filters[rel_name][rel_field] = []
+						}
+						//relation_filters[rel_name][rel_field].push(connection.escape(params.filter_values[i]))
+						relation_filters[rel_name][rel_field].push(resolveEqual(connection, params.filter_values[i], ''))
+					} else {
+						if (!filters[key]) {
+							filters[key] = []
+						}
+						filters[key].push(resolveEqual(connection, params.filter_values[i], '= '))
+					}
+
 				})
-			}
 
-			search = []
-			for (var i in fields) {
-				// TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
-				search.push('`' + fields[i] + "` like " + connection.escape("%" + params.filter.split(" ").join("%") + "%"))
-			}
-			search = "(" + search.join(" OR ") + ")"
-		}
+				let search = ""
+				if (params.filter && params.filter.length > 0) {
+					let ety = dmt.entities[info.entity]
+					let view = resolveViewName(info.entity, params.lang)
+					let baseTable = getTable(info.entity)
+					let translateTable = null
+					if (ety && ety.translate)
+						translateTable = getTable(ety.translate.table)
+					let fields = []
+					baseTable.fields.forEach((f) => {
+						if (f.type === "string" || f.type === "text") {
+							fields.push(f.name)
+						}
+					})
+					if (translateTable) {
+						translateTable.fields.forEach((f) => {
+							if (f.name !== ety.translate.rightKey && (f.type === "string" || f.type === "text")) {
+								fields.push(translateTable.name + '_' + f.name)
+							}
+						})
+					}
 
-		let conditions = ""
-		if (params.filter_fields.length > 0) {
-			let view = resolveViewName(info.entity, params.lang)
-			for (var f in filters) {
-				conditions += "("
-				for (var v in filters[f]) {
-					conditions += '`' + view + '`.`' + f + '`' + filters[f][v] + " "+params._join+" "
+					search = []
+					for (var i in fields) {
+						// TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
+						search.push('`' + fields[i] + "` like " + connection.escape("%" + params.filter.split(" ").join("%") + "%"))
+					}
+					search = "(" + search.join(" OR ") + ")"
 				}
-				conditions = conditions.slice(0, -4)
-				conditions += ") AND "
-			}
-			conditions = conditions.slice(0, -5)
-		}
-		if (search.length > 0 && conditions.length > 0) {
-			where = search + " AND " + conditions
-		} else { //just one of these
-			where = search + conditions
-		}
-		let subtable = resolveViewName(info.entity, params.lang)
-		/**
-		 * Support for filters into n-n  and 1-n relations
-		 */
-		for (let r in relation_filters) {
-			let relation = null
-			console.warn("Doing relation filters can reduce the performance")
-			for (let i = 0; i < info.relations.length; i++) {
-				if (info.relations[i].name === r) {
-					relation = info.relations[i]
-					break
-				}
-			}
-			if (!relation) {
-				break
-			}
-			let joins = []
-			let name = resolveViewName(relation.entity, params.lang)
-			let rwhere = '('
-			for (let k in relation_filters[r]) {
-				if(relation_filters[r][k][0].indexOf('\'') == 0){
-					rwhere += `\`${name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
-				}else{
-					rwhere += `\`${name + '`.`' + k}\` ${relation_filters[r][k][0]} AND `
-				}
-			}
-			rwhere = rwhere.slice(0, -4) + ')'
-			if (relation.intermediate) { // n-n relation 
-				let iname = resolveViewName(relation.intermediate.entity, params.lang)
-				joins.push(`JOIN \`${iname}\` \`intermediate\` ON \`intermediate\`.\`${relation.intermediate.leftKey}\` = \`${subtable}\`.\`${getTable(info.table).defaultSort}\`
-				JOIN \`${name}\` ON \`intermediate\`.\`${relation.intermediate.rightKey}\` = \`${name}\`.\`${getTable(relation.entity).defaultSort}\` AND (${rwhere})`)
-			} else if (relation.rightKey) { //1-n relation
-				joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation.rightKey}\` = \`${subtable}\`.\`${getTable(info.table).defaultSort}\` AND (${rwhere})`)
-			} else if (relation.leftKey) { // 1-1 and  
-				let relation_table = getTable(relation.entity || relation.table)
-				joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation_table.defaultSort}\` = \`${subtable}\`.\`${relation.leftKey}\` AND (${rwhere})`)
-			}
-			subtable = '`' + subtable + '` ' + joins.join(' ')
-		}
 
-		var query = "SELECT SQL_CALC_FOUND_ROWS `" + resolveViewName(info.entity, params.lang) + "`.`" + getTable(info.table).defaultSort + "` `key` FROM " + subtable + " "
-		if (where.length > 2) {
-			query += "WHERE " + where
-		}
-		query += "GROUP BY `key` "
-		for (let r in relation_filters) {
-			for (let k in relation_filters[r]) {
-				let relation = null
-				console.warn("Doing relation filters can reduce the performance")
-				for (let i = 0; i < info.relations.length; i++) {
-					if (info.relations[i].name === r) {
-						relation = info.relations[i]
+				let conditions = ""
+				if (params.filter_fields.length > 0) {
+					let view = resolveViewName(info.entity, params.lang)
+					for (var f in filters) {
+						conditions += "("
+						for (var v in filters[f]) {
+							conditions += '`' + view + '`.`' + f + '`' + filters[f][v] + " " + params._join + " "
+						}
+						conditions = conditions.slice(0, -4)
+						conditions += ") AND "
+					}
+					conditions = conditions.slice(0, -5)
+				}
+				if (search.length > 0 && conditions.length > 0) {
+					where = search + " AND " + conditions
+				} else { //just one of these
+					where = search + conditions
+				}
+				let subtable = resolveViewName(info.entity, params.lang)
+				/**
+				 * Support for filters into n-n  and 1-n relations
+				 */
+				for (let r in relation_filters) {
+					let relation = null
+					console.warn("Doing relation filters can reduce the performance")
+					for (let i = 0; i < info.relations.length; i++) {
+						if (info.relations[i].name === r) {
+							relation = info.relations[i]
+							break
+						}
+					}
+					if (!relation) {
 						break
 					}
+					let joins = []
+					let name = resolveViewName(relation.entity, params.lang)
+					let rwhere = '('
+					for (let k in relation_filters[r]) {
+						if (relation_filters[r][k][0].indexOf('\'') == 0) {
+							rwhere += `\`${name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
+						} else {
+							rwhere += `\`${name + '`.`' + k}\` ${relation_filters[r][k][0]} AND `
+						}
+					}
+					rwhere = rwhere.slice(0, -4) + ')'
+					if (relation.intermediate) { // n-n relation 
+						let iname = resolveViewName(relation.intermediate.entity, params.lang)
+						joins.push(`JOIN \`${iname}\` \`intermediate\` ON \`intermediate\`.\`${relation.intermediate.leftKey}\` = \`${subtable}\`.\`${getTable(info.table).defaultSort}\`
+				JOIN \`${name}\` ON \`intermediate\`.\`${relation.intermediate.rightKey}\` = \`${name}\`.\`${getTable(relation.entity).defaultSort}\` AND (${rwhere})`)
+					} else if (relation.rightKey) { //1-n relation
+						joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation.rightKey}\` = \`${subtable}\`.\`${getTable(info.table).defaultSort}\` AND (${rwhere})`)
+					} else if (relation.leftKey) { // 1-1 and  
+						let relation_table = getTable(relation.entity || relation.table)
+						joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation_table.defaultSort}\` = \`${subtable}\`.\`${relation.leftKey}\` AND (${rwhere})`)
+					}
+					subtable = '`' + subtable + '` ' + joins.join(' ')
 				}
-				if (!relation) {
-					break
+
+				var query = "SELECT SQL_CALC_FOUND_ROWS `" + resolveViewName(info.entity, params.lang) + "`.`" + getTable(info.table).defaultSort + "` `key` FROM " + subtable + " "
+				if (where.length > 2) {
+					query += "WHERE " + where
 				}
-				let name = resolveViewName(relation.entity, params.lang)
-				//query += `HAVING COUNT(\`${name + '`.`' + k}\`) = ${relation_filters[r][k].length} `
-			}
-		}
-		query += "ORDER BY `" + resolveViewName(info.entity, params.lang) + "`." + params.order + " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
-		query += "SELECT FOUND_ROWS() as total"
-		return this.customQuery(query).then((result) => {
-			let keys = []
-			for (let i in result[0]) {
-				keys.push(result[0][i].key)
-			}
-			let total = result[1][0].total
-			if (keys.length === 0) {
-				return { data: [], total_results: 0 }
-			}
-			keys = keys.join(",")
-			query = "SELECT * FROM `" + resolveViewName(info.entity, params.lang) + "` WHERE `" + getTable(info.table).defaultSort + "` IN (" + keys + ") ORDER BY "+ params.order+ ";"
-			let count = 0;
-			if (params.simple === false) {
-				if (info.relations) {
-					for (let i = 0; i < info.relations.length; i++) {
-						let relation = info.relations[i]
-						//info.relations.forEach((relation) =>
-						switch (relation.type) {
-							case "1-n":
-								count++;
-								query += `SELECT * FROM \`${resolveViewName(relation.entity, params.lang)}\` WHERE \`${resolveViewName(relation.entity, params.lang)}\`.\`${relation.rightKey}\` IN (${keys});`
-								break;
-							case "n-n":
-								count++;
-								query += `SELECT * FROM \`${resolveViewName(relation.entity, params.lang)}\`
+				query += "GROUP BY `key` "
+				for (let r in relation_filters) {
+					for (let k in relation_filters[r]) {
+						let relation = null
+						console.warn("Doing relation filters can reduce the performance")
+						for (let i = 0; i < info.relations.length; i++) {
+							if (info.relations[i].name === r) {
+								relation = info.relations[i]
+								break
+							}
+						}
+						if (!relation) {
+							break
+						}
+						let name = resolveViewName(relation.entity, params.lang)
+						//query += `HAVING COUNT(\`${name + '`.`' + k}\`) = ${relation_filters[r][k].length} `
+					}
+				}
+				query += "ORDER BY `" + resolveViewName(info.entity, params.lang) + "`." + params.order + " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
+				query += "SELECT FOUND_ROWS() as total"
+				return resolveQuery(query, connection).then((result) => {
+					let keys = []
+					for (let i in result[0]) {
+						keys.push(result[0][i].key)
+					}
+					let total = result[1][0].total
+					if (keys.length === 0) {
+						resolve({ data: [], total_results: 0 }) 
+						return
+					}
+					keys = keys.join(",")
+					query = "SELECT * FROM `" + resolveViewName(info.entity, params.lang) + "` WHERE `" + getTable(info.table).defaultSort + "` IN (" + keys + ") ORDER BY " + params.order + ";"
+					let count = 0;
+					if (params.simple === false) {
+						if (info.relations) {
+							for (let i = 0; i < info.relations.length; i++) {
+								let relation = info.relations[i]
+								//info.relations.forEach((relation) =>
+								switch (relation.type) {
+									case "1-n":
+										count++;
+										query += `SELECT * FROM \`${resolveViewName(relation.entity, params.lang)}\` WHERE \`${resolveViewName(relation.entity, params.lang)}\`.\`${relation.rightKey}\` IN (${keys});`
+										break;
+									case "n-n":
+										count++;
+										query += `SELECT * FROM \`${resolveViewName(relation.entity, params.lang)}\`
 							LEFT JOIN \`${resolveViewName(relation.intermediate.entity, params.lang)}\` \`intermediate\` ON \`intermediate\`.\`${relation.intermediate.rightKey}\` = \`${resolveViewName(relation.entity, params.lang)}\`.\`${getTable(relation.entity).defaultSort}\`
 							WHERE \`intermediate\`.\`${relation.intermediate.leftKey}\` IN (${keys});`
-								break;
+										break;
+								}
+							}
 						}
 					}
-				}
-			}
-			return this.customQuery(query).then((result) => {
-				let data = null
-				if (count == 0) {
-					data = result;
-					delete data.password;
-				} else {
-					data = result[0];
-				}
-				//sintetize relations
-				let relations = {};
-				let relationlist = []
-				if (info.relations) {
-					info.relations.forEach((relation) => {
-						if (relation.type === "1-1")
-							return
-						relationlist.push(relation)
-					})
-					for (let i = 1; i < result.length; i++) {
-						let table = result[i]
-						for (let j = 0; j < table.length; j++) {
-							let relation = relationlist[i - 1]
-							let entity = this.sintetizeRelation(table[j], relation)
-							//let key = entity[getTable(info.table).defaultSort]
-							let key = relation.rightKey
-							if (relation.intermediate) {
-								key = relation.intermediate.leftKey
+					return this.customQuery(query)
+						.then((result) => {
+							let data = null
+							if (count == 0) {
+								data = result;
+								delete data.password;
+							} else {
+								data = result[0];
 							}
-							key = table[j][key]
-							if (!relations[key]) {
-								relations[key] = {}
+							//sintetize relations
+							let relations = {};
+							let relationlist = []
+							if (info.relations) {
+								info.relations.forEach((relation) => {
+									if (relation.type === "1-1")
+										return
+									relationlist.push(relation)
+								})
+								for (let i = 1; i < result.length; i++) {
+									let table = result[i]
+									for (let j = 0; j < table.length; j++) {
+										let relation = relationlist[i - 1]
+										let entity = this.sintetizeRelation(table[j], relation)
+										//let key = entity[getTable(info.table).defaultSort]
+										let key = relation.rightKey
+										if (relation.intermediate) {
+											key = relation.intermediate.leftKey
+										}
+										key = table[j][key]
+										if (!relations[key]) {
+											relations[key] = {}
+										}
+										if (!relations[key][relation.name]) {
+											relations[key][relation.name] = []
+										}
+										relations[key][relation.name].push(entity)
+									}
+								}
 							}
-							if (!relations[key][relation.name]) {
-								relations[key][relation.name] = []
+							let results = []
+							for (let i = 0; i < data.length; i++) {
+								let row = this.sintetizeRelation(data[i], info)
+								let key = row[getTable(info.table).defaultSort]
+								if (relations[key]) {
+									for (j in relations[key]) {
+										row[j] = relations[key][j]
+									}
+								}
+								results.push(row)
 							}
-							relations[key][relation.name].push(entity)
-						}
-					}
-				}
-				let results = []
-				for (let i = 0; i < data.length; i++) {
-					let row = this.sintetizeRelation(data[i], info)
-					let key = row[getTable(info.table).defaultSort]
-					if (relations[key]) {
-						for (j in relations[key]) {
-							row[j] = relations[key][j]
-						}
-					}
-					results.push(row)
-				}
-				return { data: results, total_results: total }
+							resolve({ data: results, total_results: total })
+						}, reject)
+				}, reject)
 			})
 		})
-
-
-
 	}
 	this.createMultiple = function (data) {
 		let rows = data.data
@@ -530,10 +534,10 @@ var EntityModel = function (info) {
 				queryWhere += '`' + f.name + '`=' + connection.escape(data[f.name]) + ' AND '
 			}
 		})
-		if(condition){
+		if (condition) {
 			for (var j in condition) {
 				queryWhere += '`' + j + '`=' + connection.escape(condition[j]) + ' AND '
-			}	
+			}
 		}
 		queryValues = queryValues.slice(0, -1)
 		queryWhere = queryWhere.slice(0, -5) + ')'
@@ -553,27 +557,36 @@ var EntityModel = function (info) {
 		})
 	}
 	this.create = function (body) {
-		var connection = mysql.createConnection(dbConf)
-		let entity = dmt.entities[info.entity]
-		let table = getTable(info.entity)
-		/*if (body[table.defaultSort]) {
-			let key = table.defaultSort;
-			return this.update(body, { key: body[key] })
-		}*/
-		return resolveQuery(insertIntoTable(table, body, connection), connection).then((base) => {
-			if (base.insertId) {
-				body[table.defaultSort] = base.insertId
-			}
-			if (entity.translate) {
-				connection = mysql.createConnection(dbConf)
-				return resolveQuery(updateTranslation(body, connection), connection)
-			} else {
-				return
-				//throw utiles.informError(300)
-			}
-			emiter.emit(info.entity+'.created',body)
-		}).then(() => {
-			return this.updateView()
+		return new Promise((resolve, reject) => {
+			pool.getConnection((err, connection) => {
+				if(err){reject(err)}
+				let entity = dmt.entities[info.entity]
+				let table = getTable(info.entity)
+				/*if (body[table.defaultSort]) {
+					let key = table.defaultSort;
+					return this.update(body, { key: body[key] })
+				}*/
+				return resolveQuery(insertIntoTable(table, body, connection), connection).then((base) => {
+					if (base.insertId) {
+						body[table.defaultSort] = base.insertId
+					}
+					if (entity.translate) {
+						return new Promise((resolve, reject) => {
+							pool.getConnection((err, connection) => {
+								if(err){reject(err)}
+								resolveQuery(updateTranslation(body, connection), connection).then(resolve, reject)
+							})
+						})
+					} else {
+						return
+						//throw utiles.informError(300)
+					}
+				}, reject).then(() => {
+					emiter.emit(info.entity + '.created', body)
+					this.updateView()
+					resolve(body)
+				}, reject)
+			})
 		})
 	}
 	function updateTranslation(body, connection) {
@@ -602,22 +615,40 @@ var EntityModel = function (info) {
 		let entity = dmt.entities[info.entity]
 		let table = getTable(info.entity)
 		let old = null
-		return this.getByParams(condition).then((result)=>{
+		return this.getByParams(condition).then((result) => {
 			old = result.data[0]
-			let connection = mysql.createConnection(dbConf)
-			return resolveQuery(updateTable(table, body, connection, condition), connection)
-		})
-		.then((results) => {
-			if (entity.translate) {
-				connection = mysql.createConnection(dbConf)
-				return resolveQuery(updateTranslation(body, connection), connection)
-			} else {
-				return
-				//throw utiles.informError(300)
-			}
-		}).then(() => {
-			emiter.emit(info.entity+'.updated',old,body)
-			this.updateView()
+			return new Promise((resolve, reject) => {
+				pool.getConnection((err, connection) => {
+					if(err){reject(err)}
+					resolveQuery(updateTable(table, body, connection, condition), connection).then((results) => {
+						if (entity.translate) {
+							return new Promise((resolve, reject) => {
+								pool.getConnection((err, connection) => {
+									if(err){reject(err)}
+									resolveQuery(updateTranslation(body, connection), connection).then(resolve, reject)
+								})
+							})
+						} else {
+							return
+						}
+					}, reject).then(() => {
+						return this.updateView()
+					}, reject).then(() => {
+						let key = body[this.getPrimaryKey()]
+						if(key){
+							return this.getByUid(key)
+						}
+						return null
+					}, reject).then((result) => {
+						let _new = null
+						if(result && result.data){
+							_new = result.data[0]
+							emiter.emit(info.entity + '.updated', old, _new)
+						}
+						resolve(_new)
+					}, reject)
+				})
+			})
 		})
 	}
 	this.delete = function (condition) {
@@ -628,25 +659,34 @@ var EntityModel = function (info) {
 				data[f.name] = condition[f.name]
 			}
 		})
-		var connection = mysql.createConnection(dbConf)
-		var queryCondition = ''
-		for (var i in data) {
-			queryCondition += i + ' = ' + connection.escape(data[i]) + ' AND '
-		}
-		queryCondition = queryCondition.slice(0, -4)
-		var query0 = 'SELECT * FROM ' + info.table + ' WHERE ' + queryCondition + ''
-		var query1 = 'DELETE FROM ' + info.table + ' WHERE ' + queryCondition + ''
-		return resolveQuery(query0, connection).then((results)=>{
-      emiter.emit(info.entity+'.deleted',results[0])
-      connection = mysql.createConnection(dbConf)
-      return resolveQuery(query1, connection)
-    }).then(() => {
-			return updateView()
+		return new Promise((resolve, reject) => {
+			pool.getConnection((err, connection) => {
+				if(err){reject(err)}
+				var queryCondition = ''
+				for (var i in data) {
+					queryCondition += i + ' = ' + connection.escape(data[i]) + ' AND '
+				}
+				queryCondition = queryCondition.slice(0, -4)
+				var query0 = 'SELECT * FROM ' + info.table + ' WHERE ' + queryCondition + ''
+				var query1 = 'DELETE FROM ' + info.table + ' WHERE ' + queryCondition + ''
+				query1 = "SET FOREIGN_KEY_CHECKS= 0;" + query1 + ";SET FOREIGN_KEY_CHECKS = 1;";
+				return resolveQuery(query0, connection).then((results) => {
+					emiter.emit(info.entity + '.deleted', results[0])
+					return this.customQuery(query1)
+				}, reject).then(() => {
+					this.updateView()
+					resolve()
+				}, reject)
+			})
 		})
 	}
 	this.customQuery = function (query) {
-		var connection = mysql.createConnection(dbConf)
-		return resolveQuery(query, connection)
+		return new Promise((resolve, reject) => {
+			pool.getConnection((err, connection) => {
+				if(err){reject(err)}
+				resolveQuery(query, connection).then(resolve, reject)
+			})
+		})
 	}
 }
 

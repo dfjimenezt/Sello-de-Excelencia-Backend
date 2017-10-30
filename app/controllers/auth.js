@@ -68,13 +68,11 @@ var Auth = function () {
                     pass = pass.digest('hex')
                     user.password = pass
                 } else throw utiles.informError(200) //login failed
-                emiter.emit('user.updatepassword',user,body.password_new)
+                //emiter.emit('user.updatepassword',user,body.password_new)
                 return userModel.update({ password: user.password }, { id: user.id })
             }
         })
     }
-
-
     putMap.set("password", { method: update_password, permits: Permissions.NONE })
     //-----------------------------------------------------------------------
 
@@ -356,8 +354,8 @@ var Auth = function () {
                                 model_user_questiontopic.create(data)
                             }, this)
                         }
-                        emiter.emit('user.created',body,pass_user);
-                        return { error: utiles.informError(0), data: user }
+                        emiter.emit('user.registered',body,pass_user);
+                        return { error: utiles.informError(0), data: body }
                     } else {
                         //if there was an error on creating the user
                         throw utiles.informError(300)
@@ -466,7 +464,7 @@ var Auth = function () {
             var now = new Date()
             var Session = require('../models/session.js')
             var sessionModel = new Session()
-            now.setDate(now.getDate() + 15) // the token expires in 15 days
+            now.setDate(now.getDate() + 1) // the token expires in 1 days
             var session = {
                 token: utiles.sign(user),
                 id_user: user.id,

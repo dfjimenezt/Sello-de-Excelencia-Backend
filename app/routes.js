@@ -77,7 +77,6 @@ var Routes = function(app) {
                 break
             }
         }
-
         if (controller) {
             let method
             if (req.originalMethod === 'GET') method = controller.get(req.params, req.headers.authorization, req.query, req, res)
@@ -97,16 +96,15 @@ var Routes = function(app) {
         } else res.sendStatus(404)
     }
 
-    app.get('/testmail', (req, res) => { 
-        var utiles = require('./utils/utiles.js')
-        utiles.sendEmail(req.params.email,null,null,"Temática","Body").then((response)=>{
-            res.send(response)
-        }).catch((err)=>{
-            res.send(err)
+    app.get('/jobs',(req,res)=>{
+        var jobs = require('./jobs/jobs.js')
+        jobs =  new jobs()
+        jobs.execute().then((result)=>{
+            res.send(result)
         })
-        
-    })
 
+    })
+    
     app.get('/health', (req, res) => { res.sendStatus(200) })
 
     /* ---------------- CREATE ---------------- */

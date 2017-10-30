@@ -101,6 +101,12 @@ var Evaluation_request = function () {
 			return { data: list, total_results: total }
 		})
 	}
+	this.addRejection = function(id){
+		let q = `UPDATE evaluation_request SET branch = IFNULL(branch,0)+1 WHERE id = '${id}'`
+		return this.customQuery(q).then(()=>{
+			this.updateView()
+		})
+	}
 	return this
 };
 util.inherits(Evaluation_request, BaseModel)
