@@ -643,7 +643,7 @@ var EntityModel = function (info) {
 						let _new = null
 						if(result && result.data){
 							_new = result.data[0]
-							emiter.emit(info.entity + '.updated', old, _new)
+							emiter.emit(info.entity + '.updated', old, _new, body)
 						}
 						resolve(_new)
 					}, reject)
