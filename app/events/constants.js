@@ -1,21 +1,21 @@
 module.exports = {
 	MOTIVES: {
 		'EVALUATOR': {
-			'ACEPTAR_REQUISITO': 1,
-			'CALIFICAR_REQUISITO': 2,
-			'VER_VIDEO': 3,
-			'POSTULARSE_EVALUAR': 4,
-			'EVENTOS': 5,
-			'NO_EVALUAR': 6,
-			'RECHAZAR': 7
+			'ACEPTAR_REQUISITO': 'Aceptar Requisito',
+			'CALIFICAR_REQUISITO': 'Calificar Requisito',
+			'VER_VIDEO': 'Participar en Aprende y Enseña',
+			'POSTULARSE_EVALUAR': 'Aceptar Voluntaria',
+			'EVENTOS': 'Eventos Especiales',
+			'NO_EVALUAR': 'No evaluar',
+			'RECHAZAR_REQUISITO': 'Rechazar Requisito'
 		},
 		'ENTITY': {
-			'VER_VIDEO': 3,
-			'EVENTOS': 5,
-			'POSTULAR': 8,
-			'RECHAZAR': 8,
-			'CUMPLE': 8,
-			'NO_CUMPLE': 8,
+			'VER_VIDEO': 'Participar en Aprende y Enseña',
+			'EVENTOS': 'Eventos Especiales',
+			'POSTULAR_SERVICIO': 'Postular Servicio',
+			'POSTULACION_RECHAZADA': 'Postulación Rechazada',
+			'CUMPLE': 'Cumplimiento Sello',
+			'NO_CUMPLE': 'Incumplimiento Sello',
 		}
 	},
 	SERVICE: {

@@ -533,6 +533,13 @@ dmt.entities = {
     relations:[
       {
         type:"1-1",
+        entity:"motivename",
+        name:"name",
+        leftKey:"name",
+        foreign_name:"name"
+      },
+      {
+        type:"1-1",
         entity:"category",
         name:"category",
         leftKey:"id_category",

@@ -125,6 +125,15 @@ dmt.api= {
                     }
                 },
                 {
+                    entity:"motivename",
+                    permissions:{
+                        read:"none",
+                        write:"admin_motives",
+                        update:"admin_motives",
+                        delete:"admin_motives"
+                    }
+                },
+                {
                     entity:"hall_of_fame",
                     permissions:{
                         read:"none",

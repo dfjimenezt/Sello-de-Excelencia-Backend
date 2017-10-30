@@ -22,6 +22,7 @@ var config = require('../models/config.js')
 var type_document = require('../models/type_document.js')
 var entity_points = require('../models/entity_points.js')
 var motives = require('../models/motives.js')
+var motivename = require('../models/motivename.js')
 var hall_of_fame = require('../models/hall_of_fame.js')
 var emiter = require('../events/emiter.js').instance
 var configuration_controller = function () {
@@ -38,6 +39,7 @@ var configuration_controller = function () {
 	var model_type_document = new type_document()
 	var model_entity_points = new entity_points()
 	var model_motives = new motives()
+	var model_motivename = new motivename()
 	var model_hall_of_fame = new hall_of_fame()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
@@ -460,6 +462,27 @@ var configuration_controller = function () {
 		return _get(model_entity_points,user,params)
 	}
 	/**
+	 * @api {get} api/configuration/motivename Request motives information
+	 * @apiName Getmotivename
+	 * @apiGroup configuration
+	 * @apiVersion 1.0.1
+	 * 
+	 * @apiParam {Number} id motivename unique ID.
+	 * @apiParam {String} filter Texto to search into DB.
+	 * 
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 * 	data:{
+	 *		"id": 80,
+	 *		"name": "This is an example text",
+	 *	},
+	 * 	total_results:1
+	 * }
+	*/
+	var get_motivename = function (user, params) {
+		return _get(model_motivename,user,params)
+	}/**
 	 * @api {get} api/configuration/motives Request motives information
 	 * @apiName Getmotives
 	 * @apiGroup configuration
@@ -563,6 +586,7 @@ var configuration_controller = function () {
 	getMap.set('config', { method: get_config, permits: Permissions.NONE })
 	getMap.set('type_document', { method: get_type_document, permits: Permissions.NONE })
 	getMap.set('points', { method: get_points, permits: Permissions.NONE })
+	getMap.set('motivename', { method: get_motivename, permits: Permissions.NONE })
 	getMap.set('motives', { method: get_motives, permits: Permissions.NONE })
 	getMap.set('hall_of_fame', { method: get_hall_of_fame, permits: Permissions.NONE })
 	/**
@@ -783,6 +807,20 @@ var configuration_controller = function () {
 		return model_entity_points.create(body)
 	}
 	/**
+	 * @api {post} api/configuration/motivename Create motivename information
+	 * @apiName Postmotivename
+	 * @apiGroup configuration
+	 * @apiVersion 1.0.1
+	 * 
+	 * @apiParam {Number} id 
+	 * @apiParam {String} name 
+	 * @apiParam {Number} points 
+ 	 * 
+	 */
+	var create_motivename = function (user, body) {
+		return model_motivename.create(body)
+	}
+	/**
 	 * @api {post} api/configuration/motives Create motives information
 	 * @apiName Postmotives
 	 * @apiGroup configuration
@@ -853,6 +891,7 @@ var configuration_controller = function () {
 	postMap.set('config', { method: create_config, permits: Permissions.ADMIN_CONFIG })
 	postMap.set('type_document', { method: create_type_document, permits: Permissions.ADMIN_TYPE_DOCUMENT })
 	postMap.set('points', { method: create_points, permits: Permissions.ADMIN_POINTS })
+	postMap.set('motivename', { method: create_motivename, permits: Permissions.ADMIN_MOTIVES })
 	postMap.set('motives', { method: create_motives, permits: Permissions.ADMIN_MOTIVES })
 	postMap.set('hall_of_fame', { method: create_hall_of_fame, permits: Permissions.ADMIN_HALL })
 	postMap.set('send',{method: send_mail, permits: Permissions.ADMIN_USERS})
@@ -1131,6 +1170,22 @@ var configuration_controller = function () {
 		return model_entity_points.update(body,{id:body.id})
 	}
 	/**
+	 * @api {put} api/configuration/motivename Update motives information
+	 * @apiName Putmotivename
+	 * @apiGroup configuration
+	 * @apiVersion 1.0.1
+	 * 
+	 * @apiParam {Number} id 
+	 * @apiParam {String} name 
+ 	 * 
+	 */
+	var update_motivename = function (user, body) {
+		if (!body.id) {
+			throw utiles.informError(400)
+		}
+		return model_motivename.update(body,{id:body.id})
+	}
+	/**
 	 * @api {put} api/configuration/motives Update motives information
 	 * @apiName Putmotives
 	 * @apiGroup configuration
@@ -1180,6 +1235,7 @@ var configuration_controller = function () {
 	putMap.set('config', { method: update_config, permits: Permissions.ADMIN_CONFIG })
 	putMap.set('type_document', { method: update_type_document, permits: Permissions.ADMIN_TYPE_DOCUMENT })
 	putMap.set('points', { method: update_points, permits: Permissions.ADMIN_POINTS })
+	putMap.set('motivename', { method: update_motivename, permits: Permissions.ADMIN_MOTIVES })
 	putMap.set('motives', { method: update_motives, permits: Permissions.ADMIN_MOTIVES })
 	putMap.set('hall_of_fame', { method: update_hall_of_fame, permits: Permissions.ADMIN_HALL })
 	/**
@@ -1415,6 +1471,22 @@ var configuration_controller = function () {
 		return model_entity_points.delete(body,{id:body.id})
 	}
 	/**
+	 * @api {delete} api/configuration/motivename Delete motives information
+	 * @apiName Delete motivename
+	 * @apiGroup configuration
+	 * @apiVersion 1.0.1
+	 * 
+	 * @apiParam {Number} id 
+	 * @apiParam {String} name 
+ 	 * 
+	 */
+	var delete_motivename = function (user, body) {
+		if (!body.id) {
+			throw utiles.informError(400)
+		}
+		return model_motivename.delete(body,{id:body.id})
+	}
+	/**
 	 * @api {delete} api/configuration/motives Delete motives information
 	 * @apiName Deletemotives
 	 * @apiGroup configuration
@@ -1464,6 +1536,7 @@ var configuration_controller = function () {
 	deleteMap.set('config', { method: delete_config, permits: Permissions.ADMIN_CONFIG })
 	deleteMap.set('type_document', { method: delete_type_document, permits: Permissions.ADMIN_TYPE_DOCUMENT })
 	deleteMap.set('points', { method: delete_points, permits: Permissions.ADMIN_POINTS })
+	deleteMap.set('motivename', { method: delete_motivename, permits: Permissions.ADMIN_MOTIVES })
 	deleteMap.set('motives', { method: delete_motives, permits: Permissions.ADMIN_MOTIVES })
 	deleteMap.set('hall_of_fame', { method: delete_hall_of_fame, permits: Permissions.ADMIN_HALL })
 	var params = [getMap, postMap, putMap, deleteMap]
