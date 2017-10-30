@@ -161,13 +161,13 @@ var Events = function () {
 								<p>Entidad: ${_service.institution.name}</p>
 								<p>Nombre del Producto o Servicio: ${_service.name}</p>
 								<p>Ha sido asignado al administrador del sistema</p>`)
-								entity_model_points.addUserPoints(_evaluator.id, CONSTANTS.MOTIVES.EVALUATOR.RECHAZAR, '', old.id_user)
 							model_entity_evaluation_request.update({id:_new.id,id_user:_admin.id},{id:_new.id})
 						}else{
 							// add rejection without trigger update event
 							model_entity_evaluation_request.addRejection(_new.id)
 							model_entity_service.reasignate(_new)
 						}
+						entity_model_points.addUserPoints(_evaluator.id, CONSTANTS.MOTIVES.EVALUATOR.RECHAZAR, '', old.id_user)
 					}
 					//6 Retroalimentación
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.RETROALIMENTACION) {
