@@ -1236,12 +1236,7 @@ dmt.tables = {
 	},
 	"motives": {
 		"fields": [
-			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
+			
 			{
 				"name": "name",
 				"type": "string",
@@ -1265,6 +1260,12 @@ dmt.tables = {
 				"type": "int",
 				"disabled": false,
 				"key": false
+			},
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
 			},
 			{
 				"name": "points",

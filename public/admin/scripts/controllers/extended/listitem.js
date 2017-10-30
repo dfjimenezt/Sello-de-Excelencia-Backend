@@ -130,9 +130,17 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
 
     function addOptions(item, index) {
         var base = item.endpoint;
-        if (!base) {
-            base = ctrl.entity.endpoint;
-        }
+		if (!base) {
+			let entity = dmt.entities[item.table];
+			let table = null
+			if (!entity) {
+				entity = dmt.tables[item.table];
+			} 
+			base = entity.endpoint
+		}
+		if (!base) {
+			base = ctrl.currentEntity.endpoint;
+		}
         $http.get(base).then(function (results) {
             ctrl.options[item.name] = results.data.data;
         });
@@ -182,9 +190,17 @@ angular.module('dmt-back').controller('listItemExtendedController', function ($s
 
     function addFilters(item, index) {
         var base = item.endpoint;
-        if (!base) {
-            base = ctrl.entity.endpoint;
-        }
+		if (!base) {
+			let entity = dmt.entities[item.table];
+			let table = null
+			if (!entity) {
+				entity = dmt.tables[item.table];
+			} 
+			base = entity.endpoint
+		}
+		if (!base) {
+			base = ctrl.currentEntity.endpoint;
+		}
         $http.get(base).then(function (results) {
             item.options = results.data.data;
         });
