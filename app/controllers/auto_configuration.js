@@ -450,7 +450,12 @@ var configuration_controller = function () {
 	*/
 	var get_points = function (user, params) {
 		if(params.sumarized){
-			return model_entity_points.getSumarized(user.id)
+			if(user.institutions.length == 0){
+				return model_entity_points.getSumarizedUser(user.id)
+			}else{
+				return model_entity_points.getSumarizedInstitution(user.institutions[0].id)
+			}
+			
 		}
 		return _get(model_entity_points,user,params)
 	}

@@ -116,6 +116,9 @@ var service_controller = function () {
 							}
 						}
 					})
+					if(!_status){
+						res.writeHead(302,{Location: 'http://mintic.gov.co'})
+					}
 					res.writeHead(200, { 'Content-Type': 'application/pdf' });
 					var hummus = require('hummus');
 					var pdfWriter = hummus.createWriter(new hummus.PDFStreamForResponse(res));
@@ -213,6 +216,7 @@ var service_controller = function () {
 					)
 					size = font.calculateTextDimensions('EL MINISTERIO TIC, PARA EL NIVEL_',13);
 					center += size.width
+					_status.level = _status.level || ''
 					cxt.writeText(''+_status.level, center, _y,
 						{
 							font: font,

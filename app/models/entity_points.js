@@ -21,8 +21,12 @@ var Points = function () {
 	"model": "entity"
 }]
 	BaseModel.apply(this, params)
-	this.getSumarized = function (id) {
+	this.getSumarizedUser = function (id) {
 		let q = `SELECT SUM(\`value\`) \`value\`,\`id_motives\` FROM points WHERE id_user = '${id}' GROUP BY id_motives`
+		return this.customQuery(q)
+	}
+	this.getSumarizedInstitution = function (id) {
+		let q = `SELECT SUM(\`value\`) \`value\`,\`id_motives\` FROM points WHERE id_institution = '${id}' GROUP BY id_motives`
 		return this.customQuery(q)
 	}
 	this.addInstitutionPoints = function (institution, motive, justification,video,value) {

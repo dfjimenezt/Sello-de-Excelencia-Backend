@@ -29,7 +29,7 @@ module.exports = {
 		'CUMPLE': 8,
 		'NO_CUMPLE': 9,
 		'INCOMPLETO': 10,
-		'RECHAZADO': 11
+		'RECHAZADO': 11,
 	},
 	EVALUATION_REQUEST: {
 		'PENDIENTE': 1,
