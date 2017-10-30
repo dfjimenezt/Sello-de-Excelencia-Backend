@@ -19,7 +19,6 @@ var Events = function () {
 	let model_category = new (require('../models/category.js'))()
 	let model_entity_question = new (require('../models/entity_question.js'))()
 
-
 	emiter.on('video.view', (user, id_hangout) => {
 		return model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.VER_VIDEO }).then((results) => {
 			let motive = results.data[0]
