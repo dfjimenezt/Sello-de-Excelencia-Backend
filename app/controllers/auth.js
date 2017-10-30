@@ -123,7 +123,11 @@ var Auth = function () {
                     },'1',1).then(()=>{
                         return login(null,user,1)
                     })
-                }return login(null,user,1)
+                }
+                if(_user.role != 'Ciudadano'){
+                    throw utiles.informError(400) // user is not citizen
+                }
+                return login(null,user,1)
             }).then((response)=>{
                 resolve(response)
             })
@@ -183,7 +187,11 @@ var Auth = function () {
                     },'1',1).then(()=>{
                         return login(null,user,1)
                     })
-                }return login(null,user,1)
+                }
+                if(_user.role != 'Ciudadano'){
+                    throw utiles.informError(400) // user is not citizen
+                }
+                return login(null,user,1)
             }).then((response)=>{
                 resolve(response)
             })
