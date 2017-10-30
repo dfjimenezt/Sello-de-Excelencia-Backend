@@ -9,7 +9,10 @@ var util = require('util')
 var Category = function () {
 	var params = [{
 		table:'category',
-		fields :[{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"name","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""}],
+		fields :[
+			{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},
+			{"Field":"name","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},
+			{"Field":"diploma","Type":"int(11)","Null":"YES","Key":"","Default":null,"Extra":""}],
 		model:'mysql'
 	}]
 	BaseModel.apply(this, params)

@@ -167,6 +167,12 @@ dmt.tables = {
 				"type": "string",
 				"disabled": false,
 				"key": false
+			},
+			{
+				"name": "id",
+				"type": "diploma",
+				"disabled": false,
+				"key": false
 			}
 		],
 		"defaultSort": "id"
