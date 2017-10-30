@@ -83,7 +83,6 @@ module.exports = {
       if(!to){
         reject("no receipt")
       }
-      to = 'daniel@domoti.rocks'
       cc = null
       bcc = null
       var transporter = Nodemailer.createTransport(Config.smtp.protocol + '://' + Config.smtp.sender + ':' + Config.smtp.password + '@' + Config.smtp.server)
