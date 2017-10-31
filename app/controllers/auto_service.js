@@ -91,10 +91,8 @@ var service_controller = function () {
 	 * 	total_results:1
 	 * }
 	*/
-	function diplomaA(_service,_status,res){
-		if(!_status){
-			res.writeHead(302,{Location: 'http://mintic.gov.co'})
-		}
+	function diplomaA(_service,_status,res, centerline){
+		centerline = 435 || centerline
 		res.writeHead(200, { 'Content-Type': 'application/pdf' });
 		var hummus = require('hummus');
 		var pdfWriter = hummus.createWriter(new hummus.PDFStreamForResponse(res));
@@ -104,7 +102,7 @@ var service_controller = function () {
 		cxt.drawImage(0, 0, './app/assets/diploma.png')
 		let _y = 480
 		let size = font.calculateTextDimensions('CERTIFICADO',60);
-		let center = 424 - size.width / 2
+		let center = centerline - size.width / 2
 		cxt.writeText('CERTIFICADO', center,_y,
 			{
 				font: font,
@@ -115,7 +113,7 @@ var service_controller = function () {
 		)
 		_y -= 25
 		size = font.calculateTextDimensions('DE RECONOCIMIENTO',30);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('DE RECONOCIMIENTO', center, _y,
 			{
 				font: font,
@@ -126,7 +124,7 @@ var service_controller = function () {
 		)
 		_y -= 50
 		size = font.calculateTextDimensions('EL MINISTERIO DE TECNOLOGÍAS DE LA INFORMACIÓN Y LAS',16);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('EL MINISTERIO DE TECNOLOGÍAS DE LA INFORMACIÓN Y LAS', center, _y,
 			{
 				font: font,
@@ -137,7 +135,7 @@ var service_controller = function () {
 		)
 		_y -= 20
 		size = font.calculateTextDimensions('COMUNICACIONES A TRAVÉS DE LA DIRECCIÓN DE GOBIERNO DIGITAL',16);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('COMUNICACIONES A TRAVÉS DE LA DIRECCIÓN DE GOBIERNO DIGITAL', center, _y,
 			{
 				font: font,
@@ -148,7 +146,7 @@ var service_controller = function () {
 		)
 		_y -= 20
 		size = font.calculateTextDimensions('CERTIFICA QUE',13);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('CERTIFICA QUE', center, _y,
 			{
 				font: font,
@@ -159,7 +157,7 @@ var service_controller = function () {
 		)
 		_y -= 30
 		size = font.calculateTextDimensions(_service.institution.name,24);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText(_service.institution.name.toUpperCase(), center, _y,
 			{
 				font: font,
@@ -170,7 +168,7 @@ var service_controller = function () {
 		)
 		_y -= 20
 		size = font.calculateTextDimensions('CUMPLIÓ CON LOS REQUISITOS DE CALIDAD',13);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('CUMPLIÓ CON LOS REQUISITOS DE CALIDAD', center, _y,
 			{
 				font: font,
@@ -181,7 +179,7 @@ var service_controller = function () {
 		)
 		_y -= 20
 		size = font.calculateTextDimensions('PARA EL NIVEL __ DE LA CATEGORÍA',13);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('PARA EL NIVEL ', center, _y,
 			{
 				font: font,
@@ -213,7 +211,7 @@ var service_controller = function () {
 		)
 		_y -= 20
 		size = font.calculateTextDimensions(' '+_service.category.name.toUpperCase()+' ',16);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText(_service.category.name.toUpperCase(), center, _y,
 			{
 				font: font,
@@ -223,8 +221,8 @@ var service_controller = function () {
 			}
 		)
 		_y -= 20
-		size = font.calculateTextDimensions('Y LE OTORGA EL SELLO DE EXCELENCIA GOBIERNO DIGITAL ',13);
-		center = 424 - size.width / 2
+		size = font.calculateTextDimensions('Y LE OTORGA EL SELLO DE EXCELENCIA GOBIERNO DIGITAL.',13);
+		center = centerline - size.width / 2
 		cxt.writeText('Y LE OTORGA EL SELLO DE EXCELENCIA GOBIERNO DIGITAL.', center, _y,
 			{
 				font: font,
@@ -242,9 +240,9 @@ var service_controller = function () {
 				color: 0x694a8b
 			}
 		)
-		let date = _status.timestamp.toISOString().substr(0,10);
+		let date = _status.timestamp.getFullYear() + '-' +(_status.timestamp.getMonth()+1)+ '-' + _status.timestamp.getDate()
 		size = font.calculateTextDimensions(date,15);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText(date, center, 595-525,
 			{
 				font: font,
@@ -256,10 +254,8 @@ var service_controller = function () {
 		pdfWriter.writePage(page)
 		pdfWriter.end()
 	}
-	function diplomaB(_service,_status,res){
-		if(!_status){
-			res.writeHead(302,{Location: 'http://mintic.gov.co'})
-		}
+	function diplomaB(_service,_status,res, centerline){
+		centerline = 435 || centerline
 		res.writeHead(200, { 'Content-Type': 'application/pdf' });
 		var hummus = require('hummus');
 		var pdfWriter = hummus.createWriter(new hummus.PDFStreamForResponse(res));
@@ -269,7 +265,7 @@ var service_controller = function () {
 		cxt.drawImage(0, 0, './app/assets/diploma.png')
 		let _y = 480
 		let size = font.calculateTextDimensions('CERTIFICADO',60);
-		let center = 424 - size.width / 2
+		let center = centerline - size.width / 2
 		cxt.writeText('CERTIFICADO', center,_y,
 			{
 				font: font,
@@ -280,7 +276,7 @@ var service_controller = function () {
 		)
 		_y -= 25
 		size = font.calculateTextDimensions('DE RECONOCIMIENTO',30);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('DE RECONOCIMIENTO', center, _y,
 			{
 				font: font,
@@ -291,7 +287,7 @@ var service_controller = function () {
 		)
 		_y -= 50
 		size = font.calculateTextDimensions('EL MINISTERIO DE TECNOLOGÍAS DE LA INFORMACIÓN Y LAS',16);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('EL MINISTERIO DE TECNOLOGÍAS DE LA INFORMACIÓN Y LAS', center, _y,
 			{
 				font: font,
@@ -302,7 +298,7 @@ var service_controller = function () {
 		)
 		_y -= 20
 		size = font.calculateTextDimensions('COMUNICACIONES A TRAVÉS DE LA DIRECCIÓN DE GOBIERNO DIGITAL',16);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('COMUNICACIONES A TRAVÉS DE LA DIRECCIÓN DE GOBIERNO DIGITAL', center, _y,
 			{
 				font: font,
@@ -313,7 +309,7 @@ var service_controller = function () {
 		)
 		_y -= 20
 		size = font.calculateTextDimensions('CERTIFICA QUE',13);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('CERTIFICA QUE', center, _y,
 			{
 				font: font,
@@ -324,7 +320,7 @@ var service_controller = function () {
 		)
 		_y -= 30
 		size = font.calculateTextDimensions(_service.institution.name,24);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText(_service.institution.name.toUpperCase(), center, _y,
 			{
 				font: font,
@@ -335,7 +331,7 @@ var service_controller = function () {
 		)
 		_y -= 20
 		size = font.calculateTextDimensions('CUMPLIÓ CON LOS REQUISITOS DE CALIDAD',13);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('CUMPLIÓ CON LOS REQUISITOS DE CALIDAD', center, _y,
 			{
 				font: font,
@@ -346,7 +342,7 @@ var service_controller = function () {
 		)
 		_y -= 20
 		size = font.calculateTextDimensions('PARA EL NIVEL __ DE LA CATEGORÍA',13);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText('PARA EL NIVEL ', center, _y,
 			{
 				font: font,
@@ -378,7 +374,7 @@ var service_controller = function () {
 		)
 		_y -= 20
 		size = font.calculateTextDimensions(' '+_service.category.name.toUpperCase()+' ',16);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText(_service.category.name.toUpperCase(), center, _y,
 			{
 				font: font,
@@ -388,8 +384,8 @@ var service_controller = function () {
 			}
 		)
 		_y -= 20
-		size = font.calculateTextDimensions('Y LE OTORGA EL SELLO DE EXCELENCIA GOBIERNO DIGITAL AL PRODUCTO O SERVICIO',13);
-		center = 424 - size.width / 2
+		size = font.calculateTextDimensions('Y LE OTORGA EL SELLO DE EXCELENCIA GOBIERNO DIGITAL AL PRODUCTO O SERVICIO:',13);
+		center = centerline - size.width / 2
 		cxt.writeText('Y LE OTORGA EL SELLO DE EXCELENCIA GOBIERNO DIGITAL AL PRODUCTO O SERVICIO:', center, _y,
 			{
 				font: font,
@@ -425,10 +421,10 @@ var service_controller = function () {
 		
 		while (_names.length){
 			_y -= 22
-			_t = _names.splice(0,1)[0]
+			_t = _names.splice(0,1)[0].toUpperCase()
 			size = font.calculateTextDimensions(_t,16);
-			center = 424 - size.width / 2
-			cxt.writeText(_t.toUpperCase(), center, _y,
+			center = centerline - size.width / 2
+			cxt.writeText(_t, center, _y,
 				{
 					font: font,
 					size: 16,
@@ -445,9 +441,9 @@ var service_controller = function () {
 				color: 0x694a8b
 			}
 		)
-		let date = _status.timestamp.toISOString().substr(0,10);
+		let date = _status.timestamp.getFullYear() + '-' +(_status.timestamp.getMonth()+1)+ '-' + _status.timestamp.getDate()
 		size = font.calculateTextDimensions(date,15);
-		center = 424 - size.width / 2
+		center = centerline - size.width / 2
 		cxt.writeText(date, center, 595-525,
 			{
 				font: font,
