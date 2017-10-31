@@ -119,7 +119,7 @@ var Events = function () {
 					'name.name': CONSTANTS.MOTIVES.EVALUATOR.ACEPTAR_REQUISITO,
 				}).then((results) => {
 					let motive = results.data[0]
-					//entity_model_points.addUserPoints(user.id, motive.id, '')
+					entity_model_points.addUserPoints(user.id, motive.id, '')
 				})
 			})
 		}
@@ -168,7 +168,7 @@ var Events = function () {
 							'name.name': CONSTANTS.MOTIVES.EVALUATOR.ACEPTAR_REQUISITO
 						}).then((results) => {
 							let motive = results.data[0]
-							//entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+							entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
 						})
 					}
 					//5 Rechazado
@@ -194,7 +194,7 @@ var Events = function () {
 							'name.name': CONSTANTS.MOTIVES.EVALUATOR.RECHAZAR_REQUISITO
 						}).then((results) => {
 							let motive = results.data[0]
-							//entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+							entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
 						})
 					}
 					//6 Retroalimentación
@@ -208,7 +208,7 @@ var Events = function () {
 							'id_category':_service.id_category
 						}).then((results) => {
 							let motive = results.data[0]
-							//entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+							entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
 						})
 						model_entity_evaluation_request.getByParams({ id_answer: _answer.id }).then((results) => {
 							let approved = 0
@@ -238,7 +238,7 @@ var Events = function () {
 							'id_category':_service.id_category
 						}).then((results) => {
 							let motive = results.data[0]
-							//entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+							entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
 						})
 						model_entity_evaluation_request.getByParams({ id_answer: _answer.id }).then((results) => {
 							let approved = 0
@@ -426,7 +426,7 @@ var Events = function () {
 						})
 						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.POSTULAR_SERVICIO }).then((results) => {
 							let motive = results.data[0]
-							//entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
 						})
 					}
 					if (_new.current_status == CONSTANTS.SERVICE.EVALUACION) {
@@ -463,7 +463,7 @@ var Events = function () {
 					if (_new.current_status == CONSTANTS.SERVICE.CUMPLE) {
 						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.CUMPLE }).then((results) => {
 							let motive = results.data[0]
-							//entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
 						})
 						
 						model_entity_institution.getUser(old.id_institution).then((result) => {
@@ -490,7 +490,7 @@ var Events = function () {
 					if (_new.current_status == CONSTANTS.SERVICE.NO_CUMPLE) {
 						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.NO_CUMPLE }).then((results) => {
 							let motive = results.data[0]
-							//entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
 						})
 						
 						model_entity_institution.getUser(old.id_institution).then((result) => {
@@ -511,7 +511,7 @@ var Events = function () {
 					if (old.current_status == CONSTANTS.SERVICE.VERIFICACION && _new.current_status === CONSTANTS.SERVICE.INCOMPLETO) {
 						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.POSTULACION_RECHAZADA }).then((results) => {
 							let motive = results.data[0]
-							//entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
 						})
 						return
 					}
