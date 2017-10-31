@@ -15,6 +15,7 @@ var status = require('../models/status.js')
 var entity_service_status = require('../models/entity_service_status.js')
 var entity_service_comment = require('../models/entity_service_comment.js')
 var emiter = require('../events/emiter.js').instance
+let CONSTANTS = require('../events/constants.js')
 var service_controller = function () {
 	var model_entity_service = new entity_service()
 	var model_category = new category()
@@ -460,7 +461,6 @@ var service_controller = function () {
 	}
 	var get_entity_service = function (user, params, req, res) {
 		if (params.certificate) {
-			let CONSTANTS = require('../events/constants.js')
 			let _service = null
 			return model_entity_service.getByUid(params.id).
 				then((result)=>{
@@ -899,6 +899,25 @@ var service_controller = function () {
 			})
 			if (!found) {
 				throw utiles.informError(100)
+			}
+			let last = null
+			service.history.forEach((status)=>{
+				if(status.id_status === CONSTANTS.SERVICE.CUMPLE){
+					let date = new Date(status.timestamp)
+					if(!last){last = date}
+					if(date > last){
+						last = date
+					}
+				}
+			})
+			if(last){
+				return model_entity_service_status.delete(
+					{
+						id_service:service.id,
+						timestamp:'> '+last.getFullYear()+'-'(last.getMonth()+1)+'-'+last.getDate()
+					}).then(()=>{
+						model_entity_service.update({current_status:8},{id:service.id})
+					})
 			}
 			return model_entity_service.delete(body.id)
 		})
