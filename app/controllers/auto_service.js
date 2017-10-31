@@ -664,8 +664,6 @@ var service_controller = function () {
 				atime.setDate(atime.getDate() + alarm)
 				let ftime = new Date()
 				ftime.setDate(ftime.getDate() + duration)
-				_new.alert_time = atime
-				_new.end_time = ftime
 				return model_entity_service_status.create({
 					id_service: body.id,
 					id_status: 10,
