@@ -893,6 +893,7 @@ var service_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
+		let last = null
 		return model_entity_service.getByUid('' + body.id).then((results) => {
 			let service = results.data[0]
 			let found = false
@@ -904,8 +905,9 @@ var service_controller = function () {
 			if (!found) {
 				throw utiles.informError(100)
 			}
-			let last = null
-			service.history.forEach((status)=>{
+			return model_entity_service_status.getByParams({id_service:service.id})
+		}).then((results)=>{
+			results.data.forEach((status)=>{
 				if(status.id_status === CONSTANTS.SERVICE.CUMPLE){
 					let date = new Date(status.timestamp)
 					if(!last){last = date}
@@ -917,10 +919,10 @@ var service_controller = function () {
 			if(last){
 				return model_entity_service_status.delete(
 					{
-						id_service:service.id,
-						timestamp:'> '+last.getFullYear()+'-'(last.getMonth()+1)+'-'+last.getDate()
+						id_service:body.id,
+						timestamp:'> '+last.getFullYear()+'-'+(last.getMonth()+1)+'-'+last.getDate()
 					}).then(()=>{
-						model_entity_service.update({current_status:8},{id:service.id})
+						model_entity_service.update({current_status:8},{id:body.id})
 					})
 			}
 			return model_entity_service.delete(body.id)

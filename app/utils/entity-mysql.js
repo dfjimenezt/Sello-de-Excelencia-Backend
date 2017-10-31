@@ -663,8 +663,19 @@ var EntityModel = function (info) {
 			pool.getConnection((err, connection) => {
 				if(err){reject(err)}
 				var queryCondition = ''
+				function resolveEqual(connection, value, equal) {
+					if (typeof value != 'string') {
+						return equal + connection.escape(value);
+					}
+					let array = value.split(" ");
+					if (array.length > 1) {
+						return array[0] + connection.escape(array[1]);
+					}
+					return equal + connection.escape(value);
+				}
 				for (var i in data) {
-					queryCondition += i + ' = ' + connection.escape(data[i]) + ' AND '
+					//i + ' = ' + connection.escape(data[i]) +
+					queryCondition += i + resolveEqual(connection,data[i],' = ') + ' AND '
 				}
 				queryCondition = queryCondition.slice(0, -4)
 				var query0 = 'SELECT * FROM ' + info.table + ' WHERE ' + queryCondition + ''
