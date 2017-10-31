@@ -232,45 +232,7 @@ var service_controller = function () {
 				color: 0X5f676a
 			}
 		)
-		size = font.calculateTextDimensions(_service.name,16);
-		let lines = 1
-		let _names = []
-		if(size.width > 400){
-			lines = Math.ceil(size.width / 400)
-			let names = _service.name.split(" ")
-			let glue = Math.floor(names.length / lines)
-			let count = 0
-			let current = []
-			while(names.length){
-				if(count < glue){
-					current.push(names.splice(0,1))
-					count++;
-				}
-				if(count == glue){
-					let n = current.join(' ')
-					_names.push(n)
-					current = []						
-					count = 0		
-				}
-			}
-		}else{
-			_names.push(_service.name)
-		}
 		
-		while (_names.length){
-			_y -= 22
-			_t = _names.splice(0,1)[0]
-			size = font.calculateTextDimensions(_t,16);
-			center = 424 - size.width / 2
-			cxt.writeText(_t.toUpperCase(), center, _y,
-				{
-					font: font,
-					size: 16,
-					colorspace: 'rgb',
-					color: 0X5f676a
-				}
-			)
-		}
 		cxt.writeText('DIRECTORA DE GOBIERNO DIGITAL', 338, 595-488,
 			{
 				font: font,
