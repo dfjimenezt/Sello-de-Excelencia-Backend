@@ -398,7 +398,7 @@ var Events = function () {
 						alarm: atime,
 						level: _laststatus.level || 1
 					}
-					if (_new.level) {
+					if (body.level) {
 						data.level = body.level
 					}
 					if (_new.current_status == CONSTANTS.SERVICE.VERIFICACION) { // verification
