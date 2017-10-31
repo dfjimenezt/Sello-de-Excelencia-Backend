@@ -100,7 +100,7 @@ var service_controller = function () {
 		var cxt = pdfWriter.startPageContentContext(page)
 		let font = pdfWriter.getFontForFile('./app/assets/UniversCondensed.ttf')
 		cxt.drawImage(0, 0, './app/assets/diploma.png')
-		let _y = 480
+		let _y = 520
 		let size = font.calculateTextDimensions('CERTIFICADO',60);
 		let center = centerline - size.width / 2
 		cxt.writeText('CERTIFICADO', center,_y,
@@ -655,13 +655,23 @@ var service_controller = function () {
 		body.id_user = user.id
 		return model_entity_service.create(body)
 			.then((result) => {
-				let valid = new Date();
-				valid.setFullYear(valid.getUTCFullYear() + 1)
+				return model_status.getByUid(10)
+			}).then((result)=>{
+				_status = result[0]
+				let duration = _status.duration
+				let alarm = duration - _status.pre_end
+				let atime = new Date()
+				atime.setDate(atime.getDate() + alarm)
+				let ftime = new Date()
+				ftime.setDate(ftime.getDate() + duration)
+				_new.alert_time = atime
+				_new.end_time = ftime
 				return model_entity_service_status.create({
 					id_service: body.id,
 					id_status: 10,
 					level: body.level,
-					valid_to: valid
+					valid_to: ftime,
+					alarm: atime,
 				})
 			}).then(() => {
 				return body
