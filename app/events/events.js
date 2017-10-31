@@ -55,26 +55,25 @@ var Events = function () {
 				_admin = result[0]
 				_user = old.user
 				if (_new.id_status == CONSTANTS.SERVICE.INCOMPLETO) { // rejected by admin
+					model_entity_service.update({ id: old.id_service, current_status: CONSTANTS.SERVICE.INCOMPLETO }, { id: old.id_service })
 					utiles.sendEmail(_user.email, null, null,
 						'Postulación no aceptada - Sello de Excelencia Gobierno Digital Colombia',
 						`<div style="text-align:center;margin: 10px auto;">
 					<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
 					</div>
-					<p>Hola ${_user.name}</p>
+					<p>Hola ${_user ? _user.name: ''}</p>
 					<p>No ha sido aceptado el siguiente requisito:</p>
-					<p>Categoría: ${_category.name}</p>
-					<p>Nivel: ${_question.level}</p>
-					<p>Temática: ${_topic.name}</p>
-					<p>Requisito: ${_question.text}</p>
-					<p>Entidad: ${_institution.name}</p>
-					<p>Nombre del Producto o Servicio: ${_service.name}</p>
+					<p>Categoría: ${_category ? _category.name: ''}</p>
+					<p>Nivel: ${_question ? _question.level:''}</p>
+					<p>Temática: ${_topic ? _topic.name:''}</p>
+					<p>Requisito: ${_question ? _question.text:''}</p>
+					<p>Entidad: ${_institution ? _institution.name:''}</p>
+					<p>Nombre del Producto o Servicio: ${_service ? _service.name:''}</p>
 					<p>Por favor valide que la descripción y la evidencia cumplan con los criterios del requisito correpondiente.</p>
 					<p>Para Subsanar por favor ingrese a la plataforma del Sello de Excelencia Gobierno Digital Colombia,
 					ingrese a <b>Postular</b> y Seleccione el Producto o Servicio en la sección <b>Continuar con una postulación anterior</b></p>
 					<p>Nuestros mejores deseos,<\p>
 					<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
-
-					return model_entity_service.update({ id: old.id_service, current_status: CONSTANTS.SERVICE.INCOMPLETO }, { id: old.id_service })
 				} else if (_new.id_status == CONSTANTS.SERVICE.ASIGNACION) {
 					model_entity_user_answer.getByParams({ id_service: _service.id })
 						.then((results) => {
