@@ -9,7 +9,17 @@ var util = require('util')
 var Points = function () {
 	var params = [{
 		table: 'points',
-		fields: [{ "Field": "id", "Type": "int(11)", "Null": "NO", "Key": "PRI", "Default": null, "Extra": "auto_increment" }, { "Field": "prev_points", "Type": "int(11)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "value", "Type": "int(11)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "result", "Type": "int(11)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "justification", "Type": "varchar(50)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "id_user", "Type": "int(11)", "Null": "YES", "Key": "MUL", "Default": null, "Extra": "" }, { "Field": "id_motives", "Type": "int(11)", "Null": "YES", "Key": "MUL", "Default": null, "Extra": "" }],
+		fields: [
+			{ "Field": "id", "Type": "int(11)", "Null": "NO", "Key": "PRI", "Default": null, "Extra": "auto_increment" }, { "Field": "prev_points", "Type": "int(11)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "value", "Type": "int(11)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "result", "Type": "int(11)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "justification", "Type": "varchar(50)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "id_user", "Type": "int(11)", "Null": "YES", "Key": "MUL", "Default": null, "Extra": "" }, 
+			{ "Field": "id_motives", "Type": "int(11)", "Null": "YES", "Key": "MUL", "Default": null, "Extra": "" },
+			{
+				"Field": "timestamp",
+				"Type": "timestamp",
+				"Null": "NO",
+				"Key": "",
+				"Default": "CURRENT_TIMESTAMP",
+				"Extra": ""
+			}],
 		model: 'mysql'
 	}]
 	BaseModel.apply(this, params)

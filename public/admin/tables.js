@@ -1407,6 +1407,12 @@ dmt.tables = {
 				"type": "int",
 				"disabled": false,
 				"key": false
+			},
+			{
+				"name": "timestamp",
+				"type": "datetime",
+				"disabled": false,
+				"key": false
 			}
 		],
 		"defaultSort": "id"
