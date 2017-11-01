@@ -445,10 +445,12 @@ var Events = function () {
 						<div style="text-align:center;margin: 10px auto;">
 						<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
 						</div>
-						<p>Hola el servicio:</p>
+						<p>Hola Administrador:</p>
+						<p>Se ha registrado la siguiente postulación en la plataforma de Sello de Excelencia Gobieno Digital Colombia:</p>
 						<p>${old.id} - ${old.name}</p>
-						<p>Está disponible para verificación</p>`
-						)
+						<p>Ahora se encuentra disponible para verificación</p>
+						<p>Nuestros mejores deseos,<\p>
+						<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
 						model_entity_institution.getUser(old.id_institution).then((result) => {
 							let user = result[0]
 							utiles.sendEmail(user.email, null, null,
@@ -513,7 +515,9 @@ var Events = function () {
 							if (results.data.length) {
 								let motive = null
 								results.data.forEach((_motive) => {
-									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.CUMPLE) {
+									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.CUMPLE
+										&& _motive.id_category === _new.id_category
+										&& _motive.level === data.level) {
 										//'id_category': _service.id_category
 										motive = _motive
 										return
@@ -549,7 +553,9 @@ var Events = function () {
 							if (results.data.length) {
 								let motive = null
 								results.data.forEach((_motive) => {
-									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.NO_CUMPLE) {
+									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.NO_CUMPLE
+										&& _motive.id_category === _new.id_category
+										&& _motive.level === data.level) {
 										//'id_category': _service.id_category
 										motive = _motive
 										return
@@ -579,7 +585,9 @@ var Events = function () {
 							if (results.data.length) {
 								let motive = null
 								results.data.forEach((_motive) => {
-									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.POSTULACION_RECHAZADA) {
+									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.POSTULACION_RECHAZADA
+										&& _motive.id_category === _new.id_category
+										&& _motive.level === data.level) {
 										//'id_category': _service.id_category
 										motive = _motive
 										return

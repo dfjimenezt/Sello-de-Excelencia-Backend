@@ -21,7 +21,7 @@ var institution_user = require('../models/institution_user.js')
 var config = require('../models/config.js')
 var type_document = require('../models/type_document.js')
 var entity_points = require('../models/entity_points.js')
-var motives = require('../models/motives.js')
+var entity_motives = require('../models/entity_motives.js')
 var motivename = require('../models/motivename.js')
 var hall_of_fame = require('../models/hall_of_fame.js')
 var emiter = require('../events/emiter.js').instance
@@ -38,7 +38,7 @@ var configuration_controller = function () {
 	var model_config = new config()
 	var model_type_document = new type_document()
 	var model_entity_points = new entity_points()
-	var model_motives = new motives()
+	var model_entity_motives = new entity_motives()
 	var model_motivename = new motivename()
 	var model_hall_of_fame = new hall_of_fame()
 	//---------------------------------------------------------------
@@ -510,7 +510,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_motives = function (user, params) {
-		return _get(model_motives,user,params)
+		return _get(model_entity_motives,user,params)
 	}
 	/**
 	 * @api {get} api/configuration/hall_of_fame Request hall_of_fame information
@@ -832,7 +832,7 @@ var configuration_controller = function () {
  	 * 
 	 */
 	var create_motives = function (user, body) {
-		return model_motives.create(body)
+		return model_entity_motives.create(body)
 	}
 	/**
 	 * @api {post} api/configuration/hall_of_fame Create hall_of_fame information
@@ -1200,7 +1200,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_motives.update(body,{id:body.id})
+		return model_entity_motives.update(body,{id:body.id})
 	}
 	/**
 	 * @api {put} api/configuration/hall_of_fame Update hall_of_fame information
@@ -1501,7 +1501,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_motives.delete(body,{id:body.id})
+		return model_entity_motives.delete(body,{id:body.id})
 	}
 	/**
 	 * @api {delete} api/configuration/hall_of_fame Delete hall_of_fame information

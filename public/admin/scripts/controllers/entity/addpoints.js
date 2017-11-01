@@ -87,8 +87,17 @@ angular.module('dmt-back').controller('addEntityPointsController', function ($md
 		if (!base) {
 			base = ctrl.currentEntity.endpoint;
 		}
-		$http.get(base).then(function (results) {
-			ctrl.options[item.name] = results.data;
+		$http.get(base+'?limit=5000').then(function (results) {
+			if(item.name === 'id_motives'){
+				results.data.data.forEach((motive)=>{
+					if(motive.name.name === 'Eventos Especiales'){
+						ctrl.options[item.name] = {data : [motive]}
+					}
+				})
+			}else{
+				ctrl.options[item.name] = results.data;
+			}
+			
 		});
 	}
 	var opts = [];
