@@ -669,7 +669,8 @@ var EntityModel = function (info) {
 					}
 					let array = value.split(" ");
 					if (array.length > 1) {
-						return array[0] + connection.escape(array[1]);
+						equal = array.splice(0,1)
+						return equal + connection.escape(array.join(' '));
 					}
 					return equal + connection.escape(value);
 				}

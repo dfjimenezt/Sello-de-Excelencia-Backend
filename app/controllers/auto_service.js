@@ -917,10 +917,11 @@ var service_controller = function () {
 				}
 			})
 			if(last){
+				last = last.getFullYear()+'-'+(last.getMonth()+1)+'-'+last.getDate()+' '+last.getHours()+':'+last.getMinutes()+':'+last.getSeconds()
 				return model_entity_service_status.delete(
 					{
 						id_service:body.id,
-						timestamp:'> '+last.getFullYear()+'-'+(last.getMonth()+1)+'-'+last.getDate()
+						timestamp:'> '+last
 					}).then(()=>{
 						model_entity_service.update({current_status:8},{id:body.id})
 					})
