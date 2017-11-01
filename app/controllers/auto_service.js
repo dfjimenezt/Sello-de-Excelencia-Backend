@@ -100,7 +100,7 @@ var service_controller = function () {
 		var cxt = pdfWriter.startPageContentContext(page)
 		let font = pdfWriter.getFontForFile('./app/assets/UniversCondensed.ttf')
 		cxt.drawImage(0, 0, './app/assets/diploma.png')
-		let _y = 520
+		let _y = 440
 		let size = font.calculateTextDimensions('CERTIFICADO',60);
 		let center = centerline - size.width / 2
 		cxt.writeText('CERTIFICADO', center,_y,
