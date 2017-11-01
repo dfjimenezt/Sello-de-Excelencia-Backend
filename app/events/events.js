@@ -466,8 +466,9 @@ var Events = function () {
 							if (results.data.length) {
 								let motive = null
 								results.data.forEach((_motive) => {
-									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.POSTULAR_SERVICIO) {
-										//'id_category': _service.id_category
+									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.POSTULAR_SERVICIO
+									&& _motive.id_category === _new.id_category
+									&& _motive.level === data.level) {
 										motive = _motive
 										return
 									}
