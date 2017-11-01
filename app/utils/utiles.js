@@ -97,7 +97,7 @@ module.exports = {
       // send mail with defined transport object
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-          //reject(error)
+          console.log(error)
         }
         resolve()
       })
