@@ -235,9 +235,11 @@ var Service = function () {
 			_filters[params.filter_field[i]].push(params.filter_value[i])
 		}
 		let now = new Date()
+		now = now.getFullYear() + '-' + (now.getMonth()+1)  + '-' + now.getDate()
 		let query = `SELECT s.id FROM service s
 		JOIN service_status ss ON  (
-			ss.id_service = s.id 
+			ss.id_service = s.id AND
+			ss.id_status = 8 AND ss.valid_to > '${now}'
 			${_filters['certification'] ? 'AND DATE(ss.timestamp) =  \''+_filters['certification'][0] +'\' AND ss.id_status = 8' :''}
 		)
 		JOIN institution i on s.id_institution = i.id
@@ -246,7 +248,7 @@ var Service = function () {
 		${_filters['institution.id'] ? 'i.id = \''+_filters['institution.id'][0] +'\' AND ' :''}
 		${_filters['id'] ? 's.id = \''+_filters['id'][0] +'\' AND ' :''}
 		${_filters['id_category'] ? 's.id_category = \''+_filters['id_category'][0] +'\' AND ' :''}
-		s.current_status = 8 
+		1
 		ORDER BY s.id desc`
 		let keys = []
 		return this.customQuery(query).then((results)=>{
