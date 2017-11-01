@@ -20,9 +20,16 @@ var Events = function () {
 	let model_entity_question = new (require('../models/entity_question.js'))()
 
 	emiter.on('video.view', (user, id_hangout) => {
-		return model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.VER_VIDEO }).then((results) => {
-			if(results.data.length){
-				let motive = results.data[0]
+		return model_entity_motives.getAll({ limit: 5000 }).then((results) => {
+			if (results.data.length) {
+				let motive = null
+				results.data.forEach((_motive) => {
+					if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.VER_VIDEO) {
+						motive = _motive
+						return
+					}
+				})
+
 				if (user.institutions.length > 0) {
 					return entity_model_points.addInstitutionPoints(user.institutions[0].id, motive.id, '', id_hangout)
 				} else {
@@ -63,14 +70,14 @@ var Events = function () {
 						`<div style="text-align:center;margin: 10px auto;">
 					<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
 					</div>
-					<p>Hola ${_user ? _user.name: ''}</p>
+					<p>Hola ${_user ? _user.name : ''}</p>
 					<p>No ha sido aceptado el siguiente requisito:</p>
-					<p>Categoría: ${_category ? _category.name: ''}</p>
-					<p>Nivel: ${_question ? _question.level:''}</p>
-					<p>Temática: ${_topic ? _topic.name:''}</p>
-					<p>Requisito: ${_question ? _question.text:''}</p>
-					<p>Entidad: ${_institution ? _institution.name:''}</p>
-					<p>Nombre del Producto o Servicio: ${_service ? _service.name:''}</p>
+					<p>Categoría: ${_category ? _category.name : ''}</p>
+					<p>Nivel: ${_question ? _question.level : ''}</p>
+					<p>Temática: ${_topic ? _topic.name : ''}</p>
+					<p>Requisito: ${_question ? _question.text : ''}</p>
+					<p>Entidad: ${_institution ? _institution.name : ''}</p>
+					<p>Nombre del Producto o Servicio: ${_service ? _service.name : ''}</p>
 					<p>Por favor valide que la descripción y la evidencia cumplan con los criterios del requisito correpondiente.</p>
 					<p>Para Subsanar por favor ingrese a la plataforma del Sello de Excelencia Gobierno Digital Colombia,
 					ingrese a <b>Postular</b> y Seleccione el Producto o Servicio en la sección <b>Continuar con una postulación anterior</b></p>
@@ -116,11 +123,16 @@ var Events = function () {
 		if (_new.id_request_status === CONSTANTS.EVALUATION_REQUEST.SOLICITADO) {
 			model_user.getByUid('' + _new.id_user).then((result) => {
 				user = result[0]
-				model_entity_motives.getByParams({
-					'name.name': CONSTANTS.MOTIVES.EVALUATOR.ACEPTAR_REQUISITO,
-				}).then((results) => {
-					if(result.data[0].length){
-						let motive = results.data[0]
+				model_entity_motives.getAll({ limit: 5000 }).then((results) => {
+					if (results.data.length) {
+						let motive = null
+						results.data.forEach((_motive) => {
+							if (_motive.name.name === CONSTANTS.MOTIVES.EVALUATOR.CALIFICAR_REQUISITO) {
+								//'id_category': _service.id_category
+								motive = _motive
+								return
+							}
+						})
 						entity_model_points.addUserPoints(user.id, motive.id, '')
 					}
 				})
@@ -167,11 +179,16 @@ var Events = function () {
 					_new.alert_time = atime
 					_new.end_time = ftime
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.ACEPTADO) {
-						model_entity_motives.getByParams({
-							'name.name': CONSTANTS.MOTIVES.EVALUATOR.ACEPTAR_REQUISITO
-						}).then((results) => {
-							if(result.data.length){
-								let motive = results.data[0]
+						model_entity_motives.getAll({ limit: 5000 }).then((results) => {
+							if (results.data.length) {
+								let motive = null
+								results.data.forEach((_motive) => {
+									if (_motive.name.name === CONSTANTS.MOTIVES.EVALUATOR.ACEPTAR_REQUISITO) {
+										//'id_category': _service.id_category
+										motive = _motive
+										return
+									}
+								})
 								entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
 							}
 						})
@@ -195,11 +212,16 @@ var Events = function () {
 							model_entity_evaluation_request.addRejection(_new.id)
 							model_entity_service.reasignate(_new)
 						}
-						model_entity_motives.getByParams({
-							'name.name': CONSTANTS.MOTIVES.EVALUATOR.RECHAZAR_REQUISITO
-						}).then((results) => {
-							if(result.data.length){
-								let motive = results.data[0]
+						model_entity_motives.getAll({ limit: 5000 }).then((results) => {
+							if (results.data.length) {
+								let motive = null
+								results.data.forEach((_motive) => {
+									if (_motive.name.name === CONSTANTS.MOTIVES.EVALUATOR.RECHAZAR_REQUISITO) {
+										//'id_category': _service.id_category
+										motive = _motive
+										return
+									}
+								})
 								entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
 							}
 						})
@@ -210,12 +232,16 @@ var Events = function () {
 					}
 					//7 Cumple
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE) {//add points
-						model_entity_motives.getByParams({
-							'name.name': CONSTANTS.MOTIVES.EVALUATOR.CALIFICAR_REQUISITO,
-							'id_category':_service.id_category
-						}).then((results) => {
-							if(result.data.length){
-								let motive = results.data[0]
+						model_entity_motives.getAll({ limit: 5000 }).then((results) => {
+							if (results.data.length) {
+								let motive = null
+								results.data.forEach((_motive) => {
+									if (_motive.name.name === CONSTANTS.MOTIVES.EVALUATOR.CALIFICAR_REQUISITO) {
+										//'id_category': _service.id_category
+										motive = _motive
+										return
+									}
+								})
 								entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
 							}
 						})
@@ -242,12 +268,18 @@ var Events = function () {
 					}
 					//8 No Cumple
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE) {//add points
-						model_entity_motives.getByParams({
-							'name.name': CONSTANTS.MOTIVES.EVALUATOR.CALIFICAR_REQUISITO,
-							'id_category':_service.id_category
-						}).then((results) => {
-							let motive = results.data[0]
-							entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+						model_entity_motives.getAll({ limit: 5000 }).then((results) => {
+							if (results.data.length) {
+								let motive = null
+								results.data.forEach((_motive) => {
+									if (_motive.name.name === CONSTANTS.MOTIVES.EVALUATOR.CALIFICAR_REQUISITO) {
+										//'id_category': _service.id_category
+										motive = _motive
+										return
+									}
+								})
+								entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+							}
 						})
 						model_entity_evaluation_request.getByParams({ id_answer: _answer.id }).then((results) => {
 							let approved = 0
@@ -287,7 +319,7 @@ var Events = function () {
 		<div>
 		<p> Hola ${user.name} </p>
 		<p>Te has registrado en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
-		<p>${user.role == 1 ? 'Como Ciudadano':'Tu nueva contraseña para acceder es:'+pass_user}</p>
+		<p>${user.role == 1 ? 'Como Ciudadano' : 'Tu nueva contraseña para acceder es:' + pass_user}</p>
 		<p><a href='${HOST}/activar-cuenta?token=${token}&email=${user.email}&active=1'>
 			Haz click aquí para activar tu cuenta </a>
 		</p>
@@ -430,9 +462,16 @@ var Events = function () {
 							<p>Nuestros mejores deseos,<\p>
 							<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
 						})
-						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.POSTULAR_SERVICIO }).then((results) => {
-							if(result.data.length){
-								let motive = results.data[0]
+						model_entity_motives.getAll({ limit: 5000 }).then((results) => {
+							if (results.data.length) {
+								let motive = null
+								results.data.forEach((_motive) => {
+									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.POSTULAR_SERVICIO) {
+										//'id_category': _service.id_category
+										motive = _motive
+										return
+									}
+								})
 								entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
 							}
 						})
@@ -469,13 +508,20 @@ var Events = function () {
 						})
 					}
 					if (_new.current_status == CONSTANTS.SERVICE.CUMPLE) {
-						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.CUMPLE }).then((results) => {
-							if(result.data.length){
-								let motive = results.data[0]
+						model_entity_motives.getAll({ limit: 5000 }).then((results) => {
+							if (results.data.length) {
+								let motive = null
+								results.data.forEach((_motive) => {
+									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.CUMPLE) {
+										//'id_category': _service.id_category
+										motive = _motive
+										return
+									}
+								})
 								entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
 							}
 						})
-						
+
 						model_entity_institution.getUser(old.id_institution).then((result) => {
 							let user = result[0]
 							utiles.sendEmail(user.email, null, null,
@@ -498,13 +544,20 @@ var Events = function () {
 						})
 					}
 					if (_new.current_status == CONSTANTS.SERVICE.NO_CUMPLE) {
-						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.NO_CUMPLE }).then((results) => {
-							if(result.data.length){
-								let motive = results.data[0]
+						model_entity_motives.getAll({ limit: 5000 }).then((results) => {
+							if (results.data.length) {
+								let motive = null
+								results.data.forEach((_motive) => {
+									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.NO_CUMPLE) {
+										//'id_category': _service.id_category
+										motive = _motive
+										return
+									}
+								})
 								entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
 							}
 						})
-						
+
 						model_entity_institution.getUser(old.id_institution).then((result) => {
 							let user = result[0]
 
@@ -521,9 +574,16 @@ var Events = function () {
 						})
 					}
 					if (old.current_status == CONSTANTS.SERVICE.VERIFICACION && _new.current_status === CONSTANTS.SERVICE.INCOMPLETO) {
-						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.POSTULACION_RECHAZADA }).then((results) => {
-							if(result.data.length){
-								let motive = results.data[0]
+						model_entity_motives.getAll({ limit: 5000 }).then((results) => {
+							if (results.data.length) {
+								let motive = null
+								results.data.forEach((_motive) => {
+									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.POSTULACION_RECHAZADA) {
+										//'id_category': _service.id_category
+										motive = _motive
+										return
+									}
+								})
 								entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
 							}
 						})
