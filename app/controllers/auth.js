@@ -125,11 +125,15 @@ var Auth = function () {
                     })
                 }
                 if(_user.role != 'Ciudadano'){
-                    throw utiles.informError(400) // user is not citizen
+                    return
                 }
                 return login(null,user,1)
             }).then((response)=>{
-                resolve(response)
+                if(!response){
+                    reject(utiles.informError(100))
+                }else{
+                    resolve(response)
+                }
             })
         });
         return p
@@ -189,11 +193,15 @@ var Auth = function () {
                     })
                 }
                 if(_user.role != 'Ciudadano'){
-                    throw utiles.informError(400) // user is not citizen
+                    return
                 }
                 return login(null,user,1)
             }).then((response)=>{
-                resolve(response)
+                if(!response){
+                    reject(utiles.informError(100))
+                }else{
+                    resolve(response)
+                }
             })
         });
         return p

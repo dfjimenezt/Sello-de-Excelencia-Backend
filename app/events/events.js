@@ -21,11 +21,13 @@ var Events = function () {
 
 	emiter.on('video.view', (user, id_hangout) => {
 		return model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.VER_VIDEO }).then((results) => {
-			let motive = results.data[0]
-			if (user.institutions.length > 0) {
-				return entity_model_points.addInstitutionPoints(user.institutions[0].id, motive.id, '', id_hangout)
-			} else {
-				return entity_model_points.addUserPoints(user.id, motive.id, '', id_hangout)
+			if(results.data.length){
+				let motive = results.data[0]
+				if (user.institutions.length > 0) {
+					return entity_model_points.addInstitutionPoints(user.institutions[0].id, motive.id, '', id_hangout)
+				} else {
+					return entity_model_points.addUserPoints(user.id, motive.id, '', id_hangout)
+				}
 			}
 		})
 	})
@@ -117,8 +119,10 @@ var Events = function () {
 				model_entity_motives.getByParams({
 					'name.name': CONSTANTS.MOTIVES.EVALUATOR.ACEPTAR_REQUISITO,
 				}).then((results) => {
-					let motive = results.data[0]
-					entity_model_points.addUserPoints(user.id, motive.id, '')
+					if(result.data[0].length){
+						let motive = results.data[0]
+						entity_model_points.addUserPoints(user.id, motive.id, '')
+					}
 				})
 			})
 		}
@@ -166,8 +170,10 @@ var Events = function () {
 						model_entity_motives.getByParams({
 							'name.name': CONSTANTS.MOTIVES.EVALUATOR.ACEPTAR_REQUISITO
 						}).then((results) => {
-							let motive = results.data[0]
-							entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+							if(result.data.length){
+								let motive = results.data[0]
+								entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+							}
 						})
 					}
 					//5 Rechazado
@@ -192,8 +198,10 @@ var Events = function () {
 						model_entity_motives.getByParams({
 							'name.name': CONSTANTS.MOTIVES.EVALUATOR.RECHAZAR_REQUISITO
 						}).then((results) => {
-							let motive = results.data[0]
-							entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+							if(result.data.length){
+								let motive = results.data[0]
+								entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+							}
 						})
 					}
 					//6 Retroalimentación
@@ -206,8 +214,10 @@ var Events = function () {
 							'name.name': CONSTANTS.MOTIVES.EVALUATOR.CALIFICAR_REQUISITO,
 							'id_category':_service.id_category
 						}).then((results) => {
-							let motive = results.data[0]
-							entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+							if(result.data.length){
+								let motive = results.data[0]
+								entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
+							}
 						})
 						model_entity_evaluation_request.getByParams({ id_answer: _answer.id }).then((results) => {
 							let approved = 0
@@ -337,7 +347,7 @@ var Events = function () {
 		if (avg <= 3.5) {
 			let _service = null
 			model_entity_service.getByUid('' + id_service).then((result) => {
-				_service = result[0]
+				_service = result.data[0]
 				return model_user.getAdmin()
 			})
 				.then((result) => {
@@ -424,8 +434,10 @@ var Events = function () {
 							<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
 						})
 						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.POSTULAR_SERVICIO }).then((results) => {
-							let motive = results.data[0]
-							entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							if(result.data.length){
+								let motive = results.data[0]
+								entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							}
 						})
 					}
 					if (_new.current_status == CONSTANTS.SERVICE.EVALUACION) {
@@ -461,8 +473,10 @@ var Events = function () {
 					}
 					if (_new.current_status == CONSTANTS.SERVICE.CUMPLE) {
 						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.CUMPLE }).then((results) => {
-							let motive = results.data[0]
-							entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							if(result.data.length){
+								let motive = results.data[0]
+								entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							}
 						})
 						
 						model_entity_institution.getUser(old.id_institution).then((result) => {
@@ -488,8 +502,10 @@ var Events = function () {
 					}
 					if (_new.current_status == CONSTANTS.SERVICE.NO_CUMPLE) {
 						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.NO_CUMPLE }).then((results) => {
-							let motive = results.data[0]
-							entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							if(result.data.length){
+								let motive = results.data[0]
+								entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							}
 						})
 						
 						model_entity_institution.getUser(old.id_institution).then((result) => {
@@ -509,8 +525,10 @@ var Events = function () {
 					}
 					if (old.current_status == CONSTANTS.SERVICE.VERIFICACION && _new.current_status === CONSTANTS.SERVICE.INCOMPLETO) {
 						model_entity_motives.getByParams({ 'name.name': CONSTANTS.MOTIVES.ENTITY.POSTULACION_RECHAZADA }).then((results) => {
-							let motive = results.data[0]
-							entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							if(result.data.length){
+								let motive = results.data[0]
+								entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+							}
 						})
 						return
 					}

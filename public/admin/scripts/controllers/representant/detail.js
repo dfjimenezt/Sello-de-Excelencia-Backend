@@ -122,16 +122,34 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 	};
 	ctrl.updateItem = function (item, field, relation) {
 		let entity = dmt.entities[relation.entity];
-		if (item.timestamp) {
-			delete item.timestamp;
-		}
-		if (entity.translate) {
-			item.language = ctrl.language
-		}
-		var fd = new FormData();
-		for (var i in item) {
-			fd.append(i, item[i]);
-		}
+		var data = new FormData();
+		var update = false;
+		entity.fields.forEach(function (field) {
+			if (field.type !== 'file') {
+				if (typeof item[field.name] === 'object' || typeof item[field.name] === 'array') {
+					if( (item[field.name] instanceof Date)){
+						let _d = item[field.name].toISOString()
+						_d = _d.split('T').join(' ').split('.')[0]
+						data.append(field.name, _d)	
+					}
+					return;
+				}
+				if (field.name === 'timestamp') {
+					return;
+				}
+			}
+			if (field.type === 'boolean') {
+				data.append(field.name, item[field.name] === true ? 1 : 0)
+				return;
+			}
+			if (!item[field.name]) {
+				return;
+			}
+			if (field.name === entity.defaultSort) {
+				update = true;
+			}
+			data.append(field.name, item[field.name])
+		})
 		/*$http({
 			method: 'PUT',
 			url: entity.endpoint,
@@ -141,7 +159,7 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 		})*/
 		var request = new XMLHttpRequest();
 		request.open("PUT", entity.endpoint);
-		request.send(fd);
+		request.send(data);
 	};
 	ctrl.delete = function (event, relation) {
 		let entity = dmt.entities[relation.entity];
