@@ -1268,12 +1268,6 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "id",
-				"type": "int",
-				"disabled": true,
-				"key": true
-			},
-			{
 				"name": "points",
 				"type": "int",
 				"disabled": false,
@@ -1290,6 +1284,12 @@ dmt.tables = {
 				"type": "string",
 				"disabled": false,
 				"key": false
+			},
+			{
+				"name": "id",
+				"type": "int",
+				"disabled": true,
+				"key": true
 			},
 		],
 		"defaultSort": "id"
