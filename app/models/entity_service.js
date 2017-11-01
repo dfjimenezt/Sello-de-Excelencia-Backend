@@ -115,9 +115,9 @@ var Service = function () {
 						u_a.id_question id_question,
 						u.id_availability
 						FROM user_answer u_a
-						JOIN questiontopic qt ON qt.id = u_a.id_topic
-						JOIN user_questiontopic ON user_questiontopic.id_topic = qt.id
-						JOIN user u ON u.id = user_questiontopic.id_user
+						LEFT JOIN questiontopic qt ON qt.id = u_a.id_topic
+						LEFT JOIN user_questiontopic ON user_questiontopic.id_topic = qt.id
+						LEFT JOIN user u ON u.id = user_questiontopic.id_user
 						WHERE u_a.id_service = '${service.id}' 
 						ORDER BY u_a.id asc,u.id_availability desc`
 					return this.customQuery(q).then((_users) => {
