@@ -2,7 +2,7 @@
 	"port": "3000",
 	"enviroment": "development",
 	"verbose": "true",
-	"googleDebug": "false",
+	"googleDebug": "true",
 	"defaultModel": "mysql",
 	"version": "1.0.1",
 	"db_production": {
@@ -40,6 +40,11 @@
     "from"        : "Sello de Excelencia <no-reply@domoti-sas.com>",
     "bcc"         : "",
     "admin"       : "jorge.contreras@domoti-sas.com"
+	},
+	"hosts":{
+		"development":"https://prueba-dot-domoti-sellodeexcelencia.appspot.com",
+		"production":"http://sellodeexcelencia.gov.co",
+		"local":"http://localhost:9000"
 	},
 	"secret": "1234567890",
     "gcloud": {
