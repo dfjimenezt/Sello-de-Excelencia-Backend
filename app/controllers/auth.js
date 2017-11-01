@@ -295,12 +295,14 @@ var Auth = function () {
                 if (body.email === undefined) {
                     throw utiles.informError(400)
                 }
+                let tmp_pwd = false
                 //Generar password temporal para evaluador a registrar y activar por e-mail
                 if (body.password === undefined) {
                     pass_user = pass_generator.generate({
                         length: 8,
                         numbers: true
                     })
+                    tmp_pwd = true
                 } else {
                     pass_user = body.password
                 }
@@ -320,7 +322,7 @@ var Auth = function () {
                     ocupation: body.ocupation || null,
                     education_level: body.education_level || null,
                     password: pass,
-                    tmp_pwd: true,
+                    tmp_pwd: tmp_pwd,
                     points: "0",
                     active: _active,
                     verified: false,

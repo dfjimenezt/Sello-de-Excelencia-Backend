@@ -278,9 +278,6 @@ var Events = function () {
 		if (!pass_user) {
 			return
 		}
-		if (user.role == 1) {
-			return
-		}
 		// send an email to the user
 		let token = utiles.sign(user.email)
 		let template = `
@@ -289,8 +286,8 @@ var Events = function () {
 		</div>
 		<div>
 		<p> Hola ${user.name} </p>
-		<p>Se ha asignado una nueva contraseña en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
-		<p>Tu nueva contraseña para acceder es: ${pass_user} </p>
+		<p>Te has registrado en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
+		<p>${user.role == 1 ? 'Como Ciudadano':'Tu nueva contraseña para acceder es:'+pass_user}</p>
 		<p><a href='${HOST}/activar-cuenta?token=${token}&email=${user.email}&active=1'>
 			Haz click aquí para activar tu cuenta </a>
 		</p>
@@ -357,7 +354,7 @@ var Events = function () {
 				<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
 				</div>
 				<div>
-				<p>El servicio ${_service.name} tiene una calificación muy baja</p>
+				<p>El servicio ${_service.name} tiene una calificación muy baja.</p>
 				<p>Da click <a href="${HOST}/detalle/${_service.id}">aquí </a> para ingresar al servicio</p>
 				<p>La calificación del servicio es ${avg}</p>
 				<p>Nuestros mejores deseos,<\p>
