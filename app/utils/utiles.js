@@ -95,6 +95,7 @@ module.exports = {
       }
       //send Mail
       // send mail with defined transport object
+      console.log("SENDING MAIL TO: "+to)
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
           console.log("ERROR en Email")
