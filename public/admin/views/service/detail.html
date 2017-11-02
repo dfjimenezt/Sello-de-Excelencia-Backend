@@ -130,7 +130,7 @@
           <tbody md-body>
             <tr md-row ng-repeat="item in ctrl.entities.user_answer.data">
               <td md-cell>
-                  <span>{{ item.id_question }}</span>
+                  <span>{{ item.question.text }}</span>
               </td>
               <td md-cell>
                   <span>{{ item.comment }}</span>
@@ -146,7 +146,7 @@
                     <md-button aria-label="accept" ng-click="item.id_status = 2;ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-raised"> Aprobar </md-button>
                     <md-button aria-label="reject" ng-click="item.id_status = 10;ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-hue-1 md-raised"> Rechazar </md-button>
                 </div>
-                <div ng-if="item.id_status == 5">
+                <div>
                   <md-button aria-label="accept" ng-click="ctrl.openAnswerDetail(item);" class="md-primary md-raised"> Ver</md-button>
                 </div>
               </td>

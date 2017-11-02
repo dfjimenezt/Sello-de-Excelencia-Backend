@@ -136,6 +136,7 @@ angular.module('dmt-back').controller('detailItemUserController', function ($mdD
 		})*/
 		var request = new XMLHttpRequest();
 		request.open("PUT", entity.endpoint);
+		request.setRequestHeader("Authorization", localStorage.getItem("token"));
 		request.send(data);
 	};
 	ctrl.delete = function (event, relation) {

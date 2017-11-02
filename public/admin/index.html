@@ -38,7 +38,7 @@
         <![endif]-->
 </head>
 
-<body ng-app="dmt-back" ng-cloak ng-controller="backCtrl as ctrl">
+<body ng-app="dmt-back" flex ng-cloak ng-controller="backCtrl as ctrl">
   <md-toolbar layout="row" flex layout-align="start center" class="md-primary md-hue-1">
     <md-button ng-click="ctrl.menu()">
       <md-icon class="material-icons">menu</md-icon>
@@ -99,6 +99,7 @@
   <script src="translate.js"></script>
   <script src="index.js"></script>
   <script src="./scripts/utils/utils.js"></script>
+  <script src="./scripts/services/entityservice.js"></script>
   <script src="./scripts/controllers/default/additem.js"></script>
   <script src="./scripts/controllers/default/listitem.js"></script>
   <script src="./scripts/controllers/default/deleteitem.js"></script>

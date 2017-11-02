@@ -7,6 +7,33 @@ dmt.config = [
 		path: "general",
 		pages:[
 			{
+				name: "Config",
+				path: "config",
+				entity: "config",
+				controller: "listItemExtendedController",
+				templateUrl: "views/extended/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailBannerController",
+						templateUrl: "views/banner/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailBannerController",
+						templateUrl: "views/banner/detail.html"
+					}
+				]
+			},{
+				name: "Logos",
+				path: "logos/1",
+				entity: "config",
+				controller: "detailItemSingleController",
+				templateUrl: "views/single/detail.html",
+			},
+			{
 				name: "Banner",
 				path: "banner",
 				entity: "banner",
@@ -26,6 +53,11 @@ dmt.config = [
 						templateUrl: "views/banner/detail.html"
 					}
 				]
+			},
+			{
+				name: "Salón de la fama",
+				path: "hall",
+				entity: "hall_of_fame",
 			},
 			{
 				name: "Pie de página",
@@ -206,7 +238,7 @@ dmt.config = [
 				]
 			},
 			{
-				name: "Cumplidos",
+				name: "Otorgados",
 				path: "cumplidos",
 				entity: "service",
 				filters:{
@@ -230,7 +262,7 @@ dmt.config = [
 				]
 			},
 			{
-				name: "No Cumplidos",
+				name: "No Otorgados",
 				path: "no_cumplidos",
 				entity: "service",
 				filters:{
@@ -260,7 +292,6 @@ dmt.config = [
 				filters:{
 					'evaluators.id_request_status':['< 7'],
 					'evaluators.alert_time': ['< '+(new Date().toISOString().substring(0,10))],
-					//'evaluators.alert_time': ['< 2018-10-10'],
 				},
 				controller: "urgentAnswerController",
 				templateUrl: "views/answer/urgent.html",
@@ -272,37 +303,9 @@ dmt.config = [
 		path: "administrar",
 		pages: [
 			{
-				name: "Aprende y Enseña",
-				path: "aprende_ensena",
-				entity: "hangouts",
-				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
-				pages: [
-					{
-						name: "add",
-						path: "add",
-						controller: "detailLearnExtendedController",
-						templateUrl: "views/extended/detail.html"
-					},
-					{
-						name: "detail",
-						path: "detail/:id",
-						controller: "detailLearnExtendedController",
-						templateUrl: "views/extended/detail.html"
-					}
-				]
-			},
-			{
 				name: "Tipos de Evaluador",
 				path: "tipos_evaluador",
 				entity: "usertype",
-			},
-			{
-				name: "Logos",
-				path: "logos/1",
-				entity: "config",
-				controller: "detailItemSingleController",
-				templateUrl: "views/single/detail.html",
 			},
 			{
 				name: "Categorías",
@@ -315,9 +318,9 @@ dmt.config = [
 				entity: "questiontopic"
 			},
 			{
-				name: "Puntaje",
-				path: "puntaje",
-				entity: "motives",
+				name: "Requisitos",
+				path: "requisitos",
+				entity: "question",
 				controller: "listItemExtendedController",
 				templateUrl: "views/extended/list.html",
 				pages: [
@@ -346,9 +349,9 @@ dmt.config = [
 				entity: "status"
 			},
 			{
-				name: "Requisitos",
-				path: "requisitos",
-				entity: "question",
+				name: "Puntaje",
+				path: "puntaje",
+				entity: "motives",
 				controller: "listItemExtendedController",
 				templateUrl: "views/extended/list.html",
 				pages: [
@@ -367,22 +370,34 @@ dmt.config = [
 				]
 			},
 			{
+				name: "Aprende y Enseña",
+				path: "aprende_ensena",
+				entity: "hangouts",
+				controller: "listItemExtendedController",
+				templateUrl: "views/extended/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailLearnExtendedController",
+						templateUrl: "views/extended/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailLearnExtendedController",
+						templateUrl: "views/extended/detail.html"
+					}
+				]
+			},
+			{
 				name: "Preguntas Ciudadano",
 				path: "preguntas",
 				entity: "category_questions"
 			},
+			
 			{
-				name: "Ciudades",
-				path: "ciudades",
-				entity: "city"
-			},
-			{
-				name: "Regiones",
-				path: "regiones",
-				entity: "region"
-			},
-			{
-				name: "Roles",
+				name: "Perfiles",
 				path: "roles",
 				entity: "role",
 				controller: "listItemExtendedController",

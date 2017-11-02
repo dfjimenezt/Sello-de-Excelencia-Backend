@@ -29,7 +29,7 @@ dmt.translate={
         "phone":"Teléfono",
         "extension":"Extensión",
         "mobile":"Celular",
-        "alert":"Alerta",
+        "alert":"Enviar notificación",
         "newsletter":"Boletín",
         "id_type_document":"Tipo de Documento",
         "document":"Documento",
@@ -120,7 +120,8 @@ dmt.translate={
         "requisites":"Requisitos",
         "id_order":"Posición",
         "comment":"Comentario",
-        "value":"Valor",
+        "value":"Puntos",
+        "justification":"Justificación",
         "result":"Total Acumulado",
         "id_motives":"Motivo",
         "id_hangout":"Live"

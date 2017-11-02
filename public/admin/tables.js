@@ -170,7 +170,7 @@ dmt.tables = {
 			},
 			{
 				"name": "diploma",
-				"type": "diploma",
+				"type": "int",
 				"disabled": false,
 				"key": false
 			}
@@ -538,9 +538,21 @@ dmt.tables = {
 				"key": false
 			},
 			{
+				"name": "id_category",
+				"type": "int",
+				"disabled": true,
+				"key": false
+			},
+			{
+				"name": "current_status",
+				"type": "int",
+				"disabled": true,
+				"key": false
+			},
+			{
 				"name": "rate",
 				"type": "number",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 			{
@@ -550,27 +562,21 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "id_category",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
 				"name": "id_institution",
 				"type": "int",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 			{
 				"name": "test_user",
 				"type": "string",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 			{
 				"name": "test_password",
 				"type": "string",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 			{
@@ -585,16 +591,11 @@ dmt.tables = {
 				"disabled": true,
 				"key": false
 			},
-			{
-				"name": "current_status",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
+			
 			{
 				"name": "id_user",
 				"type": "int",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 		],
@@ -610,6 +611,12 @@ dmt.tables = {
 			},
 			{
 				"name": "name",
+				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "description",
 				"type": "string",
 				"disabled": false,
 				"key": false
@@ -708,12 +715,6 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "ranking",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
 				"name": "points",
 				"type": "int",
 				"disabled": false,
@@ -723,18 +724,6 @@ dmt.tables = {
 				"name": "date",
 				"type": "datetime",
 				"disabled": true,
-				"key": false
-			},
-			{
-				"name": "id_user",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "id_institution",
-				"type": "int",
-				"disabled": false,
 				"key": false
 			},
 			{

@@ -38,14 +38,15 @@
 			<md-tab label="Evaluaciones">
 				<md-card ng-repeat="request in ctrl.entities.evaluation_request.data" layout="column" flex layout-padding>
 					<md-content>
-						<div layout="row">
-							<md-input-container flex="50">
+						<div layout="row" flex="60">
+								
+							<md-input-container flex="30">
 									<label>Estado</label>
 									<md-select ng-model="request.id_request_status">
 										<md-option ng-repeat="o in ctrl.entities.evaluation_request.options.id_request_status" value="{{o.id}}">{{o.name}}</md-option>
 									</md-select>
 								</md-input-container>
-								<md-input-container flex="50">
+								<md-input-container flex="30">
 									<label>Fecha Limite de Evaluación</label>
 									<md-datepicker type="text" ng-model="request.end_time" ng-disabled="true"></md-datepicker>
 								</md-input-container>
@@ -57,13 +58,13 @@
 						 md-search-text-change="ctrl.entities.user.search()" 
 						 md-search-text="ctrl.entities.user.query.filter"
 						 md-selected-item-change="ctrl.evaluatorSelected(request)"
-						 placeholder="Seleccionar un Evaluador">
+						 placeholder="Seleccionar un Evaluador" flex="60">
 						 <md-item-template>
 								<span md-highlight-text="ctrl.entities.user.query.filter" md-highlight-flags="^i">{{item.name}} - {{item.email}}</span>
 							</md-item-template>
-							</md-autocomplete>
-						<div layout="row" layout-wrap class="input-row" layout-padding flex>
-							<md-input-container flex="50">
+						</md-autocomplete>
+						<div layout="row" layout-wrap class="input-row" layout-padding flex="60">
+							<md-input-container flex="30">
 								<label>Nombre</label>
 								<input type="text" ng-model="request.user.name" ng-disabled="true">
 							</md-input-container>
@@ -88,6 +89,7 @@
 								<input type="text" ng-model="request.user.mobile" ng-disabled="true">
 							</md-input-container>
 						</div>
+						
 						<div layout="row" layout-align="center">
 							<md-button class="md-accent md-raised" ng-click="ctrl.reasignate(request)">Re-asignar</md-button>
 							<md-button class="md-primary md-raised" ng-click="ctrl.updateItem(request,null,ctrl.evaluation_request_relation)">Guardar</md-button>

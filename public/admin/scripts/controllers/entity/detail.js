@@ -150,13 +150,6 @@ angular.module('dmt-back').controller('detailItemEntityController', function ($m
 			}
 			data.append(field.name, item[field.name])
 		})
-		/*$http({
-			method: 'PUT',
-			url: entity.endpoint,
-			data: item,
-			transformRequest: angular.identity,
-			headers: {'Content-Type': 'multipart/form-data'}
-		})*/
 		var request = new XMLHttpRequest();
 		request.open("PUT", entity.endpoint);
 		request.send(data);

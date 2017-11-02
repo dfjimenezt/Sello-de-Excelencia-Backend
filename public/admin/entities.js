@@ -528,6 +528,18 @@ dmt.entities = {
       }
     ]
   },
+  "hall_of_fame":{
+    table:"hall_of_fame",
+    relations:[
+      {
+        type:"1-1",
+        entity:"role",
+        name:"role",
+        leftKey:"id_role",
+        foreign_name:"name"
+      },
+    ]
+  },
   "motives":{
     table:"motives",
     relations:[

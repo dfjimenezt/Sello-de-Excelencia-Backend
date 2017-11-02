@@ -456,6 +456,17 @@ var service_controller = function () {
 		pdfWriter.end()
 	}
 	var get_entity_service = function (user, params, req, res) {
+		if(user.permissions.indexOf('admin_services') == -1){
+			if(!params.filter_field){
+				params.filter_field = []
+				params.filter_value = []
+			}else if(typeof params.filter_field === 'string'){
+				params.filter_field = [params.filter_field]
+				params.filter_value = [params.filter_value]
+			}
+			params.filter_field.push('active')
+			params.filter_value.push('1')
+		}
 		if (params.certificate) {
 			let _service = null
 			return model_entity_service.getByUid(params.id).

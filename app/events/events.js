@@ -600,6 +600,34 @@ var Events = function () {
 					}
 					return model_entity_service_status.create(data)
 				}
+				if(_new.active === 0 && old.active===1){
+					model_entity_institution.getUser(old.id_institution).then((result) => {
+						let user = result[0]
+						let tpl = `
+						<div style="text-align:center;margin: 10px auto;">
+						<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
+						</div>
+						<p>Hola ${user.name}</p>
+						<p>Hemos desactivado tu servicio por favor ponte en contacto con nosotros.</p>
+						<p>Nuestros mejores deseos,<\p>
+						<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`
+						utiles.sendEmail(user.email, null, null, 'Asignación de Requisito', tpl)
+					})
+				}
+				if(_new.active === 1 && old.active===0){
+					model_entity_institution.getUser(old.id_institution).then((result) => {
+						let user = result[0]
+						let tpl = `
+						<div style="text-align:center;margin: 10px auto;">
+						<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
+						</div>
+						<p>Hola ${user.name}</p>
+						<p>Hemos re-activado tu servicio.</p>
+						<p>Nuestros mejores deseos,<\p>
+						<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`
+						utiles.sendEmail(user.email, null, null, 'Asignación de Requisito', tpl)
+					})
+				}
 			})
 	})
 	emiter.on('evaluation_request.asignation', (_new) => {

@@ -99,7 +99,6 @@ angular.module('dmt-back').controller('detailBannerController', function ($mdDia
 	};
 	ctrl.updateItem = function (item, field, relation) {
 		let entity = dmt.entities[relation.entity];
-		let entity = dmt.entities[relation.entity];
 		var data = new FormData();
 		var update = false;
 		entity.fields.forEach(function (field) {
