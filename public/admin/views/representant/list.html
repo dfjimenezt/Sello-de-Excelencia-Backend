@@ -48,22 +48,22 @@
         <table md-table md-progress="promise">
             <thead md-head md-order="ctrl.entities[ctrl.entity].query.order" md-on-reorder="ctrl.update">
                 <tr md-row>
-                    <th md-column md-order-by="id">
+                    <th md-column md-order-by="id" style="max-width:150px">
                         <span>Id</span>
                     </th>
-                    <th md-column md-order-by="name">
+                    <th md-column md-order-by="name" style="max-width:150px">
                         <span>Nombre</span>
                     </th>
                     <!--th md-column md-order-by="secondname">
                         <span>Segundo Nombre</span>
                     </th-->
-                    <th md-column md-order-by="lastname">
+                    <th md-column md-order-by="lastname" style="max-width:150px">
                         <span>Apellido</span>
                     </th>
                     <!--th md-column md-order-by="secondlastname">
                         <span>Segundo Apellido</span>
                     </th-->
-                    <th md-column >
+                    <th md-column style="max-width:150px">
                         <md-autocomplete md-items="item in ctrl.entities.user.data" 
                             md-item-text="item.email" md-selected-item="ctrl.user" 
                             md-search-text-change="ctrl.entities.user.search()"
@@ -75,7 +75,7 @@
                             </md-item-template>
                         </md-autocomplete>
                     </th>
-                    <th md-column >
+                    <th md-column style="max-width:150px">
                         <md-autocomplete md-items="item in ctrl.entities.institution.data" 
                         md-item-text="item.name "
                         md-selected-item="ctrl.institution"
@@ -93,35 +93,35 @@
                         </md-item-template>
                       </md-autocomplete>
                     </th>
-                    <th md-column md-order-by="active">
+                    <th md-column md-order-by="active" style="max-width:150px">
                         <span>Activo</span>
                     </th>
                 </tr>
             </thead>
             <tbody md-body>
                 <tr md-row md-select="item" md-select-id="name" md-auto-select ng-repeat="item in ctrl.data">
-                    <td md-cell ng-click="ctrl.details(item)">
+                    <td md-cell ng-click="ctrl.details(item)" style="max-width:150px">
                         {{item.id}}
                     </td>
-                    <td md-cell ng-click="ctrl.details(item)">
+                    <td md-cell ng-click="ctrl.details(item)" style="max-width:150px">
                         {{item.name}}
                     </td>
                     <!--td md-cell>
                         {{item.secondname}}
                     </td-->
-                    <td md-cell ng-click="ctrl.details(item)">
+                    <td md-cell ng-click="ctrl.details(item)" style="max-width:150px">
                         {{item.lastname}}
                     </td>
                     <!--td md-cell>
                         {{item.secondlastname}}
                     </td-->
-                    <td md-cell ng-click="ctrl.details(item)">
+                    <td md-cell ng-click="ctrl.details(item)" style="max-width:150px">
                         {{item.email}}
                     </td>
-                    <td md-cell ng-click="ctrl.details(item)">
+                    <td md-cell ng-click="ctrl.details(item)" style="max-width:150px">
                         {{item.institutions[0].name}}
                     </td>
-                    <td md-cell ng-click="ctrl.details(item)">
+                    <td md-cell ng-click="ctrl.details(item)" style="max-width:150px">
                         <md-checkbox name="activo" ng-disabled="true" ng-model="item.active" aria-label="activo"></md-checkbox>
                     </td>
                 </tr>

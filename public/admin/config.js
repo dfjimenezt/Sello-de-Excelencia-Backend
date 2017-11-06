@@ -184,19 +184,19 @@ dmt.config = [
 				filters:{
 					'current_status':[1]
 				},
-				controller: "listItemServiceController",
+				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemServiceController",
+						controller: "servicesDetailController",
 						templateUrl: "views/service/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemServiceController",
+						controller: "servicesDetailController",
 						templateUrl: "views/service/detail.html"
 					}
 				]
@@ -208,19 +208,19 @@ dmt.config = [
 				filters:{
 					'current_status':[5]
 				},
-				controller: "listItemServiceController",
+				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemServiceController",
+						controller: "servicesDetailController",
 						templateUrl: "views/service/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemServiceController",
+						controller: "servicesDetailController",
 						templateUrl: "views/service/detail.html"
 					}
 				]
@@ -232,19 +232,19 @@ dmt.config = [
 				filters:{
 					'current_status':[8]
 				},
-				controller: "listItemServiceController",
+				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemServiceController",
+						controller: "servicesDetailController",
 						templateUrl: "views/service/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemServiceController",
+						controller: "servicesDetailController",
 						templateUrl: "views/service/detail.html"
 					}
 				]
@@ -256,19 +256,19 @@ dmt.config = [
 				filters:{
 					'current_status':[11]
 				},
-				controller: "listItemServiceController",
+				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemServiceController",
+						controller: "servicesDetailController",
 						templateUrl: "views/service/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemServiceController",
+						controller: "servicesDetailController",
 						templateUrl: "views/service/detail.html"
 					}
 				]
@@ -361,20 +361,20 @@ dmt.config = [
 				name: "Aprende y Enseña",
 				path: "aprende_ensena",
 				entity: "hangouts",
-				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
+				controller: "learnListController",
+				templateUrl: "views/learn/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailLearnExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "learnDetailController",
+						templateUrl: "views/learn/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailLearnExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "learnDetailController",
+						templateUrl: "views/learn/detail.html"
 					}
 				]
 			},
@@ -383,25 +383,24 @@ dmt.config = [
 				path: "preguntas",
 				entity: "category_questions"
 			},
-			
 			{
 				name: "Perfiles",
 				path: "roles",
 				entity: "role",
-				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
+				controller: "rolesListController",
+				templateUrl: "views/roles/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "rolesDetailController",
+						templateUrl: "views/roles/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "rolesDetailController",
+						templateUrl: "views/roles/detail.html"
 					}
 				]
 			},

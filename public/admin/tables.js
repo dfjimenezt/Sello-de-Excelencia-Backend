@@ -86,6 +86,12 @@ dmt.tables = {
 				"type": "datetime",
 				"disabled": false,
 				"key": false
+			},
+			{
+				"name": "active",
+				"type": "boolean",
+				"disabled": false,
+				"key": false
 			}
 		],
 		"defaultSort": "id"
@@ -1540,7 +1546,7 @@ dmt.tables = {
 			},
 			{
 				"name": "level",
-				"type": "boolean",
+				"type": "int",
 				"disabled": false,
 				"key": false
 			},

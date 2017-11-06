@@ -1,9 +1,9 @@
-angular.module('dmt-back').controller('servicesListController',
+angular.module('dmt-back').controller('learnListController',
 	function ($scope, $mdDialog,
 		$mdEditDialog,
 		page, $http,
 		entityService, $routeParams, Excel,
-		$timeout, $window, $location,$scope) {
+		$timeout, $window, $location) {
 		let ctrl = {}
 		ctrl.entity = page.entity || page.parent.entity
 		ctrl.page = page
@@ -70,14 +70,5 @@ angular.module('dmt-back').controller('servicesListController',
 				templateUrl: ctrl.entity.delete ? ctrl.entity.delete.templateUrl || 'views/default/delete-dialog.html' : 'views/default/delete-dialog.html',
 			}).then(ctrl.update);
 		}
-		$scope.$watch('ctrl.institution',(_new,_old,_scope)=>{
-			if(_new){
-				ctrl.entities[ctrl.entity].query.filters['id_institution'] = [_new.id]
-				ctrl.update()
-			}else{
-				delete ctrl.entities[ctrl.entity].query.filters['id_institution']
-				ctrl.update()
-			}
-		})
 		return ctrl
 	});

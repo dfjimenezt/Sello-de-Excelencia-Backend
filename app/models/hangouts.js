@@ -56,6 +56,14 @@
 		"Key": "",
 		"Default": null,
 		"Extra": ""
+	},
+	{
+		"Field": "active",
+		"Type": "tinyint(4)",
+		"Null": "NO",
+		"Key": "",
+		"Default": 1,
+		"Extra": ""
 	}
 ]
  * DMT 2017
@@ -121,6 +129,14 @@ var Hangouts = function () {
 		"Null": "YES",
 		"Key": "",
 		"Default": null,
+		"Extra": ""
+	},
+	{
+		"Field": "active",
+		"Type": "tinyint(4)",
+		"Null": "NO",
+		"Key": "",
+		"Default": 1,
 		"Extra": ""
 	}
 ],

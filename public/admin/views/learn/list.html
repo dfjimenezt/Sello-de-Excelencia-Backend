@@ -1,7 +1,7 @@
 <div layout="column" flex>
     <!--md-toolbar layout="row" layout-align="space-around" md-theme="dark">
-            <md-button ng-repeat="page in ctrl.sibling" ng-click="ctrl.selectPage(page)">{{page.name}}</md-button>
-        </md-toolbar-->
+        <md-button ng-repeat="page in ctrl.sibling" ng-click="ctrl.selectPage(page)">{{page.name}}</md-button>
+    </md-toolbar-->
     <md-toolbar class="md-table-toolbar md-default" ng-hide="ctrl.entities[ctrl.entity].selected.length || filter.show">
         <div class="md-toolbar-tools">
             <h2 class="md-title">{{ctrl.page.name}}</h2>
@@ -50,70 +50,23 @@
         <table md-table ng-model="ctrl.entities[ctrl.entity].selected" md-progress="promise">
             <thead md-head md-order="ctrl.entities[ctrl.entity].query.order" md-on-reorder="ctrl.update">
                 <tr md-row>
-                    <th md-column md-order-by="id">
-                        Id
-                    </th>
-                    <th md-column md-order-by="name">
-                        Nombre
-                    </th>
-                    <th md-column>
-                        <md-select multiple="true" ng-model="ctrl.entities[ctrl.entity].query.filters.id_category" placeholder="Categoría" ng-change="ctrl.update()">
-                            <md-option ng-repeat="o in ctrl.options.id_category" value="{{o.id}}">{{o.name}}</md-option>
+                    <th md-column ng-repeat="f in ctrl.currentEntity.fields " style="max-width:150px">
+                        <span ng-if="f.type !== 'link' && f.type!=='file'">{{f.name | translate}}</span>
+                        <md-select ng-if="f.type == 'link' && f.type!=='file'" multiple="true" ng-model="ctrl.entities[ctrl.entity].query.filters[f.name]"
+                            placeholder="{{f.name | translate:'es'}}" ng-change="ctrl.update()">
+                            <md-option ng-repeat="o in ctrl.options[f.name]" value="{{o[f.foreign_key]}}">{{o[f.foreign_name]}}</md-option>
                         </md-select>
-                    </th>
-                    <!--th md-column>
-                        <md-select multiple="true" ng-model="ctrl.entities[ctrl.entity].query.filters.current_status" placeholder="Estado" ng-change="ctrl.update()">
-                            <md-option ng-repeat="o in ctrl.options.current_status" value="{{o.id}}">{{o.name}}</md-option>
-                        </md-select>
-                    </th-->
-                    <th md-column md-order-by="level" style="max-width:50px;">
-                        Nivel
-                    </th>
-                    <th md-column md-order-by="rate" style="max-width:50px;">
-                        Calificación
-                    </th>
-                    <th md-column style="max-width:150px">
-                        <md-autocomplete md-items="item in ctrl.entities.institution.data" md-item-text="item.name " md-selected-item="ctrl.institution"
-                            md-selected-item-change="ctrl.selectedInstitution(item)" md-search-text-change="ctrl.entities.institution.search()"
-                            md-search-text="ctrl.entities.institution.query.filter" md-select-on-match="true" md-input-name="institution"
-                            md-autofocus="true" md-autoselect="true" placeholder="Entidad">
-                            <md-item-template>
-                                <span md-highlight-text="ctrl.entities.institution.query.filter" md-highlight-flags="^i">{{item.name}}</span>
-                            </md-item-template>
-                        </md-autocomplete>
-                    </th>
-                    <th md-column md-order-by="is_active">
-                        <span>Activo</span>
                     </th>
                 </tr>
             </thead>
             <tbody md-body>
                 <tr style="max-width:150px" md-row md-select="item" md-select-id="name" md-auto-select ng-repeat="item in ctrl.data">
-                    <td md-cell ng-click="ctrl.details(item)">
-                        <span>{{item.id}}</span>
+                    <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;" md-cell ng-repeat="f in ctrl.currentEntity.fields " ng-click="ctrl.details(item)">
+                        <md-checkbox ng-model="item[f.name]" ng-if="f.type === 'boolean' && f.type !=='file' && f.type !=='link'" ng-disabled="true"></md-checkbox>
+                        <span ng-if="f.type === 'datetime'&& f.type !== 'link' && f.type !=='file' && f.type !=='boolean'">{{ item[f.name] | date }}</span>
+                        <span ng-if="f.type === 'link' && f.type !=='file' && f.type !=='boolean' && f.type !=='datetime'">{{ ctrl.options[f.name] | linkvalue:f:item }}</span>
+                        <span ng-if="f.type !=='link' && f.type !=='file'  && f.type !=='boolean' && f.type !=='datetime'">{{item[f.name] | limitTo:150}}</span>
                     </td>
-                    <td md-cell ng-click="ctrl.details(item)">
-                        <span>{{item.name}}</span>
-                    </td>
-                    <td md-cell ng-click="ctrl.details(item)">
-                        <span>{{item.category.name}}</span>
-                    </td>
-                    <!--td md-cell ng-click="ctrl.details(item)">
-                        <span>{{item.status.name}}</span>
-                    </td-->
-                    <td md-cell style="max-width:50px;" ng-click="ctrl.details(item)">
-                        <span>{{item.level}}</span>
-                    </td>
-                    <td md-cell style="max-width:50px;" ng-click="ctrl.details(item)">
-                        <span>{{item.rate}}</span>
-                    </td>
-                    <td md-cell ng-click="ctrl.details(item)">
-                        <span>{{item.institution.name}}</span>
-                    </td>
-                    <td md-cell ng-click="ctrl.details(item)">
-                        <md-checkbox name="activo" ng-model="item.is_active" ng-disabled="true" aria-label="Activo">Activo</md-checkbox>
-                    </td>
-
                 </tr>
             </tbody>
         </table>

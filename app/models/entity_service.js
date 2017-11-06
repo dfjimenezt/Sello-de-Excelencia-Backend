@@ -55,7 +55,9 @@ var Service = function () {
 		WHERE (
 			${status ? `\`service_status\`.\`id_status\` IN ( '${status.join(',')}' ) AND` : ``} 
 			\`service_status\`.\`valid_to\` <'${date}' 
-		) GROUP BY \`id_service\`) \`service_status\` ON \`service_status\`.\`id_service\` = \`service\`.\`id\` 
+		)
+		WHERE \`service\`.\`is_active\` = '1'
+		GROUP BY \`id_service\`) \`service_status\` ON \`service_status\`.\`id_service\` = \`service\`.\`id\` 
 		GROUP BY \`key\` ORDER BY \`service\`.id LIMIT 0,5000;`
 		let keys = []
 		return this.customQuery(q).then((results)=>{
@@ -248,7 +250,7 @@ var Service = function () {
 		${_filters['institution.id'] ? 'i.id = \''+_filters['institution.id'][0] +'\' AND ' :''}
 		${_filters['id'] ? 's.id = \''+_filters['id'][0] +'\' AND ' :''}
 		${_filters['id_category'] ? 's.id_category = \''+_filters['id_category'][0] +'\' AND ' :''}
-		1
+		s.is_active = '1'
 		ORDER BY s.id desc`
 		let keys = []
 		return this.customQuery(query).then((results)=>{

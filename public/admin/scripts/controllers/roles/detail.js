@@ -1,10 +1,9 @@
-angular.module('dmt-back').controller('questionDetailController', 
+angular.module('dmt-back').controller('rolesDetailController', 
 function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routeParams, $location) {
 	let ctrl = this
 	ctrl.entity = page.entity || page.parent.entity
 	ctrl.filters = page.filters
 	ctrl.service = entityService(ctrl.entity,ctrl.filters,$routeParams.id)
-	ctrl.service.loadEntity('category')
 	ctrl.page = page
 	ctrl.currentEntity = ctrl.service.currentEntity
 	ctrl.currentEntity.relations.forEach(ctrl.service.getEntityData)
@@ -14,7 +13,6 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	if(ctrl.filters || $routeParams.id){
 		ctrl.service.getData().then(()=>{
 			ctrl.data = ctrl.entities[ctrl.entity].data[0]
-			ctrl.service.entities.category.getData()
 		})
 	}
 	ctrl.selectTab = function (tab) {

@@ -28,6 +28,7 @@ if (!localStorage.getItem("token")) {
 			localStorage.removeItem("token");
 			window.location.href = "/admin/login";
 		}
+		localStorage.setItem("last_access",new Date())
 	}
 }
 var app = angular.module('dmt-back', [
