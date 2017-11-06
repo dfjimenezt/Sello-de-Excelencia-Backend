@@ -9,6 +9,7 @@ angular.module('dmt-back').controller('detailItemUserController', function ($mdD
 	ctrl.options = {};
 	ctrl.page = page;
 	ctrl.tab = null;
+	ctrl.loading = false;
 	ctrl.currentEntity = dmt.entities[page.entity || page.parent.entity];
 	if(!ctrl.currentEntity.relations){
 		ctrl.currentEntity.relations = []
@@ -428,12 +429,13 @@ angular.module('dmt-back').controller('detailItemUserController', function ($mdD
 				user: ctrl.data,
 				entity: false
 			},
-			templateUrl: entity.delete ? entity.delete.templateUrl || 'views/user/message-dialog.html' : 'views/user/message-dialog.html',
+			templateUrl: entity.delete ? entity.delete.templateUrl || 'views/admon/message-dialog.html' : 'views/admon/message-dialog.html',
 		}).then(ctrl.getData);
 	}
 	this.saveItem = function (ev) {
 		ctrl.form.$setSubmitted();
 		if (ctrl.form.$valid) {
+			ctrl.loading = true
 			var base = ctrl.currentEntity.endpoint;
 			var data = new FormData();
 			var update = false;
@@ -467,6 +469,7 @@ angular.module('dmt-back').controller('detailItemUserController', function ($mdD
 				request.open("PUT", base);
 				request.setRequestHeader("Authorization", localStorage.getItem("token"));
 				request.onload = function(){
+					ctrl.loading = false
 					$mdDialog.show($mdDialog.alert()
 					.parent(angular.element(document.body))
 					.clickOutsideToClose(true)
@@ -482,6 +485,7 @@ angular.module('dmt-back').controller('detailItemUserController', function ($mdD
 				request.open("POST", base);
 				request.setRequestHeader("Authorization", localStorage.getItem("token"));
 				request.onload = function () {
+					ctrl.loading = false
 					$mdDialog.show($mdDialog.alert()
 						.parent(angular.element(document.body))
 						.clickOutsideToClose(true)

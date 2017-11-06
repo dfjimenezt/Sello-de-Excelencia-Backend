@@ -124,6 +124,10 @@ dmt.translate={
         "justification":"Justificación",
         "result":"Total Acumulado",
         "id_motives":"Motivo",
-        "id_hangout":"Live"
+        "id_hangout":"Live",
+        "date":"Fecha",
+        "ranking":"Ranking",
+        "true":"Sí",
+        "false":"No",
     },
 }

@@ -17,6 +17,18 @@
 */
 if (!localStorage.getItem("token")) {
 	window.location.href = "/admin/login";
+}else{
+	var last = localStorage.getItem("last_access")
+	if(!last){
+		localStorage.setItem("last_access",new Date())
+	}else{
+		last = new Date(last)
+		var now = new Date()
+		if(now - last > 24*60*60*1000){
+			localStorage.removeItem("token");
+			window.location.href = "/admin/login";
+		}
+	}
 }
 var app = angular.module('dmt-back', [
 'ngRoute', 
@@ -54,6 +66,7 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 		dmt.api.endpoints.forEach(function (endpoint) {
 			endpoint.entities.forEach(function (ety) {
 				if (ety.entity == name) {
+					dmt.entities[name].name = name
 					dmt.entities[name].endpoint = '/api/' + endpoint.controller + '/' + ety.entity
 				}
 			})
@@ -100,6 +113,7 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 			continue;
 		}
 		entity = dmt.entities[name] = {
+			name: name,
 			table: name,
 			fields: dmt.tables[name].fields,
 			defaultSort: dmt.tables[name].defaultSort

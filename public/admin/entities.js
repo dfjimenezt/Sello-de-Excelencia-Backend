@@ -230,6 +230,13 @@ dmt.entities = {
         name: "user",
         leftKey: "id_user",
         foreign_name: "email"
+      },
+      {
+        type: "1-1",
+        entity: "service",
+        name: "service",
+        leftKey: "id_service",
+        foreign_name: "name"
       }
     ]
   },

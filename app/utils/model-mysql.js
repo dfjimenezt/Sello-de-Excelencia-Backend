@@ -105,7 +105,10 @@ var MysqlModel = function (info) {
           params.filter_values = [params.filter_values]
         }
         params.fields = params.fields || []
-
+        if(params.order.indexOf('-') === 0){
+					params.order = params.order.substring(1)+' desc'
+        }
+        
         //group fields by name
         params.filter_fields.forEach((key, i) => {
           if (!filters[key]) {
@@ -118,31 +121,38 @@ var MysqlModel = function (info) {
         }
 
         let search = ""
-        if (params.fields.length > 0) {
+        if (params.filter && params.filter.length > 0) {
+					let fields = []
+					info.fields.forEach((f) => {
+						if (f.Type.indexOf("text") > -1 || f.Type.indexOf("varchar") > -1) {
+							fields.push(f.Field)
+						}
+					})
           search = "("
-          for (var i in params.fields) {
+          for (var i in fields) {
             // TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
-            search += "list." + params.fields[i] + " like " + connection.escape("%" + params.filter + "%") + " OR "
+            search += "list." + fields[i] + " like " + connection.escape("%" + params.filter + "%") + " OR "
           }
           search = search.slice(0, -4)
           search += ")"
         }
-        function resolveEqual(connection, value) {
-          if (typeof value == 'number') {
-            return '= ' + connection.escape(value);
-          }
-          let array = value.split(" ");
-          if (array.length > 1) {
-            return array[0] + connection.escape(array[1]);
-          }
-          return '= ' + connection.escape(value);
-        }
+        function resolveEqual(connection, value, equal) {
+					if (typeof value != 'string') {
+						return equal + connection.escape(value);
+					}
+					let array = value.split(" ");
+					if (array.length > 1) {
+						equal = array.splice(0,1)
+						return equal + connection.escape(array.join(' '));
+					}
+					return equal + connection.escape(value);
+				}
         let conditions = ""
         if (params.filter_fields.length > 0) {
           for (var f in filters) {
             conditions += "("
             for (var v in filters[f]) {
-              conditions += "list." + f + resolveEqual(connection, filters[f][v]) + " " + params._joins + " "
+              conditions += "list." + f + resolveEqual(connection, filters[f][v],' = ') + " " + params._joins + " "
             }
             conditions = conditions.slice(0, -4)
             conditions += ") AND "

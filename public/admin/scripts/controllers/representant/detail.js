@@ -353,15 +353,18 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 			}
 		})
 	}
-	ctrl.updateRepresentant = function(){
+	ctrl.deleteRepresentant = function($event){
 		var url = '/api/configuration/institution_user?id_institution='+ctrl.entities.institution.originalInstitution+'&id_user=' + $routeParams.id
 		$http.delete(url).then(()=>{
-			return $http.post(url, {
-				id_user: $routeParams.id,
-				id_institution : ctrl.entities.institution.selectedInstitution.id
-			})
-		}).then(()=>{
-			ctrl.entities.institution.originalInstitution = ctrl.entities.institution.selectedInstitution.id
+			$mdDialog.show($mdDialog.alert()
+			.parent(angular.element(document.body))
+			.clickOutsideToClose(true)
+			.title('Guardado')
+			.textContent('Se ha eliminado este representante de la entidad.')
+			.ariaLabel('Guardado exitosamente')
+			.ok('Aceptar')
+			.targetEvent($event))
+			ctrl.entities.institution.selectedInstitution = null
 		})
 	}
 
@@ -465,7 +468,7 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 				user: ctrl.data,
 				entity: false,
 			},
-			templateUrl: entity.delete ? entity.delete.templateUrl || 'views/user/message-dialog.html' : 'views/user/message-dialog.html',
+			templateUrl: entity.delete ? entity.delete.templateUrl || 'views/admon/message-dialog.html' : 'views/admon/message-dialog.html',
 		}).then(ctrl.getData);
 	}
 	this.saveItem = function (ev) {
@@ -474,6 +477,7 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 			var base = ctrl.currentEntity.endpoint;
 			var data = new FormData();
 			var update = false;
+			ctrl.loading = true;
 			ctrl.currentEntity.fields.forEach(function (field) {
 				if (field.type !== 'file') {
 					if (typeof ctrl.data[field.name] === 'object' || typeof ctrl.data[field.name] === 'array') {
@@ -505,6 +509,7 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 				request.open("PUT", base);
 				request.setRequestHeader("Authorization", localStorage.getItem("token"));
 				request.onload = function(){
+					ctrl.loading = false;
 					$mdDialog.show($mdDialog.alert()
 					.parent(angular.element(document.body))
 					.clickOutsideToClose(true)
@@ -520,6 +525,7 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 				request.open("POST", base);
 				request.setRequestHeader("Authorization", localStorage.getItem("token"));
 				request.onload = function () {
+					ctrl.loading = false;
 					$mdDialog.show($mdDialog.alert()
 						.parent(angular.element(document.body))
 						.clickOutsideToClose(true)

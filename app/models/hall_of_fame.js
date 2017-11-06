@@ -8,30 +8,31 @@ var BaseModel = require('../utils/model.js')
 var util = require('util')
 var Hall_of_fame = function () {
 	var params = [{
-		table:'hall_of_fame',
-		fields :[{"Field":"id","Type":"int(11)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},{"Field":"name","Type":"varchar(50)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"ranking","Type":"int(11)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"points","Type":"int(11)","Null":"YES","Key":"","Default":null,"Extra":""},{"Field":"date","Type":"timestamp","Null":"NO","Key":"","Default":"CURRENT_TIMESTAMP","Extra":""},{"Field":"id_user","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""},{"Field":"id_role","Type":"int(11)","Null":"YES","Key":"MUL","Default":null,"Extra":""}],
-		model:'mysql'
+		table: 'hall_of_fame',
+		fields: [{ "Field": "id", "Type": "int(11)", "Null": "NO", "Key": "PRI", "Default": null, "Extra": "auto_increment" }, { "Field": "name", "Type": "varchar(50)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "ranking", "Type": "int(11)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "points", "Type": "int(11)", "Null": "YES", "Key": "", "Default": null, "Extra": "" }, { "Field": "date", "Type": "timestamp", "Null": "NO", "Key": "", "Default": "CURRENT_TIMESTAMP", "Extra": "" }, { "Field": "id_user", "Type": "int(11)", "Null": "YES", "Key": "MUL", "Default": null, "Extra": "" }, { "Field": "id_role", "Type": "int(11)", "Null": "YES", "Key": "MUL", "Default": null, "Extra": "" }],
+		model: 'mysql'
 	}]
 	BaseModel.apply(this, params)
-	this.updateTop = function(type){
+	this.updateTop = function (type) {
 		let q = null
-		if(type == 2){
-			q = 'INSERT INTO `hall_of_fame` (`points`,`date`,`name`,`id_user`,`id_role`)  ( '+
-			'SELECT SUM(`p`.`value`) points, CURRENT_DATE() date, CONCAT(`u`.`name`," ",`u`.`secondname`," ",`u`.`lastname`," ",`u`.`secondlastname`),`u`.`id`,`u_r`.`id_role` '+
-			'FROM `points` `p` '+
-			'JOIN `user` `u` on `u`.`id` = `p`.`id_user` '+
-			'JOIN `user_role` `u_r` on `u_r`.`id_user` = `u`.`id` '+
-			'WHERE `u_r`.`id_role` = 2 GROUP BY `p`.`id_user` ORDER BY points desc LIMIT 10 );';
+		if (type == 2) {
+			q = `INSERT INTO \`hall_of_fame\` (\`points\`,\`date\`,\`name\`,\`id_user\`,\`id_role\`,\`ranking\`)  (
+			SELECT p.*,@rownum := @rownum + 1 AS ranking FROM	( 
+			SELECT SUM(\`p\`.\`value\`) points, CURRENT_DATE() date, CONCAT(\`u\`.\`name\`," ",\`u\`.\`secondname\`," ",\`u\`.\`lastname\`," ",\`u\`.\`secondlastname\`),\`u\`.\`id\`,\`u_r\`.\`id_role\` 
+			FROM \`points\` \`p\` 
+			JOIN \`user\` \`u\` on \`u\`.\`id\` = \`p\`.\`id_user\` 
+			JOIN \`user_role\` \`u_r\` on \`u_r\`.\`id_user\` = \`u\`.\`id\` 
+			WHERE \`u_r\`.\`id_role\` = 2 GROUP BY \`p\`.\`id_user\` ORDER BY points desc LIMIT 10 ) \`p\` JOIN (SELECT @rownum := 0) r);`
+		}
+		if (type == 4) {
+			q = `INSERT INTO \`hall_of_fame\` (\`points\`,\`date\`,\`name\`,\`id_institution\`,\`id_role\`,\`ranking\`)  ( 
+			SELECT p.*,@rownum := @rownum + 1 AS ranking FROM	( 
+			SELECT SUM(\`p\`.\`value\`) points, CURRENT_DATE() date, \`i\`.\`name\`,\`i\`.\`id\`,4 
+			FROM \`points\` \`p\` 
+			JOIN \`institution\` \`i\` on \`i\`.\`id\` = \`p\`.\`id_institution\` 
+			GROUP BY \`p\`.\`id_institution\` ORDER BY points desc LIMIT 10 ) \`p\` JOIN (SELECT @rownum := 0) r);`
+		}
 
-		}
-		if(type==4){
-			 q = 'INSERT INTO `hall_of_fame` (`points`,`date`,`name`,`id_institution`,`id_role`)  ( '+
-			'SELECT SUM(`p`.`value`) points, CURRENT_DATE() date, `i`.`name`,`i`.`id`,4 '+
-			'FROM `points` `p` '+
-			'JOIN `institution` `i` on `i`.`id` = `p`.`id_institution` '+
-			'GROUP BY `p`.`id_institution` ORDER BY points desc LIMIT 10 );'
-		}
-		
 		return this.customQuery(q)
 	}
 	return this

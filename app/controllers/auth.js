@@ -341,12 +341,12 @@ var Auth = function () {
                         if (!body.role) {
                             body.role = role_seguro
                         }
+                        body.id = body.id || user.insertId
                         //create the role assignment
                         user_role.create({
-                            id_user: user.insertId,
+                            id_user: body.id,
                             id_role: parseInt(body.role)
                         })
-                        body.id = user.insertId
                         if (body.role == 4) {
                             var institution_user_model = require("../models/institution_user.js")
                             var institution_user = new institution_user_model()

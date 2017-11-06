@@ -1,7 +1,7 @@
 var form = require('connect-form2')
 var bodyParser = require('body-parser')
 
-var Routes = function(app) {
+var Routes = function (app) {
     /*
   This are the controllers
   - test is for development an debug porpusoses
@@ -28,7 +28,7 @@ var Routes = function(app) {
     This are the routing functions. They separate the request to the diferents controllers.
     There is a special considerations when usig POST, to allow file uploads
     */
-    var finishPostPut = function(req, res, body, files) {
+    var finishPostPut = function (req, res, body, files) {
         var i, controller
         for (i in controllers) {
             if (controllers[i].type === req.params.type) {
@@ -51,7 +51,7 @@ var Routes = function(app) {
             })
         } else res.sendStatus(404)
     };
-    var postPutFunction = function(req, res) {
+    var postPutFunction = function (req, res) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token')
@@ -66,7 +66,7 @@ var Routes = function(app) {
         }
     }
 
-    var getDeleteFunction = function(req, res) {
+    var getDeleteFunction = function (req, res) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token')
@@ -83,10 +83,19 @@ var Routes = function(app) {
             else if (req.originalMethod === 'DELETE') method = controller.delete(req.params, req.headers.authorization, req.query)
 
             method.then((data) => {
-                if(data){
-                    if (data.error && data.error.htmlCode) res.status(data.error.htmlCode).send(data)
-                    else res.send(data)
-                }else{
+                if (data) {
+                    if(req.query.download){
+                        let utiles = require('./utils/utiles.js')
+                        let buff = utiles.writeExcelFile(data.data)
+                        res.setHeader('Content-Disposition', 'attachment; filename="downloaded.xlsx"');
+                        res.status(200)
+                        res.send(buff)
+                        res.end()
+                    }else{
+                        if (data.error && data.error.htmlCode) res.status(data.error.htmlCode).send(data)
+                        else res.send(data)
+                    }
+                } else {
                     res.end()
                 }
             }).catch((err2) => {
@@ -96,15 +105,15 @@ var Routes = function(app) {
         } else res.sendStatus(404)
     }
 
-    app.get('/jobs',(req,res)=>{
+    app.get('/jobs', (req, res) => {
         var jobs = require('./jobs/jobs.js')
-        jobs =  new jobs()
-        jobs.execute().then((result)=>{
+        jobs = new jobs()
+        jobs.execute().then((result) => {
             res.send(result)
         })
 
     })
-    
+
     app.get('/health', (req, res) => { res.sendStatus(200) })
 
     /* ---------------- CREATE ---------------- */

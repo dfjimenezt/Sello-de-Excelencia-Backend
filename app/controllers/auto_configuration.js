@@ -21,7 +21,7 @@ var institution_user = require('../models/institution_user.js')
 var config = require('../models/config.js')
 var type_document = require('../models/type_document.js')
 var entity_points = require('../models/entity_points.js')
-var motives = require('../models/motives.js')
+var motives = require('../models/entity_motives.js')
 var motivename = require('../models/motivename.js')
 var hall_of_fame = require('../models/hall_of_fame.js')
 var emiter = require('../events/emiter.js').instance
@@ -43,7 +43,7 @@ var configuration_controller = function () {
 	var model_hall_of_fame = new hall_of_fame()
 	//---------------------------------------------------------------
 	var getMap = new Map(), postMap = new Map(), putMap = new Map(), deleteMap = new Map()
-	var _get = function(model,user,params){
+	var _get = function (model, user, params) {
 		let key = model.getPrimaryKey()
 		if (params.filter_field) {
 			if (typeof params.filter_field == 'string') {
@@ -66,8 +66,9 @@ var configuration_controller = function () {
 			filter_fields: params.filter_field,
 			filter_values: params.filter_value,
 			fields: params.field,
+			simple: params.simple,
 			lang: params.lang,
-			_joins:params._joins
+			_joins: params._joins
 		})
 	}
 	/**
@@ -122,7 +123,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_entity_user = function (user, params) {
-		return _get(model_entity_user,user,params)
+		return _get(model_entity_user, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/role Request role information
@@ -151,7 +152,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_role = function (user, params) {
-		return _get(model_role,user,params)
+		return _get(model_role, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/availability Request availability information
@@ -180,7 +181,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_availability = function (user, params) {
-		return _get(model_availability,user,params)
+		return _get(model_availability, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/user_category Request user_category information
@@ -208,7 +209,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_user_category = function (user, params) {
-		return _get(model_user_category,user,params)
+		return _get(model_user_category, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/user_questiontopic Request user_questiontopic information
@@ -236,7 +237,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_user_questiontopic = function (user, params) {
-		return _get(model_user_questiontopic,user,params)
+		return _get(model_user_questiontopic, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/permission Request permission information
@@ -265,7 +266,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_permission = function (user, params) {
-		return _get(model_permission,user,params)
+		return _get(model_permission, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/permission_role Request permission_role information
@@ -293,7 +294,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_entity_permission_role = function (user, params) {
-		return _get(model_entity_permission_role,user,params)
+		return _get(model_entity_permission_role, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/user_role Request user_role information
@@ -321,7 +322,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_entity_user_role = function (user, params) {
-		return _get(model_entity_user_role,user,params)
+		return _get(model_entity_user_role, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/institution_user Request institution_user information
@@ -352,7 +353,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_institution_user = function (user, params) {
-		return _get(model_institution_user,user,params)
+		return _get(model_institution_user, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/config Request config information
@@ -388,7 +389,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_config = function (user, params) {
-		return _get(model_config,user,params)
+		return _get(model_config, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/type_document Request type_document information
@@ -417,7 +418,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_type_document = function (user, params) {
-		return _get(model_type_document,user,params)
+		return _get(model_type_document, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/points Request points information
@@ -451,15 +452,15 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_points = function (user, params) {
-		if(params.sumarized){
-			if(user.institutions.length == 0){
+		if (params.sumarized) {
+			if (user.institutions.length == 0) {
 				return model_entity_points.getSumarizedUser(user.id)
-			}else{
+			} else {
 				return model_entity_points.getSumarizedInstitution(user.institutions[0].id)
 			}
-			
+
 		}
-		return _get(model_entity_points,user,params)
+		return _get(model_entity_points, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/motivename Request motives information
@@ -481,7 +482,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_motivename = function (user, params) {
-		return _get(model_motivename,user,params)
+		return _get(model_motivename, user, params)
 	}/**
 	 * @api {get} api/configuration/motives Request motives information
 	 * @apiName Getmotives
@@ -510,7 +511,7 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_motives = function (user, params) {
-		return _get(model_motives,user,params)
+		return _get(model_motives, user, params)
 	}
 	/**
 	 * @api {get} api/configuration/hall_of_fame Request hall_of_fame information
@@ -544,35 +545,41 @@ var configuration_controller = function () {
 	 * }
 	*/
 	var get_hall_of_fame = function (user, params) {
-		let empty = true
-		if(!params.filter_field){
-			params.filter_field = []
-			params.filter_value = []
-		}
-		if (typeof params.filter_field == 'string') {
-			empty = false
-			params.filter_field = [params.filter_field]
-			params.filter_value = [params.filter_value]
-		}
-		let today = new Date()
-		today.setHours(0,0,0)
-		let tomorrow = new Date(today.getFullYear(),today.getMonth(),today.getDate()+1)
-		params.filter_field.push('date')
-		params.filter_value.push('>= '+today.toISOString().split('T')[0])
-		params.filter_field.push('date')
-		params.filter_value.push('<= '+tomorrow.toISOString().split('T')[0])
-		params.order='points desc'
-		params._joins = 'AND'
-		return _get(model_hall_of_fame,user,params).then((results)=>{
-			if(results.total_results == 0){
-				if(!empty){
-					return model_hall_of_fame.updateTop(params.filter_value[0]).then((results)=>{
-						return _get(model_hall_of_fame,user,params)
-					})
-				}
+		if (!user.permissions || user.permissions.indexOf('admin_hall') == -1) {
+			let empty = true
+			if (!params.filter_field) {
+				params.filter_field = []
+				params.filter_value = []
 			}
-			return results
-		})
+			if (typeof params.filter_field == 'string') {
+				empty = false
+				params.filter_field = [params.filter_field]
+				params.filter_value = [params.filter_value]
+			}
+			let today = new Date()
+			today.setHours(0, 0, 0)
+			let tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+			params.filter_field.push('date')
+			params.filter_value.push('>= ' + today.toISOString().split('T')[0])
+			params.filter_field.push('date')
+			params.filter_value.push('<= ' + tomorrow.toISOString().split('T')[0])
+			params.order = 'points desc'
+			params._joins = 'AND'
+			return _get(model_hall_of_fame, user, params).then((results) => {
+				if (results.total_results == 0) {
+					if (!empty) {
+						return model_hall_of_fame.updateTop(params.filter_value[0]).then((results) => {
+							return _get(model_hall_of_fame, user, params)
+						})
+					}
+				}
+				return results
+			})
+		} else {
+			params._joins = 'AND'
+			params.order = 'date desc,id_role desc'
+			return _get(model_hall_of_fame, user, params)
+		}
 	}
 	getMap.set('user', { method: get_entity_user, permits: Permissions.ADMIN_USERS })
 	getMap.set('role', { method: get_role, permits: Permissions.NONE })
@@ -625,7 +632,25 @@ var configuration_controller = function () {
  	 * 
 	 */
 	var create_entity_user = function (user, body) {
-		return model_entity_user.create(body)
+		let pass_user = "", tmp_pwd = false
+		if (body.password === undefined) {
+			var pass_generator = require('generate-password')
+			pass_user = pass_generator.generate({
+				length: 8,
+				numbers: true
+			})
+			tmp_pwd = true
+		} else {
+			pass_user = body.password
+		}
+		var pass = utiles.createHmac('sha256')
+		pass.update(pass_user)
+		pass = pass.digest('hex')
+		body.password = pass
+		return model_entity_user.create(body).then((user) => {
+			user.role = -1
+			emiter.emit('user.registered', user , pass_user)
+		})
 	}
 	/**
 	 * @api {post} api/configuration/role Create role information
@@ -751,21 +776,21 @@ var configuration_controller = function () {
 	 * @apiParam {String} schedulle 
  	 * 
 	 */
-	var create_config = function (user, body,files) {
+	var create_config = function (user, body, files) {
 		let promises = []
-		let order =[]
-		for(var i in files){
+		let order = []
+		for (var i in files) {
 			order.push(i)
 			promises.push(utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type))
 		}
-		if(promises.length){
-			return Promise.all(promises).then((urls)=>{
-				for(var i in urls){
+		if (promises.length) {
+			return Promise.all(promises).then((urls) => {
+				for (var i in urls) {
 					body[order[i]] = urls[i]
 				}
 				return model_config.create(body)
 			})
-		}else{
+		} else {
 			return model_config.create(body)
 		}
 	}
@@ -798,11 +823,11 @@ var configuration_controller = function () {
  	 * 
 	 */
 	var create_points = function (user, body) {
-		if(body.id_institution){
-			return model_entity_points.addInstitutionPoints(body.id_institution,body.id_motives,body.justification,body.id_hangout,body.value)
+		if (body.id_institution) {
+			return model_entity_points.addInstitutionPoints(body.id_institution, body.id_motives, body.justification, body.id_hangout, body.value)
 		}
-		if(body.id_user){
-			return model_entity_points.addUserPoints(body.id_user,body.id_motives,body.justification,body.id_hangout,body.value)
+		if (body.id_user) {
+			return model_entity_points.addUserPoints(body.id_user, body.id_motives, body.justification, body.id_hangout, body.value)
 		}
 		return model_entity_points.create(body)
 	}
@@ -858,24 +883,24 @@ var configuration_controller = function () {
 	 * @param {user} user 
 	 * @param {body} body 
 	 */
-	var send_mail = function(user,body){
-		if(!body.entity){
-			model_entity_user.getByUid(''+body.id).then((user)=>{
+	var send_mail = function (user, body) {
+		if (!body.entity) {
+			model_entity_user.getByUid('' + body.id).then((user) => {
 				user = user.data[0]
-				return utiles.sendEmail(user.email,null,null,'Contacto desde Sello de Excelencia',body.message)
+				return utiles.sendEmail(user.email, null, null, 'Contacto desde Sello de Excelencia', body.message)
 			})
-		}else{
+		} else {
 			let institution = require('../models/entity_institution.js');
 			let model_entity_institution = new institution();
 			let _institution = null
-			model_entity_institution.getByUid(''+body.id).then((results)=>{
+			model_entity_institution.getByUid('' + body.id).then((results) => {
 				_institution = results[0]
-				return model_entity_institution.getUser(body.id).then((user)=>{
+				return model_entity_institution.getUser(body.id).then((user) => {
 					user = user[0]
-					return utiles.sendEmail(user.email,_institution.email,null,'Contacto desde Sello de Excelencia',body.message)
+					return utiles.sendEmail(user.email, _institution.email, null, 'Contacto desde Sello de Excelencia', body.message)
 				})
 			})
-			
+
 		}
 	}
 
@@ -894,7 +919,7 @@ var configuration_controller = function () {
 	postMap.set('motivename', { method: create_motivename, permits: Permissions.ADMIN_MOTIVES })
 	postMap.set('motives', { method: create_motives, permits: Permissions.ADMIN_MOTIVES })
 	postMap.set('hall_of_fame', { method: create_hall_of_fame, permits: Permissions.ADMIN_HALL })
-	postMap.set('send',{method: send_mail, permits: Permissions.ADMIN_USERS})
+	postMap.set('send', { method: send_mail, permits: Permissions.ADMIN_USERS })
 	/**
 	 * @api {put} api/configuration/user Update user information
 	 * @apiName Putuser
@@ -931,35 +956,39 @@ var configuration_controller = function () {
  	 * 
 	 */
 	var update_entity_user = function (user, body) {
-		if(!user){
+		if (!user) {
 			throw utiles.informError(400)
 		}
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		if(user.id != body.id){
-			if(user.permissions.indexOf(Permissions.ADMIN_USERS)== -1){
+		if (user.id != body.id) {
+			if (user.permissions.indexOf(Permissions.ADMIN_USERS) == -1) {
 				throw utiles.informError(400)
 			}
 		}
-		return model_entity_user.update(body,{id:body.id}).then(()=>{
+		return model_entity_user.update(body, { id: body.id }).then(() => {
 			let toppromises = []
-			if(body.categories){
-				toppromises.push(model_user_category.delete({id_user:user.id}))
+			if (body.categories) {
+				toppromises.push(model_user_category.delete({ id_user: user.id }))
 			}
-			if(body.topics){
-				toppromises.push(model_user_questiontopic.delete({id_user:user.id}))
+			if (body.topics) {
+				toppromises.push(model_user_questiontopic.delete({ id_user: user.id }))
 			}
-			return Promise.all(toppromises).then(()=>{
+			return Promise.all(toppromises).then(() => {
 				let promises = []
-				body.categories.forEach((value)=>{
-					let data = {id_user:body.id,id_category:value.id}
-					promises.push(model_user_category.create(data))
-				},this)
-				body.topics.forEach((value)=>{
-					let data = {id_user:body.id,id_topic:value.id}
-					promises.push(model_user_questiontopic.create(data))
-				},this)
+				if (body.categories) {
+					body.categories.forEach((value) => {
+						let data = { id_user: body.id, id_category: value.id }
+						promises.push(model_user_category.create(data))
+					}, this)
+				}
+				if (body.topics) {
+					body.topics.forEach((value) => {
+						let data = { id_user: body.id, id_topic: value.id }
+						promises.push(model_user_questiontopic.create(data))
+					}, this)
+				}
 				return Promise.all(promises)
 			})
 		})
@@ -978,7 +1007,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_role.update(body,{id:body.id})
+		return model_role.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/configuration/availability Update availability information
@@ -994,7 +1023,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_availability.update(body,{id:body.id})
+		return model_availability.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/configuration/user_category Update user_category information
@@ -1010,7 +1039,7 @@ var configuration_controller = function () {
 		if (!body.id_user) {
 			throw utiles.informError(400)
 		}
-		return model_user_category.update(body,{id_user:body.id_user})
+		return model_user_category.update(body, { id_user: body.id_user })
 	}
 	/**
 	 * @api {put} api/configuration/user_questiontopic Update user_questiontopic information
@@ -1026,7 +1055,7 @@ var configuration_controller = function () {
 		if (!body.id_user) {
 			throw utiles.informError(400)
 		}
-		return model_user_questiontopic.update(body,{id_user:body.id_user})
+		return model_user_questiontopic.update(body, { id_user: body.id_user })
 	}
 	/**
 	 * @api {put} api/configuration/permission Update permission information
@@ -1042,7 +1071,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_permission.update(body,{id:body.id})
+		return model_permission.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/configuration/permission_role Update permission_role information
@@ -1058,7 +1087,7 @@ var configuration_controller = function () {
 		if (!body.id_role) {
 			throw utiles.informError(400)
 		}
-		return model_entity_permission_role.update(body,{id_role:body.id_role})
+		return model_entity_permission_role.update(body, { id_role: body.id_role })
 	}
 	/**
 	 * @api {put} api/configuration/user_role Update user_role information
@@ -1074,7 +1103,7 @@ var configuration_controller = function () {
 		if (!body.id_user) {
 			throw utiles.informError(400)
 		}
-		return model_entity_user_role.update(body,{id_user:body.id_user})
+		return model_entity_user_role.update(body, { id_user: body.id_user })
 	}
 	/**
 	 * @api {put} api/configuration/institution_user Update institution_user information
@@ -1093,7 +1122,7 @@ var configuration_controller = function () {
 		if (!body.id_institution) {
 			throw utiles.informError(400)
 		}
-		return model_institution_user.update(body,{id_institution:body.id_institution})
+		return model_institution_user.update(body, { id_institution: body.id_institution })
 	}
 	/**
 	 * @api {put} api/configuration/config Update config information
@@ -1117,20 +1146,20 @@ var configuration_controller = function () {
 			throw utiles.informError(400)
 		}
 		let promises = []
-		let order =[]
-		for(var i in files){
+		let order = []
+		for (var i in files) {
 			order.push(i)
 			promises.push(utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type))
 		}
-		if(promises.length){
-			return Promise.all(promises).then((urls)=>{
-				for(var i in urls){
+		if (promises.length) {
+			return Promise.all(promises).then((urls) => {
+				for (var i in urls) {
 					body[order[i]] = urls[i]
 				}
-				return model_config.update(body,{id:body.id})
+				return model_config.update(body, { id: body.id })
 			})
 		}
-		return model_config.update(body,{id:body.id})
+		return model_config.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/configuration/type_document Update type_document information
@@ -1146,7 +1175,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_type_document.update(body,{id:body.id})
+		return model_type_document.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/configuration/points Update points information
@@ -1167,7 +1196,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_points.update(body,{id:body.id})
+		return model_entity_points.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/configuration/motivename Update motives information
@@ -1183,7 +1212,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_motivename.update(body,{id:body.id})
+		return model_motivename.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/configuration/motives Update motives information
@@ -1200,7 +1229,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_motives.update(body,{id:body.id})
+		return model_motives.update(body, { id: body.id })
 	}
 	/**
 	 * @api {put} api/configuration/hall_of_fame Update hall_of_fame information
@@ -1221,7 +1250,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_hall_of_fame.update(body,{id:body.id})
+		return model_hall_of_fame.update(body, { id: body.id })
 	}
 	putMap.set('user', { method: update_entity_user, permits: Permissions.NONE })
 	putMap.set('role', { method: update_role, permits: Permissions.ADMIN_USERS })
@@ -1277,7 +1306,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_user.delete(body,{id:body.id})
+		return model_entity_user.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/configuration/role Delete role information
@@ -1293,7 +1322,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_role.delete(body,{id:body.id})
+		return model_role.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/configuration/availability Delete availability information
@@ -1309,7 +1338,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_availability.delete(body,{id:body.id})
+		return model_availability.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/configuration/user_category Delete user_category information
@@ -1325,7 +1354,7 @@ var configuration_controller = function () {
 		if (!body.id_user) {
 			throw utiles.informError(400)
 		}
-		return model_user_category.delete(body,{id_user:body.id_user})
+		return model_user_category.delete(body, { id_user: body.id_user })
 	}
 	/**
 	 * @api {delete} api/configuration/user_questiontopic Delete user_questiontopic information
@@ -1341,7 +1370,7 @@ var configuration_controller = function () {
 		if (!body.id_user) {
 			throw utiles.informError(400)
 		}
-		return model_user_questiontopic.delete(body,{id_user:body.id_user})
+		return model_user_questiontopic.delete(body, { id_user: body.id_user })
 	}
 	/**
 	 * @api {delete} api/configuration/permission Delete permission information
@@ -1357,7 +1386,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_permission.delete(body,{id:body.id})
+		return model_permission.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/configuration/permission_role Delete permission_role information
@@ -1373,7 +1402,7 @@ var configuration_controller = function () {
 		if (!body.id_role) {
 			throw utiles.informError(400)
 		}
-		return model_entity_permission_role.delete(body,{id_role:body.id_role})
+		return model_entity_permission_role.delete(body, { id_role: body.id_role })
 	}
 	/**
 	 * @api {delete} api/configuration/user_role Delete user_role information
@@ -1389,7 +1418,7 @@ var configuration_controller = function () {
 		if (!body.id_user) {
 			throw utiles.informError(400)
 		}
-		return model_entity_user_role.delete(body,{id_user:body.id_user})
+		return model_entity_user_role.delete(body, { id_user: body.id_user })
 	}
 	/**
 	 * @api {delete} api/configuration/institution_user Delete institution_user information
@@ -1408,7 +1437,7 @@ var configuration_controller = function () {
 		if (!body.id_institution) {
 			throw utiles.informError(400)
 		}
-		return model_institution_user.delete(body,{id_institution:body.id_institution})
+		return model_institution_user.delete(body, { id_institution: body.id_institution })
 	}
 	/**
 	 * @api {delete} api/configuration/config Delete config information
@@ -1431,7 +1460,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_config.delete(body,{id:body.id})
+		return model_config.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/configuration/type_document Delete type_document information
@@ -1447,7 +1476,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_type_document.delete(body,{id:body.id})
+		return model_type_document.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/configuration/points Delete points information
@@ -1468,7 +1497,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_entity_points.delete(body,{id:body.id})
+		return model_entity_points.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/configuration/motivename Delete motives information
@@ -1484,7 +1513,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_motivename.delete(body,{id:body.id})
+		return model_motivename.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/configuration/motives Delete motives information
@@ -1501,7 +1530,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_motives.delete(body,{id:body.id})
+		return model_motives.delete(body, { id: body.id })
 	}
 	/**
 	 * @api {delete} api/configuration/hall_of_fame Delete hall_of_fame information
@@ -1522,7 +1551,7 @@ var configuration_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_hall_of_fame.delete(body,{id:body.id})
+		return model_hall_of_fame.delete(body, { id: body.id })
 	}
 	deleteMap.set('user', { method: delete_entity_user, permits: Permissions.ADMIN_USERS })
 	deleteMap.set('role', { method: delete_role, permits: Permissions.ADMIN_USERS })

@@ -7,49 +7,32 @@ dmt.config = [
 		path: "general",
 		pages:[
 			{
-				name: "Config",
-				path: "config",
+				name:"Logos",
+				path: "logos",
+				filters:{
+					'id':[1]
+				},
 				entity: "config",
-				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
-				pages: [
-					{
-						name: "add",
-						path: "add",
-						controller: "detailBannerController",
-						templateUrl: "views/banner/detail.html"
-					},
-					{
-						name: "detail",
-						path: "detail/:id",
-						controller: "detailBannerController",
-						templateUrl: "views/banner/detail.html"
-					}
-				]
-			},{
-				name: "Logos",
-				path: "logos/1",
-				entity: "config",
-				controller: "detailItemSingleController",
-				templateUrl: "views/single/detail.html",
+				controller: "detailItemController",
+				templateUrl: "views/logos/detail.html",
 			},
 			{
 				name: "Banner",
 				path: "banner",
 				entity: "banner",
-				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
+				controller: "bannerListController",
+				templateUrl: "views/banner/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailBannerController",
+						controller: "bannerDetailController",
 						templateUrl: "views/banner/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailBannerController",
+						controller: "bannerDetailController",
 						templateUrl: "views/banner/detail.html"
 					}
 				]
@@ -58,12 +41,17 @@ dmt.config = [
 				name: "Salón de la fama",
 				path: "hall",
 				entity: "hall_of_fame",
+				controller: 'hallFameController',
+				templateUrl: "views/hall/list.html",
 			},
 			{
 				name: "Pie de página",
-				path: "pie_pagina/1",
+				path: "pie_pagina",
+				filters:{
+					'id':[1]
+				},
 				entity: "footer",
-				controller: "detailItemSingleController",
+				controller: "detailItemController",
 				templateUrl: "views/footer/detail.html",
 			},
 		]
@@ -97,8 +85,8 @@ dmt.config = [
 				name: "Representantes",
 				path: "representantes",
 				entity: "user",
-				controller: "listItemEvaluatorController",
-				templateUrl: "views/user/list.html",
+				controller: "representantListController",
+				templateUrl: "views/representant/list.html",
 				filters:{
 					'roles.id':[4]
 				},
@@ -115,8 +103,8 @@ dmt.config = [
 				name: "Evaluadores",
 				path: "evaluadores",
 				entity: "user",
-				controller: "listItemEvaluatorController",
-				templateUrl: "views/user/list.html",
+				controller: "evaluatortListController",
+				templateUrl: "views/evaluator/list.html",
 				filters:{
 					'roles.id':[2]
 				},
@@ -124,38 +112,14 @@ dmt.config = [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemEvaluatorController",
+						controller: "evaluatorDetailController",
 						templateUrl: "views/evaluator/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemEvaluatorController",
+						controller: "evaluatorDetailController",
 						templateUrl: "views/evaluator/detail.html"
-					}
-				]
-			},
-			{
-				name: "Administradores",
-				path: "administradores",
-				entity: "user",
-				controller: "listItemUserController",
-				templateUrl: "views/user/list.html",
-				filters:{
-					'roles.id':[3]
-				},
-				pages: [
-					{
-						name: "add",
-						path: "add",
-						controller: "detailItemUserController",
-						templateUrl: "views/user/detail.html"
-					},
-					{
-						name: "detail",
-						path: "detail/:id",
-						controller: "detailItemUserController",
-						templateUrl: "views/user/detail.html"
 					}
 				]
 			},
@@ -163,8 +127,8 @@ dmt.config = [
 				name: "Ciudadanos",
 				path: "ciudadanos",
 				entity: "user",
-				controller: "listItemUserController",
-				templateUrl: "views/user/list.html",
+				controller: "citizenListController",
+				templateUrl: "views/citizen/list.html",
 				filters:{
 					'roles.id':[1]
 				},
@@ -172,14 +136,38 @@ dmt.config = [
 					{
 						name: "add",
 						path: "add",
+						controller: "citizenDetailController",
+						templateUrl: "views/citizen/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "citizenDetailController",
+						templateUrl: "views/citizen/detail.html"
+					}
+				]
+			},
+			{
+				name: "Administradores",
+				path: "administradores",
+				entity: "user",
+				controller: "admonListController",
+				templateUrl: "views/admon/list.html",
+				filters:{
+					'roles.id':['!= 1','!= 2','!= 4']
+				},
+				pages: [
+					{
+						name: "add",
+						path: "add",
 						controller: "detailItemUserController",
-						templateUrl: "views/user/detail.html"
+						templateUrl: "views/admon/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "detailItemUserController",
-						templateUrl: "views/user/detail.html"
+						templateUrl: "views/admon/detail.html"
 					}
 				]
 			}
@@ -321,20 +309,20 @@ dmt.config = [
 				name: "Requisitos",
 				path: "requisitos",
 				entity: "question",
-				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
+				controller: "questionListController",
+				templateUrl: "views/question/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "questionDetailController",
+						templateUrl: "views/question/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "questionDetailController",
+						templateUrl: "views/question/detail.html"
 					}
 				]
 			},

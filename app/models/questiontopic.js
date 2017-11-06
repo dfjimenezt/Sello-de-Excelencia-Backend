@@ -40,10 +40,18 @@
 		"Key": "MUL",
 		"Default": null,
 		"Extra": ""
+	},
+	{
+		"Field": "active",
+		"Type": "tinyint(4)",
+		"Null": "NO",
+		"Key": "",
+		"Default": "1",
+		"Extra": ""
 	}
 ]
  * DMT 2017
- * GENERATED: 14 / 9 / 2017 - 21:54:43
+ * GENERATED: 6 / 11 / 2017 - 0:16:2
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
@@ -89,6 +97,14 @@ var Questiontopic = function () {
 		"Null": "YES",
 		"Key": "MUL",
 		"Default": null,
+		"Extra": ""
+	},
+	{
+		"Field": "active",
+		"Type": "tinyint(4)",
+		"Null": "NO",
+		"Key": "",
+		"Default": "1",
 		"Extra": ""
 	}
 ],

@@ -173,7 +173,13 @@ dmt.tables = {
 				"type": "int",
 				"disabled": false,
 				"key": false
-			}
+			},
+			{
+				"name": "active",
+				"type": "boolean",
+				"disabled": false,
+				"key": false
+			},
 		],
 		"defaultSort": "id"
 	},
@@ -221,6 +227,24 @@ dmt.tables = {
 				"key": false
 			},
 			{
+				"name": "id_institution_type",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "id_city",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "active",
+				"type": "boolean",
+				"disabled": false,
+				"key": false
+			},
+			{
 				"name": "nit",
 				"type": "string",
 				"disabled": false,
@@ -257,12 +281,6 @@ dmt.tables = {
 				"key": false
 			},
 			{
-				"name": "id_city",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
 				"name": "id_region",
 				"type": "int",
 				"disabled": false,
@@ -274,18 +292,7 @@ dmt.tables = {
 				"disabled": false,
 				"key": false
 			},
-			{
-				"name": "id_institution_type",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "active",
-				"type": "boolean",
-				"disabled": false,
-				"key": false
-			},
+			
 			{
 				"name": "timestamp",
 				"type": "datetime",
@@ -324,6 +331,12 @@ dmt.tables = {
 			{
 				"name": "id_category",
 				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "active",
+				"type": "boolean",
 				"disabled": false,
 				"key": false
 			}
@@ -550,6 +563,12 @@ dmt.tables = {
 				"key": false
 			},
 			{
+				"name": "level",
+				"type": "int",
+				"disabled": true,
+				"key": false
+			},
+			{
 				"name": "rate",
 				"type": "number",
 				"disabled": true,
@@ -618,6 +637,12 @@ dmt.tables = {
 			{
 				"name": "description",
 				"type": "string",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "active",
+				"type": "boolean",
 				"disabled": false,
 				"key": false
 			}
@@ -709,6 +734,12 @@ dmt.tables = {
 				"key": true
 			},
 			{
+				"name": "ranking",
+				"type": "int",
+				"disabled": true,
+				"key": true
+			},
+			{
 				"name": "name",
 				"type": "text",
 				"disabled": false,
@@ -778,6 +809,12 @@ dmt.tables = {
 				"key": true
 			},
 			{
+				"name": "position",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
 				"name": "title",
 				"type": "string",
 				"disabled": false,
@@ -786,18 +823,6 @@ dmt.tables = {
 			{
 				"name": "summary",
 				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "position",
-				"type": "int",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "active",
-				"type": "boolean",
 				"disabled": false,
 				"key": false
 			},
@@ -823,6 +848,12 @@ dmt.tables = {
 			{
 				"name": "id_type_banner",
 				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
+				"name": "active",
+				"type": "boolean",
 				"disabled": false,
 				"key": false
 			}
@@ -1615,6 +1646,12 @@ dmt.tables = {
 				"key": false
 			},
 			{
+				"name": "points",
+				"type": "int",
+				"disabled": true,
+				"key": false
+			},
+			{
 				"name": "active",
 				"type": "boolean",
 				"disabled": false,
@@ -1635,37 +1672,37 @@ dmt.tables = {
 			{
 				"name": "id_availability",
 				"type": "int",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 			{
 				"name": "id_city",
 				"type": "int",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 			{
 				"name": "id_region",
 				"type": "int",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 			{
 				"name": "id_country",
 				"type": "int",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 			{
 				"name": "document",
 				"type": "string",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 			{
 				"name": "id_type_document",
 				"type": "int",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			}
 		],

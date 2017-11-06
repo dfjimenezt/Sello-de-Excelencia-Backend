@@ -122,8 +122,16 @@
 		"Extra": ""
 	},
 	{
+		"Field": "level",
+		"Type": "int(11)",
+		"Null": "YES",
+		"Key": "",
+		"Default": "1",
+		"Extra": ""
+	},
+	{
 		"Field": "datetime",
-		"Type": "timestamp",
+		"Type": "int(11)",
 		"Null": "YES",
 		"Key": "",
 		"Default": null,
@@ -131,7 +139,7 @@
 	}
 ]
  * DMT 2017
- * GENERATED: 29 / 10 / 2017 - 13:19:36
+ * GENERATED: 5 / 11 / 2017 - 1:30:27
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
@@ -260,8 +268,16 @@ var Service = function () {
 		"Extra": ""
 	},
 	{
+		"Field": "level",
+		"Type": "int(11)",
+		"Null": "YES",
+		"Key": "",
+		"Default": "1",
+		"Extra": ""
+	},
+	{
 		"Field": "datetime",
-		"Type": "timestamp",
+		"Type": "int(11)",
 		"Null": "YES",
 		"Key": "",
 		"Default": null,

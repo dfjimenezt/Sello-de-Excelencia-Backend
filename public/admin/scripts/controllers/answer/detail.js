@@ -450,7 +450,7 @@ angular.module('dmt-back').controller('answerController', function ($mdDialog, p
 				user: ctrl.data,
 				entity: false
 			},
-			templateUrl: entity.delete ? entity.delete.templateUrl || 'views/user/message-dialog.html' : 'views/user/message-dialog.html',
+			templateUrl: entity.delete ? entity.delete.templateUrl || 'views/admon/message-dialog.html' : 'views/admon/message-dialog.html',
 		}).then(ctrl.getData);
 	}
 	this.saveItem = function (ev) {

@@ -24,10 +24,18 @@
 		"Key": "",
 		"Default": null,
 		"Extra": ""
+	},
+	{
+		"Field": "active",
+		"Type": "tinyint(4)",
+		"Null": "NO",
+		"Key": "",
+		"Default": "1",
+		"Extra": ""
 	}
 ]
  * DMT 2017
- * GENERATED: 2 / 11 / 2017 - 11:53:11
+ * GENERATED: 6 / 11 / 2017 - 0:45:52
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
@@ -57,6 +65,14 @@ var Usertype = function () {
 		"Null": "YES",
 		"Key": "",
 		"Default": null,
+		"Extra": ""
+	},
+	{
+		"Field": "active",
+		"Type": "tinyint(4)",
+		"Null": "NO",
+		"Key": "",
+		"Default": "1",
 		"Extra": ""
 	}
 ],

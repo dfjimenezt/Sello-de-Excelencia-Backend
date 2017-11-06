@@ -6,7 +6,11 @@
 var BaseModel = require('../utils/model.js')
 var util = require('util')
 var Service_comment = function () {
-	var params = [{"table":"service_comment","relations":[{"type":"1-1","entity":"user","name":"user","leftKey":"id_user","foreign_name":"email"}],"entity":"service_comment","model":"entity"}]
+	var params = [
+		{"table":"service_comment","relations":[
+			{"type":"1-1","entity":"user","name":"user","leftKey":"id_user","foreign_name":"email"},
+			{"type":"1-1","entity":"service","name":"service","leftKey":"id_service","foreign_name":"name"}
+		],"entity":"service_comment","model":"entity"}]
 	BaseModel.apply(this, params)
 	this._create = this.create
 	this.create = function(body){

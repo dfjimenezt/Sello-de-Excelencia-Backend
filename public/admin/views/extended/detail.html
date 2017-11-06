@@ -21,7 +21,7 @@
         </div>
         <form name="ctrl.form" layout="row" flex>
           <div layout="row" layout-wrap class="input-row" layout-padding flex>
-            <md-input-container ng-repeat="f in ctrl.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="100">
+            <md-input-container ng-repeat="f in ctrl.service.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="100">
               <label ng-if="f.type!=='boolean' && f.type !=='file' && f.type !=='text'">{{f.name | translate}}</label>
               <input type="number" ng-if="f.type=='int'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
               <input type="text" ng-if="f.type=='string'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />

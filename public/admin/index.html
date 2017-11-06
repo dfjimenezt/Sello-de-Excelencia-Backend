@@ -39,7 +39,7 @@
 </head>
 
 <body ng-app="dmt-back" flex ng-cloak ng-controller="backCtrl as ctrl">
-  <md-toolbar layout="row" flex layout-align="start center" class="md-primary md-hue-1">
+  <md-toolbar layout="row" flex layout-align="start center" class="md-primary">
     <md-button ng-click="ctrl.menu()">
       <md-icon class="material-icons">menu</md-icon>
       </md-icon>
@@ -92,6 +92,10 @@
   <!-- Angular Data Tables -->
   <script src="bower_components/angular-material-data-table/dist/md-data-table.min.js"></script>
 
+  <!-- File Saver -->
+  <script src="https://fastcdn.org/FileSaver.js/1.1.20151003/FileSaver.js"></script>
+  
+  <!-- Base Items -->
   <script src="tables.js"></script>
   <script src="entities.js"></script>
   <script src="api.js"></script>
@@ -100,25 +104,49 @@
   <script src="index.js"></script>
   <script src="./scripts/utils/utils.js"></script>
   <script src="./scripts/services/entityservice.js"></script>
+
+
+  <!-- Controllers -->
+  <!-- Basic you could do a completely administration with just this 4 files but you are a human -->
+  <script src="./scripts/controllers/default/detail.js"></script>
   <script src="./scripts/controllers/default/additem.js"></script>
   <script src="./scripts/controllers/default/listitem.js"></script>
   <script src="./scripts/controllers/default/deleteitem.js"></script>
+  <!-- Ok, we added other two -->
   <script src="./scripts/controllers/extended/detail.js"></script>
   <script src="./scripts/controllers/extended/listitem.js"></script>
-  <script src="./scripts/controllers/single/detail.js"></script>
-  <script src="./scripts/controllers/service/listitem.js"></script>
-  <script src="./scripts/controllers/service/detail.js"></script>
-  <script src="./scripts/controllers/entity/addpoints.js"></script>
-  <script src="./scripts/controllers/entity/listitem.js"></script>
-  <script src="./scripts/controllers/entity/detail.js"></script>
-  <script src="./scripts/controllers/representant/detail.js"></script>
-  <script src="./scripts/controllers/user/listitem.js"></script>
-  <script src="./scripts/controllers/user/detail.js"></script>
-  <script src="./scripts/controllers/user/sendmessage.js"></script>
-  <script src="./scripts/controllers/evaluator/addpoints.js"></script>
-  <script src="./scripts/controllers/evaluator/listitem.js"></script>
-  <script src="./scripts/controllers/evaluator/detail.js"></script>
+  <!-- ¯\_(ツ)_/¯ -->
+  <script src="./scripts/controllers/hall/detail.js"></script>
+  <script src="./scripts/controllers/banner/list.js"></script>
   <script src="./scripts/controllers/banner/detail.js"></script>
+
+  <!-- ¯\_(ツ)_/¯ -->
+  <script src="./scripts/controllers/entity/list.js"></script>
+  <script src="./scripts/controllers/entity/detail.js"></script>
+  <script src="./scripts/controllers/entity/addpoints.js"></script>
+
+  <script src="./scripts/controllers/representant/list.js"></script>
+  <script src="./scripts/controllers/representant/detail.js"></script>
+
+  <script src="./scripts/controllers/citizen/list.js"></script>
+  <script src="./scripts/controllers/citizen/detail.js"></script>
+
+  <script src="./scripts/controllers/evaluator/list.js"></script>
+  <script src="./scripts/controllers/evaluator/detail.js"></script>
+  <script src="./scripts/controllers/evaluator/addpoints.js"></script>
+
+  <script src="./scripts/controllers/admon/list.js"></script>
+  <script src="./scripts/controllers/admon/detail.js"></script>
+  <script src="./scripts/controllers/admon/sendmessage.js"></script>
+  
+  <!-- ¯\_(ツ)_/¯ -->
+  <script src="./scripts/controllers/service/list.js"></script>
+  <script src="./scripts/controllers/service/detail.js"></script>
+  
+  <!-- ¯\_(ツ)_/¯ -->
+  <script src="./scripts/controllers/question/list.js"></script>
+  <script src="./scripts/controllers/question/detail.js"></script>
+  
   <script src="./scripts/controllers/answer/urgent.js"></script>
   <script src="./scripts/controllers/answer/detail.js"></script>
   <script src="./scripts/controllers/learn/detail.js"></script>

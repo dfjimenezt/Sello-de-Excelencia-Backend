@@ -10,8 +10,8 @@ dbConf.multipleStatements = true
 var pool = mysql.createPool(dbConf)
 
 var EntityModel = function (info) {
-	let dmt_entities = require('../../public/admin/entities.js');
-	let dmt_tables = require('../../public/admin/tables.js');
+	let dmt_entities = require('./entities.js');
+	let dmt_tables = require('./tables.js');
 	let dmt = {
 		entities: dmt_entities.entities,
 		tables: dmt_tables.tables
@@ -244,13 +244,17 @@ var EntityModel = function (info) {
 				if (typeof params.fields == "string") {
 					params.fields = [params.fields]
 				}
+				if(params.order.indexOf('-') === 0){
+					params.order = params.order.substring(1)+' desc'
+				}
 				function resolveEqual(connection, value, equal) {
 					if (typeof value != 'string') {
 						return equal + connection.escape(value);
 					}
 					let array = value.split(" ");
 					if (array.length > 1) {
-						return array[0] + connection.escape(array[1]);
+						equal = array.splice(0,1)
+						return equal + connection.escape(array.join(' '));
 					}
 					return equal + connection.escape(value);
 				}
@@ -303,7 +307,7 @@ var EntityModel = function (info) {
 					search = []
 					for (var i in fields) {
 						// TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
-						search.push('`' + fields[i] + "` like " + connection.escape("%" + params.filter.split(" ").join("%") + "%"))
+						search.push('`' + view+'`.`'+fields[i] + "` like " + connection.escape("%" + params.filter.split(" ").join("%") + "%"))
 					}
 					search = "(" + search.join(" OR ") + ")"
 				}
@@ -326,10 +330,12 @@ var EntityModel = function (info) {
 				} else { //just one of these
 					where = search + conditions
 				}
-				let subtable = resolveViewName(info.entity, params.lang)
+				let vname = '`'+resolveViewName(info.entity, params.lang)+'`'
+				let subtable = vname
 				/**
 				 * Support for filters into n-n  and 1-n relations
 				 */
+				let intermediate = 0
 				for (let r in relation_filters) {
 					let relation = null
 					console.warn("Doing relation filters can reduce the performance")
@@ -349,21 +355,25 @@ var EntityModel = function (info) {
 						if (relation_filters[r][k][0].indexOf('\'') == 0) {
 							rwhere += `\`${name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
 						} else {
-							rwhere += `\`${name + '`.`' + k}\` ${relation_filters[r][k][0]} AND `
+							for(var l in relation_filters[r][k]){
+								let v = relation_filters[r][k][l]
+								rwhere += `\`${name + '`.`' + k}\` ${v} AND `
+							}
 						}
 					}
 					rwhere = rwhere.slice(0, -4) + ')'
 					if (relation.intermediate) { // n-n relation 
 						let iname = resolveViewName(relation.intermediate.entity, params.lang)
-						joins.push(`JOIN \`${iname}\` \`intermediate\` ON \`intermediate\`.\`${relation.intermediate.leftKey}\` = \`${subtable}\`.\`${getTable(info.table).defaultSort}\`
-				JOIN \`${name}\` ON \`intermediate\`.\`${relation.intermediate.rightKey}\` = \`${name}\`.\`${getTable(relation.entity).defaultSort}\` AND (${rwhere})`)
+						joins.push(`JOIN \`${iname}\` \`intermediate_${intermediate}\` ON \`intermediate_${intermediate}\`.\`${relation.intermediate.leftKey}\` = ${vname}.\`${getTable(info.table).defaultSort}\`
+				JOIN \`${name}\` ON \`intermediate_${intermediate}\`.\`${relation.intermediate.rightKey}\` = \`${name}\`.\`${getTable(relation.entity).defaultSort}\` AND (${rwhere})`)
 					} else if (relation.rightKey) { //1-n relation
-						joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation.rightKey}\` = \`${subtable}\`.\`${getTable(info.table).defaultSort}\` AND (${rwhere})`)
+						joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation.rightKey}\` = ${vname}.\`${getTable(info.table).defaultSort}\` AND (${rwhere})`)
 					} else if (relation.leftKey) { // 1-1 and  
 						let relation_table = getTable(relation.entity || relation.table)
-						joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation_table.defaultSort}\` = \`${subtable}\`.\`${relation.leftKey}\` AND (${rwhere})`)
-					}
-					subtable = '`' + subtable + '` ' + joins.join(' ')
+						joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation_table.defaultSort}\` = ${vname}.\`${relation.leftKey}\` AND (${rwhere})`)
+					}	
+					subtable = subtable + ' ' + joins
+					intermediate++
 				}
 
 				var query = "SELECT SQL_CALC_FOUND_ROWS `" + resolveViewName(info.entity, params.lang) + "`.`" + getTable(info.table).defaultSort + "` `key` FROM " + subtable + " "
@@ -371,7 +381,7 @@ var EntityModel = function (info) {
 					query += "WHERE " + where
 				}
 				query += "GROUP BY `key` "
-				for (let r in relation_filters) {
+				/*for (let r in relation_filters) {
 					for (let k in relation_filters[r]) {
 						let relation = null
 						console.warn("Doing relation filters can reduce the performance")
@@ -387,7 +397,7 @@ var EntityModel = function (info) {
 						let name = resolveViewName(relation.entity, params.lang)
 						//query += `HAVING COUNT(\`${name + '`.`' + k}\`) = ${relation_filters[r][k].length} `
 					}
-				}
+				}*/
 				query += "ORDER BY `" + resolveViewName(info.entity, params.lang) + "`." + params.order + " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
 				query += "SELECT FOUND_ROWS() as total"
 				return resolveQuery(query, connection).then((result) => {

@@ -58,20 +58,21 @@ var Points = function () {
 	}
 	this.addUserPoints = function (user, motive, justification,video,value) {
 		video = video || 'NULL'
-		let insert = `
+		let insert = `SET @result = 0;
 		INSERT INTO points (\`prev_points\`,\`value\`,\`result\`,
 		\`justification\`,\`id_user\`,\`id_motives\`,\`id_hangout\`)
 		SELECT 
 		\`p\`.\`prev_points\`,
 		${value ? value:'\`m\`.\`points\` \`value\`'},
-		${value ? '(\`p\`.\`prev_points\` + '+value+') \`result\`':'(\`p\`.\`prev_points\` + \`m\`.\`points\`) \`result\`'},
+		@result := ${value ? '(\`p\`.\`prev_points\` + '+value+') \`result\`':'(\`p\`.\`prev_points\` + \`m\`.\`points\`) \`result\`'},
 		${justification.length>0 ? '\''+justification+'\'' :'\`m\`.\`description\`'}  \`justification\`,
 		${user},
 		${motive},
 		${video}
 		FROM \`motives\` \`m\`,
 		(SELECT SUM(\`p\`.\`value\`) \`prev_points\` FROM \`points\` \`p\` 
-		WHERE \`p\`.\`id_user\` = ${user}) \`p\` WHERE \`m\`.\`id\` = ${motive}`
+		WHERE \`p\`.\`id_user\` = ${user}) \`p\` WHERE \`m\`.\`id\` = ${motive};
+		UPDATE \`user\` SET \`points\` = @result WHERE \`id\` = ${user}`
 		
 		if(video != 'NULL'){
 			let q = `SELECT count(*) count FROM points WHERE 

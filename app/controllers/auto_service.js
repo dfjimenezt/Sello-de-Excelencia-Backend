@@ -456,7 +456,7 @@ var service_controller = function () {
 		pdfWriter.end()
 	}
 	var get_entity_service = function (user, params, req, res) {
-		if(user.permissions.indexOf('admin_services') == -1){
+		if(!user.permissions || user.permissions.indexOf('admin_services') == -1){
 			if(!params.filter_field){
 				params.filter_field = []
 				params.filter_value = []
@@ -464,7 +464,7 @@ var service_controller = function () {
 				params.filter_field = [params.filter_field]
 				params.filter_value = [params.filter_value]
 			}
-			params.filter_field.push('active')
+			params.filter_field.push('is_active')
 			params.filter_value.push('1')
 		}
 		if (params.certificate) {
@@ -503,7 +503,7 @@ var service_controller = function () {
 			if(params.certified){
 				return model_entity_service.getByPostulateCertificationDate(params)
 			}
-			params.order = 'id desc'
+			params.order = params.order || 'id desc'
 			return _get(model_entity_service, user, params)
 		}
 	}
@@ -534,6 +534,17 @@ var service_controller = function () {
 	 * }
 	*/
 	var get_category = function (user, params) {
+		if(!user.permissions || user.permissions.indexOf('admin_services') == -1){
+			if(!params.filter_field){
+				params.filter_field = []
+				params.filter_value = []
+			}else if(typeof params.filter_field === 'string'){
+				params.filter_field = [params.filter_field]
+				params.filter_value = [params.filter_value]
+			}
+			params.filter_field.push('active')
+			params.filter_value.push('1')
+		}
 		return _get(model_category, user, params)
 	}
 	/**

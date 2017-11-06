@@ -113,19 +113,22 @@ module.exports = {
       let titles = []
       for(let i in item){
         titles.push(i)
-        row.push(item[i])
+        if(typeof item[i] === 'object'){
+          row.push(JSON.stringify(item[i]))
+        }else{
+          row.push(item[i])
+        }
       }
       if(d.length==0){
         d.push(titles)
       }
       d.push(row)
     })
-    //return JSON.stringify(d)
     let XLSX = require("xlsx")
-    let wopts = { bookType:'xlsx', bookSST:false, type:'binary' }
+    let wopts = { bookType:'xlsx', type:'buffer' }
     let sheet = XLSX.utils.aoa_to_sheet(d)
     let workbook = {SheetNames:['Hoja 1'],Sheets:{'Hoja 1':sheet}}
-    workbook.Props = {
+    /*workbook.Props = {
       Title: "SheetJS Test",
       Subject: "Tests",
       Author: "Devs at SheetJS",
@@ -135,8 +138,8 @@ module.exports = {
       Keywords: "Test",
       Comments: "Nothing to say here",
       LastAuthor: "Not SheetJS",
-      CreatedDate: new Date(2017,1,19)
-    }
+      CreatedDate: new Date()
+    }*/
     let r =  XLSX.write(workbook,wopts)
     return r
   },
