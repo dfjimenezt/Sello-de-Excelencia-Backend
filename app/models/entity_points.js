@@ -62,9 +62,9 @@ var Points = function () {
 		INSERT INTO points (\`prev_points\`,\`value\`,\`result\`,
 		\`justification\`,\`id_user\`,\`id_motives\`,\`id_hangout\`)
 		SELECT 
-		\`p\`.\`prev_points\`,
+		IFNULL(\`p\`.\`prev_points\`,0) \`prev_points\`,
 		${value ? value:'\`m\`.\`points\` \`value\`'},
-		@result := ${value ? '(\`p\`.\`prev_points\` + '+value+') \`result\`':'(\`p\`.\`prev_points\` + \`m\`.\`points\`) \`result\`'},
+		@result := ${value ? '(IFNULL(\`p\`.\`prev_points\`,0) + '+value+') \`result\`':'(IFNULL(\`p\`.\`prev_points\`,0) + \`m\`.\`points\`) \`result\`'},
 		${justification.length>0 ? '\''+justification+'\'' :'\`m\`.\`description\`'}  \`justification\`,
 		${user},
 		${motive},

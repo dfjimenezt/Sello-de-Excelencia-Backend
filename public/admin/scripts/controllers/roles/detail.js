@@ -18,6 +18,12 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	ctrl.selectTab = function (tab) {
 		ctrl.tab = tab
 	}
+	ctrl.select = function(selection){
+		ctrl.service.bind(selection,ctrl.tab)
+	}
+	ctrl.unselect = function(selection){
+		ctrl.service.unbind(selection,ctrl.tab)
+	}
 
 	ctrl.delete = function (event, relation) {
 		let entity = dmt.entities[relation.entity];

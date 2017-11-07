@@ -505,13 +505,7 @@ dmt.entities = {
         leftKey:"id_user",
         foreign_name:"email"
       },
-      {
-        type:"1-1",
-        entity:"media",
-        name:"media",
-        leftKey:"id_media",
-        foreign_name:"url"
-      },
+      
       {
         type:"1-1",
         entity:"questiontopic",

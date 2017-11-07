@@ -9,14 +9,7 @@ function ($scope, $mdDialog, $mdEditDialog, parent, $http, entityService, $route
 	ctrl.entities = ctrl.service.entities
 	ctrl.options = ctrl.service.options
 	ctrl.loading = false
-	if(ctrl.filters || $routeParams.id){
-		ctrl.service.getData().then(()=>{
-			ctrl.data = ctrl.entities[ctrl.entity].data[0]
-			ctrl.service.entities.motivename.getData()
-			ctrl.service.entities.usertype.getData()
-			ctrl.service.entities.request_status.getData()
-		})
-	}
+	ctrl.data = answer
 	ctrl.cancel = function() {
 		$mdDialog.cancel()
 	}
@@ -25,38 +18,38 @@ function ($scope, $mdDialog, $mdEditDialog, parent, $http, entityService, $route
 		request.user = null
 		request.id_user = null
 	}
+	ctrl.approve = function(request){
+		request.id_request_status = 7
+		ctrl.saveRequest(request)
+	}
+	ctrl.reject = function(request){
+		request.id_request_status = 8
+		ctrl.saveRequest(request)
+	}
 	ctrl.evaluatorSelected = function(request){
 		request.showAutocomplete = false
+		ctrl.saveRequest(request)
 	}
 	ctrl.selectTab = function (tab) {
 		ctrl.tab = tab
 	}
-	ctrl.removeRepresentant = function($event){
-		var url = '/api/configuration/institution_user?id_institution=' + $routeParams.id
-		$http.delete(url).then(()=>{
-			$mdDialog.show($mdDialog.alert()
-			.parent(angular.element(document.body))
-			.clickOutsideToClose(true)
-			.title('Guardado')
-			.textContent('Se ha eliminado el representante de esta entidad.')
-			.ariaLabel('Guardado exitosamente')
-			.ok('Aceptar')
-			.targetEvent($event))
+	ctrl.saveRequest = function(request){
+		request.loading = true
+		ctrl.service.updateItem(request, null, {entity:'evaluation_request'}).then(()=>{
+			request.loading = false
 		})
 	}
-
-	ctrl.sendMessage = function(){
-		$mdDialog.show({
-			clickOutsideToClose: true,
-			controller: 'sendMessageController',
-			controllerAs: 'ctrl',
-			focusOnOpen: false,
-			targetEvent: event,
-			locals: {
-				user: ctrl.data,
-				entity: true,
-			},
-			templateUrl: 'views/admon/message-dialog.html',
+	$scope.$watch('ctrl.entities.evaluation_request.data',(_val,_old,scope)=>{
+		if(_val && _val.length){
+			ctrl.getMessages()
+		}
+	})
+	ctrl.getMessages = function(){
+		ctrl.entities.evaluation_request.data.forEach((request)=>{
+			var url = '/api/question/chats?filter_field=id_evaluation_request&filter_value=' + request.id
+			$http.get(url).then((response)=>{
+				request.messages = response.data.data
+			})
 		})
 	}
 

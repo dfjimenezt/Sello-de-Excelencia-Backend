@@ -47,7 +47,6 @@ angular.module('dmt-back').controller('answerController', function ($mdDialog, p
 				},
 			}
 		}
-
 	})
 
 	ctrl.reasignate = function(request){

@@ -28,3 +28,29 @@ text-angular .ta-bind{
   background: #fff;
   border: 1px solid #ddd;
 }
+
+
+.chat .messages-container{
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background: #efefef;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  padding: 5px;
+}
+.chat .message{
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+}
+.chat .message.mine{
+  width: 68%;
+  margin-left: 27%;
+  background: #55ddff;
+}
+.chat .message.remote{
+  width: 69%;
+  margin-left: 1%;
+  background: #55ffcc;
+}

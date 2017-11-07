@@ -39,12 +39,10 @@
 				<md-card ng-repeat="request in ctrl.entities.evaluation_request.data" layout="column" flex layout-padding>
 					<md-content layout="row" flex>
 						<div layout="row" layout-wrap flex="60">
-							<md-input-container flex="50">
+							<div flex="50">
 								<label>Estado</label>
-								<md-select ng-model="request.id_request_status" ng-disabled="true">
-									<md-option ng-repeat="o in ctrl.entities.evaluation_request.options.id_request_status" value="{{o.id}}">{{o.name}}</md-option>
-								</md-select>
-							</md-input-container>
+								<span>{{ctrl.entities.evaluation_request.options.id_request_status | linkvalue:{name:'id_request_status',foreign_key:'id',foreign_name:'name'}:request}}</span>
+							</div>
 							<md-input-container flex="50">
 								<label>Fecha Limite de Evaluación</label>
 								<md-datepicker type="text" ng-model="request.end_time" ng-disabled="true"></md-datepicker>
@@ -83,16 +81,17 @@
 						</div>
 						<div layout=column flex="40">
 							<div layout="row" layout-align="center">
-									<md-button class="md-accent md-raised" ng-click="ctrl.approve(request)">CUMPLE</md-button>
-									<md-button class="md-accent md-raised" ng-click="ctrl.reject(request)">NO CUMPLE</md-button>
-									<md-button class="md-accent md-raised" ng-click="ctrl.reasignate(request)">Re-asignar</md-button>
-									<md-button class="md-primary md-raised" ng-click="ctrl.updateItem(request,null,ctrl.evaluation_request_relation)">Guardar</md-button>
+									<md-button ng-if="!request.loading" class="md-accent md-raised" ng-click="ctrl.approve(request)">CUMPLE</md-button>
+									<md-button ng-if="!request.loading" class="md-accent md-raised" ng-click="ctrl.reject(request)">NO CUMPLE</md-button>
+									<md-button ng-if="!request.loading" class="md-accent md-raised" ng-click="ctrl.reasignate(request)">Re-asignar</md-button>
+									<md-button ng-if="!request.loading" class="md-primary md-raised" ng-click="ctrl.saveRequest(request)">Guardar</md-button>
+									<md-progress-circular class="md-accent" md-mode="indeterminate" ng-if="request.loading"aria-label="Cargando"> </md-progress-circular>
 							</div>
-							<div layout="column" flex="100" flex-grow>
+							<div layout="column" class="chat" flex="100" flex-grow>
 									<div class="messages-container">
-											<div class="message" ng-repeat="message in ctrl.messages" ng-class="{
-													mine:ctrl.user.id == message.id_sender,
-													remote:ctrl.user.id != message.id_sender,}">
+											<div class="message" ng-repeat="message in request.messages" ng-class="{
+													mine:request.id_user == message.id_sender,
+													remote:request.id_user != message.id_sender,}">
 													<span class="bold">{{message.from.name}}</span>
 													<span class="pull-right">{{message.timestamp |date}}</span>
 													<p class="background" >

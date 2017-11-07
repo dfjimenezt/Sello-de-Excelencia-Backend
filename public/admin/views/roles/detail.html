@@ -68,7 +68,7 @@
                 md-auto-select ng-repeat="item in ctrl.entities[relation.entity].data">
                 <td md-cell ng-repeat="f in ctrl.entities[relation.entity].table.fields" ng-click="ctrl.editField($event,item,f,relation)"
                   ng-if="f.name !== relation.rightKey">
-                  <span ng-if="f.type !== 'link'">{{ item[f.name] }}</span>
+                  <span ng-if="f.type !== 'link'">{{ item[f.name] | translate}}</span>
                   <span ng-if="f.type === 'link'">{{ item[f.table][f.foreign_name] }}</span>
                 </td>
               </tr>
