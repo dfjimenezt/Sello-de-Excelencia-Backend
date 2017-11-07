@@ -48,6 +48,14 @@
 		"Key": "",
 		"Default": "1",
 		"Extra": ""
+	},
+	{
+		"Field": "timestamp",
+		"Type": "timestamp",
+		"Null": "NO",
+		"Key": "",
+		"Default": "1",
+		"Extra": ""
 	}
 ]
  * DMT 2017
@@ -105,6 +113,14 @@ var Banner = function () {
 		"Null": "NO",
 		"Key": "",
 		"Default": "1",
+		"Extra": ""
+	},
+	{
+		"Field": "timestamp",
+		"Type": "timestamp",
+		"Null": "NO",
+		"Key": "",
+		"Default": "CURRENT_TIMESTAMP",
 		"Extra": ""
 	}
 ],
