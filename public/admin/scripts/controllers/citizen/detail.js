@@ -35,6 +35,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 			templateUrl: 'views/admon/message-dialog.html',
 		})
 	}
+	
 	this.delete = function (event, relation) {
 		let entity = dmt.entities[relation.entity];
 		$mdDialog.show({

@@ -618,6 +618,12 @@ var platform_controller = function () {
 		}
 		let promises = []
 		let order =[]
+		if(!files.background){
+			body.background = ''
+		}
+		if(!files.video){
+			body.video = ''
+		}
 		for(var i in files){
 			order.push(i)
 			promises.push(utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type))
