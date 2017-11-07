@@ -21,6 +21,20 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 		this.tab = tab
 	}
 
+	ctrl.sendMessage = function(){
+		$mdDialog.show({
+			clickOutsideToClose: true,
+			controller: 'sendMessageController',
+			controllerAs: 'ctrl',
+			focusOnOpen: false,
+			targetEvent: event,
+			locals: {
+				user: ctrl.data,
+				entity: false,
+			},
+			templateUrl: 'views/admon/message-dialog.html',
+		})
+	}
 	this.delete = function (event, relation) {
 		let entity = dmt.entities[relation.entity];
 		$mdDialog.show({

@@ -56,7 +56,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 			targetEvent: event,
 			locals: {
 				user: ctrl.data,
-				entity: true,
+				entity: false,
 			},
 			templateUrl: 'views/admon/message-dialog.html',
 		})
