@@ -17,6 +17,7 @@ function ($scope, $mdDialog, $mdEditDialog, parent, $http, entityService, $route
 		request.showAutocomplete = true
 		request.user = null
 		request.id_user = null
+
 	}
 	ctrl.approve = function(request){
 		request.id_request_status = 7
@@ -28,6 +29,7 @@ function ($scope, $mdDialog, $mdEditDialog, parent, $http, entityService, $route
 	}
 	ctrl.evaluatorSelected = function(request){
 		request.showAutocomplete = false
+		request.id_user = request.user.id
 		ctrl.saveRequest(request)
 	}
 	ctrl.selectTab = function (tab) {

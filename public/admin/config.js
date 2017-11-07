@@ -340,20 +340,20 @@ dmt.config = [
 				name: "Puntaje",
 				path: "puntaje",
 				entity: "motives",
-				controller: "listItemExtendedController",
-				templateUrl: "views/extended/list.html",
+				controller: "pointsListController",
+				templateUrl: "views/points/list.html",
 				pages: [
 					{
 						name: "add",
 						path: "add",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "pointsDetailController",
+						templateUrl: "views/points/detail.html"
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
-						controller: "detailItemExtendedController",
-						templateUrl: "views/extended/detail.html"
+						controller: "pointsDetailController",
+						templateUrl: "views/points/detail.html"
 					}
 				]
 			},
