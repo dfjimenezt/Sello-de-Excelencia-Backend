@@ -36,17 +36,19 @@
                 <md-checkbox ng-model="ctrl.data.active" >Activo</md-checkbox>
             </md-input-container>
             
-            <md-input-container flex="100">
-                <div style="text-align:center;" ngf-select ng-model="ctrl.data.background">
+            <md-input-container flex="100" style="text-align:center;">
+                <div ngf-select ng-model="ctrl.data.background">
                     <img ngf-thumbnail="ctrl.data.background" /><br/>
                     <md-button class="md-raised">IMAGEN DE FONDO DEL BANNER</md-button>
                   </div>
+                  <md-button class="md-raised md-primary" ng-click="ctrl.data.background=''">BORRAR IMAGEN</md-button>
             </md-input-container>
-            <md-input-container flex="100">
-                <div style="text-align:center;" ngf-select ng-model="ctrl.data.video">
+            <md-input-container flex="100" style="text-align:center;">
+                <div ngf-select ng-model="ctrl.data.video">
                     <video src="{{ctrl.data.video}}"></video><br/>
                     <md-button class="md-raised">VIDEO DE FONDO DEL BANNER</md-button>
                   </div>
+                  <md-button class="md-raised md-primary" ng-click="ctrl.data.video=''">BORRAR VIDEO</md-button>
             </md-input-container>
             <div flex="100">
                 <span>Texto de Detalle del Banner</span>
