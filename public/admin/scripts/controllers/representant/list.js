@@ -57,7 +57,7 @@ angular.module('dmt-back').controller('representantListController',
 			ctrl.update()
 		};
 		ctrl.update()
-		ctrl.delete = function () {
+		ctrl.delete = function (event) {
 			$mdDialog.show({
 				clickOutsideToClose: true,
 				controller: ctrl.entity.delete ? ctrl.entity.delete.controller || 'deleteItemController' : 'deleteItemController',
