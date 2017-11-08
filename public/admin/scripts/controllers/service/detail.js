@@ -17,6 +17,9 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 		if(relation.entity == 'questiontopic'){
 			ctrl.questiontopic_relation = relation
 		}
+		if(relation.entity == 'user_answer'){
+			ctrl.user_answer_relation = relation
+		}
 		ctrl.service.getEntityData(relation)
 	})
 	ctrl.entities = ctrl.service.entities
@@ -129,6 +132,9 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	}
 	ctrl.serviceDetail = function(item){
 		$location.path('postulaciones/todos/detalle/'+item.id)
+	}
+	ctrl.updateItem = function(item,f,relation){
+		ctrl.service.updateItem(item,f,relation)
 	}
 	ctrl.createPoints = function(event){
 		$mdDialog.show({

@@ -593,7 +593,9 @@ var Events = function () {
 										return
 									}
 								})
-								entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+								if(motive){
+									entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
+								}
 							}
 						})
 						return
