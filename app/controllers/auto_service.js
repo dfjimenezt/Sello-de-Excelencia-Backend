@@ -675,6 +675,7 @@ var service_controller = function () {
 	var create_entity_service = function (user, body) {
 		body.current_status = 10
 		body.id_user = user.id
+		body.is_active = 1
 		return model_entity_service.create(body)
 			.then((result) => {
 				return model_status.getByUid(10)
