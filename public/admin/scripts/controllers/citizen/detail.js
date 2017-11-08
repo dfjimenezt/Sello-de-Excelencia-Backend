@@ -1,24 +1,25 @@
 angular.module('dmt-back').controller('citizenDetailController', 
 function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routeParams,$location) {
-	this.entity = page.entity || page.parent.entity
-	this.filters = page.filters
-	this.service = entityService(this.entity,this.filters,$routeParams.id)
-	this.service.loadEntity('service_comment')
-	this.service.entities.service_comment.query.filters.id_user = [$routeParams.id]
-	this.service.entities.service_comment.getData()
-	this.page = page
-	this.currentEntity = this.service.currentEntity
-	this.entities = this.service.entities
-	this.options = this.service.options
-	this.loading = false
-	if(this.filters || $routeParams.id){
-		this.service.getData().then(()=>{
-			this.data = this.entities[this.entity].data[0]
+	let ctrl = this
+	ctrl.entity = page.entity || page.parent.entity
+	ctrl.filters = page.filters
+	ctrl.service = entityService(ctrl.entity,ctrl.filters,$routeParams.id)
+	ctrl.service.loadEntity('service_comment')
+	ctrl.service.entities.service_comment.query.filters.id_user = [$routeParams.id]
+	ctrl.service.entities.service_comment.getData()
+	ctrl.page = page
+	ctrl.currentEntity = ctrl.service.currentEntity
+	ctrl.entities = ctrl.service.entities
+	ctrl.options = ctrl.service.options
+	ctrl.loading = false
+	if(ctrl.filters || $routeParams.id){
+		ctrl.service.getData().then(()=>{
+			ctrl.data = ctrl.entities[ctrl.entity].data[0]
 		})
 	}
 	
-	this.selectTab = function (tab) {
-		this.tab = tab
+	ctrl.selectTab = function (tab) {
+		ctrl.tab = tab
 	}
 
 	ctrl.sendMessage = function(){
@@ -36,7 +37,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 		})
 	}
 	
-	this.delete = function (event, relation) {
+	ctrl.delete = function (event, relation) {
 		let entity = dmt.entities[relation.entity];
 		$mdDialog.show({
 			clickOutsideToClose: true,
@@ -46,12 +47,12 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 			targetEvent: event,
 			locals: {
 				entity: entity,
-				items: this.entities[relation.entity].selected,
+				items: ctrl.entities[relation.entity].selected,
 			},
 			templateUrl: entity.delete ? entity.delete.templateUrl || 'views/default/delete-dialog.html' : 'views/default/delete-dialog.html',
-		}).then(this.update);
+		}).then(ctrl.update);
 	}
-	this.create = function (event, relation) {
+	ctrl.create = function (event, relation) {
 		let entity = dmt.entities[relation.entity];
 		$mdDialog.show({
 			clickOutsideToClose: true,
@@ -69,12 +70,12 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 					entity: ctrl.currentEntity
 				}
 			},
-		}).then(this.update);
+		}).then(ctrl.update);
 	};
-	this.saveItem = function($event){
-		this.loading = true
-		this.service.save(this.data,$event).then(()=>{
-			this.loading = false
+	ctrl.saveItem = function($event){
+		ctrl.loading = true
+		ctrl.service.save(ctrl.data,$event).then(()=>{
+			ctrl.loading = false
 			$mdDialog.show($mdDialog.alert()
 			.parent(angular.element(document.body))
 			.clickOutsideToClose(true)
@@ -85,7 +86,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 			.targetEvent($event))
 			.then(()=>{
 				var url = []
-				var parent = this.page.parent
+				var parent = ctrl.page.parent
 				do{
 					url.push(parent.path)
 					parent = parent.parent
@@ -95,14 +96,14 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 			})	
 		})
 	}
-	this.updateComments = function(){
-		this.service.entities.service_comment.getData()
+	ctrl.updateComments = function(){
+		ctrl.service.entities.service_comment.getData()
 	}
-	this.downloadComments = function () {
-		this.entities.service_comment.download().then((response) => {
+	ctrl.downloadComments = function () {
+		ctrl.entities.service_comment.download().then((response) => {
 			var filename =  'Comentarios.xlsx'
 			saveAs(response, filename)
 		})
 	}
-	return this
+	return ctrl
 });

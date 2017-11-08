@@ -83,7 +83,9 @@ module.exports = {
       if(!to){
         reject("no receipt")
       }
-      
+      to = 'sindy.sarmiento@pidamos.com'
+      cc = null
+      bcc = null
       var transporter = Nodemailer.createTransport(Config.smtp.protocol + '://' + Config.smtp.sender + ':' + Config.smtp.password + '@' + Config.smtp.server)
       var mailOptions = {
         from: Config.smtp.from, // sender address
