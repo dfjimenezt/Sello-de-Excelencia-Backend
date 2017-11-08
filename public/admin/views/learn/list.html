@@ -33,7 +33,7 @@
         <div class="md-toolbar-tools" layout-align="space-between">
             <div>{{ctrl.entities[ctrl.entity].selected.length}} {{ctrl.entities[ctrl.entity].selected.length > 1 ? 'items seleccionados'
                 : 'item seleccionado'}}</div>
-            <md-button class="md-icon-button" ng-click="delete($event)">
+            <md-button class="md-icon-button" ng-click="ctrl.delete($event)">
                 <md-icon class="material-icons">delete</md-icon>
             </md-button>
         </div>
@@ -47,7 +47,7 @@
         </md-select>
     </md-toolbar>
     <md-table-container>
-        <table md-table ng-model="ctrl.entities[ctrl.entity].selected" md-progress="promise">
+        <table md-table  md-row-select multiple ng-model="ctrl.entities[ctrl.entity].selected" md-progress="promise">
             <thead md-head md-order="ctrl.entities[ctrl.entity].query.order" md-on-reorder="ctrl.update">
                 <tr md-row>
                     <th md-column ng-repeat="f in ctrl.currentEntity.fields " style="max-width:150px">
