@@ -53,7 +53,7 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 	})
 	$mdThemingProvider.definePalette('stampBrown', primary)
 	$mdThemingProvider.theme('default')
-	.primaryPalette('stampBrown',{
+	.primaryPalette('blue',{
 		'default':'400',
 		'hue-1':'900',
 	})
@@ -161,9 +161,16 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 		redirectTo: '/'
 	});
 	//$locationProvider.html5Mode(true);
-	/*$provide.decorator('taOptions', ['taRegisterTool', '$delegate', function(taRegisterTool, taOptions) {
-		console.log(taOptions.toolbar);
-	}]);*/
+	$provide.decorator('taOptions', ['$delegate', function(taOptions){
+		taOptions.forceTextAngularSanitize = true;
+		taOptions.toolbar = [
+      ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre', 'quote'],
+      ['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol', 'redo', 'undo', 'clear'],
+      ['justifyLeft', 'justifyCenter', 'justifyRight', 'indent', 'outdent'],
+      ['html', 'insertImage','insertLink']
+		]
+		return taOptions
+	}]);
 });
 
 app.controller('backCtrl', function ($mdSidenav, $location, $http) {

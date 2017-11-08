@@ -110,39 +110,31 @@
                 <th md-column md-order-by="is_active">
                   <span>Activo</span>
                 </th>
-                <th md-column>
-                  <span>Detalles</span>
-                </th>
               </tr>
             </thead>
             <tbody md-body>
               <tr md-row md-auto-select ng-repeat="item in ctrl.entities.service.data">
-                <td md-cell>
+                <td md-cell ng-click="ctrl.serviceDetail(item)">
                   <span>{{ item.id }}</span>
                 </td>
-                <td md-cell>
+                <td md-cell ng-click="ctrl.serviceDetail(item)">
                   <span>{{ item.name }}</span>
                 </td>
-                <td md-cell>
+                <td md-cell ng-click="ctrl.serviceDetail(item)">
                   <span>{{ item.category.name }}</span>
                 </td>
-                <td md-cell>
+                <td md-cell ng-click="ctrl.serviceDetail(item)">
                   <span>{{ item.level }}</span>
                 </td>
-                <td md-cell>
+                <td md-cell ng-click="ctrl.serviceDetail(item)">
                   <span>{{ item.status.name }}</span>
                 </td>
-                <td md-cell>
+                <td md-cell ng-click="ctrl.serviceDetail(item)">
                   <span>{{ item.rate }}</span>
                 </td>
-                <td md-cell>
+                <td md-cell ng-click="ctrl.serviceDetail(item)">
                   <md-checkbox name="activo" ng-model="item.is_active" ng-disabled="true" aria-label="activo">
                     </-checkbox>
-                </td>
-                <td md-cell>
-                  <md-button aria-label="Ver" class="md-icon-button md-raised md-primary">
-                    <md-icon class="material-icons" ng-click="ctrl.serviceDetail(item)">navigate_next</md-icon>
-                  </md-button>
                 </td>
               </tr>
             </tbody>

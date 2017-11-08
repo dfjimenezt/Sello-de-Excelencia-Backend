@@ -274,6 +274,27 @@ dmt.config = [
 				]
 			},
 			{
+				name: "Todos",
+				path: "todos",
+				entity: "service",
+				controller: "servicesListController",
+				templateUrl: "views/service/all_list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "servicesDetailController",
+						templateUrl: "views/service/detail.html"
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "servicesDetailController",
+						templateUrl: "views/service/detail.html"
+					}
+				]
+			},
+			{
 				name: "Evaluaciones Urgentes",
 				path: "urgente",
 				entity: "user_answer",

@@ -65,8 +65,8 @@
                 </tr>
             </thead>
             <tbody md-body>
-                <tr md-row md-select="item" md-select-id="name" ng-repeat="item in ctrl.data">
-                    <td md-cell ng-repeat="f in ctrl.currentEntity.fields" ng-if="f.name !== 'id'" ng-click="editField($event,item,f)">
+                <tr md-row ng-repeat="item in ctrl.data">
+                    <td md-cell ng-repeat="f in ctrl.currentEntity.fields" ng-if="f.name !== 'id'">
                         <span ng-if="f.type=='link' && f.disabled">{{ ctrl.options[f.name] | linkvalue:f:item }}</span>
                         <span ng-if="f.type!=='link' && f.type!=='datetime' && f.type!=='file'">{{item[f.name]}}</span>
                         <md-datepicker ng-model="item[f.name]" ng-if="f.type=='datetime' || f.type=='date'" ng-disabled="f.disabled"></md-datepicker>

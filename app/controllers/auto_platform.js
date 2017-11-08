@@ -619,10 +619,14 @@ var platform_controller = function () {
 		let promises = []
 		let order =[]
 		if(!files.background){
-			body.background = ''
+			if(body.background === 'del')	{
+				body.background = ''
+			}
 		}
 		if(!files.video){
-			body.video = ''
+			if(body.video === 'del'){
+				body.video = ''
+			}
 		}
 		for(var i in files){
 			order.push(i)

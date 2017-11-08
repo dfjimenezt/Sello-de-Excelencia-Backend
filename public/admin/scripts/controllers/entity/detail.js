@@ -126,7 +126,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 		ctrl.service.entities.service.getData()
 	}
 	ctrl.serviceDetail = function(item){
-		$location.path('postulaciones/todos/detalle/'+item.id)
+		$location.path('postulaciones/todos/detail/'+item.id)
 	}
 	ctrl.createPoints = function(event){
 		$mdDialog.show({
