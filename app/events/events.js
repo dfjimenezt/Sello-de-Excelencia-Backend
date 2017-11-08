@@ -206,7 +206,7 @@ var Events = function () {
 								<p>Entidad: ${_service.institution.name}</p>
 								<p>Nombre del Producto o Servicio: ${_service.name}</p>
 								<p>Ha sido asignado al administrador del sistema</p>`)
-							model_entity_evaluation_request.update({ id: _new.id, id_user: _admin.id }, { id: _new.id })
+							model_entity_evaluation_request.update({ id: _new.id, id_user: _admin.id, id_request_status:3 }, { id: _new.id })
 						} else {
 							// add rejection without trigger update event
 							model_entity_evaluation_request.addRejection(_new.id)
@@ -639,7 +639,7 @@ var Events = function () {
 				<div style="text-align:center;margin: 10px auto;">
 				<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
 				</div>
-				<p>Hola ${user.name}</p>
+				<p>Hola ${user.name} ${user.lastname}</p>
 				<p>Se ha asignado un nuevo requisito para tu evaluación en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
 				<p>Para mayor información por favor consultar el siguiente  <a href="${HOST}">enlace</a>
 				<p>Nuestros mejores deseos,<\p>

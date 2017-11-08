@@ -205,7 +205,7 @@ var Service = function () {
 				emiter.emit('evaluation_request.updated',request,request)
 				return
 			}
-			let q = `UPDATE evaluation_request SET id_user = ${_users[0].id_user} WHERE id='${request.id}'`
+			let q = `UPDATE evaluation_request SET id_user = ${_users[0].id_user}, id_request_status='3' WHERE id='${request.id}'`
 			emiter.emit('evaluation_request.asignation',{id_user:_users[0].id_user})
 			return this.customQuery(q)
 		})
