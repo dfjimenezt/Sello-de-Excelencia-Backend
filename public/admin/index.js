@@ -61,7 +61,9 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 		'default':'400'
 	})
 	.backgroundPalette('grey')
-
+	var token = localStorage.getItem("token").split('.')[1]
+	const base64 = token.replace('-', '+').replace('_', '/')
+	var user =  JSON.parse(decodeBase64(base64))
 	for (var name in dmt.entities) {
 		let entity = dmt.entities[name]
 		dmt.api.endpoints.forEach(function (endpoint) {
@@ -151,6 +153,7 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 	/**
 	 * Parse Config File to create the navigation tree
 	 */
+	
 	dmt.config.forEach((section) => {
 		section.pages.forEach((page) => {
 			addPage("/" + section.path, page, section);

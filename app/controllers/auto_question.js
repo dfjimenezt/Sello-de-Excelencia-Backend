@@ -987,7 +987,14 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		return model_usertype.delete(body, { id: body.id })
+		return model_entity_questiontopic.getByParams({id_usertype:body.id}).then((results)=>{
+			if(results.total_results === 0){
+				return model_usertype.delete(body, { id: body.id })
+			}else{
+				throw utiles.informError(400)
+			}
+		})
+		
 	}
 	/**
 	 * @api {delete} api/question/category_questions Delete category_questions information
