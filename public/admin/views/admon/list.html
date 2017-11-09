@@ -58,16 +58,7 @@
                             <span>Apellido</span>
                         </th>
                         <th md-column>
-                            <md-autocomplete md-items="item in ctrl.entities.user.data" 
-                                md-item-text="item.email" md-selected-item="ctrl.user" 
-                                md-search-text-change="ctrl.entities.user.search()"
-                                md-search-text="ctrl.entities.user.query.filter" 
-                                md-select-on-match="true" md-input-name="user" md-autofocus="true"
-                                md-autoselect="true" placeholder="Email">
-                                <md-item-template>
-                                    <span md-highlight-text="ctrl.entities.user.query.filter" md-highlight-flags="^i">{{item.email}}</span>
-                                </md-item-template>
-                            </md-autocomplete>
+                            <span>Email</span>
                         </th>
                         <th md-column>
                             <span>Rol</span>
