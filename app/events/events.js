@@ -650,7 +650,14 @@ var Events = function () {
 			}, tout)
 		})
 	})
-
+	emiter.on('institution.updated',(old,_new)=>{
+		if(old.active === 0 && _new.active === 1){ //activar
+			model_entity_service.update({is_active:1},{id_institution:_new.id})
+		}
+		if(old.active === 1 && _new.active === 0){ //desactivar
+			model_entity_service.update({is_active:0},{id_institution:_new.id})
+		}
+	})
 	emiter.on('about', (_new) => {
 		///RENOVACIÓN
 		//

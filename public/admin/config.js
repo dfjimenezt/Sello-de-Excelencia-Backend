@@ -306,7 +306,7 @@ dmt.config = [
 				]
 			},
 			{
-				name: "Todos",
+				name: "Todos los servicios",
 				path: "todos",
 				entity: "service",
 				controller: "servicesListController",
