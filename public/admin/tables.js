@@ -1690,25 +1690,25 @@ dmt.tables = {
 			{
 				"name": "id_availability",
 				"type": "int",
-				"disabled": true,
+				"disabled": false,
 				"key": false
 			},
 			{
 				"name": "id_city",
 				"type": "int",
-				"disabled": true,
+				"disabled": false,
 				"key": false
 			},
 			{
 				"name": "id_region",
 				"type": "int",
-				"disabled": true,
+				"disabled": false,
 				"key": false
 			},
 			{
 				"name": "id_country",
 				"type": "int",
-				"disabled": true,
+				"disabled": false,
 				"key": false
 			},
 			{
