@@ -84,7 +84,7 @@ module.exports = {
         reject("no receipt")
       }
       to = 'sindy.sarmiento@pidamos.com'
-      cc = null
+      cc = 'jdevia@mintic.gov.co'
       bcc = null
       var transporter = Nodemailer.createTransport(Config.smtp.protocol + '://' + Config.smtp.sender + ':' + Config.smtp.password + '@' + Config.smtp.server)
       var mailOptions = {
