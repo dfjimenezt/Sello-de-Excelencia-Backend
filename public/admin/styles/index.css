@@ -54,3 +54,7 @@ text-angular .ta-bind{
   margin-left: 1%;
   background: #55ffcc;
 }
+
+md-input-container div{
+  overflow: hidden;
+}
