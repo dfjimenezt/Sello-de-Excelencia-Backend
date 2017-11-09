@@ -649,6 +649,7 @@ var configuration_controller = function () {
 		body.password = pass
 		return model_entity_user.create(body).then((user) => {
 			user.role = -1
+			model_entity_user_role.create({id_user:user.id,id_role:3})
 			emiter.emit('user.registered', user , pass_user)
 		})
 	}
