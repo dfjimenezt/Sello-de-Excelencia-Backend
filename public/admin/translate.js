@@ -145,7 +145,7 @@ dmt.translate={
         "admin_status":"Administrar Estados",
         "admin_evaluation_request":"Re-asignar",
         "create_chat":"Iniciar Chat",
-        "admin_platform":"Administrar plataforma",
+        "admin_platform":"Administrar Logos,Banner,Pie de página",
         "create_evaluation_request":"Postularse",
     },
 }

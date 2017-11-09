@@ -198,8 +198,8 @@ dmt.config = [
 		path: "postulaciones",
 		pages: [
 			{
-				name: "Verificación",
-				path: "verificacion",
+				name: "En Validación",
+				path: "validacion",
 				entity: "service",
 				filters:{
 					'current_status':[1]
@@ -225,7 +225,7 @@ dmt.config = [
 				]
 			},
 			{
-				name: "En Evaluación",
+				name: "En Proceso",
 				path: "evaluacion",
 				entity: "service",
 				filters:{
@@ -283,7 +283,7 @@ dmt.config = [
 				path: "no_cumplidos",
 				entity: "service",
 				filters:{
-					'current_status':[11]
+					'current_status':[9]
 				},
 				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
