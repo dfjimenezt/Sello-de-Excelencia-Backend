@@ -130,7 +130,7 @@ dmt.tables = {
 			{
 				"name": "name",
 				"type": "string",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 			{
@@ -666,7 +666,7 @@ dmt.tables = {
 			{
 				"name": "name",
 				"type": "string",
-				"disabled": false,
+				"disabled": true,
 				"key": false
 			},
 			{

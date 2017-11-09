@@ -39,7 +39,7 @@ angular.module('dmt-back').controller('deleteItemController', function ($mdDialo
     $mdDialog.hide();
   }
   function error(err) {
-    ctrl.error = 'Uno o más de los elementos seleccionados no pueden ser eliminados verifique que no estén en uso'
+    $mdDialog.hide();
   }
 
   this.deleteItems = function () {

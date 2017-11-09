@@ -99,8 +99,13 @@ var Routes = function (app) {
                     res.end()
                 }
             }).catch((err2) => {
-                if (err2.error && err2.error.htmlCode) res.status(err2.error.htmlCode).send(err2)
-                else res.send(err2)
+                if (err2.error && err2.error.htmlCode){ 
+                    res.status(err2.error.htmlCode).send(err2)
+                }
+                else {
+                    res.status(400)
+                    res.send(err2)
+                }
             })
         } else res.sendStatus(404)
     }

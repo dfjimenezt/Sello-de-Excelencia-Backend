@@ -277,7 +277,7 @@ var MysqlModel = function (info) {
         queryCondition = queryCondition.slice(0, -4)
         var query0 = 'SELECT * FROM ' + info.table + ' WHERE ' + queryCondition + ''
         var query1 = 'DELETE FROM ' + info.table + ' WHERE ' + queryCondition + ''
-        query1 = "SET FOREIGN_KEY_CHECKS= 0;" + query1 + ";SET FOREIGN_KEY_CHECKS = 1;";
+        query1 = "SET FOREIGN_KEY_CHECKS= 1;" + query1 + ";SET FOREIGN_KEY_CHECKS = 1;";
         let old = null
         resolveQuery(query0, connection).then((results) => {
           emiter.emit(info.table + '.deleted', results[0])
