@@ -897,10 +897,14 @@ var configuration_controller = function () {
 				_institution = results.data[0]
 				return model_entity_institution.getUser(body.id).then((user) => {
 					let email = null
+					let cc = null
 					if(user.length > 0){
 						email = user[0].email
+						cc = _institution.email
+					}else{
+						email = _institution.email
 					}
-					return utiles.sendEmail(email, _institution.email, null, 'Contacto desde Sello de Excelencia', body.message)
+					return utiles.sendEmail(email, cc, null, 'Contacto desde Sello de Excelencia', body.message)
 				})
 			})
 
