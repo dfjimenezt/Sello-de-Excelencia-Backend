@@ -15,6 +15,7 @@ dmt.config = [
 				entity: "config",
 				controller: "detailItemController",
 				templateUrl: "views/logos/detail.html",
+				permission:'admin_platform'
 			},
 			{
 				name: "Banner",
@@ -22,18 +23,21 @@ dmt.config = [
 				entity: "banner",
 				controller: "bannerListController",
 				templateUrl: "views/banner/list.html",
+				permission:'admin_platform',
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "bannerDetailController",
-						templateUrl: "views/banner/detail.html"
+						templateUrl: "views/banner/detail.html",
+						permission:'admin_platform'
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "bannerDetailController",
-						templateUrl: "views/banner/detail.html"
+						templateUrl: "views/banner/detail.html",
+						permission:'admin_platform'
 					}
 				]
 			},
@@ -43,6 +47,7 @@ dmt.config = [
 				entity: "hall_of_fame",
 				controller: 'hallFameController',
 				templateUrl: "views/hall/list.html",
+				permission:'admin_hall'
 			},
 			{
 				name: "Pie de página",
@@ -53,6 +58,7 @@ dmt.config = [
 				entity: "footer",
 				controller: "detailItemController",
 				templateUrl: "views/footer/detail.html",
+				permission:'admin_platform'
 			},
 		]
 	},
@@ -66,18 +72,21 @@ dmt.config = [
 				entity: "institution",
 				controller: "listItemEntityController",
 				templateUrl: "views/entity/list.html",
+				permission:'admin_institution',
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "detailItemEntityController",
-						templateUrl: "views/entity/detail.html"
+						templateUrl: "views/entity/detail.html",
+						permission:'admin_users'
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "detailItemEntityController",
-						templateUrl: "views/entity/detail.html"
+						templateUrl: "views/entity/detail.html",
+						permission:'admin_users'
 					}
 				]
 			},
@@ -87,6 +96,7 @@ dmt.config = [
 				entity: "user",
 				controller: "representantListController",
 				templateUrl: "views/representant/list.html",
+				permission:'admin_users',
 				filters:{
 					'roles.id':[4]
 				},
@@ -95,7 +105,8 @@ dmt.config = [
 						name: "detail",
 						path: "detail/:id",
 						controller: "detailItemRepresentantController",
-						templateUrl: "views/representant/detail.html"
+						templateUrl: "views/representant/detail.html",
+						permission:'admin_users'
 					}
 				]
 			},
@@ -105,6 +116,7 @@ dmt.config = [
 				entity: "user",
 				controller: "evaluatortListController",
 				templateUrl: "views/evaluator/list.html",
+				permission:'admin_users',
 				filters:{
 					'roles.id':[2]
 				},
@@ -113,13 +125,15 @@ dmt.config = [
 						name: "add",
 						path: "add",
 						controller: "evaluatorDetailController",
-						templateUrl: "views/evaluator/detail.html"
+						templateUrl: "views/evaluator/detail.html",
+						permission:'admin_users'
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "evaluatorDetailController",
-						templateUrl: "views/evaluator/detail.html"
+						templateUrl: "views/evaluator/detail.html",
+						permission:'admin_users'
 					}
 				]
 			},
@@ -129,6 +143,7 @@ dmt.config = [
 				entity: "user",
 				controller: "citizenListController",
 				templateUrl: "views/citizen/list.html",
+				permission:'admin_users',
 				filters:{
 					'roles.id':[1]
 				},
@@ -137,13 +152,15 @@ dmt.config = [
 						name: "add",
 						path: "add",
 						controller: "citizenDetailController",
-						templateUrl: "views/citizen/detail.html"
+						templateUrl: "views/citizen/detail.html",
+						permission:'admin_users'
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "citizenDetailController",
-						templateUrl: "views/citizen/detail.html"
+						templateUrl: "views/citizen/detail.html",
+						permission:'admin_users'
 					}
 				]
 			},
@@ -153,6 +170,7 @@ dmt.config = [
 				entity: "user",
 				controller: "admonListController",
 				templateUrl: "views/admon/list.html",
+				permission:'admin_users',
 				filters:{
 					'roles.id':['!= 1','!= 2','!= 4']
 				},
@@ -161,13 +179,15 @@ dmt.config = [
 						name: "add",
 						path: "add",
 						controller: "detailItemUserController",
-						templateUrl: "views/admon/detail.html"
+						templateUrl: "views/admon/detail.html",
+						permission:'admin_users'
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "detailItemUserController",
-						templateUrl: "views/admon/detail.html"
+						templateUrl: "views/admon/detail.html",
+						permission:'admin_users'
 					}
 				]
 			}
@@ -186,18 +206,21 @@ dmt.config = [
 				},
 				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
+				permission:'admin_services',
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "servicesDetailController",
-						templateUrl: "views/service/detail.html"
+						templateUrl: "views/service/detail.html",
+						permission:'admin_services'
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "servicesDetailController",
-						templateUrl: "views/service/detail.html"
+						templateUrl: "views/service/detail.html",
+						permission:'admin_services'
 					}
 				]
 			},
@@ -210,18 +233,21 @@ dmt.config = [
 				},
 				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
+				permission:'admin_services',
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "servicesDetailController",
-						templateUrl: "views/service/detail.html"
+						templateUrl: "views/service/detail.html",
+						permission:'admin_services'
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "servicesDetailController",
-						templateUrl: "views/service/detail.html"
+						templateUrl: "views/service/detail.html",
+						permission:'admin_services'
 					}
 				]
 			},
@@ -234,18 +260,21 @@ dmt.config = [
 				},
 				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
+				permission:'admin_services',
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "servicesDetailController",
-						templateUrl: "views/service/detail.html"
+						templateUrl: "views/service/detail.html",
+						permission:'admin_services'
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "servicesDetailController",
-						templateUrl: "views/service/detail.html"
+						templateUrl: "views/service/detail.html",
+						permission:'admin_services'
 					}
 				]
 			},
@@ -258,18 +287,21 @@ dmt.config = [
 				},
 				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
+				permission:'admin_services',
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "servicesDetailController",
-						templateUrl: "views/service/detail.html"
+						templateUrl: "views/service/detail.html",
+						permission:'admin_services'
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "servicesDetailController",
-						templateUrl: "views/service/detail.html"
+						templateUrl: "views/service/detail.html",
+						permission:'admin_services'
 					}
 				]
 			},
@@ -279,18 +311,21 @@ dmt.config = [
 				entity: "service",
 				controller: "servicesListController",
 				templateUrl: "views/service/all_list.html",
+				permission:'admin_services',
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "servicesDetailController",
-						templateUrl: "views/service/detail.html"
+						templateUrl: "views/service/detail.html",
+						permission:'admin_services'
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "servicesDetailController",
-						templateUrl: "views/service/detail.html"
+						templateUrl: "views/service/detail.html",
+						permission:'admin_services'
 					}
 				]
 			},
@@ -304,6 +339,7 @@ dmt.config = [
 				},
 				controller: "urgentAnswerController",
 				templateUrl: "views/answer/urgent.html",
+				permission:'admin_evaluation_request'
 			}
 		]
 	},
@@ -315,16 +351,19 @@ dmt.config = [
 				name: "Tipos de Evaluador",
 				path: "tipos_evaluador",
 				entity: "usertype",
+				permission:'admin_config'
 			},
 			{
 				name: "Categorías",
 				path: "categorias",
-				entity: "category"
+				entity: "category",
+				permission:'admin_config'
 			},
 			{
 				name: "Temáticas de interés",
 				path: "tematicas_interes",
-				entity: "questiontopic"
+				entity: "questiontopic",
+				permission:'admin_config'
 			},
 			{
 				name: "Requisitos",
@@ -332,30 +371,35 @@ dmt.config = [
 				entity: "question",
 				controller: "questionListController",
 				templateUrl: "views/question/list.html",
+				permission:'admin_questions',
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "questionDetailController",
-						templateUrl: "views/question/detail.html"
+						templateUrl: "views/question/detail.html",
+						permission:'admin_questions'
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "questionDetailController",
-						templateUrl: "views/question/detail.html"
+						templateUrl: "views/question/detail.html",
+						permission:'admin_questions'
 					}
 				]
 			},
 			{
 				name: "Tiempos / Requisito",
 				path: "tiempos_requisito",
-				entity: "request_status"
+				entity: "request_status",
+				permission:'admin_status'
 			},
 			{
 				name: "Tiempos / Servicio",
 				path: "tiempos_servicio",
-				entity: "status"
+				entity: "status",
+				permission:'admin_status'
 			},
 			{
 				name: "Puntaje",
@@ -363,18 +407,21 @@ dmt.config = [
 				entity: "motives",
 				controller: "pointsListController",
 				templateUrl: "views/points/list.html",
+				permission:'admin_motives',
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "pointsDetailController",
-						templateUrl: "views/points/detail.html"
+						templateUrl: "views/points/detail.html",
+						permission:'admin_motives',
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "pointsDetailController",
-						templateUrl: "views/points/detail.html"
+						templateUrl: "views/points/detail.html",
+						permission:'admin_motives',
 					}
 				]
 			},
@@ -384,18 +431,21 @@ dmt.config = [
 				entity: "hangouts",
 				controller: "learnListController",
 				templateUrl: "views/learn/list.html",
+				permission:'admin_hangouts',
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "learnDetailController",
-						templateUrl: "views/learn/detail.html"
+						templateUrl: "views/learn/detail.html",
+						permission:'admin_hangouts',
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "learnDetailController",
-						templateUrl: "views/learn/detail.html"
+						templateUrl: "views/learn/detail.html",
+						permission:'admin_hangouts',
 					}
 				]
 			},
@@ -410,18 +460,21 @@ dmt.config = [
 				entity: "role",
 				controller: "rolesListController",
 				templateUrl: "views/roles/list.html",
+				entity: "category_config",
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "rolesDetailController",
-						templateUrl: "views/roles/detail.html"
+						templateUrl: "views/roles/detail.html",
+						entity: "category_config",
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "rolesDetailController",
-						templateUrl: "views/roles/detail.html"
+						templateUrl: "views/roles/detail.html",
+						entity: "category_config",
 					}
 				]
 			},
