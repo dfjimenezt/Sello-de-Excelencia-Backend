@@ -65,7 +65,7 @@ var User_answer = function () {
 		}
 	]
 	BaseModel.apply(this, params)
-	this.clearMedia = function(id){
+	this.clearMedia = function (id) {
 		let q = `UPDATE user_answer SET id_media = NULL WHERE id= '${id}'`
 		return this.customQuery(q)
 	}
@@ -108,7 +108,26 @@ var User_answer = function () {
 			return { data: list, total_results: total }
 		})
 	}
-	return this
+	this.urgent = function (user, params) {
+		let q = `UPDATE evaluation_request SET id_user = 3 WHERE 
+			id_request_status < 7 AND alert_time < '${new Date().toISOString().substring(0, 10)}'`
+		console.log(q)
+		return this.customQuery(q).then(() => {
+			return this.getAll({
+				filter: params.filter,
+				limit: params.limit,
+				page: params.page,
+				order: params.order,
+				filter_fields: params.filter_field,
+				filter_values: params.filter_value,
+				fields: params.field,
+				simple: params.simple,
+				lang: params.lang,
+				_joins: params._joins
+			})
+		})
+	}
+return this
 };
 util.inherits(User_answer, BaseModel)
 module.exports = User_answer

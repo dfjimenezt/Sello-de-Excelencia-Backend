@@ -190,7 +190,9 @@ angular.module('dmt-back').controller('urgentAnswerController', function ($scope
 					}
 			}
 			str.push("lang=" + ctrl.language);
+			str.push("urgent=true")
 			let filter = str.join("&");
+
 
 			$scope.promise = $http.get(ctrl.entity.endpoint + "?" + filter);
 			$scope.promise.then($scope.getSuccess).catch(function (response) {

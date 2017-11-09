@@ -302,6 +302,9 @@ var question_controller = function () {
 		if (params.postulate) {
 			return model_entity_user_answer.toPostulate(user, params)
 		}
+		if(params.urgent){
+			return model_entity_user_answer.urgent(user,params)
+		}		
 		return _get(model_entity_user_answer, user, params)
 	}
 	/**

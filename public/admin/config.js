@@ -334,8 +334,7 @@ dmt.config = [
 				path: "urgente",
 				entity: "user_answer",
 				filters:{
-					'evaluators.id_request_status':['< 7'],
-					'evaluators.alert_time': ['< '+(new Date().toISOString().substring(0,10))],
+					'evaluators.id_user':['3'],
 				},
 				controller: "urgentAnswerController",
 				templateUrl: "views/answer/urgent.html",
