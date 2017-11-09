@@ -658,6 +658,14 @@ var Events = function () {
 			model_entity_service.update({is_active:0},{id_institution:_new.id})
 		}
 	})
+	emiter.on('user.updated',(old,_new)=>{
+		if(old.active === 1 && _new.active === 0){ //desactivar
+			model_user.getAdmin().then((result) => {
+				_admin = result[0]
+				model_entity_evaluation_request.update({id_user:_admin.id},{id_user:_new.id})
+			})
+		}
+	})
 	emiter.on('about', (_new) => {
 		///RENOVACIÓN
 		//
