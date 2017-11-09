@@ -1714,13 +1714,13 @@ dmt.tables = {
 			{
 				"name": "document",
 				"type": "string",
-				"disabled": true,
+				"disabled": false,
 				"key": false
 			},
 			{
 				"name": "id_type_document",
 				"type": "int",
-				"disabled": true,
+				"disabled": false,
 				"key": false
 			}
 		],
