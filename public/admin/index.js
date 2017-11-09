@@ -156,6 +156,12 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 	
 	dmt.config.forEach((section) => {
 		section.pages.forEach((page) => {
+			//check permission and 
+			if(user.permissions.indexOf(page.permission) == -1){
+				page.authorized = false
+				return
+			}
+			page.authorized = true
 			addPage("/" + section.path, page, section);
 		});
 	});
