@@ -10,6 +10,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	ctrl.currentEntity.relations.forEach(ctrl.service.getEntityData)
 	ctrl.entities = ctrl.service.entities
 	ctrl.options = ctrl.service.options
+	ctrl.entities[ctrl.entity].query.filters.id_role = []
 	ctrl.data = null
 	ctrl.query = null
 	ctrl.promise = null

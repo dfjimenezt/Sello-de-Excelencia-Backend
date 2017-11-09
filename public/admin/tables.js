@@ -445,6 +445,12 @@ dmt.tables = {
 				"type": "text",
 				"disabled": false,
 				"key": false
+			},
+			{
+				"name": "active",
+				"type": "boolean",
+				"disabled": false,
+				"key": false
 			}
 		],
 		"defaultSort": "id"
