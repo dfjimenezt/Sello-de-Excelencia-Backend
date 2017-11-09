@@ -111,7 +111,6 @@ var User_answer = function () {
 	this.urgent = function (user, params) {
 		let q = `UPDATE evaluation_request SET id_user = 3 WHERE 
 			id_request_status < 7 AND alert_time < '${new Date().toISOString().substring(0, 10)}'`
-		console.log(q)
 		return this.customQuery(q).then(() => {
 			return this.getAll({
 				filter: params.filter,
