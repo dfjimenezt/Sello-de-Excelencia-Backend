@@ -156,7 +156,7 @@ function ($scope, $mdDialog, $mdEditDialog, parent, $http, entityService, $route
 			controller: 'answerController',
 			controllerAs: 'ctrl',
 			focusOnOpen: false,
-			targetEvent: event,
+			targetEvent: null,
 			templateUrl: 'views/answer/detail.html',
 			locals: {
 				answer:answer,

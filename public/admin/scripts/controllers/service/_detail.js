@@ -84,7 +84,7 @@ angular.module('dmt-back').controller('detailItemServiceController', function ($
 			controller: 'answerController',
 			controllerAs: 'ctrl',
 			focusOnOpen: false,
-			targetEvent: event,
+			targetEvent: null,
 			templateUrl: 'views/answer/detail.html',
 			locals: {
 				answer:answer,
