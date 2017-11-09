@@ -452,7 +452,8 @@ dmt.config = [
 			{
 				name: "Preguntas Ciudadano",
 				path: "preguntas",
-				entity: "category_questions"
+				entity: "category_questions",
+				permission:'admin_questions',
 			},
 			{
 				name: "Perfiles",
@@ -478,6 +479,7 @@ dmt.config = [
 					}
 				]
 			},
+			
 		]
 	}
 ]
