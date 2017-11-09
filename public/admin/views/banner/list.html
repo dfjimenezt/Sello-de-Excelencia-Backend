@@ -50,7 +50,7 @@
                 <tr md-row>
                     <th md-column 
                         ng-repeat="f in ctrl.currentEntity.fields" 
-                        ng-if="f.name !== 'id'">
+                        ng-if="f.name !== 'id' && f.name!=='text'">
                         <span ng-if="f.type !== 'link' && f.type!=='file'">{{f.name | translate:'es'}}</span>
                         <md-select ng-if="f.type == 'link'" multiple="true" ng-model="ctrl.entities[ctrl.entity].query.filters[f.name]" placeholder="{{f.name | translate:'es'}}"
                             ng-change="ctrl.update()">
@@ -61,7 +61,7 @@
             </thead>
             <tbody md-body>
                 <tr md-row md-select="item" md-select-id="name" md-auto-select ng-repeat="item in ctrl.data" >
-                    <td md-cell ng-repeat="f in ctrl.currentEntity.fields" ng-if="f.name !== 'id'" ng-click="ctrl.details(item)">
+                    <td md-cell ng-repeat="f in ctrl.currentEntity.fields" ng-if="f.name !== 'id' && f.name!=='text'" ng-click="ctrl.details(item)">
                         <md-checkbox ng-model="item[f.name]" ng-if="f.type === 'boolean' && f.type !=='file' && f.type !=='link'" ng-disabled="true"></md-checkbox>
                         <span ng-if="f.type === 'link' && f.type !=='datetime'  && f.type !=='file' && f.type !=='boolean'">{{ ctrl.options[f.name] | linkvalue:f:item }}</span>
                         <span ng-if="f.type !=='link' && f.type !=='datetime' && f.type !=='file'  && f.type !=='boolean'">{{item[f.name] | limitTo:150}}</span>
