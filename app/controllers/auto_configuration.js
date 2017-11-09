@@ -896,8 +896,11 @@ var configuration_controller = function () {
 			model_entity_institution.getByUid('' + body.id).then((results) => {
 				_institution = results.data[0]
 				return model_entity_institution.getUser(body.id).then((user) => {
-					user = user[0]
-					return utiles.sendEmail(user.email, _institution.email, null, 'Contacto desde Sello de Excelencia', body.message)
+					let email = null
+					if(user.length > 0){
+						email = user[0].email
+					}
+					return utiles.sendEmail(email, _institution.email, null, 'Contacto desde Sello de Excelencia', body.message)
 				})
 			})
 
