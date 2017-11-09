@@ -78,7 +78,7 @@ var Events = function () {
 					<p>Requisito: ${_question ? _question.text : ''}</p>
 					<p>Entidad: ${_institution ? _institution.name : ''}</p>
 					<p>Nombre del Producto o Servicio: ${_service ? _service.name : ''}</p>
-					<p>Por favor valide que el requisito cumpla con las espicificaciones de la evidencia.</p>
+					<p>Por favor valide que el requisito cumpla con las especificaciones de la evidencia.</p>
 					<p>Para Subsanar por favor ingrese a la plataforma del Sello de Excelencia Gobierno Digital Colombia,
 					ingrese a <b>Postular</b> y Seleccione el Producto o Servicio en la sección <b>Continuar con una postulación anterior</b></p>
 					<p>Nuestros mejores deseos,<\p>
