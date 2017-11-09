@@ -460,21 +460,21 @@ dmt.config = [
 				entity: "role",
 				controller: "rolesListController",
 				templateUrl: "views/roles/list.html",
-				entity: "category_config",
+				permission:'admin_config',
 				pages: [
 					{
 						name: "add",
 						path: "add",
 						controller: "rolesDetailController",
 						templateUrl: "views/roles/detail.html",
-						entity: "category_config",
+						permission:'admin_config',
 					},
 					{
 						name: "detail",
 						path: "detail/:id",
 						controller: "rolesDetailController",
 						templateUrl: "views/roles/detail.html",
-						entity: "category_config",
+						permission:'admin_config',
 					}
 				]
 			},
