@@ -335,6 +335,7 @@ dmt.config = [
 				entity: "user_answer",
 				filters:{
 					'evaluators.id_user':['3'],
+					'evaluators.id_request_status':['< 7'],
 				},
 				controller: "urgentAnswerController",
 				templateUrl: "views/answer/urgent.html",
