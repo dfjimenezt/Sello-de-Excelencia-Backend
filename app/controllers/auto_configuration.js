@@ -894,7 +894,7 @@ var configuration_controller = function () {
 			let model_entity_institution = new institution();
 			let _institution = null
 			model_entity_institution.getByUid('' + body.id).then((results) => {
-				_institution = results[0]
+				_institution = results.data[0]
 				return model_entity_institution.getUser(body.id).then((user) => {
 					user = user[0]
 					return utiles.sendEmail(user.email, _institution.email, null, 'Contacto desde Sello de Excelencia', body.message)
