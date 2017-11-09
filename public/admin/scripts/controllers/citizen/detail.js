@@ -22,7 +22,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 		ctrl.tab = tab
 	}
 
-	ctrl.sendMessage = function(){
+	ctrl.sendMessage = function(event){
 		$mdDialog.show({
 			clickOutsideToClose: true,
 			controller: 'sendMessageController',

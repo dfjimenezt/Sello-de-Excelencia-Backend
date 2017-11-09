@@ -418,7 +418,7 @@ angular.module('dmt-back').controller('detailItemUserController', function ($mdD
 		window.location.href = "/admin/login";
 	}
 
-	this.sendMessage = function(){
+	this.sendMessage = function(event){
 		$mdDialog.show({
 			clickOutsideToClose: true,
 			controller: entity.delete ? entity.delete.controller || 'sendMessageController' : 'sendMessageController',
