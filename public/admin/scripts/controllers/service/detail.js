@@ -102,7 +102,9 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	};
 	ctrl.saveItem = function($event){
 		ctrl.loading = true
-		ctrl.service.save(ctrl.data,$event).then(()=>{
+		var data = JSON.parse(JSON.stringify(ctrl.data))
+		delete data.current_status
+		ctrl.service.save(data,$event).then(()=>{
 			ctrl.loading = false
 			$mdDialog.show($mdDialog.alert()
 			.parent(angular.element(document.body))
