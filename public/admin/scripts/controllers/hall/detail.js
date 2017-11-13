@@ -35,7 +35,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 		ctrl.promise.then(()=>{
 			ctrl.data = ctrl.entities[ctrl.entity].data
 			ctrl.data.forEach((item)=>{
-				item.date = new Date(item.date.toISOString().split('T')[0])
+				//item.date = new Date(item.date.toISOString().split('T')[0])
 			})
 		})
 	}

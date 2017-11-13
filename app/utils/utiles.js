@@ -114,11 +114,15 @@ module.exports = {
       let row = []
       let titles = []
       for(let i in item){
+        if(i.indexOf('id_') == 0){
+          continue
+        }
         titles.push(i)
         if(typeof item[i] === 'object'){
-          row.push(JSON.stringify(item[i]))
+          let val = item[i].name || item[i].text || item[i].description || ''
+          row.push(val)
         }else{
-          row.push(item[i])
+          row.push(item[i] || '')
         }
       }
       if(d.length==0){

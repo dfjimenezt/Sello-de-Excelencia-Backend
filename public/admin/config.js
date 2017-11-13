@@ -396,6 +396,7 @@ dmt.config = [
 				path: "tiempos_requisito",
 				entity: "request_status",
 				permission:'admin_status',
+				templateUrl: "views/status/list.html",
 				readOnly:true
 			},
 			{
@@ -403,6 +404,7 @@ dmt.config = [
 				path: "tiempos_servicio",
 				entity: "status",
 				permission:'admin_status',
+				templateUrl: "views/status/list.html",
 				readOnly:true
 			},
 			{
