@@ -94,6 +94,7 @@ var User_answer = function () {
 			${params['topic.id'] ? 'qt.id = ' + params['topic.id'] + ' AND ' : ''}
 			${params['level'] ? 'q.level = ' + params['level'] + ' AND ' : ''}
 			u_a.id_topic IN (${topics.join(',')}) AND
+			u_a.id_status = '${CONSTANTS.EVALUATION_REQUEST.ASIGNADO}'
 			u_a.id NOT IN (SELECT id_answer FROM evaluation_request WHERE id_user = '${user.id}')
 			ORDER BY u_a.${params.order}
 		)

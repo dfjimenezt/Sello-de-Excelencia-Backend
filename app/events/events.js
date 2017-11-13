@@ -496,7 +496,7 @@ var Events = function () {
 								data
 							)
 						})
-						model_entity_user_answer.update({ id_status: CONSTANTS.SERVICE.EVALUACION }, { id_service: _new.id })
+						model_entity_user_answer.update({ id_status: CONSTANTS.EVALUATION_REQUEST.ASIGNADO }, { id_service: _new.id })
 						model_entity_institution.getUser(old.id_institution).then((result) => {
 							let user = result[0]
 							utiles.sendEmail(user.email, null, null,
