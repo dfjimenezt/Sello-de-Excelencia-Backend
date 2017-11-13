@@ -10,8 +10,10 @@
 		"password": "qazwsxedc123",
 		"host": "8.35.192.8",
 		"database": "stamp",
+		"dateStrings":true,
 		"options": {
-			"encrypt": true
+			"encrypt": true,
+			"dateStrings":true
 		}
 	},
 	"db_development": {
@@ -19,8 +21,10 @@
 		"password": "qazwsxedc123",
 		"host": "8.35.192.8",
 		"database": "stamp_test",
+		"dateStrings":true,
 		"options": {
-			"encrypt": true
+			"encrypt": true,
+			"dateStrings":true
 		}
 	},
 	"db_local": {
@@ -28,8 +32,10 @@
 		"password": "Qazwsx123$",
 		"host": "localhost",
 		"database": "stamp",
+		"dateStrings":true,
 		"options": {
-			"encrypt": true
+			"encrypt": true,
+			"dateStrings":true
 		}
 	},
 	"smtp":{

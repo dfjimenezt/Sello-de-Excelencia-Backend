@@ -29,7 +29,7 @@ dmt.config = [
 				entity: "config",
 				controller: "detailItemController",
 				templateUrl: "views/logos/detail.html",
-				permission:'admin_platform'
+				permission:'admin_config'
 			},
 			{
 				name: "Banner",
@@ -498,7 +498,30 @@ dmt.config = [
 					}
 				]
 			},
-			
+			{
+				name: "Ciudades",
+				path: "ciudades",
+				entity: "city",
+				permission:'admin_cities_regions',
+			},
+			{
+				name: "Regiones",
+				path: "regiones",
+				entity: "region",
+				permission:'admin_cities_regions',
+			},
+			{
+				name: "Paises",
+				path: "paises",
+				entity: "country",
+				permission:'admin_cities_regions',
+			},
+			{
+				name: "Tipos de Documento",
+				path: "tipos_documento",
+				entity: "type_document",
+				permission:'admin_type_document',
+			},
 		]
 	}
 ]

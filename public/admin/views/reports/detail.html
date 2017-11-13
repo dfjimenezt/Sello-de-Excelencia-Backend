@@ -3,28 +3,28 @@
     <md-card-content>
       <h2>Hall de la fama</h2>
       <p>Seleccione la fecha del reporte</p>
-      <md-datepicker ng-model="ctrl.date_from" ng-change="ctrl.updateDates()"></md-datepicker>
+      <md-datepicker ng-model="ctrl.date_hall" ng-change="ctrl.updateDates()"></md-datepicker>
     </md-card-content>
     <md-card-actions layout="row" layout-align="end center">
-      <md-button>Descargar</md-button>
+      <md-button class="md-raised md-primary" ng-click="ctrl.downloadHall()">Descargar</md-button>
     </md-card-actions>
   </md-card>
   <md-card  flex="45">
     <md-card-content>
       <h2>Informe de estado de requisitos por postulación</h2>
-      <p>Seleccione la fecha del reporte</p>
+      <p>Seleccione el Producto o Servicio</p>
 
-      <md-autocomplete md-items="item in ctrl.entities.institution.data" md-item-text="item.name " md-selected-item="ctrl.institution"
-        md-selected-item-change="ctrl.selectedInstitution(item)" md-search-text-change="ctrl.entities.institution.search()"
-        md-search-text="ctrl.entities.institution.query.filter" md-select-on-match="true" md-input-name="institution" md-autofocus="true"
-        md-autoselect="true" placeholder="Entidad">
+      <md-autocomplete md-items="item in ctrl.service.entities.service.data" md-item-text="item.name " md-selected-item="ctrl._service"
+        md-selected-item-change="ctrl.selectedService(item)" md-search-text-change="ctrl.service.entities.service.search()"
+        md-search-text="ctrl.service.entities.service.query.filter" md-select-on-match="true" md-input-name="service" md-autofocus="true"
+        md-autoselect="true" placeholder="Servicio o Producto">
         <md-item-template>
-          <span md-highlight-text="ctrl.entities.institution.query.filter" md-highlight-flags="^i">{{item.name}}</span>
+          <span md-highlight-text="ctrl.service.entities.service.query.filter" md-highlight-flags="^i">{{item.name}}</span>
         </md-item-template>
       </md-autocomplete>
     </md-card-content>
     <md-card-actions layout="row" layout-align="end center">
-      <md-button>Descargar</md-button>
+      <md-button ng-click="ctrl.downloadServiceReport()" class="md-primary md-raised">Descargar</md-button>
     </md-card-actions>
   </md-card>
   <md-card flex="45">
@@ -32,12 +32,12 @@
         <h2>Informe de tiempos de atención por cada estado</h2>
         <p>Seleccione la fecha del reporte</p>
   
-        <md-autocomplete md-items="item in ctrl.entities.institution.data" md-item-text="item.name " md-selected-item="ctrl.institution"
-          md-selected-item-change="ctrl.selectedInstitution(item)" md-search-text-change="ctrl.entities.institution.search()"
-          md-search-text="ctrl.entities.institution.query.filter" md-select-on-match="true" md-input-name="institution" md-autofocus="true"
+        <md-autocomplete md-items="item in ctrl.service.entities.institution.data" md-item-text="item.name " md-selected-item="ctrl.institution"
+          md-selected-item-change="ctrl.selectedInstitution(item)" md-search-text-change="ctrl.service.entities.institution.search()"
+          md-search-text="ctrl.service.entities.institution.query.filter" md-select-on-match="true" md-input-name="institution" md-autofocus="true"
           md-autoselect="true" placeholder="Entidad">
           <md-item-template>
-            <span md-highlight-text="ctrl.entities.institution.query.filter" md-highlight-flags="^i">{{item.name}}</span>
+            <span md-highlight-text="ctrl.service.entities.institution.query.filter" md-highlight-flags="^i">{{item.name}}</span>
           </md-item-template>
         </md-autocomplete>
       </md-card-content>
@@ -50,12 +50,12 @@
           <h2>Informe de sellos otorgados</h2>
           <p>Seleccione la fecha del reporte</p>
     
-          <md-autocomplete md-items="item in ctrl.entities.institution.data" md-item-text="item.name " md-selected-item="ctrl.institution"
-            md-selected-item-change="ctrl.selectedInstitution(item)" md-search-text-change="ctrl.entities.institution.search()"
-            md-search-text="ctrl.entities.institution.query.filter" md-select-on-match="true" md-input-name="institution" md-autofocus="true"
+          <md-autocomplete md-items="item in ctrl.service.entities.institution.data" md-item-text="item.name " md-selected-item="ctrl.institution"
+            md-selected-item-change="ctrl.selectedInstitution(item)" md-search-text-change="ctrl.service.entities.institution.search()"
+            md-search-text="ctrl.service.entities.institution.query.filter" md-select-on-match="true" md-input-name="institution" md-autofocus="true"
             md-autoselect="true" placeholder="Entidad">
             <md-item-template>
-              <span md-highlight-text="ctrl.entities.institution.query.filter" md-highlight-flags="^i">{{item.name}}</span>
+              <span md-highlight-text="ctrl.service.entities.institution.query.filter" md-highlight-flags="^i">{{item.name}}</span>
             </md-item-template>
           </md-autocomplete>
         </md-card-content>

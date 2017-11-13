@@ -128,6 +128,68 @@ var User_answer = function () {
 			})
 		})
 	}
+	this.getStatsByService = function(service){
+		let q = `SELECT s.name service,q.id id,q.text requisite,
+			c.name category,
+			q.level level,
+			e_r.id_request_status status,
+			IFNULL(e_r.branch,0) branch
+			 FROM user_answer u_a 
+			JOIN service s on u_a.id_service = s.id 
+			JOIN evaluation_request e_r on e_r.id_answer = u_a.id
+			JOIN question q on u_a.id_question = q.id
+			JOIN category c on s.id_category = c.id 
+			WHERE u_a.id_service = ${service}`
+		return this.customQuery(q).then((results)=>{
+			let _final = []
+			let _requisites = {}
+			results.forEach((item)=>{
+				if(!_requisites[item.id]){
+					_requisites[item.id] = {
+						'Servicio':item.service,
+						'Requisito':item.requisite,
+						'Categoría':item.category,
+						'Nivel':item.level,
+						'Evaluaciones':0,
+						'Verificado':0,
+						'No Verificado':0,
+						'Aceptado':0,
+						'Rechazado':0,
+						'Retroalimentación':0,
+						'Cumple':0,
+						'No Cumple':0,
+					}
+				}
+				if(item.status === CONSTANTS.EVALUATION_REQUEST.POR_ASIGNAR){
+					_requisites[item.id].Verificado++
+				}
+				if(item.status === CONSTANTS.EVALUATION_REQUEST.ERROR){
+					_requisites[item.id]['No Verificado']++
+				}
+				if(item.status === CONSTANTS.EVALUATION_REQUEST.ACEPTADO){
+					_requisites[item.id].Aceptado++
+					_requisites[item.id].Evaluaciones++
+				}
+				item.Rechazado = item.branch
+				if(item.status === CONSTANTS.EVALUATION_REQUEST.RETROALIMENTACION){
+					_requisites[item.id].Aceptado++
+					_requisites[item.id].Evaluaciones++
+				}
+				if(item.status === CONSTANTS.EVALUATION_REQUEST.CUMPLE){
+					_requisites[item.id].Cumple++
+					_requisites[item.id].Evaluaciones++
+				}
+				if(item.status === CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE){
+					_requisites[item.id]['No Cumple']++
+					_requisites[item.id].Evaluaciones++
+				}
+			})
+			for(let i in _requisites){
+				_final.push(_requisites[i])
+			}
+			return {data:_final}
+		})
+	}
 return this
 };
 util.inherits(User_answer, BaseModel)

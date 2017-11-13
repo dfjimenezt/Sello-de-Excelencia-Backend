@@ -5,12 +5,6 @@ angular.module('dmt-back')
 			ctrl.currentEntity = null
 			ctrl.language = null
 			ctrl.key = key
-			if (typeof entity === 'string') {
-				ctrl.currentEntity = dmt.entities[entity]
-			} else {
-				ctrl.currentEntity = entity
-			}
-			ctrl.currentEntity.relations = ctrl.currentEntity.relations || []
 			ctrl.entities = {}
 			ctrl.options = {}
 			function initRelation(relation, list, scope) {
@@ -34,26 +28,37 @@ angular.module('dmt-back')
 					search: function () { return scope.search(relation) }
 				}
 			}
-			initRelation({ entity: ctrl.currentEntity.name }, ctrl.entities, ctrl)
-			ctrl.currentEntity.relations.forEach((relation) => {
-				initRelation(relation, ctrl.entities, ctrl)
-				if (relation.intermediate) {
-					initRelation(relation.intermediate.entity, ctrl.entities, ctrl)
-				}
-			})
-			if(ctrl.key){
-				ctrl.entities[ctrl.currentEntity.name].query.filters = filters || {}
-				ctrl.entities[ctrl.currentEntity.name].query.filters[ctrl.currentEntity.defaultSort] = [key]
+
+			if (typeof entity === 'string') {
+				ctrl.currentEntity = dmt.entities[entity]
+			} else {
+				ctrl.currentEntity = entity
 			}
-			if (filters) {
-				ctrl.entities[ctrl.currentEntity.name].query.filters = filters
-				for (var i in filters) {
-					if (i === ctrl.currentEntity.defaultSort) {
-						ctrl.key = filters[i][0]
+			
+			
+			if(ctrl.currentEntity){
+				ctrl.currentEntity.relations = ctrl.currentEntity.relations || []
+				initRelation({ entity: ctrl.currentEntity.name }, ctrl.entities, ctrl)
+				ctrl.currentEntity.relations.forEach((relation) => {
+					initRelation(relation, ctrl.entities, ctrl)
+					if (relation.intermediate) {
+						initRelation(relation.intermediate.entity, ctrl.entities, ctrl)
+					}
+				})
+				if(ctrl.key){
+					ctrl.entities[ctrl.currentEntity.name].query.filters = filters || {}
+					ctrl.entities[ctrl.currentEntity.name].query.filters[ctrl.currentEntity.defaultSort] = [key]
+				}
+				if (filters) {
+					ctrl.entities[ctrl.currentEntity.name].query.filters = filters
+					for (var i in filters) {
+						if (i === ctrl.currentEntity.defaultSort) {
+							ctrl.key = filters[i][0]
+						}
 					}
 				}
 			}
-
+			
 			ctrl.data = {}
 
 			function removeItems(item, index) {
@@ -322,6 +327,22 @@ angular.module('dmt-back')
 			
 			ctrl.download = function () {
 				return ctrl.entities[ctrl.currentEntity.name].download()
+			}
+			ctrl.downloadUrl = function(url){
+				var deferred = $q.defer()
+				var request = new XMLHttpRequest();
+				request.open("GET", url);
+				request.setRequestHeader("Authorization", localStorage.getItem("token"))
+				request.responseType = "blob";
+				request.onload = function () {
+					if (request.status === 200) {
+						deferred.resolve(request.response)
+					} else {
+						deferred.reject(request.response)
+					}
+				}
+				request.send()
+				return deferred.promise;
 			}
 			return ctrl
 		}

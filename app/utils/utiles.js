@@ -123,7 +123,11 @@ module.exports = {
           let val = item[i] ? item[i].name || item[i].text || item[i].description || '' : ''
           row.push(val)
         }else{
-          row.push(item[i] || '')
+          if(item[i] === 0){
+            row.push(0)
+          }else{
+            row.push(item[i] || '')
+          }
         }
       }
       if(d.length==0){
