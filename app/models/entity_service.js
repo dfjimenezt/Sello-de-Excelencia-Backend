@@ -249,7 +249,7 @@ var Service = function () {
 		let query = `SELECT s.id FROM service s
 		JOIN service_status ss ON  (
 			ss.id_service = s.id AND
-			ss.id_status = 8 AND ss.valid_to > '${now}'
+			ss.id_status = '${CONSTANTS.SERVICE.CUMPLE}' AND ss.valid_to > '${now}'
 			${_filters['certification'] ? 'AND DATE(ss.timestamp) =  \''+_filters['certification'][0] +'\' AND ss.id_status = '+CONSTANTS.SERVICE.CUMPLE :''}
 		)
 		JOIN institution i on s.id_institution = i.id

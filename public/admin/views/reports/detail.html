@@ -1,0 +1,28 @@
+<div layout="column" layout-align="center center" flex>
+  <md-card>
+    <md-card-content>
+      <h2>Hall de la fama</h2>
+      <p>Seleccione la fecha del reporte</p>
+      <div>
+          <label>Desde:</label>
+          <md-datepicker ng-model="ctrl.date_from" ng-change="ctrl.updateDates()"></md-datepicker>
+      </div>
+    </md-card-content>
+    <md-card-actions layout="row" layout-align="end center">
+      <md-button>Descargar</md-button>
+    </md-card-actions>
+  </md-card>
+  <md-card>
+      <md-card-content>
+        <h2>Informe de estado de requisitos por postulación</h2>
+        <p>Seleccione la fecha del reporte</p>
+        <div>
+            <label>Desde:</label>
+            <md-datepicker ng-model="ctrl.date_from" ng-change="ctrl.updateDates()"></md-datepicker>
+        </div>
+      </md-card-content>
+      <md-card-actions layout="row" layout-align="end center">
+        <md-button>Descargar</md-button>
+      </md-card-actions>
+    </md-card>
+</div>
