@@ -94,6 +94,8 @@ dmt.translate={
         "user":"Usuarios",
         "role":"Roles",
         "city":"Ciudad",
+        "region":"Region",
+        "country":"País",
         "question":"Pregunta",
         "permission":"Permiso",
         "session":"Sesión",
@@ -148,4 +150,8 @@ dmt.translate={
         "admin_platform":"Administrar Logos,Banner,Pie de página",
         "create_evaluation_request":"Postularse",
     },
+}
+try {
+	module.exports = dmt;
+} catch (e) {
 }

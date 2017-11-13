@@ -109,6 +109,7 @@ module.exports = {
   },
   writeExcelFile: function(data){
     //data = [['titulo','nombre','xx'],['hola','nombre','si']]
+    let dmt = require('../../public/admin/translate.js');
     var d = []
     data.forEach(function(item){
       let row = []
@@ -117,9 +118,9 @@ module.exports = {
         if(i.indexOf('id_') == 0){
           continue
         }
-        titles.push(i)
+        titles.push(dmt.translate.es[i] || i)
         if(typeof item[i] === 'object'){
-          let val = item[i].name || item[i].text || item[i].description || ''
+          let val = item[i] ? item[i].name || item[i].text || item[i].description || '' : ''
           row.push(val)
         }else{
           row.push(item[i] || '')
