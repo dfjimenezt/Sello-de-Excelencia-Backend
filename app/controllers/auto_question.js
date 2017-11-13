@@ -101,7 +101,17 @@ var question_controller = function () {
 	 * }
 	*/
 	var get_entity_question = function (user, params) {
-		
+		if(!user.permissions || user.permissions.indexOf('admin_questions') == -1){
+			if(!params.filter_field){
+				params.filter_field = []
+				params.filter_value = []
+			}else if(typeof params.filter_field === 'string'){
+				params.filter_field = [params.filter_field]
+				params.filter_value = [params.filter_value]
+			}
+			params.filter_field.push('active')
+			params.filter_value.push('1')
+		}
 		return _get(model_entity_question, user, params)
 	}
 	/**

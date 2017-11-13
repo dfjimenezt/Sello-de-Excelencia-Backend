@@ -4,6 +4,19 @@ if (!dmt) {
 let date = new Date()
 dmt.config = [
 	{
+		section: "Reportes",
+		path: "reoportes",
+		pages:[
+			{
+				name:"Logos",
+				path: "logos",
+				controller: "reportsController",
+				templateUrl: "views/reports/detail.html",
+				permission:'admin_platform'
+			}
+		]
+	},
+	{
 		section: "General",
 		path: "general",
 		pages:[
