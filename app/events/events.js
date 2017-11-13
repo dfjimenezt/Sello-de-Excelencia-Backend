@@ -18,6 +18,7 @@ var Events = function () {
 	let model_status = new (require('../models/status.js'))()
 	let model_category = new (require('../models/category.js'))()
 	let model_entity_question = new (require('../models/entity_question.js'))()
+	let model_usertype = new (require('../models/usertype.js'))()
 
 	emiter.on('video.view', (user, id_hangout) => {
 		return model_entity_motives.getAll({ limit: 5000 }).then((results) => {
@@ -206,7 +207,7 @@ var Events = function () {
 								<p>Entidad: ${_service.institution.name}</p>
 								<p>Nombre del Producto o Servicio: ${_service.name}</p>
 								<p>Ha sido asignado al administrador del sistema</p>`)
-							model_entity_evaluation_request.update({ id: _new.id, id_user: _admin.id, id_request_status:3 }, { id: _new.id })
+							model_entity_evaluation_request.update({ id: _new.id, id_user: _admin.id, id_request_status:CONSTANTS.EVALUATION_REQUEST.ASIGNADO }, { id: _new.id })
 						} else {
 							// add rejection without trigger update event
 							model_entity_evaluation_request.addRejection(_new.id)
@@ -651,18 +652,76 @@ var Events = function () {
 		})
 	})
 	emiter.on('institution.updated',(old,_new)=>{
-		if(old.active === 0 && _new.active === 1){ //activar
+		if(old.active === 0 && _new.active === 1){ //Activate
 			model_entity_service.update({is_active:1},{id_institution:_new.id})
 		}
-		if(old.active === 1 && _new.active === 0){ //desactivar
+		if(old.active === 1 && _new.active === 0){ //De_activate
 			model_entity_service.update({is_active:0},{id_institution:_new.id})
 		}
 	})
 	emiter.on('user.updated',(old,_new)=>{
-		if(old.active === 1 && _new.active === 0){ //desactivar
+		if(old.active === 1 && _new.active === 0){ //De_activate
 			model_user.getAdmin().then((result) => {
 				_admin = result[0]
 				model_entity_evaluation_request.update({id_user:_admin.id},{id_user:_new.id})
+			})
+		}
+	})
+	emiter.on('usertype.updated',(old,_new)=>{
+		if(old.active === 1 && _new.active === 0){ //De_activate
+			model_entity_questiontopic.getByParams({id_usertype:_new.id})
+			.then((results)=>{
+				results.data.forEach((questiontopic)=>{
+					model_entity_questiontopic.update({active:0},{id:questiontopic.id})
+				})
+			})
+		}
+	})
+	emiter.on('questiontopic.updated',(old,_new)=>{
+		if(old.active === 1 && _new.active === 0){ //desactivar
+			/**
+			 * De_activate all requisites /questions
+			 */
+			model_entity_question.update({active:0},{id_topic:_new.id})
+			/**
+			 * Check if the category should be deactivated
+			 */
+			model_entity_questiontopic.getByParams({id_category:_new.id_category})
+			.then((results)=>{
+				var deactivate = true
+				results.data.forEach((topic)=>{
+					if(topic.active === 1){
+						deactivate = false
+					}
+				})
+				if(deactivate){
+					model_category.update({active:0},{id:_new.id_category})
+				}
+			})
+			/**
+			 * Check if the usertype should be deactivated
+			 */
+			model_entity_questiontopic.getByParams({id_usertype:_new.id_usertype})
+			.then((results)=>{
+				var deactivate = true
+				results.data.forEach((topic)=>{
+					if(topic.active === 1){
+						deactivate = false
+					}
+				})
+				if(deactivate){
+					model_usertype.update({active:0},{id:_new.id_category})
+				}
+			})
+		}
+	})
+	emiter.on('category.updated',(old,_new)=>{
+		if(old.active === 1 && _new.active === 0){ //De_activate
+			model_entity_questiontopic.getByParams({id_category:_new.id_category})
+			.then((results)=>{
+				results.data.forEach((topic)=>{
+					model_entity_questiontopic.upate({active:0},{id:topic.id})
+				})
 			})
 		}
 	})

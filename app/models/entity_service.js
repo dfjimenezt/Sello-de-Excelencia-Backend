@@ -6,6 +6,7 @@
 var BaseModel = require('../utils/model.js')
 var util = require('util')
 let emiter = require('../events/emiter.js').instance
+let CONSTANTS = require('../events/constants.js')
 var Service = function () {
 	var params = [{
 		"table": "service",
@@ -71,7 +72,8 @@ var Service = function () {
 			WHERE id IN (${keys.join(',')}) ORDER BY id desc
 			LIMIT 0,5000;
 			SELECT FOUND_ROWS() as total;
-			SELECT * FROM view_service_status WHERE id_service IN (${keys.join(',')}) AND id_status = 8 ORDER BY timestamp desc;`	
+			SELECT * FROM view_service_status WHERE id_service IN (${keys.join(',')}) 
+			AND id_status = ${CONSTANTS.SERVICE.CUMPLE} ORDER BY timestamp desc;`	
 			return this.customQuery(query)
 		}).then((result)=>{
 			let data = result[0]
@@ -100,7 +102,7 @@ var Service = function () {
 		let q = `SELECT u.id from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
 		return this.customQuery(q).then((_admin)=>{
 			_admin = _admin[0]
-			let q = `SELECT * from request_status WHERE id = 3`
+			let q = `SELECT * from request_status WHERE id = '${CONSTANTS.EVALUATION_REQUEST.ASIGNADO}'`
 			return this.customQuery(q).
 				then((_status) => {
 					_status = _status[0]
@@ -158,7 +160,7 @@ var Service = function () {
 										id_user: _admin.id,
 										id_answer: answer,
 										id_service: service.id,
-										id_request_status: 3,
+										id_request_status: CONSTANTS.EVALUATION_REQUEST.ASIGNADO,
 										id_question: _couples[answer][0].id_question,
 										alert_time:atime.toISOString().split('T')[0],
 										end_time:ftime.toISOString().split('T')[0]
@@ -173,7 +175,7 @@ var Service = function () {
 									id_user: data.id_user,
 									id_answer: answer,
 									id_service: service.id,
-									id_request_status: 3,
+									id_request_status: CONSTANTS.EVALUATION_REQUEST.ASIGNADO,
 									id_question: data.id_question,
 									alert_time:atime.toISOString().split('T')[0],
 									end_time:ftime.toISOString().split('T')[0]
@@ -205,7 +207,7 @@ var Service = function () {
 				emiter.emit('evaluation_request.updated',request,request)
 				return
 			}
-			let q = `UPDATE evaluation_request SET id_user = ${_users[0].id_user}, id_request_status='3' WHERE id='${request.id}'`
+			let q = `UPDATE evaluation_request SET id_user = ${_users[0].id_user}, id_request_status='${CONSTANTS.EVALUATION_REQUEST.ASIGNADO}' WHERE id='${request.id}'`
 			emiter.emit('evaluation_request.asignation',{id_user:_users[0].id_user})
 			return this.customQuery(q)
 		})
@@ -216,7 +218,7 @@ var Service = function () {
 		DELETE FROM service_comment WHERE id_service = '${id}';
 		DELETE FROM service_comment WHERE id_service = '${id}';
 		DELETE FROM user_answer WHERE id_service = '${id}';
-		DELETE chats FROM chats JOIN evaluation_request on chats.id_evaluation_request = evaluation_request.id WHERE evaluation_request.id_service = ${id};
+		DELETE chats FROM chats JOIN evaluation_request ON chats.id_evaluation_request = evaluation_request.id WHERE evaluation_request.id_service = ${id};
 		DELETE FROM evaluation_request WHERE id_service = '${id}';
 		DELETE FROM service WHERE id = ${id};
 		SET FOREIGN_KEY_CHECKS = 1;
@@ -242,7 +244,7 @@ var Service = function () {
 		JOIN service_status ss ON  (
 			ss.id_service = s.id AND
 			ss.id_status = 8 AND ss.valid_to > '${now}'
-			${_filters['certification'] ? 'AND DATE(ss.timestamp) =  \''+_filters['certification'][0] +'\' AND ss.id_status = 8' :''}
+			${_filters['certification'] ? 'AND DATE(ss.timestamp) =  \''+_filters['certification'][0] +'\' AND ss.id_status = '+CONSTANTS.SERVICE.CUMPLE :''}
 		)
 		JOIN institution i on s.id_institution = i.id
 		WHERE 
@@ -264,7 +266,7 @@ var Service = function () {
 			WHERE id IN (${keys.join(',')}) ORDER BY id desc
 			LIMIT ${params.limit * (params.page-1)},${params.limit};
 			SELECT FOUND_ROWS() as total;
-			SELECT * FROM view_service_status WHERE id_service IN (${keys.join(',')}) AND id_status = 8 ORDER BY timestamp desc;`	
+			SELECT * FROM view_service_status WHERE id_service IN (${keys.join(',')}) AND id_status = ${CONSTANTS.SERVICE.CUMPLE} ORDER BY timestamp desc;`	
 			return this.customQuery(query)
 		}).then((result)=>{
 			let data = result[0]

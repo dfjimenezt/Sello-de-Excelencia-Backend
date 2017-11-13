@@ -5,6 +5,7 @@
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
+let CONSTANTS = require('../events/constants.js')
 var User_answer = function () {
 	var params = [
 		{
@@ -110,7 +111,7 @@ var User_answer = function () {
 	}
 	this.urgent = function (user, params) {
 		let q = `UPDATE evaluation_request SET id_user = 3 WHERE 
-			id_request_status < 7 AND alert_time < '${new Date().toISOString().substring(0, 10)}'`
+			id_request_status < '${CONSTANTS.EVALUATION_REQUEST.CUMPLE}' AND alert_time < '${new Date().toISOString().substring(0, 10)}'`
 		return this.customQuery(q).then(() => {
 			return this.getAll({
 				filter: params.filter,

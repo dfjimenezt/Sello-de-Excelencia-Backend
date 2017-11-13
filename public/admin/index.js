@@ -181,7 +181,26 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $pro
 		return taOptions
 	}]);
 });
-
+app.constant("STATES",{
+  SERVICE: {
+		'INCOMPLETO': 1, //EN DILIGENCIAMIENTO POR LA ENTIDAD
+		'VERIFICACION': 2,  //EN VERIFICACIÓN POR EL ADMON
+		'EVALUACION': 3, //EN PROCESO DE EVALUACIÓN
+		'CUMPLE': 4, // CUMPLE
+		'NO_CUMPLE': 5 // NO CUMPLE
+	},
+	EVALUATION_REQUEST: {
+		'PENDIENTE': 1, //EN DILIGENCIAMIENTO POR LA ENTIDAD
+		'ERROR': 2, //HAS ERROR
+		'SOLICITADO': 3, //SOLICITADO VOLUNTARIAMENTE
+		'ASIGNADO': 4, //ASIGNADO POR LA PLATAFORMA
+		'ACEPTADO': 5, //ACEPTADO POR EL EVALUADOR
+		'RECHAZADO': 6, //RECHAZADO POR EL EVALUADOR
+		'RETROALIMENTACION': 7, //EN RETROALIMENTACIÓN
+		'CUMPLE': 8, //CUMPLE
+		'NO_CUMPLE': 9 //NO_CUMPLE
+	}
+})
 app.controller('backCtrl', function ($mdSidenav, $location, $http) {
 	var ctrl = this;
 	$http.defaults.headers.common.Authorization = localStorage.getItem("token");

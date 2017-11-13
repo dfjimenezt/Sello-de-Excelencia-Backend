@@ -1,7 +1,8 @@
 angular.module('dmt-back').controller('answerController', 
-function ($scope, $mdDialog, $mdEditDialog, parent, $http, entityService, $routeParams, answer) {
+function ($scope, $mdDialog, $mdEditDialog, parent, $http, entityService, $routeParams, answer, STATES) {
 	let ctrl = this
 	ctrl.entity = 'user_answer';
+	ctrl.STATES = STATES
 	ctrl.service = entityService(ctrl.entity,ctrl.filters,answer.id)
 	ctrl.currentEntity = ctrl.service.currentEntity
 	ctrl.today = new Date()
@@ -20,17 +21,17 @@ function ($scope, $mdDialog, $mdEditDialog, parent, $http, entityService, $route
 
 	}
 	ctrl.approve = function(request){
-		request.id_request_status = 7
+		request.id_request_status = ctrl.STATES.EVALUATION_REQUEST.CUMPLE
 		ctrl.saveRequest(request)
 	}
 	ctrl.reject = function(request){
-		request.id_request_status = 8
+		request.id_request_status = ctrl.STATES.EVALUATION_REQUEST.NO_CUMPLE
 		ctrl.saveRequest(request)
 	}
 	ctrl.evaluatorSelected = function(request){
 		request.showAutocomplete = false
 		request.id_user = request.user.id
-		request.id_request_status = 3
+		request.id_request_status = ctrl.STATES.EVALUATION_REQUEST.ASIGNADO
 		ctrl.saveRequest(request)
 	}
 	ctrl.selectTab = function (tab) {

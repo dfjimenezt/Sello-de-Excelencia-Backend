@@ -1,6 +1,7 @@
 if (!dmt) {
 	var dmt = {}
 }
+let date = new Date()
 dmt.config = [
 	{
 		section: "General",
@@ -202,7 +203,7 @@ dmt.config = [
 				path: "validacion",
 				entity: "service",
 				filters:{
-					'current_status':[1]
+					'current_status':[2]
 				},
 				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
@@ -229,7 +230,7 @@ dmt.config = [
 				path: "evaluacion",
 				entity: "service",
 				filters:{
-					'current_status':[5]
+					'current_status':[3]
 				},
 				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
@@ -256,7 +257,8 @@ dmt.config = [
 				path: "cumplidos",
 				entity: "service",
 				filters:{
-					'current_status':[8]
+					'history.id_status':[4],
+					'history.valid_to' : ['> ' + date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()]
 				},
 				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
@@ -283,7 +285,7 @@ dmt.config = [
 				path: "no_cumplidos",
 				entity: "service",
 				filters:{
-					'current_status':[9]
+					'current_status':[5]
 				},
 				controller: "servicesListController",
 				templateUrl: "views/service/list.html",
@@ -335,7 +337,7 @@ dmt.config = [
 				entity: "user_answer",
 				filters:{
 					'evaluators.id_user':['3'],
-					'evaluators.id_request_status':['< 7'],
+					'evaluators.id_request_status':['< 8'],
 				},
 				controller: "urgentAnswerController",
 				templateUrl: "views/answer/urgent.html",
