@@ -175,9 +175,9 @@
                 </td>
                 <td md-cell>
                   <div ng-if="item.id_status == 1">
-                    <md-button aria-label="accept" ng-click="item.id_status = 2;ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-raised">
+                    <md-button aria-label="accept" ng-click="item.id_status = ctrl.STATES.EVALUATION_REQUEST.POR_ASIGNAR;ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-raised">
                       Aprobar </md-button>
-                    <md-button aria-label="reject" ng-click="item.id_status = 10;ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-hue-1 md-raised">
+                    <md-button aria-label="reject" ng-click="item.id_status = ctrl.STATES.EVALUATION_REQUEST.ERROR; ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-hue-1 md-raised">
                       Rechazar </md-button>
                   </div>
                   <div>

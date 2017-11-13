@@ -64,7 +64,7 @@ var Events = function () {
 			.then((result) => {
 				_admin = result[0]
 				_user = old.user
-				if (_new.id_status == CONSTANTS.SERVICE.INCOMPLETO) { // rejected by admin
+				if (_new.id_status == CONSTANTS.EVALUATION_REQUEST.ERROR) { // rejected by admin
 					model_entity_service.update({ id: old.id_service, current_status: CONSTANTS.SERVICE.INCOMPLETO }, { id: old.id_service })
 					utiles.sendEmail(_user.email, null, null,
 						'Postulación no aceptada - Sello de Excelencia Gobierno Digital Colombia',
@@ -84,13 +84,13 @@ var Events = function () {
 					ingrese a <b>Postular</b> y Seleccione el Producto o Servicio en la sección <b>Continuar con una postulación anterior</b></p>
 					<p>Nuestros mejores deseos,<\p>
 					<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
-				} else if (_new.id_status == CONSTANTS.SERVICE.ASIGNACION) {
+				} else if (_new.id_status == CONSTANTS.EVALUATION_REQUEST.POR_ASIGNAR) {
 					model_entity_user_answer.getByParams({ id_service: _service.id })
 						.then((results) => {
 							let ready = true
 							results.data.forEach((answer) => {
-								if (answer.id_status == CONSTANTS.SERVICE.INCOMPLETO
-									|| answer.id_status == CONSTANTS.SERVICE.VERIFICACION) {
+								if (answer.id_status == CONSTANTS.EVALUATION_REQUEST.ERROR
+									|| answer.id_status == CONSTANTS.EVALUATION_REQUEST.PENDIENTE) {
 									ready = false
 								}
 							})
@@ -100,12 +100,12 @@ var Events = function () {
 							}
 							return
 						})
-				} else if (_new.id_status == CONSTANTS.SERVICE.CUMPLE) {
+				} else if (_new.id_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE) {
 					model_entity_user_answer.getByParams({ id_service: _service.id })
 						.then((results) => {
 							let ready = true
 							results.data.forEach((answer) => {
-								if (answer.id_status !== CONSTANTS.SERVICE.CUMPLE) {
+								if (answer.id_status !== CONSTANTS.EVALUATION_REQUEST.CUMPLE) {
 									ready = false
 								}
 							})
@@ -114,7 +114,7 @@ var Events = function () {
 							}
 							return
 						})
-				} else if (_new.id_status == CONSTANTS.SERVICE.NO_CUMPLE) {
+				} else if (_new.id_status == CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE) {
 					return model_entity_service.update({ id: _service.id, current_status: CONSTANTS.SERVICE.NO_CUMPLE }, { id: old.id_service })
 				}
 			})
@@ -260,9 +260,9 @@ var Events = function () {
 							})
 							if (approved + rejected === total) {
 								if (approved >= Math.ceil(total / 2)) {
-									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.SERVICE.CUMPLE }, { id: _answer.id })
+									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.EVALUATION_REQUEST.CUMPLE }, { id: _answer.id })
 								} else if (rejected >= Math.ceil(total / 2)) {
-									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.SERVICE.NO_CUMPLE }, { id: _answer.id })
+									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE }, { id: _answer.id })
 								}
 							}
 						})
@@ -296,9 +296,9 @@ var Events = function () {
 							})
 							if (approved + rejected === total) {
 								if (approved >= Math.ceil(total / 2)) {
-									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.SERVICE.CUMPLE }, { id: _answer.id })
+									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.EVALUATION_REQUEST.CUMPLE }, { id: _answer.id })
 								} else if (rejected >= Math.ceil(total / 2)) {
-									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.SERVICE.NO_CUMPLE }, { id: _answer.id })
+									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE }, { id: _answer.id })
 								}
 							}
 

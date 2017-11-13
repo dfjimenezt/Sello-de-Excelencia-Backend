@@ -395,13 +395,15 @@ dmt.config = [
 				name: "Tiempos / Requisito",
 				path: "tiempos_requisito",
 				entity: "request_status",
-				permission:'admin_status'
+				permission:'admin_status',
+				readOnly:true
 			},
 			{
 				name: "Tiempos / Servicio",
 				path: "tiempos_servicio",
 				entity: "status",
-				permission:'admin_status'
+				permission:'admin_status',
+				readOnly:true
 			},
 			{
 				name: "Puntaje",

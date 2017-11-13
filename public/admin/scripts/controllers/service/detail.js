@@ -1,5 +1,5 @@
 angular.module('dmt-back').controller('servicesDetailController', 
-function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routeParams, $location) {
+function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routeParams, $location,STATES) {
 	let ctrl = this
 	ctrl.entity = page.entity || page.parent.entity
 	ctrl.filters = page.filters
@@ -10,6 +10,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	ctrl.page = page
 	ctrl.currentEntity = ctrl.service.currentEntity
 	ctrl.today = new Date()
+	ctrl.STATES = STATES
 	ctrl.currentEntity.relations.forEach((relation)=>{
 		if(relation.entity == 'points'){
 			ctrl.points_relation = relation

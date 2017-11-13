@@ -673,12 +673,12 @@ var service_controller = function () {
  	 * 
 	 */
 	var create_entity_service = function (user, body) {
-		body.current_status = 10
+		body.current_status = CONSTANTS.SERVICE.INCOMPLETO
 		body.id_user = user.id
 		body.is_active = 1
 		return model_entity_service.create(body)
 			.then((result) => {
-				return model_status.getByUid(10)
+				return model_status.getByUid(CONSTANTS.SERVICE.INCOMPLETO)
 			}).then((result)=>{
 				_status = result[0]
 				let duration = _status.duration
@@ -689,7 +689,7 @@ var service_controller = function () {
 				ftime.setDate(ftime.getDate() + duration)
 				return model_entity_service_status.create({
 					id_service: body.id,
-					id_status: 10,
+					id_status: CONSTANTS.SERVICE.INCOMPLETO,
 					level: body.level,
 					valid_to: ftime,
 					alarm: atime,
@@ -946,7 +946,7 @@ var service_controller = function () {
 						id_service:body.id,
 						timestamp:'> '+last
 					}).then(()=>{
-						model_entity_service.update({current_status:8},{id:body.id})
+						model_entity_service.update({current_status:CONSTANTS.SERVICE.CUMPLE},{id:body.id})
 					})
 			}
 			return model_entity_service.delete(body.id)

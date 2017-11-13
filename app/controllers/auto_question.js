@@ -23,6 +23,7 @@ var media = require('../models/media.js')
 var user = require('../models/user.js')
 var points = require('../models/points.js')
 var emiter = require('../events/emiter.js').instance
+let CONSTANTS = require('../events/constants.js')
 var question_controller = function () {
 	var model_entity_question = new entity_question()
 	var model_entity_questiontopic = new entity_questiontopic()
@@ -619,7 +620,7 @@ var question_controller = function () {
 	 */
 	var create_entity_evaluation_request = function (user, body) {
 		if (user.permissions.indexOf(Permissions.ADMIN_EVALUATION_REQUEST) == -1) {
-			return model_request_status.getByUid('2')
+			return model_request_status.getByUid(CONSTANTS.EVALUATION_REQUEST.SOLICITADO)
 				.then((result) => {
 					let _status = result[0]
 					let duration = _status.duration
@@ -631,7 +632,7 @@ var question_controller = function () {
 					ftime.setDate(ftime.getDate() + duration)
 					body.alert_time = atime
 					body.end_time = ftime
-					body.id_request_status = 2
+					body.id_request_status = CONSTANTS.EVALUATION_REQUEST.SOLICITADO
 					return model_entity_evaluation_request.create(body)
 				})
 		}
