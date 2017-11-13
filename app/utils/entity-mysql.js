@@ -147,7 +147,7 @@ var EntityModel = function (info) {
 	this.getByUids = function (uids) {
 		return new Promise((resolve, reject) => {
 			pool.getConnection((err, connection) => {
-				if(err){reject(err)}
+				if (err) { reject(err) }
 				var queryGet = ''
 				for (var i in uids) {
 					queryGet += 'list.Uid = ' + connection.escape(uids[i]) + ' AND '
@@ -221,7 +221,7 @@ var EntityModel = function (info) {
 	this.getFiltered = function (params) {
 		return new Promise((resolve, reject) => {
 			pool.getConnection((err, connection) => {
-				if(err){reject(err)}
+				if (err) { reject(err) }
 				let filters = {}
 				var relation_filters = {}
 				var where = ""
@@ -244,8 +244,8 @@ var EntityModel = function (info) {
 				if (typeof params.fields == "string") {
 					params.fields = [params.fields]
 				}
-				if(params.order.indexOf('-') === 0){
-					params.order = params.order.substring(1)+' desc'
+				if (params.order.indexOf('-') === 0) {
+					params.order = params.order.substring(1) + ' desc'
 				}
 				function resolveEqual(connection, value, equal) {
 					if (typeof value != 'string') {
@@ -253,7 +253,7 @@ var EntityModel = function (info) {
 					}
 					let array = value.split(" ");
 					if (array.length > 1) {
-						equal = array.splice(0,1)
+						equal = array.splice(0, 1)
 						return equal + connection.escape(array.join(' '));
 					}
 					return equal + connection.escape(value);
@@ -293,7 +293,7 @@ var EntityModel = function (info) {
 					let fields = []
 					baseTable.fields.forEach((f) => {
 						if (f.type === "string" || f.type === "text") {
-							fields.push(f.name)
+							fields.push('`'+view+'`.`'+f.name+'`')
 						}
 					})
 					if (translateTable) {
@@ -303,11 +303,22 @@ var EntityModel = function (info) {
 							}
 						})
 					}
-
+					if (ety.relations) {
+						ety.relations.forEach((relation) => {
+							let table = getTable(relation.entity || relation.table)
+							let view = resolveViewName(relation.entity || relation.table, params.lang) +'_'+relation.name
+							table.fields.forEach((f) => {
+								if (f.type === "string" || f.type === "text") {
+									fields.push('`'+view+'`.`'+f.name+'`')
+								}
+							})
+						})
+					}
 					search = []
 					for (var i in fields) {
 						// TODO CREATE FULLTEXT INDEX AND USE MATCH IN NATURAL LANGUAGE MODE
-						search.push('`' + view+'`.`'+fields[i] + "` like " + connection.escape("%" + params.filter.split(" ").join("%") + "%"))
+						search.push(fields[i] + " like " + connection.escape("%" + params.filter.split(" ").join("%") + "%"))
+						//search.push('`' + view + '`.`' + fields[i] + "` like " + connection.escape("%" + params.filter.split(" ").join("%") + "%"))
 					}
 					search = "(" + search.join(" OR ") + ")"
 				}
@@ -330,50 +341,61 @@ var EntityModel = function (info) {
 				} else { //just one of these
 					where = search + conditions
 				}
-				let vname = '`'+resolveViewName(info.entity, params.lang)+'`'
+				let vname = '`' + resolveViewName(info.entity, params.lang) + '`'
 				let subtable = vname
 				/**
 				 * Support for filters into n-n  and 1-n relations
 				 */
 				let intermediate = 0
-				for (let r in relation_filters) {
-					let relation = null
-					console.warn("Doing relation filters can reduce the performance")
-					for (let i = 0; i < info.relations.length; i++) {
-						if (info.relations[i].name === r) {
-							relation = info.relations[i]
-							break
-						}
-					}
-					if (!relation) {
-						break
-					}
-					let joins = []
-					let name = resolveViewName(relation.entity, params.lang)
-					let rwhere = '('
-					for (let k in relation_filters[r]) {
-						if (relation_filters[r][k][0].indexOf('\'') == 0) {
-							rwhere += `\`${name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
-						} else {
-							for(var l in relation_filters[r][k]){
-								let v = relation_filters[r][k][l]
-								rwhere += `\`${name + '`.`' + k}\` ${v} AND `
+				if (info.relations) {
+					info.relations.forEach((relation) => {
+						let rwhere = ''
+						let name = resolveViewName(relation.entity, params.lang)
+						for (let r in relation_filters) {
+							console.warn("Doing relation filters can reduce the performance")
+							if (relation.name == r) {
+								rwhere = '('
+								for (let k in relation_filters[r]) {
+									if (relation_filters[r][k][0].indexOf('\'') == 0) {
+										rwhere += `\`${name +'_'+ relation.name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
+									} else {
+										for (var l in relation_filters[r][k]) {
+											let v = relation_filters[r][k][l]
+											rwhere += `\`${name +'_'+ relation.name + '`.`' + k}\` ${v} AND `
+										}
+									}
+								}
+								rwhere = rwhere.slice(0, -4) + ')'
 							}
 						}
-					}
-					rwhere = rwhere.slice(0, -4) + ')'
-					if (relation.intermediate) { // n-n relation 
-						let iname = resolveViewName(relation.intermediate.entity, params.lang)
-						joins.push(`JOIN \`${iname}\` \`intermediate_${intermediate}\` ON \`intermediate_${intermediate}\`.\`${relation.intermediate.leftKey}\` = ${vname}.\`${getTable(info.table).defaultSort}\`
-				JOIN \`${name}\` ON \`intermediate_${intermediate}\`.\`${relation.intermediate.rightKey}\` = \`${name}\`.\`${getTable(relation.entity).defaultSort}\` AND (${rwhere})`)
-					} else if (relation.rightKey) { //1-n relation
-						joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation.rightKey}\` = ${vname}.\`${getTable(info.table).defaultSort}\` AND (${rwhere})`)
-					} else if (relation.leftKey) { // 1-1 and  
-						let relation_table = getTable(relation.entity || relation.table)
-						joins.push(`JOIN \`${name}\` ON \`${name}\`.\`${relation_table.defaultSort}\` = ${vname}.\`${relation.leftKey}\` AND (${rwhere})`)
-					}	
-					subtable = subtable + ' ' + joins
-					intermediate++
+						let joins = []
+						/*let joins = []
+						let name = resolveViewName(relation.entity, params.lang)
+						let rwhere = '('
+						for (let k in relation_filters[r]) {
+							if (relation_filters[r][k][0].indexOf('\'') == 0) {
+								rwhere += `\`${name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
+							} else {
+								for (var l in relation_filters[r][k]) {
+									let v = relation_filters[r][k][l]
+									rwhere += `\`${name + '`.`' + k}\` ${v} AND `
+								}
+							}
+						}*/
+						//rwhere = rwhere.slice(0, -4) + ')'
+						if (relation.intermediate) { // n-n relation 
+							let iname = resolveViewName(relation.intermediate.entity, params.lang)
+							joins.push(`LEFT JOIN \`${iname}\` \`intermediate_${intermediate}\` ON \`intermediate_${intermediate}\`.\`${relation.intermediate.leftKey}\` = ${vname}.\`${getTable(info.table).defaultSort}\`
+							LEFT JOIN \`${name}\` \`${name+'_'+relation.name}\` ON \`intermediate_${intermediate}\`.\`${relation.intermediate.rightKey}\` = \`${name+'_'+relation.name}\`.\`${getTable(relation.entity).defaultSort}\` ${rwhere.length >0 ? 'AND ('+rwhere+')':'' }`)
+						} else if (relation.rightKey) { //1-n relation
+							joins.push(`LEFT JOIN \`${name}\` \`${name+'_'+relation.name}\` ON \`${name+'_'+relation.name}\`.\`${relation.rightKey}\` = ${vname}.\`${getTable(info.table).defaultSort}\` ${rwhere.length >0 ? 'AND ('+rwhere+')':'' }`)
+						} else if (relation.leftKey) { // 1-1 and  
+							let relation_table = getTable(relation.entity || relation.table)
+							joins.push(`LEFT JOIN \`${name}\` \`${name+'_'+relation.name}\` ON \`${name+'_'+relation.name}\`.\`${relation_table.defaultSort}\` = ${vname}.\`${relation.leftKey}\` ${rwhere.length >0 ? 'AND ('+rwhere+')':'' }`)
+						}
+						subtable = subtable + ' ' + joins
+						intermediate++
+					})
 				}
 
 				var query = "SELECT SQL_CALC_FOUND_ROWS `" + resolveViewName(info.entity, params.lang) + "`.`" + getTable(info.table).defaultSort + "` `key` FROM " + subtable + " "
@@ -407,7 +429,7 @@ var EntityModel = function (info) {
 					}
 					let total = result[1][0].total
 					if (keys.length === 0) {
-						resolve({ data: [], total_results: 0 }) 
+						resolve({ data: [], total_results: 0 })
 						return
 					}
 					keys = keys.join(",")
@@ -569,7 +591,7 @@ var EntityModel = function (info) {
 	this.create = function (body) {
 		return new Promise((resolve, reject) => {
 			pool.getConnection((err, connection) => {
-				if(err){reject(err)}
+				if (err) { reject(err) }
 				let entity = dmt.entities[info.entity]
 				let table = getTable(info.entity)
 				/*if (body[table.defaultSort]) {
@@ -583,7 +605,7 @@ var EntityModel = function (info) {
 					if (entity.translate) {
 						return new Promise((resolve, reject) => {
 							pool.getConnection((err, connection) => {
-								if(err){reject(err)}
+								if (err) { reject(err) }
 								resolveQuery(updateTranslation(body, connection), connection).then(resolve, reject)
 							})
 						})
@@ -629,12 +651,12 @@ var EntityModel = function (info) {
 			old = result.data[0]
 			return new Promise((resolve, reject) => {
 				pool.getConnection((err, connection) => {
-					if(err){reject(err)}
+					if (err) { reject(err) }
 					resolveQuery(updateTable(table, body, connection, condition), connection).then((results) => {
 						if (entity.translate) {
 							return new Promise((resolve, reject) => {
 								pool.getConnection((err, connection) => {
-									if(err){reject(err)}
+									if (err) { reject(err) }
 									resolveQuery(updateTranslation(body, connection), connection).then(resolve, reject)
 								})
 							})
@@ -645,13 +667,13 @@ var EntityModel = function (info) {
 						return this.updateView()
 					}, reject).then(() => {
 						let key = body[this.getPrimaryKey()]
-						if(key){
+						if (key) {
 							return this.getByUid(key)
 						}
 						return null
 					}, reject).then((result) => {
 						let _new = null
-						if(result && result.data){
+						if (result && result.data) {
 							_new = result.data[0]
 							emiter.emit(info.entity + '.updated', old, _new, body)
 						}
@@ -671,7 +693,7 @@ var EntityModel = function (info) {
 		})
 		return new Promise((resolve, reject) => {
 			pool.getConnection((err, connection) => {
-				if(err){reject(err)}
+				if (err) { reject(err) }
 				var queryCondition = ''
 				function resolveEqual(connection, value, equal) {
 					if (typeof value != 'string') {
@@ -679,14 +701,14 @@ var EntityModel = function (info) {
 					}
 					let array = value.split(" ");
 					if (array.length > 1) {
-						equal = array.splice(0,1)
+						equal = array.splice(0, 1)
 						return equal + connection.escape(array.join(' '));
 					}
 					return equal + connection.escape(value);
 				}
 				for (var i in data) {
 					//i + ' = ' + connection.escape(data[i]) +
-					queryCondition += i + resolveEqual(connection,data[i],' = ') + ' AND '
+					queryCondition += i + resolveEqual(connection, data[i], ' = ') + ' AND '
 				}
 				queryCondition = queryCondition.slice(0, -4)
 				var query0 = 'SELECT * FROM ' + info.table + ' WHERE ' + queryCondition + ''
@@ -705,7 +727,7 @@ var EntityModel = function (info) {
 	this.customQuery = function (query) {
 		return new Promise((resolve, reject) => {
 			pool.getConnection((err, connection) => {
-				if(err){reject(err)}
+				if (err) { reject(err) }
 				resolveQuery(query, connection).then(resolve, reject)
 			})
 		})

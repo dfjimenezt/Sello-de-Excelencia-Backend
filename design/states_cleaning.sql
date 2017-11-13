@@ -12,9 +12,10 @@ ADD CONSTRAINT `FK_user_answer_status`
   ON UPDATE NO ACTION;
 
 
+SELECT * from stamp_test.`service_status`;
 UPDATE stamp_test.user_answer SET id_status = id_status + 10 WHERE id >= 1;
-UPDATE stamp_test.evaluation_request SET id_status = id_status + 10 WHERE id >= 1;
-UPDATE stamp_test.service_status SET id_status = id_status + 10 WHERE id >= 1;
+UPDATE stamp_test.evaluation_request SET id_request_status = id_request_status + 10 WHERE id_request_status >= 1;
+UPDATE stamp_test.service_status SET id_status = id_status + 10 WHERE id_service >= 1;
 UPDATE stamp_test.service SET current_status = current_status + 10 WHERE id >= 1;
 
 

@@ -99,7 +99,7 @@
 	}
 ]
  * DMT 2017
- * GENERATED: 5 / 9 / 2017 - 15:11:29
+ * GENERATED: 13 / 11 / 2017 - 1:50:20
  **/
 var BaseModel = require('../utils/model.js')
 var util = require('util')
