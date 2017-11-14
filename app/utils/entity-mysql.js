@@ -332,15 +332,10 @@ var EntityModel = function (info) {
 							conditions += '`' + view + '`.`' + f + '`' + filters[f][v] + " " + params._join + " "
 						}
 						conditions = conditions.slice(0, -4)
-						conditions += ") AND "
+						conditions += ') AND '
 					}
-					conditions = conditions.slice(0, -5)
 				}
-				if (search.length > 0 && conditions.length > 0) {
-					where = search + " AND " + conditions
-				} else { //just one of these
-					where = search + conditions
-				}
+				
 				let vname = '`' + resolveViewName(info.entity, params.lang) + '`'
 				let subtable = vname
 				/**
@@ -349,53 +344,45 @@ var EntityModel = function (info) {
 				let intermediate = 0
 				if (info.relations) {
 					info.relations.forEach((relation) => {
-						let rwhere = ''
 						let name = resolveViewName(relation.entity, params.lang)
 						for (let r in relation_filters) {
 							console.warn("Doing relation filters can reduce the performance")
 							if (relation.name == r) {
-								rwhere = '('
+								conditions += '('
 								for (let k in relation_filters[r]) {
 									if (relation_filters[r][k][0].indexOf('\'') == 0) {
-										rwhere += `\`${name +'_'+ relation.name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
+										conditions += `\`${name +'_'+ relation.name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
 									} else {
 										for (var l in relation_filters[r][k]) {
 											let v = relation_filters[r][k][l]
-											rwhere += `\`${name +'_'+ relation.name + '`.`' + k}\` ${v} AND `
+											conditions += `\`${name +'_'+ relation.name + '`.`' + k}\` ${v} AND `
 										}
 									}
 								}
-								rwhere = rwhere.slice(0, -4) + ')'
+								conditions = conditions.slice(0, -4) + ') AND '
 							}
 						}
 						let joins = []
-						/*let joins = []
-						let name = resolveViewName(relation.entity, params.lang)
-						let rwhere = '('
-						for (let k in relation_filters[r]) {
-							if (relation_filters[r][k][0].indexOf('\'') == 0) {
-								rwhere += `\`${name + '`.`' + k}\` IN ( ${relation_filters[r][k]} ) AND `
-							} else {
-								for (var l in relation_filters[r][k]) {
-									let v = relation_filters[r][k][l]
-									rwhere += `\`${name + '`.`' + k}\` ${v} AND `
-								}
-							}
-						}*/
 						//rwhere = rwhere.slice(0, -4) + ')'
 						if (relation.intermediate) { // n-n relation 
 							let iname = resolveViewName(relation.intermediate.entity, params.lang)
 							joins.push(`LEFT JOIN \`${iname}\` \`intermediate_${intermediate}\` ON \`intermediate_${intermediate}\`.\`${relation.intermediate.leftKey}\` = ${vname}.\`${getTable(info.table).defaultSort}\`
-							LEFT JOIN \`${name}\` \`${name+'_'+relation.name}\` ON \`intermediate_${intermediate}\`.\`${relation.intermediate.rightKey}\` = \`${name+'_'+relation.name}\`.\`${getTable(relation.entity).defaultSort}\` ${rwhere.length >0 ? 'AND ('+rwhere+')':'' }`)
+							LEFT JOIN \`${name}\` \`${name+'_'+relation.name}\` ON \`intermediate_${intermediate}\`.\`${relation.intermediate.rightKey}\` = \`${name+'_'+relation.name}\`.\`${getTable(relation.entity).defaultSort}\``)
 						} else if (relation.rightKey) { //1-n relation
-							joins.push(`LEFT JOIN \`${name}\` \`${name+'_'+relation.name}\` ON \`${name+'_'+relation.name}\`.\`${relation.rightKey}\` = ${vname}.\`${getTable(info.table).defaultSort}\` ${rwhere.length >0 ? 'AND ('+rwhere+')':'' }`)
+							joins.push(`LEFT JOIN \`${name}\` \`${name+'_'+relation.name}\` ON \`${name+'_'+relation.name}\`.\`${relation.rightKey}\` = ${vname}.\`${getTable(info.table).defaultSort}\``)
 						} else if (relation.leftKey) { // 1-1 and  
 							let relation_table = getTable(relation.entity || relation.table)
-							joins.push(`LEFT JOIN \`${name}\` \`${name+'_'+relation.name}\` ON \`${name+'_'+relation.name}\`.\`${relation_table.defaultSort}\` = ${vname}.\`${relation.leftKey}\` ${rwhere.length >0 ? 'AND ('+rwhere+')':'' }`)
+							joins.push(`LEFT JOIN \`${name}\` \`${name+'_'+relation.name}\` ON \`${name+'_'+relation.name}\`.\`${relation_table.defaultSort}\` = ${vname}.\`${relation.leftKey}\``)
 						}
 						subtable = subtable + ' ' + joins
 						intermediate++
 					})
+				}
+				conditions = conditions.slice(0, -5)
+				if (search.length > 0 && conditions.length > 0) {	
+					where = search + " AND " + conditions
+				} else { //just one of these
+					where = search + conditions
 				}
 
 				var query = "SELECT SQL_CALC_FOUND_ROWS `" + resolveViewName(info.entity, params.lang) + "`.`" + getTable(info.table).defaultSort + "` `key` FROM " + subtable + " "
