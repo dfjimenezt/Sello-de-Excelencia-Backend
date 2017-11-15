@@ -304,13 +304,6 @@ dmt.entities = {
       },
       {
         type: "1-1",
-        entity: "user",
-        name: "creator",
-        leftKey: "id_user_creator",
-        foreign_name: "email"
-      },
-      {
-        type: "1-1",
         entity: "institutionType",
         name: "type",
         leftKey: "id_institution_type",

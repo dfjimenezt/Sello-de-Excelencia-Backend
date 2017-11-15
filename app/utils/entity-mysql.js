@@ -303,7 +303,7 @@ var EntityModel = function (info) {
 							}
 						})
 					}
-					if (ety.relations) {
+					if (ety.relations && params.simple === false) {
 						ety.relations.forEach((relation) => {
 							let table = getTable(relation.entity || relation.table)
 							let view = resolveViewName(relation.entity || relation.table, params.lang) +'_'+relation.name
@@ -342,7 +342,7 @@ var EntityModel = function (info) {
 				 * Support for filters into n-n  and 1-n relations
 				 */
 				let intermediate = 0
-				if (info.relations) {
+				if (info.relations && params.simple===false) {
 					info.relations.forEach((relation) => {
 						let name = resolveViewName(relation.entity, params.lang)
 						for (let r in relation_filters) {
