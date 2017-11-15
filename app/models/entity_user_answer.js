@@ -49,7 +49,7 @@ var User_answer = function () {
 				},
 				{
 					"type": "1-1",
-					"entity": "status",
+					"entity": "request_status",
 					"name": "status",
 					"leftKey": "id_status",
 					"foreign_name": "name"
