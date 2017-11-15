@@ -226,10 +226,11 @@ var Events = function () {
 								entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
 							}
 						})
+						
 					}
 					//6 Retroalimentación
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.RETROALIMENTACION) {
-						model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.SERVICE.RETROALIMENTACION })
+						model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.EVALUATION_REQUEST.RETROALIMENTACION })
 					}
 					//7 Cumple
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE) {//add points
