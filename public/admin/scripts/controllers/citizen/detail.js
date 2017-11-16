@@ -15,9 +15,19 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	if(ctrl.filters || $routeParams.id){
 		ctrl.service.getData().then(()=>{
 			ctrl.data = ctrl.entities[ctrl.entity].data[0]
+			ctrl.service.entities.city.data.push(ctrl.data.city)
+			ctrl.service.entities.country.data.push(ctrl.data.country)
+			ctrl.service.entities.region.data.push(ctrl.data.region)
 		})
 	}
-	
+	ctrl.selectCountry = function(){
+		ctrl.service.entities.region.filters.id_country = [ctrl.data.id_country]
+		ctrl.service.entities.region.getData()
+	}
+	ctrl.selectRegion = function (){
+		ctrl.service.entities.city.filters.id_region = [ctrl.data.id_region]
+		ctrl.service.entities.city.getData()
+	}
 	ctrl.selectTab = function (tab) {
 		ctrl.tab = tab
 	}

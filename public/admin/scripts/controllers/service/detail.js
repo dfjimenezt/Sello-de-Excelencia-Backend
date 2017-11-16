@@ -32,6 +32,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 			ctrl.service.entities.motivename.getData()
 			ctrl.service.entities.usertype.getData()
 			ctrl.service.entities.request_status.getData()
+			ctrl.service.entities.institution.data.push(ctrl.data.region)
 		})
 	}
 	ctrl.selectTab = function (tab) {
@@ -180,7 +181,11 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 					entity: ctrl.currentEntity
 				}
 			},
-		}).then(ctrl.getData);
+		}).then(()=>{
+			ctrl.service.entities.user_answer.getData()
+		},()=>{
+			ctrl.service.entities.user_answer.getData()
+		});
 	}
 	return ctrl
 });

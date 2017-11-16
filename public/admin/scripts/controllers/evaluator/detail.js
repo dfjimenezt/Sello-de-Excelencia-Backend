@@ -28,7 +28,18 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 			ctrl.service.entities.motivename.getData()
 			ctrl.service.entities.usertype.getData()
 			ctrl.service.entities.request_status.getData()
+			ctrl.service.entities.city.data.push(ctrl.data.city)
+			ctrl.service.entities.country.data.push(ctrl.data.country)
+			ctrl.service.entities.region.data.push(ctrl.data.region)
 		})
+	}
+	ctrl.selectCountry = function(){
+		ctrl.service.entities.region.filters.id_country = [ctrl.data.id_country]
+		ctrl.service.entities.region.getData()
+	}
+	ctrl.selectRegion = function (){
+		ctrl.service.entities.city.filters.id_region = [ctrl.data.id_region]
+		ctrl.service.entities.city.getData()
 	}
 	ctrl.selectTab = function (tab) {
 		ctrl.tab = tab
