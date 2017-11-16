@@ -72,15 +72,8 @@
                     <th md-column md-order-by="rate" style="max-width:50px;">
                         Calificación
                     </th>
-                    <th md-column style="max-width:150px">
-                        <md-autocomplete md-items="item in ctrl.entities.institution.data" md-item-text="item.name " md-selected-item="ctrl.institution"
-                            md-selected-item-change="ctrl.selectedInstitution(item)" md-search-text-change="ctrl.entities.institution.search()"
-                            md-search-text="ctrl.entities.institution.query.filter" md-select-on-match="true" md-input-name="institution"
-                            md-autofocus="true" md-autoselect="true" placeholder="Entidad">
-                            <md-item-template>
-                                <span md-highlight-text="ctrl.entities.institution.query.filter" md-highlight-flags="^i">{{item.name}}</span>
-                            </md-item-template>
-                        </md-autocomplete>
+                    <th md-column md-order-by="id_institution" style="max-width:150px" >
+                        Entidad
                     </th>
                     <th md-column md-order-by="is_active">
                         <span>Activo</span>
