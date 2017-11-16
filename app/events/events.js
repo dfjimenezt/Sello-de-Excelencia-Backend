@@ -724,6 +724,12 @@ var Events = function () {
 					model_entity_questiontopic.upate({active:0},{id:topic.id})
 				})
 			})
+			model_entity_service.getByParams({id_category:_new.id_category})
+			.then((results)=>{
+				results.data.forEach((service)=>{
+					model_entity_service.upate({active:0},{id:service.id})
+				})
+			})
 		}
 	})
 	emiter.on('about', (_new) => {
