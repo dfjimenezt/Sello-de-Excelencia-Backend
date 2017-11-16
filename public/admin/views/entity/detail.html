@@ -14,22 +14,60 @@
         </md-toolbar>
         <form class="md-padding" name="ctrl.form" layout="row" flex>
           <div layout="row" layout-wrap class="input-row" layout-padding flex>
-            <md-input-container ng-repeat="f in ctrl.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="50">
-              <label ng-if="f.type!=='boolean' && f.type !=='file'">{{f.name | translate}}</label>
-              <input type="number" ng-if="f.type=='int'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
-              <input type="text" ng-if="f.type=='string'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
-              <md-datepicker ng-model="ctrl.data[f.name]" ng-if="f.type=='datetime'" ng-disabled="f.disabled"></md-datepicker>
-              <input type="email" ng-if="f.type=='email'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
-              <md-checkbox ng-if="f.type=='boolean'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled">{{f.name | translate}}</md-checkbox>
-              <md-select ng-if="f.type=='link'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled">
-                <md-option ng-repeat="o in ctrl.options[f.name]" value="{{o[f.foreign_key]}}">{{o[f.foreign_name]}}</md-option>
-              </md-select>
-              <textarea ng-if="f.type=='text'" ng-model="ctrl.data[f.name]"></textarea>
-              <div style="text-align:center;" ng-if="f.type=='file'" ngf-select ng-model="ctrl.data[f.name]">
-                <img ngf-thumbnail="ctrl.data[f.name]" />
-                <br/>
-                <md-button class="md-raised">{{f.name | translate}}</md-button>
-              </div>
+            <md-input-container flex="50">
+                <label >Id</label> 
+                <input type="text" ng-model="ctrl.data.id" ng-disabled="true">
+            </md-input-container>
+            <md-input-container flex="50">
+                <label >Nombre</label> 
+                <input type="text" ng-model="ctrl.data.name" ng-disabled="true">
+            </md-input-container>
+            <md-input-container flex="50">
+                <label >Tipo de Institución</label> 
+                <md-select ng-model="ctrl.data.id_institution_type">
+                    <md-option ng-repeat="o in ctrl.options.id_institution_type" value="{{o.id}}">{{o.name}}</md-option>
+                  </md-select>  
+            </md-input-container>
+            <md-input-container flex="50">
+                <md-checkbox ng-model="ctrl.data.active" aria-label="Activo">Activo</md-checkbox>
+            </md-input-container>
+            <md-input-container flex="50">
+                <label >Correo electrónico</label> 
+                <input type="text" ng-model="ctrl.data.email" ng-disabled="true">
+            </md-input-container>
+            <md-input-container flex="50">
+                <label >Telefóno</label> 
+                <input type="text" ng-model="ctrl.data.phone" ng-disabled="true">
+            </md-input-container>
+            <md-input-container flex="50">
+                <label >Extensión</label> 
+                <input type="text" ng-model="ctrl.data.extension" ng-disabled="true">
+            </md-input-container>
+            <md-input-container flex="50">
+                <label >Telefóno</label> 
+                <input type="text" ng-model="ctrl.data.phone" ng-disabled="true">
+            </md-input-container>
+            <md-input-container flex="50">
+                <label >País</label> 
+                <md-select ng-model="ctrl.data.id_country" ng-change="ctrl.selectCountry()">
+                    <md-option ng-repeat="o in ctrl.options.id_country" value="{{o.id}}">{{o.name}}</md-option>
+                </md-select>  
+            </md-input-container>
+            <md-input-container flex="50">
+                <label >Región</label> 
+                <md-select ng-model="ctrl.data.id_region" ng-change="ctrl.selectRegion()" ng-disabled="!ctrl.data.id_country">
+                    <md-option ng-repeat="o in ctrl.options.id_region" value="{{o.id}}">{{o.name}}</md-option>
+                </md-select>  
+            </md-input-container>
+            <md-input-container flex="50">
+                <label >Ciudad</label> 
+                <md-select ng-model="ctrl.data.id_city" ng-disabled="!ctrl.data.id_region">
+                    <md-option ng-repeat="o in ctrl.options.id_city" value="{{o.id}}">{{o.name}}</md-option>
+                </md-select>  
+            </md-input-container>
+            <md-input-container flex="50">
+                <label >Telefóno</label> 
+                <md-datepicker ng-model="ctrl.data.timestamp" ng-disabled="true"></md-datepicker>
             </md-input-container>
           </div>
         </form>

@@ -88,7 +88,7 @@
 						</div>
 						<div layout=column flex="40">
 							<div layout="row" layout-align="center">
-								<div ng-if="request.id_request_status !== 7 && request.id_request_status !== 8">
+								<div ng-if="request.id_request_status !== ctrl.STATES.EVALUATION_REQUEST.CUMPLE && request.id_request_status !== ctrl.STATES.EVALUATION_REQUEST.NO_CUMPLE">
 										<md-button ng-if="!request.loading" class="md-accent md-raised" ng-click="ctrl.approve(request)">CUMPLE</md-button>
 										<md-button ng-if="!request.loading" class="md-accent md-raised" ng-click="ctrl.reject(request)">NO CUMPLE</md-button>
 										<md-button ng-if="!request.loading" class="md-accent md-raised" ng-click="ctrl.reasignate(request)">Re-asignar</md-button>

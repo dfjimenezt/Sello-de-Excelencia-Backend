@@ -18,7 +18,10 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	if(ctrl.filters || $routeParams.id){
 		ctrl.service.getData().then(()=>{
 			ctrl.data = ctrl.entities[ctrl.entity].data[0]
-			return $http.get('/api/configuration/user?filter_field=institutions.id&filter_value='+$routeParams.id)
+			ctrl.service.entities.city.data.push(ctrl.data.city)
+			ctrl.service.entities.country.data.push(ctrl.data.country)
+			ctrl.service.entities.region.data.push(ctrl.data.region)
+			return $http.get('/api/configuration/user?simple=false&filter_field=institutions.id&filter_value='+$routeParams.id)
 		}).then((results)=>{
 			if(results.data.total_results == 1){
 				ctrl.entities.user.selectedUser = results.data.data[0]
@@ -30,6 +33,15 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 			}
 		})
 	}
+	ctrl.selectCountry = function(){
+		ctrl.service.entities.region.filters.id_country = [ctrl.data.id_country]
+		ctrl.service.entities.region.getData()
+	}
+	ctrl.selectRegion = function (){
+		ctrl.service.entities.city.filters.id_region = [ctrl.data.id_region]
+		ctrl.service.entities.city.getData()
+	}
+	
 	ctrl.selectTab = function (tab) {
 		ctrl.tab = tab
 	}
