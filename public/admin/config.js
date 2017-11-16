@@ -8,7 +8,7 @@ dmt.config = [
 		path: "reoportes",
 		pages:[
 			{
-				name:"General",
+				name:"Listado",
 				path: "consolidado",
 				controller: "reportsController",
 				templateUrl: "views/reports/detail.html",
