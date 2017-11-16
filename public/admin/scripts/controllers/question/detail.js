@@ -14,7 +14,9 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	if(ctrl.filters || $routeParams.id){
 		ctrl.service.getData().then(()=>{
 			ctrl.data = ctrl.entities[ctrl.entity].data[0]
+			
 			ctrl.service.entities.category.getData()
+			ctrl.service.entities.questiontopic.query.filters.id_category = [ctrl.data.topic.id_category]
 		})
 	}
 	ctrl.selectTab = function (tab) {

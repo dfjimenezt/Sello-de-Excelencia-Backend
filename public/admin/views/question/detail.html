@@ -33,6 +33,9 @@
                 <label >Nivel</label>
                 <input type="text" ng-disabled="false" ng-model="ctrl.data.level">
              </md-input-container>
+            <md-input-container flex="50">
+              <md-checkbox ng-model="ctrl.data.active" name="name" aria-label="Activo">Activo</md-checkbox>
+            </md-input-container>
              <md-input-container flex="50">
                 <label >Nombre del Requisito</label>
                 <textarea ng-model="ctrl.data.text" ng-required="true"></textarea>

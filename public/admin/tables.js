@@ -1816,6 +1816,12 @@ dmt.tables = {
 				"key": false
 			},
 			{
+				"name": "active",
+				"type": "boolean",
+				"disabled": false,
+				"key": false
+			},
+			{
 				"name": "criteria",
 				"type": "text",
 				"disabled": false,
@@ -1836,12 +1842,6 @@ dmt.tables = {
 			{
 				"name": "help",
 				"type": "text",
-				"disabled": false,
-				"key": false
-			},
-			{
-				"name": "active",
-				"type": "boolean",
 				"disabled": false,
 				"key": false
 			}
