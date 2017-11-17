@@ -181,6 +181,12 @@ dmt.tables = {
 				"key": false
 			},
 			{
+				"name": "validity",
+				"type": "int",
+				"disabled": false,
+				"key": false
+			},
+			{
 				"name": "active",
 				"type": "boolean",
 				"disabled": false,

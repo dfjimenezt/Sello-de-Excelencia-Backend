@@ -26,6 +26,14 @@
 		"Extra": ""
 	},
 	{
+		"Field": "validity",
+		"Type": "int(11)",
+		"Null": "NO",
+		"Key": "",
+		"Default": "365",
+		"Extra": ""
+	},
+	{
 		"Field": "active",
 		"Type": "tinyint(4)",
 		"Null": "NO",
@@ -65,6 +73,14 @@ var Category = function () {
 		"Null": "NO",
 		"Key": "",
 		"Default": "1",
+		"Extra": ""
+	},
+	{
+		"Field": "validity",
+		"Type": "int(11)",
+		"Null": "NO",
+		"Key": "",
+		"Default": "365",
 		"Extra": ""
 	},
 	{
