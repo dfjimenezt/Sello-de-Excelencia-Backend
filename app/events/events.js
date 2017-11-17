@@ -407,6 +407,7 @@ var Events = function () {
 		var _admin = null
 		var _status = null
 		var _laststatus = null
+		var _category = null
 		model_user.getAdmin()
 			.then((result) => {
 				_admin = result[0]
@@ -420,10 +421,18 @@ var Events = function () {
 					limit: 1,
 					order: 'timestamp desc'
 				})
-			}).then((result) => {
-				let _laststatus = result.data[0]
+			})
+			.then((result)=>{
+				_laststatus = result.data[0]
+				return model_category.getByUid(_new.id_category)
+			})
+			.then((result) => {
+				_category = result[0]
 				if (old.current_status != _new.current_status) {
 					let duration = _status.duration
+					if(_new.current_status == CONSTANTS.SERVICE.CUMPLE){
+						duration = _category.validity
+					}
 					let alarm = duration - _status.pre_end
 					let atime = new Date()
 					atime.setDate(atime.getDate() + alarm)
