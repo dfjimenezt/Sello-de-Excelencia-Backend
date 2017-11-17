@@ -24,6 +24,9 @@ angular.module('dmt-back').controller('rolesListController',
 			$location.path(path)
 		}
 		ctrl.details = function (item) {
+			if(item.id <= 4){
+				return
+			}
 			var path = $location.path()
 			var id = item.id
 			ctrl.currentEntity.fields.forEach((f) => {

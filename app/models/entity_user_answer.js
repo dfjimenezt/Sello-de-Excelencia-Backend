@@ -138,8 +138,9 @@ var User_answer = function () {
 			q.level level,
 			u_a.id_status status,
 			e_r.id_request_status r_status,
-			IFNULL(e_r.branch,0) branch
-			 FROM user_answer u_a 
+			IFNULL(e_r.branch,0) branch,
+			DATEDIFF(CURRENT_DATE(),u_a.timestamp) time
+			FROM user_answer u_a 
 			JOIN service s on u_a.id_service = s.id 
 			JOIN institution i on i.id = s.id_institution 
 			JOIN evaluation_request e_r on e_r.id_answer = u_a.id
@@ -167,6 +168,7 @@ var User_answer = function () {
 						'No Cumple':0,
 					}
 				}
+				item.Rechazado += item.branch
 				if(item.status === CONSTANTS.EVALUATION_REQUEST.PENDIENTE){
 					_requisites[item.id]['En Validación']++
 				}
@@ -180,7 +182,6 @@ var User_answer = function () {
 					_requisites[item.id].Aceptado++
 					_requisites[item.id]['Número Evaluadores']++
 				}
-				item.Rechazado = item.branch
 				if(item.r_status === CONSTANTS.EVALUATION_REQUEST.RETROALIMENTACION){
 					_requisites[item.id]['Retroalimentación']++
 					_requisites[item.id]['Número Evaluadores']++
