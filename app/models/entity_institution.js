@@ -71,6 +71,23 @@ var Institution = function () {
 		WHERE i.id = '${id}'`
 		return this.customQuery(q)
 	}
+	this.getPerformance = function(institution){
+		let q = `SELECT i.name Entidad, 
+			s.name Servicio, 
+			IF(next.id_service = current.id_service,s_from.name,'') Anterior, s_to.name Actual, 
+			IF(next.id_service = current.id_service,TIMEDIFF(next.timestamp,current.timestamp),0) Duración
+			FROM service_status next join 
+			(select * from service_status ) current 
+			JOIN service s ON s.id = current.id_service 
+			JOIN institution i ON i.id = s.id_institution
+			JOIN status s_from ON s_from.id = current.id_status
+			JOIN status s_to ON s_to.id = next.id_status
+			WHERE next.id = current.id +1
+			${institution ? 'AND i.id = \''+institution+'\'':''}`
+		return this.customQuery(q).then((results)=>{
+			return {data:results}
+		})
+	}
 	return this
 };
 util.inherits(Institution, BaseModel)

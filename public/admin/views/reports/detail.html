@@ -29,10 +29,8 @@
   </md-card>
   <md-card flex="45">
       <md-card-content>
-        <h2>Informe de tiempos de atención por cada estado</h2>
-        <p>Seleccione la fecha del reporte</p>
-  
-        <md-autocomplete md-items="item in ctrl.service.entities.institution.data" md-item-text="item.name " md-selected-item="ctrl.institution"
+        <h2>Informe de tiempos de atención por cada estado por Entidad</h2>
+        <md-autocomplete md-items="item in ctrl.service.entities.institution.data" md-item-text="item.name " md-selected-item="ctrl._institution"
           md-selected-item-change="ctrl.selectedInstitution(item)" md-search-text-change="ctrl.service.entities.institution.search()"
           md-search-text="ctrl.service.entities.institution.query.filter" md-select-on-match="true" md-input-name="institution" md-autofocus="true"
           md-autoselect="true" placeholder="Entidad">
@@ -42,9 +40,17 @@
         </md-autocomplete>
       </md-card-content>
       <md-card-actions layout="row" layout-align="end center">
-        <md-button>Descargar</md-button>
+        <md-button ng-click="ctrl.downloadPerformance()" class="md-primary md-raised">Descargar Por Entidad</md-button>
       </md-card-actions>
     </md-card>
+    <md-card flex="45">
+        <md-card-content>
+          <h2>Informe de tiempos de atención por cada estado para todas las Entidades</h2>
+        </md-card-content>
+        <md-card-actions layout="row" layout-align="end center">
+          <md-button ng-click="ctrl.downloadPerformanceAll()" class="md-primary md-raised">Descargar Todos</md-button>
+        </md-card-actions>
+      </md-card>
     <md-card flex="45">
         <md-card-content>
           <h2>Informe de sellos otorgados</h2>

@@ -1,7 +1,7 @@
 let emiter = require('./emiter.js').instance
 var utiles = require('../utils/utiles.js')
 var config = require('../../config.json')
-let HOST = config.hosts[config.enviroment];
+let HOST = config.hosts[config.enviroment]
 let CONSTANTS = require('./constants.js')
 
 var Events = function () {

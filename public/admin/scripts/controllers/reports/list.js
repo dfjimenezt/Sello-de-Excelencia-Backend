@@ -17,8 +17,22 @@ function ($scope, $mdDialog, page, entityService, $http) {
 
 	ctrl.service.loadEntity('service')
 	ctrl.downloadServiceReport = function(){
-		ctrl.service.downloadUrl('http://localhost:3000/api/stats/service?download=true&service='+ctrl._service.id).then((response)=>{
+		ctrl.service.downloadUrl('/api/stats/service?download=true&service='+ctrl._service.id).then((response)=>{
 			var filename = 'Servicio.xlsx'
+			saveAs(response, filename)
+		})
+	}
+
+	ctrl.downloadPerformance = function(){
+		ctrl.service.downloadUrl('/api/stats/performance?download=true&institution='+ctrl._institution.id).then((response)=>{
+			var filename = 'Institucion.xlsx'
+			saveAs(response, filename)
+		})
+	}
+
+	ctrl.downloadPerformanceAll = function(){
+		ctrl.service.downloadUrl('/api/stats/performance?download=true').then((response)=>{
+			var filename = 'Institucion.xlsx'
 			saveAs(response, filename)
 		})
 	}
