@@ -118,6 +118,12 @@ module.exports = {
         if(i.indexOf('id_') == 0){
           continue
         }
+        if(i.indexOf('rate') === 0 && i['current_status'] === 5){
+          continue
+        }
+        if(i.indexOf('current_status') == 0){
+          continue
+        }
         titles.push(dmt.translate.es[i] || i)
         if(typeof item[i] === 'object'){
           let val = item[i] ? item[i].name || item[i].text || item[i].description || '' : ''

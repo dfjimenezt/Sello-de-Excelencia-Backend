@@ -294,6 +294,9 @@ var Service = function () {
 			for (let i = 0; i < data.length; i++) {
 				let item = this.sintetizeRelation(data[i], {entity:'service'})
 				item.history = _history[item.id]
+				if(item.status.id != CONSTANTS.SERVICE.CUMPLE){
+					item.status.name = 'OTORGADO'
+				}
 				item.valid_to = _history[item.id][0].valid_to
 				item.certified = _history[item.id][0].timestamp
 				list.push(item)

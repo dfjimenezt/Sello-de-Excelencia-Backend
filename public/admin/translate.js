@@ -151,7 +151,8 @@ dmt.translate={
         "admin_platform":"Administrar Banner,Pie de página",
         "create_evaluation_request":"Postularse",
         "validity":"Vigencia",
-        "certified":"Certificado"
+        "certified":"Certificado",
+        "status":"Estado"
     },
 }
 try {

@@ -378,7 +378,8 @@ dmt.config = [
 				name: "Temáticas de interés",
 				path: "tematicas_interes",
 				entity: "questiontopic",
-				permission:'admin_config'
+				permission:'admin_config',
+				templateUrl: "views/questiontopic/list.html",
 			},
 			{
 				name: "Requisitos",
