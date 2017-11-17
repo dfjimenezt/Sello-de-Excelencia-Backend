@@ -335,6 +335,15 @@ angular.module('dmt-back').controller('detailItemUserController', function ($mdD
 	}
 	ctrl.getSuccess = function (results) {
 		ctrl.data = results.data.data[0];
+		if(!ctrl.data.region.id){
+			ctrl.data.region = null
+		}
+		if(!ctrl.data.country.id){
+			ctrl.data.country = null
+		}
+		if(!ctrl.data.city.id){
+			ctrl.data.city = null
+		}
 		ctrl._country = ctrl.data.country.id
 		ctrl._region = ctrl.data.region.id
 		for (let p in ctrl.currentEntity.fields) { //mysql boolean 1 / 0 to true / false            
