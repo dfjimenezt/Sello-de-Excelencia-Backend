@@ -75,7 +75,9 @@ var Institution = function () {
 		let q = `SELECT i.name Entidad, 
 			s.name Servicio, 
 			IF(next.id_service = current.id_service,s_from.name,'') Anterior, s_to.name Actual, 
-			IF(next.id_service = current.id_service,TIMEDIFF(next.timestamp,current.timestamp),0) Duración
+			IF(next.id_service = current.id_service,TIMEDIFF(next.timestamp,current.timestamp),0) Duración,
+			IF(next.id_service = current.id_service,current.timestamp,'') Inicial,  
+			IF(next.id_service = current.id_service,next.timestamp,'') Final
 			FROM service_status next join 
 			(select * from service_status ) current 
 			JOIN service s ON s.id = current.id_service 
@@ -83,7 +85,8 @@ var Institution = function () {
 			JOIN status s_from ON s_from.id = current.id_status
 			JOIN status s_to ON s_to.id = next.id_status
 			WHERE next.id = current.id +1
-			${institution ? 'AND i.id = \''+institution+'\'':''}`
+			${institution ? 'AND i.id = \''+institution+'\'':''}
+			ORDER BY i.id,s.id`
 		return this.customQuery(q).then((results)=>{
 			return {data:results}
 		})
