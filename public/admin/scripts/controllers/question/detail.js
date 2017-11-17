@@ -5,6 +5,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	ctrl.filters = page.filters
 	ctrl.service = entityService(ctrl.entity,ctrl.filters,$routeParams.id)
 	ctrl.service.loadEntity('category')
+	ctrl.service.entities.category.getData()
 	ctrl.page = page
 	ctrl.currentEntity = ctrl.service.currentEntity
 	ctrl.currentEntity.relations.forEach(ctrl.service.getEntityData)
@@ -14,8 +15,6 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	if(ctrl.filters || $routeParams.id){
 		ctrl.service.getData().then(()=>{
 			ctrl.data = ctrl.entities[ctrl.entity].data[0]
-			
-			ctrl.service.entities.category.getData()
 			ctrl.service.entities.questiontopic.query.filters.id_category = [ctrl.data.topic.id_category]
 		})
 	}
