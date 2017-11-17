@@ -39,7 +39,14 @@ function ($scope, $mdDialog, page, entityService, $http) {
 	ctrl.downloadCertified = function(){
 		let url = '/api/stats/certified?download=true'
 		ctrl.service.downloadUrl(url).then((response)=>{
-			var filename = 'Institucion.xlsx'
+			var filename = 'Otorgados.xlsx'
+			saveAs(response, filename)
+		})
+	}
+	ctrl.downloadDenied = function(){
+		let url = '/api/stats/denied?download=true'
+		ctrl.service.downloadUrl(url).then((response)=>{
+			var filename = 'NoOtorgados.xlsx'
 			saveAs(response, filename)
 		})
 	}

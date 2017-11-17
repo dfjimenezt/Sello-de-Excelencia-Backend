@@ -123,6 +123,9 @@ module.exports = {
         if(i.indexOf('current_status') == 0){
           continue
         }
+        if(i.indexOf('history') == 0){
+          continue
+        }
         titles.push(dmt.translate.es[i] || i)
         if(typeof item[i] === 'object'){
           let val = item[i] ? item[i].name || item[i].text || item[i].description || '' : ''

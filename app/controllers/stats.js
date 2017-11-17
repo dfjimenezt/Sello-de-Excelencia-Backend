@@ -16,7 +16,6 @@ var Auth = function () {
 	putMap = new Map(),
 	deleteMap = new Map()
 
-
 	let model_entity_user_answer = new(require('../models/entity_user_answer'))()
 	let model_entity_service_status = new(require('../models/entity_service_status'))()
 	let model_entity_service = new(require('../models/entity_service'))()
@@ -34,10 +33,14 @@ var Auth = function () {
 	var certifiedReport = function(user,params){
 		return model_entity_service.getByPostulateCertificationDate({limit:50000})
 	}
+	var notCertifiedReport = function(user,params){
+		return model_entity_service.getDenied()
+	}
 
 	getMap.set('service',{method:serviceReport,permits:Permissions.NONE})
 	getMap.set('performance',{method:performanceReport,permits:Permissions.NONE})
 	getMap.set('certified',{method:certifiedReport,permits:Permissions.NONE})
+	getMap.set('denied',{method:notCertifiedReport,permits:Permissions.NONE})
 
 	var params = [getMap, postMap, putMap, null]
 	BaseController.apply(this, params)
