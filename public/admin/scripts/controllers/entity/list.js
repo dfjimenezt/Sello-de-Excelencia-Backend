@@ -13,6 +13,7 @@ angular.module('dmt-back').controller('listItemEntityController',
 		ctrl.currentEntity = ctrl.service.currentEntity
 		ctrl.currentEntity.relations.forEach(ctrl.service.getEntityData)
 		ctrl.entities = ctrl.service.entities
+		
 		ctrl.options = ctrl.service.options
 		ctrl.data = null
 		ctrl.query = null

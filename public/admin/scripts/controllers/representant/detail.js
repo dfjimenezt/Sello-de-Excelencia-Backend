@@ -25,6 +25,7 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 			bookmark: null,
 			selected: [],
 			query: {
+				filters:{},
 				filter: '',
 				limit: 10,
 				page: 1,
@@ -42,6 +43,7 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 				bookmark: null,
 				selected: [],
 				query: {
+					filters:{},
 					filter: '',
 					limit: 10,
 					page: 1,
@@ -74,6 +76,44 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 			var entity = dmt.entities[relation.intermediate.entity]
 			var url = entity.endpoint + '?' + relation.intermediate.rightKey + '=' + selection + '&' + relation.intermediate.leftKey + '=' + $routeParams.id
 			$http.delete(url)
+		}
+	}
+	ctrl.selectedCountry = function(country){
+		if(country && country.id){
+			if(country.id !== ctrl._country){
+				ctrl._country = -1
+				ctrl.data.region = null
+				ctrl.data.id_region = null
+				ctrl.data.city = null
+				ctrl.data.id_city = null
+			}
+			ctrl.data.id_country = country.id
+			ctrl.entities.region.query.filters.id_country = [country.id]
+		}else{
+			ctrl.data.country = null
+			ctrl.data.region = null
+			ctrl.data.id_region = null
+			ctrl.data.city = null
+			ctrl.data.id_city = null
+		}
+	}
+	ctrl.selectedRegion = function (region){
+		if(region){
+			if(region.id !== ctrl._region){
+				ctrl._region = -1
+				ctrl.data.city = null
+				ctrl.data.id_city = null
+			}
+			ctrl.data.id_region = region.id
+			ctrl.entities.city.query.filters.id_region = [region.id]
+		}else{
+			ctrl.data.city = null
+			ctrl.data.id_city = null
+		}
+	}
+	ctrl.selectedCity = function(city){
+		if(city){
+			ctrl.data.id_city = city.id
 		}
 	}
 	ctrl.selectTab = function (tab) {
@@ -234,6 +274,14 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 				}
 			})
 		}
+		for (let key in ctrl.entities[relation.entity].query.filters) {
+			if (ctrl.entities[relation.entity].query.filters[key]) {
+				ctrl.entities[relation.entity].query.filters[key].forEach((value) => {
+					str.push("filter_field=" + key);
+					str.push("filter_value=" + value);
+				})
+			}
+		}
 		if (relation.rightKey) { //1-n
 			str.push("filter_field=" + relation.rightKey);
 			str.push("filter_value=" + $routeParams.id);
@@ -305,6 +353,8 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 	}
 	ctrl.getSuccess = function (results) {
 		ctrl.data = results.data.data[0];
+		ctrl._country = ctrl.data.country.id
+		ctrl._region = ctrl.data.region.id
 		for (let p in ctrl.currentEntity.fields) { //mysql boolean 1 / 0 to true / false            
 			if (ctrl.currentEntity.fields[p].type === "boolean") {
 				ctrl.data[ctrl.currentEntity.fields[p].name] = ctrl.data[ctrl.currentEntity.fields[p].name] === 1;

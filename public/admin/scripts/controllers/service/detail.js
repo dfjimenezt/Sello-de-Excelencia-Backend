@@ -11,6 +11,11 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	ctrl.currentEntity = ctrl.service.currentEntity
 	ctrl.today = new Date()
 	ctrl.STATES = STATES
+	ctrl.selectedInstitution = function(institution){
+		if(institution){
+			ctrl.data.id_institution = institution.id
+		}
+	}
 	ctrl.currentEntity.relations.forEach((relation)=>{
 		if(relation.entity == 'points'){
 			ctrl.points_relation = relation

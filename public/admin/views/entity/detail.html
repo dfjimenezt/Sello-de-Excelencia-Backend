@@ -15,59 +15,72 @@
         <form class="md-padding" name="ctrl.form" layout="row" flex>
           <div layout="row" layout-wrap class="input-row" layout-padding flex>
             <md-input-container flex="50">
-                <label >Id</label> 
-                <input type="text" ng-model="ctrl.data.id" ng-disabled="true">
+              <label>Id</label>
+              <input type="text" ng-model="ctrl.data.id" ng-disabled="true">
             </md-input-container>
             <md-input-container flex="50">
-                <label >Nombre</label> 
-                <input type="text" ng-model="ctrl.data.name" ng-disabled="true">
+              <label>Nombre</label>
+              <input type="text" ng-model="ctrl.data.name" ng-disabled="true">
             </md-input-container>
             <md-input-container flex="50">
-                <label >Tipo de Institución</label> 
-                <md-select ng-model="ctrl.data.id_institution_type">
-                    <md-option ng-repeat="o in ctrl.options.id_institution_type" value="{{o.id}}">{{o.name}}</md-option>
-                  </md-select>  
+              <label>Tipo de Institución</label>
+              <md-select ng-model="ctrl.data.id_institution_type">
+                <md-option ng-repeat="o in ctrl.options.id_institution_type" value="{{o.id}}">{{o.name}}</md-option>
+              </md-select>
             </md-input-container>
             <md-input-container flex="50">
-                <md-checkbox ng-model="ctrl.data.active" aria-label="Activo">Activo</md-checkbox>
+              <md-checkbox ng-model="ctrl.data.active" aria-label="Activo">Activo</md-checkbox>
             </md-input-container>
             <md-input-container flex="50">
-                <label >Correo electrónico</label> 
-                <input type="text" ng-model="ctrl.data.email" ng-disabled="true">
+              <label>Correo electrónico</label>
+              <input type="text" ng-model="ctrl.data.email" ng-disabled="true">
             </md-input-container>
             <md-input-container flex="50">
-                <label >Telefóno</label> 
-                <input type="text" ng-model="ctrl.data.phone" ng-disabled="true">
+              <label>Telefóno</label>
+              <input type="text" ng-model="ctrl.data.phone" ng-disabled="true">
             </md-input-container>
             <md-input-container flex="50">
-                <label >Extensión</label> 
-                <input type="text" ng-model="ctrl.data.extension" ng-disabled="true">
+              <label>Extensión</label>
+              <input type="text" ng-model="ctrl.data.extension" ng-disabled="true">
             </md-input-container>
             <md-input-container flex="50">
-                <label >Telefóno</label> 
-                <input type="text" ng-model="ctrl.data.phone" ng-disabled="true">
+              <label>Telefóno</label>
+              <input type="text" ng-model="ctrl.data.phone" ng-disabled="true">
             </md-input-container>
             <md-input-container flex="50">
-                <label >País</label> 
-                <md-select ng-model="ctrl.data.id_country" ng-change="ctrl.selectCountry()">
-                    <md-option ng-repeat="o in ctrl.options.id_country" value="{{o.id}}">{{o.name}}</md-option>
-                </md-select>  
+              <label>País</label>
+              <md-autocomplete md-items="item in ctrl.entities.country.data" md-item-text="item.name " md-selected-item="ctrl.data.country"
+                md-selected-item-change="ctrl.selectedCountry(item)" md-search-text-change="ctrl.entities.country.search()"
+                md-search-text="ctrl.entities.country.query.filter" md-select-on-match="true" md-input-name="country" md-autofocus="true"
+                md-autoselect="true" placeholder="País">
+                <md-item-template>
+                  <span md-highlight-text="ctrl.entities.country.query.filter" md-highlight-flags="^i">{{item.name}}</span>
+                </md-item-template>
+              </md-autocomplete>
             </md-input-container>
             <md-input-container flex="50">
-                <label >Región</label> 
-                <md-select ng-model="ctrl.data.id_region" ng-change="ctrl.selectRegion()" ng-disabled="!ctrl.data.id_country">
-                    <md-option ng-repeat="o in ctrl.options.id_region" value="{{o.id}}">{{o.name}}</md-option>
-                </md-select>  
+              <label>Región</label>
+              <md-autocomplete md-items="item in ctrl.entities.region.data" md-item-text="item.name " md-selected-item="ctrl.data.region"
+                md-selected-item-change="ctrl.selectedRegion(item)" md-search-text-change="ctrl.entities.region.search()" md-search-text="ctrl.entities.region.query.filter"
+                md-select-on-match="true" md-input-name="institution" md-autofocus="true" md-autoselect="true" placeholder="Region">
+                <md-item-template>
+                  <span md-highlight-text="ctrl.entities.region.query.filter" md-highlight-flags="^i">{{item.name}}</span>
+                </md-item-template>
+              </md-autocomplete>
             </md-input-container>
             <md-input-container flex="50">
-                <label >Ciudad</label> 
-                <md-select ng-model="ctrl.data.id_city" ng-disabled="!ctrl.data.id_region">
-                    <md-option ng-repeat="o in ctrl.options.id_city" value="{{o.id}}">{{o.name}}</md-option>
-                </md-select>  
+              <label>Ciudad</label>
+              <md-autocomplete md-items="item in ctrl.entities.city.data" md-item-text="item.name " md-selected-item="ctrl.data.city" 
+              md-selected-item-change="ctrl.selectedCity(item)" md-search-text-change="ctrl.entities.city.search()" md-search-text="ctrl.entities.city.query.filter" 
+              md-select-on-match="true" md-input-name="city" md-autofocus="true" md-autoselect="true" placeholder="Ciudad">
+                <md-item-template>
+                  <span md-highlight-text="ctrl.entities.city.query.filter" md-highlight-flags="^i">{{item.name}}</span>
+                </md-item-template>
+              </md-autocomplete>
             </md-input-container>
             <md-input-container flex="50">
-                <label >Telefóno</label> 
-                <md-datepicker ng-model="ctrl.data.timestamp" ng-disabled="true"></md-datepicker>
+              <label>Telefóno</label>
+              <md-datepicker ng-model="ctrl.data.timestamp" ng-disabled="true"></md-datepicker>
             </md-input-container>
           </div>
         </form>
@@ -116,12 +129,12 @@
       </md-content>
     </md-tab>
     <md-tab label="Servicios">
-        <md-toolbar class="md-hue-1" layout="row" flex layout-align="start center">
-            <span flex></span>
-            <md-button  class="md-icon-button md-raised md-primary" ng-click="ctrl.downloadServices()">
-                <md-icon class="material-icons">file_download</md-icon>
-            </md-button>
-          </md-toolbar>
+      <md-toolbar class="md-hue-1" layout="row" flex layout-align="start center">
+        <span flex></span>
+        <md-button class="md-icon-button md-raised md-primary" ng-click="ctrl.downloadServices()">
+          <md-icon class="material-icons">file_download</md-icon>
+        </md-button>
+      </md-toolbar>
       <md-content>
         <div layout="column" flex>
           <table md-table ng-model="ctrl.entities.service.selected" md-progress="ctrl.entities.service.promise">
@@ -186,8 +199,8 @@
     <md-tab label="Puntos">
       <md-toolbar class="md-hue-1" layout="row" flex layout-align="start center">
         <span flex></span>
-        <md-button  class="md-icon-button md-raised md-primary" ng-click="ctrl.downloadPoints()">
-            <md-icon class="material-icons">file_download</md-icon>
+        <md-button class="md-icon-button md-raised md-primary" ng-click="ctrl.downloadPoints()">
+          <md-icon class="material-icons">file_download</md-icon>
         </md-button>
         <md-button class="md-raised md-accent" ng-click="ctrl.createPoints($event)">AGREGAR PUNTOS</md-button>
       </md-toolbar>
@@ -209,8 +222,8 @@
                   <span>Total Puntos</span>
                 </th>
                 <th md-column md-order-by="id_motives">
-                    <span>Motivo</span>
-                  </th>
+                  <span>Motivo</span>
+                </th>
                 <th md-column>
                   <span>Justificación</span>
                 </th>
@@ -234,8 +247,10 @@
                   <span>{{ item.result }}</span>
                 </td>
                 <td md-cell>
-                    <span>{{ ctrl.entities.motivename.data | linkvalue:{name:'name',foreign_key:'id',foreign_name:'name'}:item.motives }}</span>
-                  </td>
+                  <span>{{ ctrl.entities.motivename.data | linkvalue:{name:'name',foreign_key:'id',foreign_name:'name'}:item.motives
+                    }}
+                  </span>
+                </td>
                 <td md-cell>
                   <span>{{ item.justification }}</span>
                 </td>

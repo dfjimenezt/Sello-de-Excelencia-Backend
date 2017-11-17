@@ -15,12 +15,12 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	ctrl.entities = ctrl.service.entities
 	ctrl.options = ctrl.service.options
 	ctrl.loading = false
+	ctrl.country = null
 	if(ctrl.filters || $routeParams.id){
 		ctrl.service.getData().then(()=>{
 			ctrl.data = ctrl.entities[ctrl.entity].data[0]
-			ctrl.service.entities.city.data.push(ctrl.data.city)
-			ctrl.service.entities.country.data.push(ctrl.data.country)
-			ctrl.service.entities.region.data.push(ctrl.data.region)
+			ctrl._country = ctrl.data.country.id
+			ctrl._region = ctrl.data.region.id
 			return $http.get('/api/configuration/user?simple=false&filter_field=institutions.id&filter_value='+$routeParams.id)
 		}).then((results)=>{
 			if(results.data.total_results == 1){
@@ -33,13 +33,42 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 			}
 		})
 	}
-	ctrl.selectCountry = function(){
-		ctrl.service.entities.region.filters.id_country = [ctrl.data.id_country]
-		ctrl.service.entities.region.getData()
+	ctrl.selectedCountry = function(country){
+		if(country){
+			if(country.id !== ctrl._country){
+				ctrl._country = -1
+				ctrl.data.region = null
+				ctrl.data.id_region = null
+				ctrl.data.city = null
+				ctrl.data.id_city = null
+			}
+			ctrl.data.id_country = country.id
+			ctrl.service.entities.region.query.filters.id_country = [country.id]
+		}else{
+			ctrl.data.region = null
+			ctrl.data.id_region = null
+			ctrl.data.city = null
+			ctrl.data.id_city = null
+		}
 	}
-	ctrl.selectRegion = function (){
-		ctrl.service.entities.city.filters.id_region = [ctrl.data.id_region]
-		ctrl.service.entities.city.getData()
+	ctrl.selectedRegion = function (region){
+		if(region){
+			if(region.id !== ctrl._region){
+				ctrl._region = -1
+				ctrl.data.city = null
+				ctrl.data.id_city = null
+			}
+			ctrl.data.id_region = region.id
+			ctrl.service.entities.city.query.filters.id_region = [region.id]
+		}else{
+			ctrl.data.city = null
+			ctrl.data.id_city = null
+		}
+	}
+	ctrl.selectedCity = function(city){
+		if(city){
+			ctrl.data.id_city = city.id
+		}
 	}
 	
 	ctrl.selectTab = function (tab) {

@@ -303,8 +303,8 @@ var EntityModel = function (info) {
 							}
 						})
 					}
-					if (ety.relations && params.simple === false) {
-						ety.relations.forEach((relation) => {
+					if (info.relations && params.simple === false) {
+						info.relations.forEach((relation) => {
 							let table = getTable(relation.entity || relation.table)
 							let view = resolveViewName(relation.entity || relation.table, params.lang) +'_'+relation.name
 							table.fields.forEach((f) => {
@@ -363,7 +363,6 @@ var EntityModel = function (info) {
 							}
 						}
 						let joins = []
-						//rwhere = rwhere.slice(0, -4) + ')'
 						if (relation.intermediate) { // n-n relation 
 							let iname = resolveViewName(relation.intermediate.entity, params.lang)
 							joins.push(`LEFT JOIN \`${iname}\` \`intermediate_${intermediate}\` ON \`intermediate_${intermediate}\`.\`${relation.intermediate.leftKey}\` = ${vname}.\`${getTable(info.table).defaultSort}\`
@@ -390,23 +389,6 @@ var EntityModel = function (info) {
 					query += "WHERE " + where
 				}
 				query += "GROUP BY `key` "
-				/*for (let r in relation_filters) {
-					for (let k in relation_filters[r]) {
-						let relation = null
-						console.warn("Doing relation filters can reduce the performance")
-						for (let i = 0; i < info.relations.length; i++) {
-							if (info.relations[i].name === r) {
-								relation = info.relations[i]
-								break
-							}
-						}
-						if (!relation) {
-							break
-						}
-						let name = resolveViewName(relation.entity, params.lang)
-						//query += `HAVING COUNT(\`${name + '`.`' + k}\`) = ${relation_filters[r][k].length} `
-					}
-				}*/
 				query += "ORDER BY `" + resolveViewName(info.entity, params.lang) + "`." + params.order + " LIMIT " + ((parseInt(params.page) - 1) * params.limit) + "," + params.limit + ";"
 				query += "SELECT FOUND_ROWS() as total"
 				return resolveQuery(query, connection).then((result) => {

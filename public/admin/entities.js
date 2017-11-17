@@ -112,7 +112,7 @@ dmt.entities = {
       },
       {
         type: "1-n",
-        name: "points",
+        name: "record_points",
         rightKey: "id_user",
         entity: "points"
       },

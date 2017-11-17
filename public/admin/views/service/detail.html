@@ -12,22 +12,63 @@
         </md-toolbar>
         <form class="md-padding" name="ctrl.form" layout="row" flex>
           <div layout="row" layout-wrap class="input-row" layout-padding flex>
-            <md-input-container ng-repeat="f in ctrl.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="50">
-              <label ng-if="f.type!=='boolean' && f.type !=='file'">{{f.name | translate}}</label>
-              <input type="number" ng-if="f.type=='int'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
-              <input type="text" ng-if="f.type=='string'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
-              <md-datepicker ng-model="ctrl.data[f.name]" ng-if="f.type=='datetime'" ng-disabled="f.disabled"></md-datepicker>
-              <input type="email" ng-if="f.type=='email'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
-              <md-checkbox ng-if="f.type=='boolean'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled">{{f.name | translate}}</md-checkbox>
-              <md-select ng-if="f.type=='link'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled">
-                <md-option ng-repeat="o in ctrl.options[f.name]" value="{{o[f.foreign_key]}}">{{o[f.foreign_name]}}</md-option>
+            <md-input-container flex="50">
+              <label>Id</label>
+              <input type="text" ng-model="ctrl.data.id" ng-disabled="true">
+            </md-input-container>
+            <md-input-container flex="50">
+              <label>Nombre</label>
+              <input type="text" ng-model="ctrl.data.name">
+            </md-input-container>
+            <md-input-container flex="50">
+              <label>Categoría</label>
+              <md-select ng-model="ctrl.data.id_category" ng-disabled="true">
+                <md-option ng-repeat="o in ctrl.options.id_category" value="{{o.id}}">{{o.name}}</md-option>
               </md-select>
-              <textarea ng-if="f.type=='text'" ng-model="ctrl.data[f.name]"></textarea>
-              <div style="text-align:center;" ng-if="f.type=='file'" ngf-select ng-model="ctrl.data[f.name]">
-                <img ngf-thumbnail="ctrl.data[f.name]" />
-                <br/>
-                <md-button class="md-raised">{{f.name | translate}}</md-button>
-              </div>
+            </md-input-container>
+            <md-input-container flex="50">
+              <label>Estado Actual</label>
+              <md-select ng-model="ctrl.data.current_status" ng-disabled="true">
+                <md-option ng-repeat="o in ctrl.options.current_status" value="{{o.id}}">{{o.name}}</md-option>
+              </md-select>
+            </md-input-container>
+            <md-input-container flex="50">
+              <label>Nivel</label>
+              <input type="text" ng-model="ctrl.data.level" ng-disabled="true">
+            </md-input-container>
+            <md-input-container flex="50">
+              <label>Calificación</label>
+              <input type="text" ng-model="ctrl.data.rate" ng-disabled="true">
+            </md-input-container>
+            <md-input-container flex="50">
+              <label>Url</label>
+              <input type="text" ng-model="ctrl.data.url">
+            </md-input-container>
+            <md-input-container flex="50">
+              <label>Entidad</label>
+              <md-autocomplete md-items="item in ctrl.entities.institution.data" md-item-text="item.name " md-selected-item="ctrl.data.institution"
+                md-selected-item-change="ctrl.selectedInstitution(item)" md-search-text-change="ctrl.entities.institution.search()"
+                md-search-text="ctrl.entities.institution.query.filter" md-select-on-match="true" md-input-name="institution"
+                md-autofocus="true" md-autoselect="true" placeholder="Entidad">
+                <md-item-template>
+                  <span md-highlight-text="ctrl.entities.institution.query.filter" md-highlight-flags="^i">{{item.name}}</span>
+                </md-item-template>
+              </md-autocomplete>
+            </md-input-container>
+            <md-input-container flex="50">
+              <label>Usuario de Prueba</label>
+              <input type="text" ng-model="ctrl.data.test_user" ng-disabled="true">
+            </md-input-container>
+            <md-input-container flex="50">
+              <label>Clave de Prueba</label>
+              <input type="text" ng-model="ctrl.data.test_password" ng-disabled="true">
+            </md-input-container>
+            <md-input-container flex="50">
+              <md-checkbox ng-model="ctrl.data.is_active" aria-label="Activo">Activo</md-checkbox>
+            </md-input-container>
+            <md-input-container flex="50">
+              <label>Fecha de Creación</label>
+              <md-datepicker ng-model="ctrl.data.timestamp" ng-disabled="true"></md-datepicker>
             </md-input-container>
           </div>
         </form>
@@ -124,9 +165,7 @@
         <div layout="column" flex>
           <span ng-if="ctrl.data.current_status == 1" class="md-primary">* Al aprobar todos los requisitos; el servicio pasará a Evaluación, y los requisitos se asignarán automáticamente</span>
           <table md-table md-progress="ctrl.entities.user_answer.promise">
-            <thead md-head 
-              md-order="ctrl.entities.user_answer.query.order"
-              md-on-reorder="ctrl.entities.user_answer.getData">
+            <thead md-head md-order="ctrl.entities.user_answer.query.order" md-on-reorder="ctrl.entities.user_answer.getData">
               <tr md-row>
                 <th md-column style="max-width:150px;overflow:hidden;text-overflow:ellipsis;" md-order-by="id_question">
                   <span>Requisito</span>
@@ -135,10 +174,7 @@
                   <span>Comentario</span>
                 </th>
                 <th md-column>
-                    <md-select 
-                    multiple="true" 
-                    ng-model="ctrl.entities.user_answer.query.filters['service.id_category']"
-                    placeholder="Categoría"
+                  <md-select multiple="true" ng-model="ctrl.entities.user_answer.query.filters['service.id_category']" placeholder="Categoría"
                     ng-change="ctrl.entities.user_answer.getData()">
                     <md-option ng-repeat="o in ctrl.entities.category.data" value="{{o.id}}">{{o.name}}</md-option>
                   </md-select>
@@ -163,8 +199,9 @@
                   <span>{{ item.comment }}</span>
                 </td>
                 <td md-cell>
-                    <span>{{ ctrl.entities.category.data | linkvalue:{name:'id_category',foreign_key:'id',foreign_name:'name'}:item.service }}</span>
-                  </td>
+                  <span>{{ ctrl.entities.category.data | linkvalue:{name:'id_category',foreign_key:'id',foreign_name:'name'}:item.service
+                    }}</span>
+                </td>
                 <td md-cell>
                   <span>
                     <a ng-if="item.media.url" href="{{item.media.url}}">Adjunto</a>
@@ -175,9 +212,11 @@
                 </td>
                 <td md-cell>
                   <div ng-if="item.id_status == 1">
-                    <md-button aria-label="accept" ng-click="item.id_status = ctrl.STATES.EVALUATION_REQUEST.POR_ASIGNAR;ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-raised">
+                    <md-button aria-label="accept" ng-click="item.id_status = ctrl.STATES.EVALUATION_REQUEST.POR_ASIGNAR;ctrl.updateItem(item,f,ctrl.user_answer_relation);"
+                      class="md-primary md-raised">
                       Aprobar </md-button>
-                    <md-button aria-label="reject" ng-click="item.id_status = ctrl.STATES.EVALUATION_REQUEST.ERROR; ctrl.updateItem(item,f,ctrl.user_answer_relation);" class="md-primary md-hue-1 md-raised">
+                    <md-button aria-label="reject" ng-click="item.id_status = ctrl.STATES.EVALUATION_REQUEST.ERROR; ctrl.updateItem(item,f,ctrl.user_answer_relation);"
+                      class="md-primary md-hue-1 md-raised">
                       Rechazar </md-button>
                   </div>
                   <div>

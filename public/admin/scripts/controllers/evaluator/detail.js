@@ -28,18 +28,47 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 			ctrl.service.entities.motivename.getData()
 			ctrl.service.entities.usertype.getData()
 			ctrl.service.entities.request_status.getData()
-			ctrl.service.entities.city.data.push(ctrl.data.city)
-			ctrl.service.entities.country.data.push(ctrl.data.country)
-			ctrl.service.entities.region.data.push(ctrl.data.region)
+			ctrl._country = ctrl.data.country.id
+			ctrl._region = ctrl.data.region.id
 		})
 	}
-	ctrl.selectCountry = function(){
-		ctrl.service.entities.region.filters.id_country = [ctrl.data.id_country]
-		ctrl.service.entities.region.getData()
+	ctrl.selectedCountry = function(country){
+		if(country && country.id){
+			if(country.id !== ctrl._country){
+				ctrl._country = -1
+				ctrl.data.region = null
+				ctrl.data.id_region = null
+				ctrl.data.city = null
+				ctrl.data.id_city = null
+			}
+			ctrl.data.id_country = country.id
+			ctrl.service.entities.region.query.filters.id_country = [country.id]
+		}else{
+			ctrl.data.country = null
+			ctrl.data.region = null
+			ctrl.data.id_region = null
+			ctrl.data.city = null
+			ctrl.data.id_city = null
+		}
 	}
-	ctrl.selectRegion = function (){
-		ctrl.service.entities.city.filters.id_region = [ctrl.data.id_region]
-		ctrl.service.entities.city.getData()
+	ctrl.selectedRegion = function (region){
+		if(region){
+			if(region.id !== ctrl._region){
+				ctrl._region = -1
+				ctrl.data.city = null
+				ctrl.data.id_city = null
+			}
+			ctrl.data.id_region = region.id
+			ctrl.service.entities.city.query.filters.id_region = [region.id]
+		}else{
+			ctrl.data.city = null
+			ctrl.data.id_city = null
+		}
+	}
+	ctrl.selectedCity = function(city){
+		if(city){
+			ctrl.data.id_city = city.id
+		}
 	}
 	ctrl.selectTab = function (tab) {
 		ctrl.tab = tab
