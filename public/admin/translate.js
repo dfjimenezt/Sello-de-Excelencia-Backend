@@ -150,6 +150,7 @@ dmt.translate={
         "create_chat":"Iniciar Chat (Para Entidades y Evaluadores)",
         "admin_platform":"Administrar Banner,Pie de página",
         "create_evaluation_request":"Postularse",
+        "validity":"Vigencia"
     },
 }
 try {
