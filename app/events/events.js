@@ -551,7 +551,7 @@ var Events = function () {
 							<a href="${HOST}/sign-in">enlace.</a></p>
 							<p>Así mismo, te invitamos a insertar el siguiente código en tu página web o servicio digital para mostrarle a los ciudadanos tu certificación.</p>
 							<textarea rows="4" style="border:none;" cols="150" disabled="true">
-								<embed width="160" height="160" src="${HOST}/embeded/${_new.id}"></embed>
+								<embed width="200" height="180" src="${HOST}/embeded/${_new.id}"></embed>
 							</textarea>
 							<p>Nuestros mejores deseos,<\p>
 							<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
