@@ -97,7 +97,6 @@ var Service = function () {
 			for (let i = 0; i < data.length; i++) {
 				let item = this.sintetizeRelation(data[i], {entity:'service'})
 				item.history = _history[item.id]
-				item.valid_to = _history[item.id][0].valid_to
 				item['Calificado'] = _history[item.id][0].timestamp
 				list.push(item)
 			}
