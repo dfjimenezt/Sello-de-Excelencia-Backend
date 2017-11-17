@@ -97,6 +97,7 @@ var Service = function () {
 			for (let i = 0; i < data.length; i++) {
 				let item = this.sintetizeRelation(data[i], {entity:'service'})
 				item.history = _history[item.id]
+				delete item.is_active
 				item['Calificado'] = _history[item.id][0].timestamp
 				list.push(item)
 			}
