@@ -153,6 +153,7 @@ var User_answer = function () {
 			results.forEach((item)=>{
 				if(!_requisites[item.id]){
 					_requisites[item.id] = {
+						'Entidad':item.institution,
 						'Servicio':item.service,
 						'Requisito':item.requisite,
 						'Categoría':item.category,
@@ -166,6 +167,7 @@ var User_answer = function () {
 						'Retroalimentación':0,
 						'Cumple':0,
 						'No Cumple':0,
+						'Tiempo':item.time
 					}
 				}
 				item.Rechazado += item.branch
