@@ -64,10 +64,12 @@
               </tr>
             </thead>
             <tbody md-body>
-              <tr md-row md-on-select="ctrl.select" md-on-deselect="ctrl.unselect" md-select="item[ctrl.entities[relation.entity].table.defaultSort]"
-                md-auto-select ng-repeat="item in ctrl.entities[relation.entity].data">
-                <td md-cell ng-repeat="f in ctrl.entities[relation.entity].table.fields" ng-click="ctrl.editField($event,item,f,relation)"
-                  ng-if="f.name !== relation.rightKey">
+              <tr md-row md-on-select="ctrl.select" md-on-deselect="ctrl.unselect" 
+                md-select="item[ctrl.entities[relation.entity].table.defaultSort]"
+                md-auto-select ng-repeat="item in ctrl.entities[relation.entity].data"
+                ng-if="item.name !== 'admin_answers' && item.name !== 'admin_points'">
+                <td md-cell ng-repeat="f in ctrl.entities[relation.entity].table.fields" 
+                  ng-click="ctrl.editField($event,item,f,relation)" ng-if="f.name !== relation.rightKey" >
                   <span ng-if="f.type !== 'link'">{{ item[f.name] | translate}}</span>
                   <span ng-if="f.type === 'link'">{{ item[f.table][f.foreign_name] }}</span>
                 </td>
