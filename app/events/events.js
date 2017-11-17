@@ -262,7 +262,7 @@ var Events = function () {
 							if (approved + rejected === total) {
 								if (approved >= Math.ceil(total / 2)) {
 									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.EVALUATION_REQUEST.CUMPLE }, { id: _answer.id })
-								} else if (rejected >= Math.ceil(total / 2)) {
+								} else {//if (rejected >= Math.ceil(total / 2)) {
 									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE }, { id: _answer.id })
 								}
 							}
@@ -298,7 +298,7 @@ var Events = function () {
 							if (approved + rejected === total) {
 								if (approved >= Math.ceil(total / 2)) {
 									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.EVALUATION_REQUEST.CUMPLE }, { id: _answer.id })
-								} else if (rejected >= Math.ceil(total / 2)) {
+								} else {//if (rejected >= Math.ceil(total / 2)) {
 									model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE }, { id: _answer.id })
 								}
 							}

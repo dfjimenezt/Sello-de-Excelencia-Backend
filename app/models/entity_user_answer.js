@@ -130,6 +130,7 @@ var User_answer = function () {
 	}
 	this.getStatsByService = function(service){
 		let q = `SELECT 
+			i.name institution,
 			s.name service,
 			q.id id,
 			q.text requisite,
@@ -140,6 +141,7 @@ var User_answer = function () {
 			IFNULL(e_r.branch,0) branch
 			 FROM user_answer u_a 
 			JOIN service s on u_a.id_service = s.id 
+			JOIN institution i on i.id = s.id_institution 
 			JOIN evaluation_request e_r on e_r.id_answer = u_a.id
 			JOIN question q on u_a.id_question = q.id
 			JOIN category c on s.id_category = c.id 
