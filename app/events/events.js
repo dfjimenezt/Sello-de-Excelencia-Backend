@@ -541,11 +541,9 @@ var Events = function () {
 							<p>Te invitamos a descargar el diploma en la plataforma del Sello de Excelencia Gobierno Digital Colombia en el siguiente 
 							<a href="${HOST}/sign-in">enlace.</a></p>
 							<p>Así mismo, te invitamos a insertar el siguiente código en tu página web o servicio digital para mostrarle a los ciudadanos tu certificación.</p>
-							<code>
-								<pre>
-									<embed width="400" height="800" src="${HOST}/embeded/${_new.id}"></embed>
-								</pre>
-							</code>
+							<textarea rows="4" style="border:none;" cols="150" disabled="true">
+								<embed width="160" height="160" src="${HOST}/embeded/${_new.id}"></embed>
+							</textarea>
 							<p>Nuestros mejores deseos,<\p>
 							<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
 						})
