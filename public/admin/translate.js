@@ -152,7 +152,8 @@ dmt.translate={
         "create_evaluation_request":"Postularse",
         "validity":"Vigencia",
         "certified":"Certificado",
-        "status":"Estado"
+        "status":"Estado",
+        "institution":"Entidad"
     },
 }
 try {
