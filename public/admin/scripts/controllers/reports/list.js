@@ -24,14 +24,21 @@ function ($scope, $mdDialog, page, entityService, $http) {
 	}
 
 	ctrl.downloadPerformance = function(){
-		ctrl.service.downloadUrl('/api/stats/performance?download=true&institution='+ctrl._institution.id).then((response)=>{
+		let url = ''
+		if(ctrl._filter === 2){
+			url = '/api/stats/performance?download=true&institution='+ctrl._institution.id
+		}else{
+			url = '/api/stats/performance?download=true'
+		}
+		ctrl.service.downloadUrl(url).then((response)=>{
 			var filename = 'Institucion.xlsx'
 			saveAs(response, filename)
 		})
 	}
 
-	ctrl.downloadPerformanceAll = function(){
-		ctrl.service.downloadUrl('/api/stats/performance?download=true').then((response)=>{
+	ctrl.downloadCertified = function(){
+		let url = '/api/stats/certified?download=true'
+		ctrl.service.downloadUrl(url).then((response)=>{
 			var filename = 'Institucion.xlsx'
 			saveAs(response, filename)
 		})

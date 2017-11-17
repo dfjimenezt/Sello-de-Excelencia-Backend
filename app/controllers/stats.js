@@ -19,6 +19,7 @@ var Auth = function () {
 
 	let model_entity_user_answer = new(require('../models/entity_user_answer'))()
 	let model_entity_service_status = new(require('../models/entity_service_status'))()
+	let model_entity_service = new(require('../models/entity_service'))()
 	let model_entity_institution = new(require('../models/entity_institution'))()
 	let CONSTANTS = require('../events/constants')
 
@@ -30,14 +31,13 @@ var Auth = function () {
 		return model_entity_institution.getPerformance(params.institution)
 	}
 
-	var actualReport = function(user,params){
-		model_entity_user_answer.getByParams({'service.id_category':params.category}).then((results)=>{
-			
-		})
+	var certifiedReport = function(user,params){
+		return model_entity_service.getByPostulateCertificationDate({limit:50000})
 	}
 
 	getMap.set('service',{method:serviceReport,permits:Permissions.NONE})
 	getMap.set('performance',{method:performanceReport,permits:Permissions.NONE})
+	getMap.set('certified',{method:certifiedReport,permits:Permissions.NONE})
 
 	var params = [getMap, postMap, putMap, null]
 	BaseController.apply(this, params)

@@ -65,7 +65,7 @@ var Service = function () {
 		)
 		WHERE \`service\`.\`is_active\` = '1'
 		GROUP BY \`id_service\`) \`service_status\` ON \`service_status\`.\`id_service\` = \`service\`.\`id\` 
-		GROUP BY \`key\` ORDER BY \`service\`.id LIMIT 0,5000;`
+		GROUP BY \`key\` ORDER BY \`service\`.id ;`
 		let keys = []
 		return this.customQuery(q).then((results)=>{
 			results.forEach((result)=>{
@@ -236,6 +236,8 @@ var Service = function () {
 		params.limit = params.limit || 20
 		params.page = params.page || 1
 		params.order = params.order || 'id asc'
+		params.filter_field = params.filter_field || []
+		params.filter_value = params.filter_value || []
 		
 		let _filters = {}
 		for(let i = 0 ; i < params.filter_field.length ; i++){
@@ -292,6 +294,8 @@ var Service = function () {
 			for (let i = 0; i < data.length; i++) {
 				let item = this.sintetizeRelation(data[i], {entity:'service'})
 				item.history = _history[item.id]
+				item.valid_to = _history[item.id][0].valid_to
+				item.certified = _history[item.id][0].timestamp
 				list.push(item)
 			}
 			return { data: list, total_results: total }

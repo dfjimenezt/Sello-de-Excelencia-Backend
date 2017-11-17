@@ -74,6 +74,8 @@ var Institution = function () {
 	this.getPerformance = function(institution){
 		let q = `SELECT i.name Entidad, 
 			s.name Servicio, 
+			c.name Categoría,
+			s.level Nivel,
 			IF(next.id_service = current.id_service,s_from.name,'') Anterior, s_to.name Actual, 
 			IF(next.id_service = current.id_service,TIMEDIFF(next.timestamp,current.timestamp),0) Duración,
 			IF(next.id_service = current.id_service,current.timestamp,'') Inicial,  
@@ -84,6 +86,7 @@ var Institution = function () {
 			JOIN institution i ON i.id = s.id_institution
 			JOIN status s_from ON s_from.id = current.id_status
 			JOIN status s_to ON s_to.id = next.id_status
+			JOIN category c ON c.id = s.id_category
 			WHERE next.id = current.id +1
 			${institution ? 'AND i.id = \''+institution+'\'':''}
 			ORDER BY i.id,s.id`
