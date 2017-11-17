@@ -108,7 +108,6 @@ module.exports = {
     })
   },
   writeExcelFile: function(data){
-    //data = [['titulo','nombre','xx'],['hola','nombre','si']]
     let dmt = require('../../public/admin/translate.js');
     var d = []
     data.forEach(function(item){
@@ -118,7 +117,7 @@ module.exports = {
         if(i.indexOf('id_') == 0){
           continue
         }
-        if(i.indexOf('rate') === 0 && i['current_status'] === 5){
+        if(item['current_status'] === 5 && i.indexOf('rate') === 0 && i.indexOf('active')){
           continue
         }
         if(i.indexOf('current_status') == 0){
