@@ -129,10 +129,14 @@ var User_answer = function () {
 		})
 	}
 	this.getStatsByService = function(service){
-		let q = `SELECT s.name service,q.id id,q.text requisite,
+		let q = `SELECT 
+			s.name service,
+			q.id id,
+			q.text requisite,
 			c.name category,
 			q.level level,
-			e_r.id_request_status status,
+			u_a.id_status status,
+			e_r.id_request_status r_status,
 			IFNULL(e_r.branch,0) branch
 			 FROM user_answer u_a 
 			JOIN service s on u_a.id_service = s.id 
@@ -150,9 +154,10 @@ var User_answer = function () {
 						'Requisito':item.requisite,
 						'Categoría':item.category,
 						'Nivel':item.level,
-						'Evaluaciones':0,
-						'Verificado':0,
-						'No Verificado':0,
+						'En Validación':0,
+						'Por Asignar':0,
+						'Rechazado por admon':0,
+						'Número Evaluadores':0,
 						'Aceptado':0,
 						'Rechazado':0,
 						'Retroalimentación':0,
@@ -160,28 +165,31 @@ var User_answer = function () {
 						'No Cumple':0,
 					}
 				}
+				if(item.status === CONSTANTS.EVALUATION_REQUEST.PENDIENTE){
+					_requisites[item.id]['En Validación']++
+				}
 				if(item.status === CONSTANTS.EVALUATION_REQUEST.POR_ASIGNAR){
-					_requisites[item.id].Verificado++
+					_requisites[item.id]['Por Asignar']++
 				}
 				if(item.status === CONSTANTS.EVALUATION_REQUEST.ERROR){
-					_requisites[item.id]['No Verificado']++
+					_requisites[item.id]['Rechazado por admono']++
 				}
-				if(item.status === CONSTANTS.EVALUATION_REQUEST.ACEPTADO){
+				if(item.r_status === CONSTANTS.EVALUATION_REQUEST.ACEPTADO){
 					_requisites[item.id].Aceptado++
-					_requisites[item.id].Evaluaciones++
+					_requisites[item.id]['Número Evaluadores']++
 				}
 				item.Rechazado = item.branch
-				if(item.status === CONSTANTS.EVALUATION_REQUEST.RETROALIMENTACION){
-					_requisites[item.id].Aceptado++
-					_requisites[item.id].Evaluaciones++
+				if(item.r_status === CONSTANTS.EVALUATION_REQUEST.RETROALIMENTACION){
+					_requisites[item.id]['Retroalimentación']++
+					_requisites[item.id]['Número Evaluadores']++
 				}
-				if(item.status === CONSTANTS.EVALUATION_REQUEST.CUMPLE){
+				if(item.r_status === CONSTANTS.EVALUATION_REQUEST.CUMPLE){
 					_requisites[item.id].Cumple++
-					_requisites[item.id].Evaluaciones++
+					_requisites[item.id]['Número Evaluadores']++
 				}
-				if(item.status === CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE){
+				if(item.r_status === CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE){
 					_requisites[item.id]['No Cumple']++
-					_requisites[item.id].Evaluaciones++
+					_requisites[item.id]['Número Evaluadores']++
 				}
 			})
 			for(let i in _requisites){
