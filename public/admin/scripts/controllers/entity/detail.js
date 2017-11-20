@@ -21,15 +21,17 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 			ctrl.data = ctrl.entities[ctrl.entity].data[0]
 			if(!ctrl.data.region.id){
 				ctrl.data.region = null
+			}else{
+				ctrl._region = ctrl.data.region.id
 			}
 			if(!ctrl.data.country.id){
 				ctrl.data.country = null
+			}else{
+				ctrl._country = ctrl.data.country.id
 			}
 			if(!ctrl.data.city.id){
 				ctrl.data.city = null
 			}
-			ctrl._country = ctrl.data.country.id
-			ctrl._region = ctrl.data.region.id
 			return $http.get('/api/configuration/user?simple=false&filter_field=institutions.id&filter_value='+$routeParams.id)
 		}).then((results)=>{
 			if(results.data.total_results == 1){

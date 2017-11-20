@@ -355,15 +355,18 @@ angular.module('dmt-back').controller('detailItemRepresentantController', functi
 		ctrl.data = results.data.data[0];
 		if(!ctrl.data.region.id){
 			ctrl.data.region = null
+		}else{
+			ctrl._region = ctrl.data.region.id
 		}
 		if(!ctrl.data.country.id){
 			ctrl.data.country = null
+		}else{
+			ctrl._country = ctrl.data.country.id
 		}
 		if(!ctrl.data.city.id){
 			ctrl.data.city = null
 		}
-		ctrl._country = ctrl.data.country.id
-		ctrl._region = ctrl.data.region.id
+		
 		for (let p in ctrl.currentEntity.fields) { //mysql boolean 1 / 0 to true / false            
 			if (ctrl.currentEntity.fields[p].type === "boolean") {
 				ctrl.data[ctrl.currentEntity.fields[p].name] = ctrl.data[ctrl.currentEntity.fields[p].name] === 1;
