@@ -504,18 +504,72 @@ dmt.config = [
 				path: "ciudades",
 				entity: "city",
 				permission:'admin_cities_regions',
+				controller:'listItemExtendedController',
+				templateUrl: "views/extended/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemCityController",
+						templateUrl: "views/country/city.html",
+						permission:'admin_cities_regions',
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemCityController",
+						templateUrl: "views/country/city.html",
+						permission:'admin_cities_regions',
+					}
+				]
 			},
 			{
 				name: "Regiones",
 				path: "regiones",
 				entity: "region",
 				permission:'admin_cities_regions',
+				controller:'listItemExtendedController',
+				templateUrl: "views/extended/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemRegionController",
+						templateUrl: "views/country/region.html",
+						permission:'admin_cities_regions',
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemRegionController",
+						templateUrl: "views/country/region.html",
+						permission:'admin_cities_regions',
+					}
+				]
 			},
 			{
 				name: "Paises",
 				path: "paises",
 				entity: "country",
 				permission:'admin_cities_regions',
+				controller:'listItemExtendedController',
+				templateUrl: "views/extended/list.html",
+				pages: [
+					{
+						name: "add",
+						path: "add",
+						controller: "detailItemCountryController",
+						templateUrl: "views/country/country.html",
+						permission:'admin_cities_regions',
+					},
+					{
+						name: "detail",
+						path: "detail/:id",
+						controller: "detailItemCountryController",
+						templateUrl: "views/country/country.html",
+						permission:'admin_cities_regions',
+					}
+				]
 			},
 			{
 				name: "Tipos de Documento",

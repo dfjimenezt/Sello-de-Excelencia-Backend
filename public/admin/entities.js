@@ -388,7 +388,7 @@ dmt.entities = {
     relations: [
       {
         type: "1-1",
-        entity: "region",
+        entity: "city",
         name: "capital",
         leftKey: "id_capital",
         foreign_name: "name"
