@@ -18,11 +18,12 @@
                 <label>Id</label>
                 <input type="text" ng-disabled="true" ng-model="ctrl.data.id">
               </md-input-container>
-              <md-input-container md-no-float>
-                <div style="text-align:center;" ngf-select ng-model="ctrl.data.image">
+              <md-input-container flex="100" style="text-align:center;">
+                <div ngf-select ng-model="ctrl.data.image">
                   <img ngf-thumbnail="ctrl.data.image" />
                   <br/>
                   <md-button class="md-raised">IMAGEN</md-button>
+                  <md-button class="md-raised md-primary" ng-click="ctrl.data.image='del'">BORRAR IMAGEN</md-button>
                 </div>
               </md-input-container>
             </div>

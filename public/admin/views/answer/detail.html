@@ -101,7 +101,7 @@
 													mine:request.id_user == message.id_sender,
 													remote:request.id_user != message.id_sender,}">
 													<span class="bold">{{message.from.name}}</span>
-													<span class="pull-right">{{message.timestamp |date}}</span>
+													<span class="pull-right">{{message.timestamp |date:'dd/MM/yyyy hh:mm:ss a'}}</span>
 													<p class="background" >
 															{{message.text}}
 													</p>

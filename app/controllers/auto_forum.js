@@ -158,6 +158,11 @@ var forum_controller = function () {
 		}
 		let promises = []
 		let order =[]
+		if(!files.image){
+			if(body.image === 'del')	{
+				body.image = ''
+			}
+		}
 		for(var i in files){
 			order.push(i)
 			promises.push(utiles.uploadFileToGCS(user.id, files[i], user.id, files[i].type))

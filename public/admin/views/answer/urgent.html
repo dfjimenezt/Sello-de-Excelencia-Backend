@@ -6,9 +6,9 @@
             <md-button class="md-icon-button" ng-click="filter.show = true">
                 <md-icon class="material-icons">search</md-icon>
             </md-button>
-            <md-button class="md-raised md-primary" ng-if="!ctrl.page.readOnly" ng-click="create($event)">
+            <!--md-button class="md-raised md-primary" ng-if="!ctrl.page.readOnly" ng-click="create($event)">
                 <md-icon class="material-icons">add</md-icon>
-            </md-button>
+            </md-button-->
             <md-button ngf-select ngf-accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ngf-pattern="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 ngf-change="load($file)" class="md-raised md-primary" ng-if="ctrl.page.import">
                 <md-icon class="material-icons">cloud_upload</md-icon>

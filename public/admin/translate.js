@@ -153,7 +153,8 @@ dmt.translate={
         "validity":"Vigencia",
         "certified":"Certificado",
         "status":"Estado",
-        "institution":"Entidad"
+        "institution":"Entidad",
+        "prev_points":"Puntos Anteriores",
     },
 }
 try {
