@@ -21,7 +21,6 @@
 		"password": "qazwsxedc123",
 		"host": "8.35.192.8",
 		"database": "stamp_test",
-		"dateStrings":true,
 		"options": {
 			"encrypt": true,
 			"dateStrings":true
@@ -32,7 +31,6 @@
 		"password": "Qazwsx123$",
 		"host": "localhost",
 		"database": "stamp",
-		"dateStrings":true,
 		"options": {
 			"encrypt": true,
 			"dateStrings":true

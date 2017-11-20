@@ -141,7 +141,7 @@ var Events = function () {
 		}
 	})
 	emiter.on('evaluation_request.updated', (old, _new) => {
-		if (old.id_request_status != _new.id_request_status || _new.id_request_status === CONSTANTS.EVALUATION_REQUEST.RECHAZADO) {
+		if (old.id_request_status != _new.id_request_status) {
 			let _status = null
 			let _evaluator = null
 			let _answer = null
@@ -179,6 +179,7 @@ var Events = function () {
 					ftime.setDate(ftime.getDate() + duration)
 					_new.alert_time = atime
 					_new.end_time = ftime
+					model_entity_evaluation_request.upate(_new,{id:_new.id})
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.ACEPTADO) {
 						model_entity_motives.getAll({ limit: 5000 }).then((results) => {
 							if (results.data.length) {
