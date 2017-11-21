@@ -13,7 +13,7 @@ var Motives = function () {
 			"type": "1-1",
 			"entity": "motivename",
 			"name": "name",
-			"leftKey": "name",
+			"leftKey": "id_name",
 			"foreign_name": "name"
 		},
 		{

@@ -1281,7 +1281,7 @@ dmt.tables = {
 		"fields": [
 			
 			{
-				"name": "name",
+				"name": "id_name",
 				"type": "int",
 				"disabled": false,
 				"key": false
