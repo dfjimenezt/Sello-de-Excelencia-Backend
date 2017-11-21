@@ -42,13 +42,15 @@
 							<div flex="50">
 								<label>Estado</label>
 								<span ng-if="request.id_request_status === 1">PENDIENTE</span>
-								<span ng-if="request.id_request_status === 2">SOLICITADO</span>
-								<span ng-if="request.id_request_status === 3">ASIGNADO</span>
-								<span ng-if="request.id_request_status === 4">ACEPTADO</span>
-								<span ng-if="request.id_request_status === 5">RECHAZADO</span>
-								<span ng-if="request.id_request_status === 6">RETROALIMENTACIÓN</span>
-								<span ng-if="request.id_request_status === 7">CUMPLE</span>
-								<span ng-if="request.id_request_status === 8">NO CUMPLE</span>
+								<span ng-if="request.id_request_status === 2">RECHAZADO POR ADMINISTRADOR</span>
+								<span ng-if="request.id_request_status === 3">POR ASIGNAR</span>
+								<span ng-if="request.id_request_status === 4">SOLICITADO</span>
+								<span ng-if="request.id_request_status === 5">ASIGNADO</span>
+								<span ng-if="request.id_request_status === 6">ACEPTADO</span>
+								<span ng-if="request.id_request_status === 7">RECHAZADO</span>
+								<span ng-if="request.id_request_status === 8">RETROALIMENTACIÓN</span>
+								<span ng-if="request.id_request_status === 9">CUMPLE</span>
+								<span ng-if="request.id_request_status === 10">NO CUMPLE</span>
 							</div>
 							<md-input-container flex="50">
 								<label>Fecha Limite de Evaluación</label>

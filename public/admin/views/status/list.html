@@ -60,7 +60,7 @@
             </thead>
             <tbody md-body>
                 <tr md-row md-select="item" md-select-id="name" md-auto-select ng-repeat="item in items">
-                    <td md-cell ng-repeat="f in ctrl.entity.fields" ng-click="editField($event,item,f)">
+                    <td md-cell ng-repeat="f in ctrl.entity.fields" ng-click="editField($event,item,f)" ng-class="{'color-gray':item.disabled}">
                         <span ng-if="f.type=='link' && f.disabled">{{ ctrl.options[f.name] | linkvalue:f:item }}</span>
                         <span ng-if="f.type !=='boolean' && f.type!=='link' && f.type!=='datetime' && f.type!=='file'">{{item[f.name]}}</span>
                         <md-datepicker ng-model="item[f.name]" ng-if="f.type=='datetime' || f.type=='date'" ng-disabled="f.disabled"></md-datepicker>
