@@ -176,8 +176,7 @@ var Service = function () {
 						LEFT JOIN questiontopic qt ON qt.id = u_a.id_topic
 						LEFT JOIN user_questiontopic ON user_questiontopic.id_topic = qt.id
 						LEFT JOIN user u ON u.id = user_questiontopic.id_user
-						WHERE u_a.id_service = '${service.id}' 
-						GROUP BY u.id 
+						WHERE u_a.id_service = '${service.id}'
 						ORDER BY u_a.id asc,u.id_availability desc`
 					return this.customQuery(q).then((_users) => {
 						let _couples = {}
@@ -194,7 +193,7 @@ var Service = function () {
 							if(!found){
 								_couples[_user.id_answer].push(_user)
 							}
-						}, this);
+						}, this)
 
 						let request= []
 						for (let answer in _couples) {
@@ -225,7 +224,7 @@ var Service = function () {
 	
 							while (limit--) {
 								index = Math.floor(Math.random() * valid.length)
-								let data = valid.slice(index, index+1)[0]
+								let data = valid.splice(index, index+1)[0]
 								request.push({
 									id_user: data.id_user,
 									id_answer: answer,
