@@ -147,7 +147,7 @@ dmt.tables = {
 			},
 			{
 				"name": "alert",
-				"type": "int",
+				"type": "boolean",
 				"disabled": false,
 				"key": false
 			},
