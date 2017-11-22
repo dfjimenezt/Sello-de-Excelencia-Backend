@@ -111,20 +111,7 @@ var User_answer = function () {
 		})
 	}
 	this.urgent = function (user, params) {
-		return this.customQuery(q).then(() => {
-			return this.getAll({
-				filter: params.filter,
-				limit: params.limit,
-				page: params.page,
-				order: params.order,
-				filter_fields: params.filter_field,
-				filter_values: params.filter_value,
-				fields: params.field,
-				simple: params.simple,
-				lang: params.lang,
-				_joins: params._joins
-			})
-		})
+		return this.getByParams({'evaluators.id_user':['4']})
 	}
 	this.getStatsByService = function(service){
 		let q = `SELECT 

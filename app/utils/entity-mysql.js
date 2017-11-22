@@ -164,6 +164,9 @@ var EntityModel = function (info) {
 			filter_values: [],
 		}
 		for (var i in params) {
+			if(i.indexOf('.')>-1){
+				_params.simple = false
+			}
 			_params.filter_fields.push(i)
 			_params.filter_values.push(params[i])
 		}
