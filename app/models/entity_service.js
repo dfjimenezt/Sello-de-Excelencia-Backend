@@ -152,7 +152,7 @@ var Service = function () {
 			return { data: list, total_results: total }
 		})
 	}
-	this.asignate = function (service) {
+	this.asignate = function (service,upgrade) {
 		let q = `SELECT u.id from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
 		return this.customQuery(q).then((_admin)=>{
 			_admin = _admin[0]
@@ -177,6 +177,7 @@ var Service = function () {
 						LEFT JOIN user_questiontopic ON user_questiontopic.id_topic = qt.id
 						LEFT JOIN user u ON u.id = user_questiontopic.id_user
 						WHERE u_a.id_service = '${service.id}'
+						${upgrade ? 'AND u_a.id_status = \''+CONSTANTS.EVALUATION_REQUEST.POR_ASIGNAR+'\'': ''}
 						ORDER BY u_a.id asc,u.id_availability desc`
 					return this.customQuery(q).then((_users) => {
 						let _couples = {}
@@ -254,14 +255,14 @@ var Service = function () {
 		JOIN user_questiontopic ON user_questiontopic.id_topic = qt.id
 		JOIN user u ON u.id = user_questiontopic.id_user
 		WHERE u_a.id = '${request.id_answer}' 
+		AND u.id <> u_a.id_user
 		AND u.id NOT IN (SELECT id_user FROM evaluation_request WHERE id_answer = ${request.id_answer})
 		ORDER BY RAND()`
 		return this.customQuery(q).then((_users) => {
-			if(_users.length === 0){ //trigger next iteration
-				emiter.emit('evaluation_request.updated',request,request)
-				return
-			}
-			let q = `UPDATE evaluation_request SET id_user = ${_users[0].id_user}, id_request_status='${CONSTANTS.EVALUATION_REQUEST.ASIGNADO}' WHERE id='${request.id}'`
+			let q = `UPDATE evaluation_request SET 
+				id_user = ${_users[0].id_user}, 
+				id_request_status = '${CONSTANTS.EVALUATION_REQUEST.ASIGNADO}' 
+				WHERE id='${request.id}'`
 			emiter.emit('evaluation_request.asignation',{id_user:_users[0].id_user})
 			return this.customQuery(q)
 		})
