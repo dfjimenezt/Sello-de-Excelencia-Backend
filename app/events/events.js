@@ -141,6 +141,10 @@ var Events = function () {
 		}
 	})
 	emiter.on('evaluation_request.updated', (old, _new) => {
+		if(_new.id_request_status === CONSTANTS.EVALUATION_REQUEST.ASIGNADO 
+				&& _new.id_user != old.id_user){
+			emiter.emit('evaluation_request.asignation',{id_user:_new.id_user})
+		}
 		if (old.id_request_status != _new.id_request_status) {
 			let _status = null
 			let _evaluator = null
