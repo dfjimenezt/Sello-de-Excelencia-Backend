@@ -101,6 +101,12 @@ var Evaluation_request = function () {
 			return { data: list, total_results: total }
 		})
 	}
+	this.updateTimes = function(atime,ftime,id){
+		let q = `UPDATE evaluation_request SET 
+			alert_time = '${atime.toISOString().split('T')[0]}', end_time ='${ftime.toISOString().split('T')[0]}'
+			WHERE id='${id}'`
+		return this.customQuery(q)
+	}
 	this.addRejection = function(id){
 		let q = `UPDATE evaluation_request SET branch = IFNULL(branch,0)+1 WHERE id = '${id}'`
 		return this.customQuery(q).then(()=>{

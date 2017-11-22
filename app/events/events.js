@@ -179,7 +179,7 @@ var Events = function () {
 					ftime.setDate(ftime.getDate() + duration)
 					_new.alert_time = atime
 					_new.end_time = ftime
-					model_entity_evaluation_request.update(_new,{id:_new.id})
+					model_entity_evaluation_request.updateTimes(atime,ftime,_new.id)
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.ACEPTADO) {
 						model_entity_motives.getAll({ limit: 5000 }).then((results) => {
 							if (results.data.length) {
