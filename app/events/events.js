@@ -551,7 +551,10 @@ var Events = function () {
 							<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
 							</div>
 							<p>Hola ${user.name}</p>
-							<p>Hemos otorgado el Sello de Excelencia Gobierno Digital Colombia.</p>
+							<p>Hemos otorgado el Sello de Excelencia Gobierno Digital Colombia al producto con las siguientes características:</p>
+							<p>Nombre del producto o servicio: ${_new.name}</p>
+							<p>Categoría: ${_new.category.name}</p>
+							<p>Nivel: ${_new.level}</p>
 							<p>Te invitamos a descargar el diploma en la plataforma del Sello de Excelencia Gobierno Digital Colombia en el siguiente 
 							<a href="${HOST}/sign-in">enlace.</a></p>
 							<p>Así mismo, te invitamos a insertar el siguiente código en tu página web o servicio digital para mostrarle a los ciudadanos tu certificación.</p>
@@ -589,6 +592,9 @@ var Events = function () {
 							</div>
 							<p>Hola ${user.name}</p>
 							<p>Te informamos que tu postulación no cumple con los requisitos exigidos por el Sello de Excelencia Gobierno Digital Colombia.</p>
+							<p>Nombre del producto o servicio: ${_new.name}</p>
+							<p>Categoría: ${_new.category.name}</p>
+							<p>Nivel: ${_new.level}</p>
 							<p>Te invitamos a postular nuevamente en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
 							<p>Nuestros mejores deseos,<\p>
 							<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
@@ -744,60 +750,5 @@ var Events = function () {
 			})
 		}
 	})
-	emiter.on('about', (_new) => {
-		///RENOVACIÓN
-		//servicios que estén en creación y no se hayan postulado alert_time
-		//servicios que estén en otorgado y falten 2 meses para vencer el sello
-		//servicios que estén en otorgado y falten 1.5 meses para vencer el sello
-		//servicios que estén en otorgado y falten 1 meses para vencer el sello
-		//servicios que estén en otorgado y falten .5 meses para vencer el sello
-		//solicitudes de evaluación que estén en alert_time y no estén en cumple / no_cumple
-		//reasignar solicitudes con valid_to = hoy 
-		let tout = Math.floor(Math.random() * 1000) + 100
-		model_user.getByUid(_new.id_user).then((result) => { // VENCIMIENTO SELLOS
-			let user = result[0]
-			setTimeout(() => {
-				var valid_to = _service.status.valid_to.toLocaleString()
-				utiles.sendEmail(email, null, null, 'Vencimiento Sello de Excelencia Gobierno Digital Colombia', `
-				<div style="text-align:center;margin: 10px auto;">
-				<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
-				</div>
-				<p>Hola ${user.name}</p>
-				<p>La Certificación:</p>
-				<p>Categoría: ${service.category.name}</p>
-				<p>Nivel: ${question.level}</p>
-				<p>Entidad: ${institution.name}</p>
-				<p>Nombre del Producto o Servicio: ${service.name}</p>
-				<p>Se vence el <b>${valid_to}</b></p>
-				<p>Por favor ingresa a la plataforma para Renovar el Sello de Excelencia Gobierno Digital Colombia en la Pestaña 
-				<b>Actividad</b> -> <b>Sellos Otorgados</b> da click en Renovar el Sello.</p>
-				<p>Luego debes ir a la pestaña <b>Postular</b> y Seleccionar el Servicio en la sección <b>Continuar con una postulación anterior</b>
-				<p>Ten en cuenta que si la renovación no se efectúa antes de la fecha de vencimiento tendrás que hacer todo el proceso de postulación nuevamente</p>
-				<p>Nuestros mejores deseos,<\p>
-				<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
-			}, tout)
-		})
-
-		setTimeout(() => {
-			var valid_to = _service.status.valid_to.toLocaleString()
-			utiles.sendEmail(_evaluator.email, _admin.email, null, 'Vencimiento de Evaluación - Sello de Excelencia Gobierno Digital Colombia', `
-			<div style="text-align:center;margin: 10px auto;">
-			<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
-			</div>
-			<p>Hola ${user.name}</p>
-			<p>El plazo de evaluación del siguiente requisito:</p>
-			<p>Categoría: ${service.category.name}</p>
-			<p>Nivel: ${question.level}</p>
-			<p>Temática: ${question.topic.name}</p>
-			<p>Requisito: ${question.text}</p>
-			<p>Entidad: ${institution.name}</p>
-			<p>Nombre del Producto o Servicio: ${service.name}</p>
-			<p>Está próximo a vencerse <b>${valid_to}</b></p>
-			<p>Por favor ingresa a la plataforma para Evaluar el Requisito.</p>
-			<p>Nuestros mejores deseos,<\p>
-			<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
-		}, tout)
-	})
-
 }
 module.exports = Events

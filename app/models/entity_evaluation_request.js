@@ -114,10 +114,22 @@ var Evaluation_request = function () {
 		if(alert_time){
 			alert_time = alert_time.toISOString().split('T')[0]
 		}
-		let q = `SELECT s.*,e_r.end_time,u.name user_name,u.email user_email FROM evaluation_request e_r
+		let q = `SELECT e_r.*,
+			c.name category_name
+			s.name service_name,
+			q.level level,
+			q.text question,
+			qt.name topic,
+			u.name user_name,
+			i.name institution,
+			u.email user_email 
+			FROM evaluation_request e_r
 			JOIN service s ON e_r.id_service = s.id
-			JOIN institution_user i_u ON s.id_institution = i_u.id_institution
-			JOIN user u ON u.id = i_u.id_user
+			JOIN user u ON u.id = e_r.id_user
+			JOIN category c ON c.id = s.id_category
+			JOIN question q ON q.id = e_r.id_question
+			JOIN questiontopic qt ON qt.id = q.id_topic
+			JOIN institution i ON i.id = s.id_institution
 			WHERE e_r.id_request_status IN (${status.join(',')})
 			${end_time ? 'AND DATE(e_r.end_time) = \''+end_time+'\' ':''}
 			${alert_time ? 'AND DATE(e_r.alert_time) = \''+alert_time+'\' ':''}`
