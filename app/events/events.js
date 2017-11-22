@@ -746,7 +746,13 @@ var Events = function () {
 	})
 	emiter.on('about', (_new) => {
 		///RENOVACIÓN
-		//
+		//servicios que estén en creación y no se hayan postulado alert_time
+		//servicios que estén en otorgado y falten 2 meses para vencer el sello
+		//servicios que estén en otorgado y falten 1.5 meses para vencer el sello
+		//servicios que estén en otorgado y falten 1 meses para vencer el sello
+		//servicios que estén en otorgado y falten .5 meses para vencer el sello
+		//solicitudes de evaluación que estén en alert_time y no estén en cumple / no_cumple
+		//reasignar solicitudes con valid_to = hoy 
 		let tout = Math.floor(Math.random() * 1000) + 100
 		model_user.getByUid(_new.id_user).then((result) => { // VENCIMIENTO SELLOS
 			let user = result[0]

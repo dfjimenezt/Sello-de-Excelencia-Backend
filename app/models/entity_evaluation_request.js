@@ -107,6 +107,22 @@ var Evaluation_request = function () {
 			this.updateView()
 		})
 	}
+	this.getByStatusDate = function(end_time,alert_time,status){
+		if(end_time){
+			end_time = end_time.toISOString().split('T')[0]
+		}
+		if(alert_time){
+			alert_time = alert_time.toISOString().split('T')[0]
+		}
+		let q = `SELECT s.*,e_r.end_time,u.name user_name,u.email user_email FROM evaluation_request e_r
+			JOIN service s ON e_r.id_service = s.id
+			JOIN institution_user i_u ON s.id_institution = i_u.id_institution
+			JOIN user u ON u.id = i_u.id_user
+			WHERE e_r.id_request_status IN (${status.join(',')})
+			${end_time ? 'AND DATE(e_r.end_time) = \''+end_time+'\' ':''}
+			${alert_time ? 'AND DATE(e_r.alert_time) = \''+alert_time+'\' ':''}`
+		return this.customQuery(q)
+	}
 	return this
 };
 util.inherits(Evaluation_request, BaseModel)

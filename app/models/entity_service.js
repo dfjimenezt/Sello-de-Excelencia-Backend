@@ -104,53 +104,30 @@ var Service = function () {
 			return { data: list, total_results: total }
 		})
 	}
-	this.getByCurrentStatus = function(date,status){
-		let q=`SELECT \`service\`.\`id\` \`key\` FROM \`service\` 
-		JOIN (SELECT \`service_status\`.\`id_service\`,MAX(\`service_status\`.\`valid_to\`) FROM \`service_status\` 
+	this.getByCurrentStatusDate = function(valid_to,alert_time,status){
+		if(!status){
+			return
+		}
+		if(valid_to){
+			valid_to = valid_to.toISOString().split('T')[0]
+		}
+		if(alert_time){
+			alert_time = alert_time.toISOString().split('T')[0]
+		}
+		let q=`SELECT \`service\`.\`*\`,\`user\`.\`name\` \`user_name\`,\`user\`.\`email\` \`user_email\`,\`service_status\`.\`valid_to\` FROM \`service\` 
+		JOIN (SELECT \`service_status\`.\`id_service\`,MAX(\`service_status\`.\`valid_to\`) \`valid_to\` FROM \`service_status\` 
 		WHERE (
-			${status ? `\`service_status\`.\`id_status\` IN ( '${status.join(',')}' ) AND` : ``} 
-			\`service_status\`.\`valid_to\` <'${date}' 
-		)
+			${status ? `\`service_status\`.\`id_status\` IN ( '${status.join(',')}' ) ` : ``} 
+			${valid_to ? 'AND DATE(\`service_status\`.\`valid_to\`) = \''+valid_to +'\' ' :''}
+			${alert_time ? 'AND DATE(\`service_status\`.\`valid_to\`) = \''+alert_time +'\' ' :''}
+		) GROUP BY \`id_service\`) 
+		\`service_status\` ON \`service_status\`.\`id_service\` = \`service\`.\`id\` 
+		JOIN \`institution_user\` ON \`institution_user\`.\`id_institution\` = \`service\`.\`id_institution\`
+		JOIN \`user\` ON \`institution_user\`.\`id_user\` = \`user\`.\`id\`
 		WHERE \`service\`.\`is_active\` = '1'
-		GROUP BY \`id_service\`) \`service_status\` ON \`service_status\`.\`id_service\` = \`service\`.\`id\` 
-		GROUP BY \`key\` ORDER BY \`service\`.id ;`
+		ORDER BY \`service\`.id ;`
 		let keys = []
-		return this.customQuery(q).then((results)=>{
-			results.forEach((result)=>{
-				keys.push(result.key)
-			})
-			if(keys.length == 0){
-				return [[],[{total:0}],[]]
-			}
-			let query = `SELECT SQL_CALC_FOUND_ROWS * FROM view_service 
-			WHERE id IN (${keys.join(',')}) ORDER BY id desc
-			LIMIT 0,5000;
-			SELECT FOUND_ROWS() as total;
-			SELECT * FROM view_service_status WHERE id_service IN (${keys.join(',')}) 
-			AND id_status = ${CONSTANTS.SERVICE.CUMPLE} ORDER BY timestamp desc;`	
-			return this.customQuery(query)
-		}).then((result)=>{
-			let data = result[0]
-			let total = result[1][0].total
-			let history = result[2]
-			let list = []
-			
-			let _history = {}
-			for (let i = 0; i < history.length; i++) {
-				let status = this.sintetizeRelation(history[i], {entity:'service_status'})
-				if(!_history[status.id_service]){
-					_history[status.id_service] = []
-				}
-				_history[status.id_service].push(status)
-			}
-
-			for (let i = 0; i < data.length; i++) {
-				let item = this.sintetizeRelation(data[i], {entity:'service'})
-				item.history = _history[item.id]
-				list.push(item)
-			}
-			return { data: list, total_results: total }
-		})
+		return this.customQuery(q)
 	}
 	this.asignate = function (service,upgrade) {
 		let q = `SELECT u.id from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
