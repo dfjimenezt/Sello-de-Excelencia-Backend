@@ -497,11 +497,7 @@ var Events = function () {
 						})
 					}
 					if (_new.current_status == CONSTANTS.SERVICE.EVALUACION) {
-						let upgrade = false
-						if(_new.level != old.level){
-							upgrade = true
-						}
-						model_entity_service.asignate(_new,upgrade).then((evaluations) => {
+						model_entity_service.asignate(_new).then((evaluations) => {
 							if (evaluations.length == 0) {
 								return
 							}

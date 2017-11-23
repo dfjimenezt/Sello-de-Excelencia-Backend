@@ -129,9 +129,17 @@ var Service = function () {
 		let keys = []
 		return this.customQuery(q)
 	}
-	this.asignate = function (service,upgrade) {
-		let q = `SELECT u.id from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
-		return this.customQuery(q).then((_admin)=>{
+	this.asignate = function (service) {
+		let upgrade = false
+		let q = `SELECT IFNULL(MAX(level),0) level from service_status WHERE id_status = '${CONSTANTS.SERVICE.CUMPLE}' AND id_service = '${service.id}'`
+		return this.customQuery(q).then((result)=>{
+			let max = result[0].level
+			if(max > 0 && service.level > max){
+				upgrade = true
+			}
+			let q = `SELECT u.id from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
+			return this.customQuery(q)
+		}).then((_admin)=>{
 			_admin = _admin[0]
 			let q = `SELECT * from request_status WHERE id = '${CONSTANTS.EVALUATION_REQUEST.ASIGNADO}'`
 			return this.customQuery(q).
