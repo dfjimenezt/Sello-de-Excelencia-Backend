@@ -131,8 +131,12 @@ module.exports = {
         }
         titles.push(dmt.translate.es[i] || i)
         if(typeof item[i] === 'object'){
-          let val = item[i] ? item[i].name || item[i].text || item[i].description || '' : ''
-          row.push(val)
+          if(item[i] instanceof Date){
+            row.push(item[i])
+          }else{
+            let val = item[i] ? item[i].name || item[i].text || item[i].description || '' : ''
+            row.push(val)
+          }
         }else{
           if(item[i] === 0){
             row.push(0)
