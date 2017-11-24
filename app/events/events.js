@@ -422,18 +422,26 @@ var Events = function () {
 		if (old.is_active === 1 && _new.is_active === 0) { //De_activate
 			model_entity_institution.getUser(old.id_institution).then((result) => {
 				let user = result[0]
-
-				utiles.sendEmail(user.email, null, null,
+				let email = ''
+				let name = ''
+				if(user){
+					email = user.email
+					name = user.name
+				}else{
+					email = old.institution.email
+					name = old.institution.name
+				}
+				utiles.sendEmail(email, null, null,
 					'Desactivación Sello de Excelencia Gobierno Digital Colombia',
 					`<div style="text-align:center;margin: 10px auto;">
 				<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
 				</div>
-				<p>Hola ${user.name}</p>
+				<p>Hola ${name}</p>
 				<p>Te informamos que se ha retirado el Sello de Excelencia Gobierno Digital Colombia.</p>
 				<p>Nombre del producto o servicio: ${_new.name}</p>
 				<p>Categoría: ${_new.category.name}</p>
 				<p>Nivel: ${_new.level}</p>
-				<p>Te invitamos a postular nuevamente en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
+				<p>Contáctate con nosotros para mayor información.</p>
 				<p>Nuestros mejores deseos,<\p>
 				<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
 			})
