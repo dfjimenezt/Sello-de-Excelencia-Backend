@@ -418,6 +418,7 @@ var Events = function () {
 				<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
 				</div>
 				<div>
+				<p>Hola ${_admin.name}</p>
 				<p>El servicio ${_service.name} tiene una calificación muy baja.</p>
 				<p>Da click <a href="${HOST}/detalle/${_service.id}">aquí </a> para ingresar al servicio</p>
 				<p>La calificación del servicio es ${avg}</p>
