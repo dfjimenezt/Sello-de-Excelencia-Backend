@@ -141,9 +141,9 @@ var Events = function () {
 		}
 	})
 	emiter.on('evaluation_request.updated', (old, _new) => {
-		if(_new.id_request_status === CONSTANTS.EVALUATION_REQUEST.ASIGNADO 
-				&& _new.id_user != old.id_user){
-			emiter.emit('evaluation_request.asignation',{id_user:_new.id_user})
+		if (_new.id_request_status === CONSTANTS.EVALUATION_REQUEST.ASIGNADO
+			&& _new.id_user != old.id_user) {
+			emiter.emit('evaluation_request.asignation', { id_user: _new.id_user })
 		}
 		if (old.id_request_status != _new.id_request_status) {
 			let _status = null
@@ -183,7 +183,7 @@ var Events = function () {
 					ftime.setDate(ftime.getDate() + duration)
 					_new.alert_time = atime
 					_new.end_time = ftime
-					model_entity_evaluation_request.updateTimes(atime,ftime,_new.id)
+					model_entity_evaluation_request.updateTimes(atime, ftime, _new.id)
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.ACEPTADO) {
 						model_entity_motives.getAll({ limit: 5000 }).then((results) => {
 							if (results.data.length) {
@@ -213,7 +213,7 @@ var Events = function () {
 								<p>Entidad: ${_service.institution.name}</p>
 								<p>Nombre del Producto o Servicio: ${_service.name}</p>
 								<p>Ha sido asignado al administrador del sistema</p>`)
-							model_entity_evaluation_request.update({ id: _new.id, id_user: _admin.id, id_request_status:CONSTANTS.EVALUATION_REQUEST.ASIGNADO }, { id: _new.id })
+							model_entity_evaluation_request.update({ id: _new.id, id_user: _admin.id, id_request_status: CONSTANTS.EVALUATION_REQUEST.ASIGNADO }, { id: _new.id })
 						} else {
 							// add rejection without trigger update event
 							model_entity_evaluation_request.addRejection(_new.id)
@@ -232,11 +232,11 @@ var Events = function () {
 								entity_model_points.addUserPoints(_evaluator.id, motive.id, '')
 							}
 						})
-						
+
 					}
 					//6 Retroalimentación
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.RETROALIMENTACION) {
-						model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.EVALUATION_REQUEST.RETROALIMENTACION },{ id: _answer.id})
+						model_entity_user_answer.update({ id: _answer.id, id_status: CONSTANTS.EVALUATION_REQUEST.RETROALIMENTACION }, { id: _answer.id })
 					}
 					//7 Cumple
 					if (_new.id_request_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE) {//add points
@@ -404,6 +404,25 @@ var Events = function () {
 		}
 	})
 	emiter.on('service.updated', (old, _new, body) => {
+		if (old.active === 1 && _new.active === 0) { //De_activate
+			model_entity_institution.getUser(old.id_institution).then((result) => {
+				let user = result[0]
+
+				utiles.sendEmail(user.email, null, null,
+					'Desactivación Sello de Excelencia Gobierno Digital Colombia',
+					`<div style="text-align:center;margin: 10px auto;">
+				<img width="100" src="${HOST}/assets/img/sell_gel.png"/>
+				</div>
+				<p>Hola ${user.name}</p>
+				<p>Te informamos que se ha retirado el Sello de Excelencia Gobierno Digital Colombia.</p>
+				<p>Nombre del producto o servicio: ${_new.name}</p>
+				<p>Categoría: ${_new.category.name}</p>
+				<p>Nivel: ${_new.level}</p>
+				<p>Te invitamos a postular nuevamente en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
+				<p>Nuestros mejores deseos,<\p>
+				<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
+			})
+		}
 		if (!_new.current_status) {
 			return
 		}
@@ -428,7 +447,7 @@ var Events = function () {
 					order: 'timestamp desc'
 				})
 			})
-			.then((result)=>{
+			.then((result) => {
 				_laststatus = result.data[0]
 				return model_category.getByUid(_new.id_category)
 			})
@@ -436,7 +455,7 @@ var Events = function () {
 				_category = result[0]
 				if (old.current_status != _new.current_status) {
 					let duration = _status.duration
-					if(_new.current_status == CONSTANTS.SERVICE.CUMPLE){
+					if (_new.current_status == CONSTANTS.SERVICE.CUMPLE) {
 						duration = _category.validity
 					}
 					let alarm = duration - _status.pre_end
@@ -486,8 +505,8 @@ var Events = function () {
 								let motive = null
 								results.data.forEach((_motive) => {
 									if (_motive.name.name === CONSTANTS.MOTIVES.ENTITY.POSTULAR_SERVICIO
-									&& _motive.id_category === _new.id_category
-									&& _motive.level === data.level) {
+										&& _motive.id_category === _new.id_category
+										&& _motive.level === data.level) {
 										motive = _motive
 										return
 									}
@@ -512,7 +531,7 @@ var Events = function () {
 								data
 							)
 						})
-						model_entity_user_answer.update({ id_status: CONSTANTS.EVALUATION_REQUEST.ASIGNADO }, { id_service: _new.id })
+						model_entity_user_answer.update({ id_status: CONSTANTS.EVALUATION_REQUEST.ASIGNADO }, { id_service: _new.id , id_status: CONSTANTS.EVALUATION_REQUEST.POR_ASIGNAR})
 						model_entity_institution.getUser(old.id_institution).then((result) => {
 							let user = result[0]
 							utiles.sendEmail(user.email, null, null,
@@ -614,7 +633,7 @@ var Events = function () {
 										return
 									}
 								})
-								if(motive){
+								if (motive) {
 									entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
 								}
 							}
@@ -623,7 +642,7 @@ var Events = function () {
 					}
 					return model_entity_service_status.create(data)
 				}
-				if(_new.active === 0 && old.active===1){
+				if (_new.active === 0 && old.active === 1) {
 					model_entity_institution.getUser(old.id_institution).then((result) => {
 						let user = result[0]
 						let tpl = `
@@ -637,7 +656,7 @@ var Events = function () {
 						utiles.sendEmail(user.email, null, null, 'Asignación de Requisito', tpl)
 					})
 				}
-				if(_new.active === 1 && old.active===0){
+				if (_new.active === 1 && old.active === 0) {
 					model_entity_institution.getUser(old.id_institution).then((result) => {
 						let user = result[0]
 						let tpl = `
@@ -671,84 +690,84 @@ var Events = function () {
 			}, tout)
 		})
 	})
-	emiter.on('institution.updated',(old,_new)=>{
-		if(old.active === 0 && _new.active === 1){ //Activate
-			model_entity_service.update({is_active:1},{id_institution:_new.id})
+	emiter.on('institution.updated', (old, _new) => {
+		if (old.active === 0 && _new.active === 1) { //Activate
+			model_entity_service.update({ is_active: 1 }, { id_institution: _new.id })
 		}
-		if(old.active === 1 && _new.active === 0){ //De_activate
-			model_entity_service.update({is_active:0},{id_institution:_new.id})
+		if (old.active === 1 && _new.active === 0) { //De_activate
+			model_entity_service.update({ is_active: 0 }, { id_institution: _new.id })
 		}
 	})
-	emiter.on('user.updated',(old,_new)=>{
-		if(old.active === 1 && _new.active === 0){ //De_activate
+	emiter.on('user.updated', (old, _new) => {
+		if (old.active === 1 && _new.active === 0) { //De_activate
 			model_user.getAdmin().then((result) => {
 				_admin = result[0]
-				model_entity_evaluation_request.update({id_user:_admin.id},{id_user:_new.id})
+				model_entity_evaluation_request.update({ id_user: _admin.id }, { id_user: _new.id })
 			})
 		}
 	})
-	emiter.on('usertype.updated',(old,_new)=>{
-		if(old.active === 1 && _new.active === 0){ //De_activate
-			model_entity_questiontopic.getByParams({id_usertype:_new.id})
-			.then((results)=>{
-				results.data.forEach((questiontopic)=>{
-					model_entity_questiontopic.update({active:0},{id:questiontopic.id})
+	emiter.on('usertype.updated', (old, _new) => {
+		if (old.active === 1 && _new.active === 0) { //De_activate
+			model_entity_questiontopic.getByParams({ id_usertype: _new.id })
+				.then((results) => {
+					results.data.forEach((questiontopic) => {
+						model_entity_questiontopic.update({ active: 0 }, { id: questiontopic.id })
+					})
 				})
-			})
 		}
 	})
-	emiter.on('questiontopic.updated',(old,_new)=>{
-		if(old.active === 1 && _new.active === 0){ //desactivar
+	emiter.on('questiontopic.updated', (old, _new) => {
+		if (old.active === 1 && _new.active === 0) { //desactivar
 			/**
 			 * De_activate all requisites /questions
 			 */
-			model_entity_question.update({active:0},{id_topic:_new.id})
+			model_entity_question.update({ active: 0 }, { id_topic: _new.id })
 			/**
 			 * Check if the category should be deactivated
 			 */
-			model_entity_questiontopic.getByParams({id_category:_new.id_category})
-			.then((results)=>{
-				var deactivate = true
-				results.data.forEach((topic)=>{
-					if(topic.active === 1){
-						deactivate = false
+			model_entity_questiontopic.getByParams({ id_category: _new.id_category })
+				.then((results) => {
+					var deactivate = true
+					results.data.forEach((topic) => {
+						if (topic.active === 1) {
+							deactivate = false
+						}
+					})
+					if (deactivate) {
+						model_category.update({ active: 0 }, { id: _new.id_category })
 					}
 				})
-				if(deactivate){
-					model_category.update({active:0},{id:_new.id_category})
-				}
-			})
 			/**
 			 * Check if the usertype should be deactivated
 			 */
-			model_entity_questiontopic.getByParams({id_usertype:_new.id_usertype})
-			.then((results)=>{
-				var deactivate = true
-				results.data.forEach((topic)=>{
-					if(topic.active === 1){
-						deactivate = false
+			model_entity_questiontopic.getByParams({ id_usertype: _new.id_usertype })
+				.then((results) => {
+					var deactivate = true
+					results.data.forEach((topic) => {
+						if (topic.active === 1) {
+							deactivate = false
+						}
+					})
+					if (deactivate) {
+						model_usertype.update({ active: 0 }, { id: _new.id_category })
 					}
 				})
-				if(deactivate){
-					model_usertype.update({active:0},{id:_new.id_category})
-				}
-			})
 		}
 	})
-	emiter.on('category.updated',(old,_new)=>{
-		if(old.active === 1 && _new.active === 0){ //De_activate
-			model_entity_questiontopic.getByParams({id_category:_new.id_category})
-			.then((results)=>{
-				results.data.forEach((topic)=>{
-					model_entity_questiontopic.upate({active:0},{id:topic.id})
+	emiter.on('category.updated', (old, _new) => {
+		if (old.active === 1 && _new.active === 0) { //De_activate
+			model_entity_questiontopic.getByParams({ id_category: _new.id_category })
+				.then((results) => {
+					results.data.forEach((topic) => {
+						model_entity_questiontopic.upate({ active: 0 }, { id: topic.id })
+					})
 				})
-			})
-			model_entity_service.getByParams({id_category:_new.id_category})
-			.then((results)=>{
-				results.data.forEach((service)=>{
-					model_entity_service.upate({active:0},{id:service.id})
+			model_entity_service.getByParams({ id_category: _new.id_category })
+				.then((results) => {
+					results.data.forEach((service) => {
+						model_entity_service.upate({ active: 0 }, { id: service.id })
+					})
 				})
-			})
 		}
 	})
 }

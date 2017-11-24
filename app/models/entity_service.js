@@ -114,7 +114,10 @@ var Service = function () {
 		if(alert_time){
 			alert_time = alert_time.toISOString().split('T')[0]
 		}
-		let q=`SELECT \`service\`.\`*\`,\`user\`.\`name\` \`user_name\`,\`user\`.\`email\` \`user_email\`,\`service_status\`.\`valid_to\` FROM \`service\` 
+		let q=`SELECT \`service\`.\`*\`,\`user\`.\`name\` \`user_name\`,
+		\`user\`.\`email\` \`user_email\`,\`service_status\`.\`valid_to\`,
+		\`category\`.\`name\` \`category_email\`
+		 FROM \`service\` 
 		JOIN (SELECT \`service_status\`.\`id_service\`,MAX(\`service_status\`.\`valid_to\`) \`valid_to\` FROM \`service_status\` 
 		WHERE (
 			${status ? `\`service_status\`.\`id_status\` IN ( '${status.join(',')}' ) ` : ``} 
@@ -123,6 +126,7 @@ var Service = function () {
 		) GROUP BY \`id_service\`) 
 		\`service_status\` ON \`service_status\`.\`id_service\` = \`service\`.\`id\` 
 		JOIN \`institution_user\` ON \`institution_user\`.\`id_institution\` = \`service\`.\`id_institution\`
+		JOIN \`category\` ON \`service\`.\`id_category\` = \`category\`.\`id\`
 		JOIN \`user\` ON \`institution_user\`.\`id_user\` = \`user\`.\`id\`
 		WHERE \`service\`.\`is_active\` = '1'
 		ORDER BY \`service\`.id ;`

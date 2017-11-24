@@ -28,7 +28,9 @@ var Jobs = function () {
 							<p>Hola ${service.user_name}</p>
 							<p>Tienes un servicio pendiente de postulación:</p>
 							<p>Nombre del Producto o Servicio: ${service.name}</p>
-							<p>Recuerda que puedes terminar la postulación en la platforma de Sello de Excelencia Gobierno Digital</p>
+							<p>Categoría: ${service.category_name}</p>
+							<p>Nivel ${service.level}</p>
+							<p>Recuerda que puedes terminar la postulación en la plataforma de Sello de Excelencia Gobierno Digital</p>
 							<p>Nuestros mejores deseos,<\p>
 							<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`
 						)
