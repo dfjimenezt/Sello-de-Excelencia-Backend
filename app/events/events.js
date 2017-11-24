@@ -419,7 +419,7 @@ var Events = function () {
 		}
 	})
 	emiter.on('service.updated', (old, _new, body) => {
-		if (old.active === 1 && _new.active === 0) { //De_activate
+		if (old.is_active === 1 && _new.is_active === 0) { //De_activate
 			model_entity_institution.getUser(old.id_institution).then((result) => {
 				let user = result[0]
 
