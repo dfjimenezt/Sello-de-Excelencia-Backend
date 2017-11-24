@@ -111,7 +111,7 @@ var User_answer = function () {
 		})
 	}
 	this.urgent = function (user, params) {
-		return this.getByParams({'evaluators.id_user':['4']})
+		return this.getByParams({'evaluators.id_user':['4'],'id_status':'< 9'})
 	}
 	this.getStatsByService = function(service){
 		let q = `SELECT 

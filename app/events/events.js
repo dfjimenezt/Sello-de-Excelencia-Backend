@@ -1,5 +1,3 @@
-import { reject } from '../../../../Library/Caches/typescript/2.6/node_modules/@types/async';
-
 let emiter = require('./emiter.js').instance
 var utiles = require('../utils/utiles.js')
 var config = require('../../config.json')
@@ -140,6 +138,7 @@ var Events = function () {
 						if (approved + rejected === total) {
 							return model_entity_service.update({ id: _service.id, current_status: CONSTANTS.SERVICE.NO_CUMPLE }, { id: old.id_service })		
 						}
+						return
 					})
 				}
 			})
