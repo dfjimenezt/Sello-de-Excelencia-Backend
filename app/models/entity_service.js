@@ -180,7 +180,7 @@ var Service = function () {
 						LEFT JOIN user_questiontopic ON user_questiontopic.id_topic = qt.id
 						LEFT JOIN user u ON u.id = user_questiontopic.id_user
 						WHERE u_a.id_service = '${service.id}'
-						${upgrade ? 'AND u_a.id_status = \''+CONSTANTS.EVALUATION_REQUEST.POR_ASIGNAR+'\'': ''}
+						AND u_a.id_status = '${CONSTANTS.EVALUATION_REQUEST.POR_ASIGNAR}'
 						ORDER BY u_a.id asc,u.id_availability desc`
 					return this.customQuery(q).then((_users) => {
 						let _couples = {}

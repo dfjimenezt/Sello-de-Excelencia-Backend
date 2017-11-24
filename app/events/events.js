@@ -681,7 +681,7 @@ var Events = function () {
 							<p>Nombre del producto o servicio: ${_new.name}</p>
 							<p>Categoría: ${_new.category.name}</p>
 							<p>Nivel: ${_new.level}</p>
-							<p>Te invitamos a postular nuevamente en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
+							<p>Te invitamos a postular el producto nuevamente en la plataforma del Sello de Excelencia Gobierno Digital Colombia.</p>
 							<p>Nuestros mejores deseos,<\p>
 							<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
 						})
