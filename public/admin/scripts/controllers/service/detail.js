@@ -7,6 +7,7 @@ function ($scope, $mdDialog, $mdEditDialog, page, $http, entityService, $routePa
 	ctrl.service.loadEntity('motivename')
 	ctrl.service.loadEntity('usertype')
 	ctrl.service.loadEntity('request_status')
+	ctrl.service.entities.service_status.query.order = 'id asc'
 	ctrl.page = page
 	ctrl.currentEntity = ctrl.service.currentEntity
 	ctrl.today = new Date()

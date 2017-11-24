@@ -1544,6 +1544,11 @@ dmt.tables = {
 	"service_status": {
 		"fields": [
 			{
+				"name": "id",
+				"type": "int",
+				"disabled": false,
+				"key": true
+			},{
 				"name": "id_service",
 				"type": "int",
 				"disabled": false,
