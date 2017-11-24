@@ -115,7 +115,22 @@ var Events = function () {
 							return
 						})
 				} else if (_new.id_status == CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE) {
-					return model_entity_service.update({ id: _service.id, current_status: CONSTANTS.SERVICE.NO_CUMPLE }, { id: old.id_service })
+					model_entity_user_answer.getByParams({ id_service: _service.id }).then((results) => {
+						let approved = 0
+						let rejected = 0
+						let total = results.data.length
+						results.data.forEach((request) => {
+							if (request.id_request_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE) {
+								approved += 1
+							}
+							if (request.id_request_status == CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE) {
+								rejected += 1
+							}
+						})
+						if (approved + rejected === total) {
+							return model_entity_service.update({ id: _service.id, current_status: CONSTANTS.SERVICE.NO_CUMPLE }, { id: old.id_service })		
+						}
+					})
 				}
 			})
 	})
