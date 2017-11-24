@@ -519,6 +519,9 @@ var Events = function () {
 							</div>
 							<p>Hola ${user.name}:</p>
 							<p>Hemos recibido tu postulación para el Sello de Excelencia Gobierno Digital Colombia.</p>
+							<p>Nombre del Servicio o Producto: ${_new.name}</p>
+							<p>Categoría: ${_new.category.name}</p>
+							<p>Nivel: ${_new.level}</p>
 							<p>Próximamente te notificaremos si ha sido aceptada.</p>
 							<p>Nuestros mejores deseos,<\p>
 							<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
