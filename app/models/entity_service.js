@@ -133,21 +133,27 @@ var Service = function () {
 		let keys = []
 		return this.customQuery(q)
 	}
-	this.asignate = function (service) {
+	this.prepareAsignation = function(service){
 		let upgrade = false
-		let renovation = false
 		let q = `SELECT IFNULL(MAX(level),0) level from service_status WHERE id_status = '${CONSTANTS.SERVICE.CUMPLE}' AND id_service = '${service.id}'`
 		return this.customQuery(q).then((result)=>{
 			let max = result[0].level
 			if(max > 0 && service.level > max){
 				upgrade = true
-			}else if(max > 0) {
-				renovation = true
-				let q = `UPDATE user_answer SET id_status = '${CONSTANTS.EVALUATION_REQUEST.POR_ASIGNAR}' WHERE id_service = '${service}'`
-				return this.customQuery(q).then(()=>{
-					let q = `SELECT u.id from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
-					return this.customQuery(q)
-				})
+			}
+			if(!upgrade){
+				let q = `UPDATE user_answer SET id_status = '${CONSTANTS.EVALUATION_REQUEST.PENDIENTE}' WHERE id_service = '${service.id}'`
+				return this.customQuery(q)
+			}
+		})
+	}
+	this.asignate = function (service) {
+		let upgrade = false
+		let q = `SELECT IFNULL(MAX(level),0) level from service_status WHERE id_status = '${CONSTANTS.SERVICE.CUMPLE}' AND id_service = '${service.id}'`
+		return this.customQuery(q).then((result)=>{
+			let max = result[0].level
+			if(max > 0 && service.level > max){
+				upgrade = true
 			}
 			let q = `SELECT u.id from user u JOIN user_role ON user_role.id_user = u.id WHERE user_role.id_role = 3`
 			return this.customQuery(q)

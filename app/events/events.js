@@ -567,6 +567,7 @@ var Events = function () {
 								entity_model_points.addInstitutionPoints(old.id_institution, motive.id, '')
 							}
 						})
+						model_entity_service.prepareAsignation(_new)
 					}
 					if (_new.current_status == CONSTANTS.SERVICE.EVALUACION) {
 						model_entity_service.asignate(_new).then((evaluations) => {
