@@ -1,3 +1,5 @@
+import { reject } from '../../../../Library/Caches/typescript/2.6/node_modules/@types/async';
+
 let emiter = require('./emiter.js').instance
 var utiles = require('../utils/utiles.js')
 var config = require('../../config.json')
@@ -103,27 +105,35 @@ var Events = function () {
 				} else if (_new.id_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE) {
 					model_entity_user_answer.getByParams({ id_service: _service.id })
 						.then((results) => {
-							let ready = true
+							let approved = 0
+							let rejected = 0
+							let total = results.data.length
 							results.data.forEach((answer) => {
-								if (answer.id_status !== CONSTANTS.EVALUATION_REQUEST.CUMPLE) {
-									ready = false
+								if (answer.id_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE) {
+									approved += 1
+								}
+								if (answer.id_status == CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE) {
+									rejected += 1
 								}
 							})
-							if (ready) {
+							if (approved === total) {
 								return model_entity_service.update({ id: _service.id, current_status: CONSTANTS.SERVICE.CUMPLE }, { id: old.id_service })
+							}else if(approved + rejected === total){
+								return model_entity_service.update({ id: _service.id, current_status: CONSTANTS.SERVICE.NO_CUMPLE }, { id: old.id_service })		
 							}
 							return
 						})
 				} else if (_new.id_status == CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE) {
-					model_entity_user_answer.getByParams({ id_service: _service.id }).then((results) => {
+					model_entity_user_answer.getByParams({ id_service: _service.id })
+					.then((results) => {
 						let approved = 0
 						let rejected = 0
 						let total = results.data.length
-						results.data.forEach((request) => {
-							if (request.id_request_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE) {
+						results.data.forEach((answer) => {
+							if (answer.id_status == CONSTANTS.EVALUATION_REQUEST.CUMPLE) {
 								approved += 1
 							}
-							if (request.id_request_status == CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE) {
+							if (answer.id_status == CONSTANTS.EVALUATION_REQUEST.NO_CUMPLE) {
 								rejected += 1
 							}
 						})
