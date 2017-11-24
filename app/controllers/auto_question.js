@@ -389,7 +389,7 @@ var question_controller = function () {
 		if(params.activity){
 			return model_entity_evaluation_request.toActivity(user,params)
 		}
-		return _get(model_entity_evaluation_request, user, params)
+	return _get(model_entity_evaluation_request, user, params)
 	}
 	/**
 	 * @api {get} api/question/request_status Request request_status information
@@ -846,10 +846,11 @@ var question_controller = function () {
 					})
 				})
 		} else {
-			delete body.id_media
 			delete body.id_order
 			delete body.datetime
-			model_entity_user_answer.clearMedia(body.id)
+			if(!body.id_media){
+				model_entity_user_answer.clearMedia(body.id)
+			}
 			return model_entity_user_answer.update(body, { id: body.id }).then((results)=>{
 				return body
 			})
@@ -897,11 +898,6 @@ var question_controller = function () {
 		if (!body.id) {
 			throw utiles.informError(400)
 		}
-		let _status = null
-		let _erequest = null
-		let _evaluator = null
-		let _entity = null
-		let _answer = null
 		return model_entity_evaluation_request.getByUid( body.id)
 		.then((result)=>{
 			let old = result.data[0]
