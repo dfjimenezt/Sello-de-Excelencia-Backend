@@ -446,7 +446,7 @@ var Events = function () {
 				<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
 			})
 		}
-		if (old.is_active === 1 && _new.is_active === 0) { //RE_activate
+		if (old.is_active === 0 && _new.is_active === 1) { //RE_activate
 			model_entity_institution.getUser(old.id_institution).then((result) => {
 				let user = result[0]
 				let email = ''
@@ -594,6 +594,9 @@ var Events = function () {
 							</div>
 							<p>Hola ${user.name}</p>
 							<p>Hemos aceptado tu postulación para el Sello de Excelencia Gobierno Digital Colombia.</p>
+							<p>Nombre del Servicio o Producto: ${_new.name}</p>
+							<p>Categoría: ${_new.category.name}</p>
+							<p>Nivel: ${_new.level}</p>
 							<p>Ahora iniciará el proceso de evaluación de los requisitos.</p>
 							<p>Nuestros mejores deseos,<\p>
 							<p>El equipo del Sello de Excelencia Gobierno Digital Colombia<\p>`)
