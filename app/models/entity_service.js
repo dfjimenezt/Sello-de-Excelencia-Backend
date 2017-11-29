@@ -116,7 +116,7 @@ var Service = function () {
 		}
 		let q=`SELECT \`service\`.\`*\`,\`user\`.\`name\` \`user_name\`,
 		\`user\`.\`email\` \`user_email\`,\`service_status\`.\`valid_to\`,
-		\`category\`.\`name\` \`category_email\`
+		\`category\`.\`name\` \`category_name\`
 		 FROM \`service\` 
 		JOIN (SELECT \`service_status\`.\`id_service\`,MAX(\`service_status\`.\`valid_to\`) \`valid_to\` FROM \`service_status\` 
 		WHERE (

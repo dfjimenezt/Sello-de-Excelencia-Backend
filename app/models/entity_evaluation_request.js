@@ -121,7 +121,7 @@ var Evaluation_request = function () {
 			alert_time = alert_time.toISOString().split('T')[0]
 		}
 		let q = `SELECT e_r.*,
-			c.name category_name
+			c.name category_name, 
 			s.name service_name,
 			q.level level,
 			q.text question,

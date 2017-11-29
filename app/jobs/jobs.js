@@ -228,5 +228,10 @@ var Jobs = function () {
 			})
 		})
 	}
+
+	this.info = function(){
+		let adate = new Date()
+		return model_entity_service.getByCurrentStatusDate(null, null, [CONSTANTS.SERVICE.INCOMPLETO])
+	}
 }
 module.exports = Jobs
