@@ -218,7 +218,12 @@ var Jobs = function () {
 							</div>
 							<p>Hola ${_admin.name}</p>
 							<p>El plazo de evaluación del siguiente requisito:</p>
-							<p>Nombre del Producto o Servicio: ${request.name}</p>
+							<p>Categoría: ${request.category_name}</p>
+							<p>Nivel: ${request.level}</p>
+							<p>Temática: ${request.topic}</p>
+							<p>Requisito: ${request.question}</p>
+							<p>Entidad: ${request.institution}</p>
+							<p>Nombre del Producto o Servicio: ${request.service_name}</p>
 							<p>Se ha vencido</p>
 							<p>Por favor ingresa a la plataforma para Evaluar el Requisito.</p>
 							<p>Nuestros mejores deseos,<\p>
