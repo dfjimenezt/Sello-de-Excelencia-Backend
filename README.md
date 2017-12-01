@@ -13,13 +13,14 @@ Clonar el Repositorio
   $ git clone https://github.com/dfjimenezt/Sello-de-Excelencia-Backend.git
   $ cd Sello-de-Excelencia-Backend
   $ npm install
+	$ gcloud init
 ```
 
 ```shell
-	$ mysql -u root -p
-	$ > create database stamp
-	$ > quit;
-	$ mysql -u root -p stamp < ./design/database.sql
+  $ mysql -u root -p
+  $ > create database stamp
+  $ > quit;
+  $ mysql -u root -p stamp < ./design/database.sql
 ```
 
 
