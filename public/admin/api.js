@@ -10,114 +10,150 @@ dmt.api= {
                 {
                     entity:"user",
                     permissions:{
-                        read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        read:"admin_users",
+                        write:"admin_users",
+                        update:"admin_users",
+                        delete:"admin_users"
                     }
                 },
                 {
                     entity:"role",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_users",
+                        update:"admin_users",
+                        delete:"admin_users"
                     }
                 },
                 {
                     entity:"availability",
                     permissions:{
-                        read:"admin",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
-                    }
-                },
-                {
-                    entity:"level",
-                    permissions:{
-                        read:"admin",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        read:"admin_users",
+                        write:"admin_users",
+                        update:"admin_users",
+                        delete:"admin_users"
                     }
                 },
                 {
                     entity:"user_category",
                     permissions:{
-                        read:"admin",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        read:"admin_users",
+                        write:"admin_users",
+                        update:"admin_users",
+                        delete:"admin_users"
                     }
                 },
                 {
                     entity:"user_questiontopic",
                     permissions:{
-                        read:"admin",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        read:"admin_users",
+                        write:"admin_users",
+                        update:"admin_users",
+                        delete:"admin_users"
                     }
                 },
                 {
                     entity:"permission",
                     permissions:{
-                        read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        read:"admin_users",
+                        write:"admin_users",
+                        update:"admin_users",
+                        delete:"admin_users"
                     }
                 },
                 {
                     entity:"permission_role",
                     permissions:{
-                        read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        read:"admin_users",
+                        write:"admin_users",
+                        update:"admin_users",
+                        delete:"admin_users"
                     }
                 },
                 {
                     entity:"user_role",
                     permissions:{
+                        read:"admin_users",
+                        write:"admin_users",
+                        update:"admin_users",
+                        delete:"admin_users"
+                    }
+                },
+                {
+                    entity:"institution_user",
+                    permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_users",
+                        update:"admin_users",
+                        delete:"admin_users"
                     }
                 },
                 {
                     entity:"config",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_config",
+                        update:"admin_config",
+                        delete:"admin_config"
                     }
-                }
+                },
+                {
+                    entity:"type_document",
+                    permissions:{
+                        read:"none",
+                        write:"admin_type_document",
+                        update:"admin_type_document",
+                        delete:"admin_type_document"
+                    }
+                },
+                {
+                    entity:"points",
+                    permissions:{
+                        read:"none",
+                        write:"admin_points",
+                        update:"admin_points",
+                        delete:"admin_points"
+                    }
+                },
+                {
+                    entity:"motives",
+                    permissions:{
+                        read:"none",
+                        write:"admin_motives",
+                        update:"admin_motives",
+                        delete:"admin_motives"
+                    }
+                },
+                {
+                    entity:"motivename",
+                    permissions:{
+                        read:"none",
+                        write:"admin_motives",
+                        update:"admin_motives",
+                        delete:"admin_motives"
+                    }
+                },
+                {
+                    entity:"hall_of_fame",
+                    permissions:{
+                        read:"none",
+                        write:"admin_hall",
+                        update:"admin_hall",
+                        delete:"admin_hall"
+                    }
+                },
             ]
         },
         {
             controller:"forum",
             entities:[
                 {
-                    entity:"topic",
+                    entity:"hangouts",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
-                    }
-                },
-                {
-                    entity:"message",
-                    permissions:{
-                        read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_hangouts",
+                        update:"admin_hangouts",
+                        delete:"admin_hangouts"
                     }
                 }
             ]
@@ -129,27 +165,45 @@ dmt.api= {
                     entity:"institution",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_institution",
+                        update:"admin_institution",
+                        delete:"admin_institution"
+                    }
+                },
+                {
+                    entity:"institutionType",
+                    permissions:{
+                        read:"none",
+                        write:"admin_institution",
+                        update:"admin_institution",
+                        delete:"admin_institution"
                     }
                 },
                 {
                     entity:"city",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_cities_regions",
+                        update:"admin_cities_regions",
+                        delete:"admin_cities_regions"
                     }
                 },
                 {
                     entity:"region",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_cities_regions",
+                        update:"admin_cities_regions",
+                        delete:"admin_cities_regions"
+                    }
+                },
+                {
+                    entity:"country",
+                    permissions:{
+                        read:"none",
+                        write:"admin_cities_regions",
+                        update:"admin_cities_regions",
+                        delete:"admin_cities_regions"
                     }
                 }
             ]
@@ -161,54 +215,45 @@ dmt.api= {
                     entity:"service",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"postulate_service",
+                        update:"admin_services",
+                        delete:"admin_services"
                     }
                 },
                 {
                     entity:"category",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_services",
+                        update:"admin_services",
+                        delete:"admin_services"
                     }
                 },
                 {
-                    entity:"questiontopic",
+                    entity:"status",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_services",
+                        update:"admin_services",
+                        delete:"admin_services"
                     }
                 },
                 {
-                    entity:"form",
+                    entity:"service_status",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_services",
+                        update:"admin_services",
+                        delete:"admin_services"
                     }
                 },
                 {
-                    entity:"type",
+                    entity:"service_comment",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
-                    }
-                },
-                {
-                    entity:"question",
-                    permissions:{
-                        read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_services",
+                        update:"admin_services",
+                        delete:"admin_services"
                     }
                 }
             ]
@@ -217,30 +262,162 @@ dmt.api= {
             controller:"question",
             entities:[
                 {
-                    entity:"evaluation_request",
+                    entity:"question",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_questions",
+                        update:"admin_questions",
+                        delete:"admin_questions"
+                    }
+                },
+                {
+                    entity:"questiontopic",
+                    permissions:{
+                        read:"none",
+                        write:"admin_questions",
+                        update:"admin_questions",
+                        delete:"admin_questions"
+                    }
+                },
+                {
+                    entity:"usertype",
+                    permissions:{
+                        read:"none",
+                        write:"admin_questions",
+                        update:"admin_questions",
+                        delete:"admin_questions"
+                    }
+                },
+                {
+                    entity:"category_questions",
+                    permissions:{
+                        read:"none",
+                        write:"admin_questions",
+                        update:"admin_questions",
+                        delete:"admin_questions"
+                    }
+                },
+                {
+                    entity:"form",
+                    permissions:{
+                        read:"none",
+                        write:"admin_questions",
+                        update:"admin_questions",
+                        delete:"admin_questions"
                     }
                 },
                 {
                     entity:"user_answer",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"postulate_service",
+                        update:"postulate_service",
+                        delete:"admin_answers"
+                    }
+                },
+                {
+                    entity:"status",
+                    permissions:{
+                        read:"none",
+                        write:"admin_status",
+                        update:"admin_status",
+                        delete:"admin_status"
+                    }
+                },
+                {
+                    entity:"evaluation_request",
+                    permissions:{
+                        read:"none",
+                        write:"create_evaluation_request",
+                        update:"admin_evaluation_request",
+                        delete:"admin_evaluation_request"
                     }
                 },
                 {
                     entity:"request_status",
                     permissions:{
                         read:"none",
-                        write:"admin",
-                        update:"admin",
-                        delete:"admin"
+                        write:"admin_status",
+                        update:"admin_status",
+                        delete:"admin_status"
+                    }
+                },
+                {
+                    entity:"chats",
+                    permissions:{
+                        read:"none",
+                        write:"create_chat",
+                        update:"admin_answers",
+                        delete:"admin_answers"
+                    }
+                },
+                
+            ]
+        },
+        {
+            controller:"platform",
+            entities:[
+                {
+                    entity:"contact",
+                    permissions:{
+                        read:"none",
+                        write:"admin_platform",
+                        update:"admin_platform",
+                        delete:"admin_platform"
+                    }
+                },
+                {
+                    entity:"faq",
+                    permissions:{
+                        read:"none",
+                        write:"admin_platform",
+                        update:"admin_platform",
+                        delete:"admin_platform"
+                    }
+                },
+                {
+                    entity:"social",
+                    permissions:{
+                        read:"none",
+                        write:"admin_platform",
+                        update:"admin_platform",
+                        delete:"admin_platform"
+                    }
+                },
+                {
+                    entity:"footer",
+                    permissions:{
+                        read:"none",
+                        write:"admin_platform",
+                        update:"admin_platform",
+                        delete:"admin_platform"
+                    }
+                },
+                {
+                    entity:"banner",
+                    permissions:{
+                        read:"none",
+                        write:"admin_platform",
+                        update:"admin_platform",
+                        delete:"admin_platform"
+                    }
+                },
+                {
+                    entity:"type_banner",
+                    permissions:{
+                        read:"none",
+                        write:"admin_platform",
+                        update:"admin_platform",
+                        delete:"admin_platform"
+                    }
+                },
+                {
+                    entity:"config",
+                    permissions:{
+                        read:"none",
+                        write:"admin_platform",
+                        update:"admin_platform",
+                        delete:"admin_platform"
                     }
                 }
             ]

@@ -17,21 +17,30 @@
       <md-content class="md-padding" layout-spacing="center">
         <div class="md-actions" layout="row" flex>
           <span flex></span>
-          <md-button class="md-primary" ng-click="ctrl.saveItem()" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
+          <md-button class="md-primary md-raised" ng-click="ctrl.saveItem($event)" ng-disabled="ctrl.form.$invalid">Guardar</md-button>
         </div>
-        <form name="ctrl.form" ng-submit="ctrl.addItem()">
-          <div layout="row" layout-wrap class="input-row" layout-padding>
-            <md-input-container ng-repeat="f in ctrl.currentEntity.fields track by $index" flex="50">
-              <label ng-if="f.type!=='boolean'">{{f.name}}</label>
+        <form name="ctrl.form" layout="row" flex>
+          <div layout="row" layout-wrap class="input-row" layout-padding flex>
+            <md-input-container ng-repeat="f in ctrl.service.currentEntity.fields track by $index" ng-if="f.name!=='password'" flex="100">
+              <label ng-if="f.type!=='boolean' && f.type !=='file' && f.type !=='text'">{{f.name | translate}}</label>
               <input type="number" ng-if="f.type=='int'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
               <input type="text" ng-if="f.type=='string'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
+              <md-datepicker ng-model="ctrl.data[f.name]" ng-if="f.type=='datetime'" ng-disabled="f.disabled"></md-datepicker>
               <input type="email" ng-if="f.type=='email'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
-              <input type="file" ng-if="f.type=='file'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled" />
-              <md-checkbox ng-if="f.type=='boolean'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled">{{f.name}}</md-checkbox>
+              <md-checkbox ng-if="f.type=='boolean'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled">{{f.name | translate}}</md-checkbox>
               <md-select ng-if="f.type=='link'" ng-model="ctrl.data[f.name]" ng-disabled="f.disabled">
                 <md-option ng-repeat="o in ctrl.options[f.name]" value="{{o[f.foreign_key]}}">{{o[f.foreign_name]}}</md-option>
               </md-select>
-              <textarea ng-if="f.type=='text'" ng-model="ctrl.data[f.name]"></textarea>
+              <div ng-if="f.type=='text'">
+                <span>{{f.name | translate}}</span>
+                  <text-angular ng-if="f.type=='text'" ng-model="ctrl.data[f.name]"></text-angular>
+              </div>
+              
+              <div style="text-align:center;" ng-if="f.type=='file'" ngf-select ng-model="ctrl.data[f.name]">
+                <img ngf-thumbnail="ctrl.data[f.name]" /><br/>
+                <video ng-if="ctrl.data[f.name].indexOf('mp4') > -1" src="{{ctrl.data[f.name]}}"></video>
+                <md-button class="md-raised">{{f.name | translate}}</md-button>
+              </div>
             </md-input-container>
           </div>
         </form>
@@ -42,7 +51,7 @@
 
       </md-content>
     </md-tab>
-    <md-tab label="{{relation.name}}" md-on-select="ctrl.selectTab(relation)" ng-if="relation.type !== '1-1' && ctrl.data[ctrl.currentEntity.defaultSort]"
+    <md-tab label="{{relation.name | translate}}" md-on-select="ctrl.selectTab(relation)" ng-if="relation.type !== '1-1' && ctrl.data[ctrl.currentEntity.defaultSort]"
       ng-repeat="relation in ctrl.currentEntity.relations">
       <md-content class="md-padding" layout-spacing="center">
         <!-- Relation 1-n & n-n -->
@@ -50,14 +59,14 @@
           <div class="md-toolbar-tools">
             <div flex></div>
             <md-button class="md-icon-button" ng-click="ctrl.entities[relation.entity].filter.show = true">
-              <md-icon  class="material-icons">filter_list</md-icon>
+              <md-icon>search</md-icon>
             </md-button>
             <md-button class="md-raised md-primary" ng-if="!ctrl.page.readOnly" ng-click="ctrl.create($event,relation)">CREAR</md-button>
           </div>
         </md-toolbar>
         <md-toolbar class="md-table-toolbar md-default" ng-show="ctrl.entities[relation.entity].filter.show && (!ctrl.entities[relation.entity].selected.length || relation.type !== '1-n')">
           <div class="md-toolbar-tools">
-            <md-icon  class="material-icons">search</md-icon>
+            <md-icon class="material-icons">search</md-icon>
             <form flex name="ctrl.entities[relation.entity].filter.form" layout="row">
               <input type="text" flex="100" ng-model="ctrl.entities[relation.entity].query.filter" ng-model-options="ctrl.entities[relation.entity].filter.options"
                 placeholder="Buscar" ng-change="ctrl.entities[relation.entity].search()">
@@ -72,7 +81,7 @@
             <div>{{ctrl.entities[relation.entity].selected.length}} {{ctrl.entities[relation.entity].selected.length > 1 ? 'items
               seleccionados' : 'item seleccionado'}}</div>
             <md-button class="md-icon-button" ng-click="ctrl.delete($event,relation)">
-              <md-icon  class="material-icons">delete</md-icon>
+              <md-icon class="material-icons">delete</md-icon>
             </md-button>
           </div>
         </md-toolbar>
@@ -80,8 +89,8 @@
           <table md-table md-row-select multiple ng-model="ctrl.entities[relation.entity].selected" md-progress="ctrl.entities[relation.entity].promise">
             <thead md-head>
               <tr md-row>
-                <th md-column ng-repeat="f in ctrl.entities[relation.entity].table.fields" ng-if="f.type !== 'link' && f.name !== relation.rightKey">
-                  <span>{{f.name}}</span>
+                <th md-column ng-repeat="f in ctrl.entities[relation.entity].table.fields" ng-if="f.name !== relation.rightKey">
+                  <span>{{f.name | translate}}</span>
                 </th>
               </tr>
             </thead>
@@ -89,18 +98,18 @@
               <tr md-row md-on-select="ctrl.select" md-on-deselect="ctrl.unselect" md-select="item[ctrl.entities[relation.entity].table.defaultSort]"
                 md-auto-select ng-repeat="item in ctrl.entities[relation.entity].data">
                 <td md-cell ng-repeat="f in ctrl.entities[relation.entity].table.fields" ng-click="ctrl.editField($event,item,f,relation)"
-                  ng-if="f.type !== 'link' && f.name !== relation.rightKey">
-                  <span>{{ item[f.name] }}</span>
-                  </td>
-                  </tr>
+                  ng-if="f.name !== relation.rightKey">
+                  <span ng-if="f.type !== 'link'">{{ item[f.name] }}</span>
+                  <span ng-if="f.type === 'link'">{{ item[f.table][f.foreign_name] }}</span>
+                </td>
+              </tr>
             </tbody>
           </table>
           <md-table-pagination md-limit="ctrl.entities[relation.entity].query.limit" md-limit-options="[10, 15, 20]" md-page="ctrl.entities[relation.entity].query.page"
-            md-total="{{ctrl.entities[relation.entity].total_results}}" md-on-paginate="ctrl.entities[relation.entity].getData"
+            md-label="{page: 'Página:', rowsPerPage: 'Filas por página:', of: 'de'}" md-total="{{ctrl.entities[relation.entity].total_results}}" md-on-paginate="ctrl.entities[relation.entity].getData"
             md-page-select></md-table-pagination>
         </div>
-
       </md-content>
-      </md-tab>
+    </md-tab>
   </md-tabs>
 </div>

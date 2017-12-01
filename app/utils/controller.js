@@ -8,7 +8,7 @@ var Controller = function (getMap, postMap, putMap, deleteMap) {
   That function must always return a Promise
   */
 
-  this.get = function (params, token, queryParams) {
+  this.get = function (params, token, queryParams, req, res) {
     if (!getMap) return utiles.informError(405)
     var option = params[0].split('/')[0]
 
@@ -18,7 +18,7 @@ var Controller = function (getMap, postMap, putMap, deleteMap) {
       var method = rta.method
       var permitsNeeded = rta.permits
       return utiles.authorize(token, permitsNeeded).then((user) => {
-        return method(user, queryParams)
+        return method(user, queryParams, req, res)
       })
     }
   }
@@ -38,7 +38,7 @@ var Controller = function (getMap, postMap, putMap, deleteMap) {
     }
   }
 
-  this.put = function (params, token, body) {
+  this.put = function (params, token, body, files) {
     if (!putMap) return utiles.informError(405)
     var option = params[0].split('/')[0]
 
@@ -48,7 +48,7 @@ var Controller = function (getMap, postMap, putMap, deleteMap) {
       var method = rta.method
       var permitsNeeded = rta.permits
       return utiles.authorize(token, permitsNeeded).then((user) => {
-        return method(user, body)
+        return method(user, body ,files)
       })
     }
   }

@@ -1,0 +1,19 @@
+------------------
+Login Time Doctor:
+------------------
+
+Carolina:
+    user: carolina.pulido@domoti-sas.com
+    pass: tmzT.543
+
+Johnny:
+    user: johnny.cubides@domoti-sas.com
+    pass: Samus.com5
+
+--------------
+Login Postman:
+--------------
+
+All:
+    user: development@domoti-ss.com
+    pass: Domotidomoti7711

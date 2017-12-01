@@ -1,8 +1,8 @@
 {
 	"port": "3000",
-	"enviroment": "production",
+	"enviroment": "development",
 	"verbose": "true",
-	"googleDebug": "false",
+	"googleDebug": "true",
 	"defaultModel": "mysql",
 	"version": "1.0.1",
 	"db_production": {
@@ -10,17 +10,30 @@
 		"password": "qazwsxedc123",
 		"host": "8.35.192.8",
 		"database": "stamp",
+		"dateStrings":true,
 		"options": {
-			"encrypt": true
+			"encrypt": true,
+			"dateStrings":true
 		}
 	},
 	"db_development": {
 		"user": "root",
-		"password": "",
-		"host": "127.0.0.1",
+		"password": "qazwsxedc123",
+		"host": "8.35.192.8",
+		"database": "stamp_test",
+		"options": {
+			"encrypt": true,
+			"dateStrings":true
+		}
+	},
+	"db_local": {
+		"user": "root",
+		"password": "Qazwsx123$",
+		"host": "localhost",
 		"database": "stamp",
 		"options": {
-			"encrypt": true
+			"encrypt": true,
+			"dateStrings":true
 		}
 	},
 	"smtp":{
@@ -32,6 +45,15 @@
     "bcc"         : "",
     "admin"       : "jorge.contreras@domoti-sas.com"
 	},
+	"hosts":{
+		"development":"https://prueba-dot-domoti-sellodeexcelencia.appspot.com",
+		"production":"http://sellodeexcelencia.gov.co",
+		"local":"http://localhost:9000"
+	},
 	"secret": "1234567890",
+    "gcloud": {
+		"GCLOUD_PROJECT": "domoti-production",
+		"CLOUD_BUCKET": "domoti-sellodeexcelencia.appspot.com"
+	},
 	"autorizedHosts": ["http://sellodeexcelencia.gov.co","https://sellodeexcelencia.gov.co/","*"]
 }

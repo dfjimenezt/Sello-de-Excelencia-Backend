@@ -1,13 +1,16 @@
-<div layout="column">
-    <div class="breadcrum" ng-bind-html="ctrl.breadcrum"></div>
-    <md-toolbar class="md-table-toolbar md-default" ng-hide="selected.length || filter.show">
+<div layout="column" flex>
+    <!--md-toolbar layout="row" layout-align="space-around" md-theme="dark">
+        <md-button ng-repeat="page in ctrl.sibling" ng-click="ctrl.selectPage(page)">{{page.name}}</md-button>
+    </md-toolbar-->
+    <md-toolbar class="md-table-toolbar md-default"  ng-hide="selected.length || filter.show">
         <div class="md-toolbar-tools">
             <h2 class="md-title">{{ctrl.page.name}}</h2>
             <div flex></div>
-            <md-button class="md-icon-button" ng-click="filter.show = true">
+            <md-button class="md-icon-button" ng-click="filter.show = true">                
                 <md-icon class="material-icons">search</md-icon>
             </md-button>
-            <md-button class="md-raised md-primary" ng-if="!ctrl.page.readOnly"ng-click="create($event)">
+            
+            <md-button class="md-raised md-primary" ng-if="!ctrl.page.readOnly" ng-click="create($event)">
                 <md-icon class="material-icons">add</md-icon>
             </md-button>
         </div>
@@ -42,9 +45,9 @@
         <table md-table md-row-select multiple ng-model="selected" md-progress="promise">
             <thead md-head md-order="query.order" md-on-reorder="getData">
                 <tr md-row>
-                    <th md-column ng-repeat="f in ctrl.entity.fields |limitTo:4">
-                        <span ng-if="f.type !== 'link'">{{f.name}}</span>
-                        <md-select ng-if="f.type == 'link'" multiple="true" ng-model="query.filters[f.name]" placeholder="{{f.name}}" ng-change="getData()">
+                    <th md-column ng-repeat="f in ctrl.entity.fields |limitTo:5">
+                        <span ng-if="f.type !== 'link' && f.type!=='file'">{{f.name | translate}}</span>
+                        <md-select ng-if="f.type == 'link' && f.type!=='file'" multiple="true" ng-model="query.filters[f.name]" placeholder="{{f.name | translate:'es'}}" ng-change="getData()">
                             <md-option ng-repeat="o in ctrl.options[f.name]" value="{{o[f.foreign_key]}}">{{o[f.foreign_name]}}</md-option>
                         </md-select>
                     </th>
@@ -52,14 +55,14 @@
             </thead>
             <tbody md-body>
                 <tr md-row md-select="item" md-select-id="name" md-auto-select ng-repeat="item in items">
-                    <td md-cell ng-repeat="f in ctrl.entity.fields |limitTo:4" ng-click="editField($event,item,f)">
-                        <span ng-if="f.type=='link'">{{ ctrl.options[f.name] | linkvalue:f:item }}</span>
-                        <span ng-if="f.type!=='link'">{{item[f.name]}}</span>           
+                    <td md-cell ng-repeat="f in ctrl.entity.fields |limitTo:5" ng-click="editField($event,item,f)">
+                        <span ng-if="f.type=='link' && f.type !=='file'">{{ ctrl.options[f.name] | linkvalue:f:item }}</span>
+                        <span ng-if="f.type!=='link' && f.type !=='file'">{{item[f.name]}}</span>
                     </td>
                 </tr>
             </tbody>
         </table>
     </md-table-container>
     <md-table-pagination md-limit="query.limit" md-limit-options="[10, 15, 20]" md-page="query.page" md-total="{{total_results}}"
-        md-on-paginate="getData" md-page-select></md-table-pagination>
+        md-label="{page: 'Página:', rowsPerPage: 'Filas por página:', of: 'de'}" md-on-paginate="getData" md-page-select></md-table-pagination>
 </div>

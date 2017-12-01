@@ -9,6 +9,7 @@ The dev tests must not be mapped in this controller
 // We require this file to be a controller so we can use
 var BaseController = require('../utils/controller.js')
 var util = require('util')
+var utiles = require('../utils/utiles.js')
 var permissions = require('../utils/permissions.js')
 
 // we use mocha to run the test files and path to find them
@@ -58,7 +59,7 @@ function resolveTest (name) {
     var pending = []
 
     mocha.run()
-      .on('test end', test => { tests.push(test) })
+      .on('test end', test => { if(test.state){tests.push(test)}  })
       .on('pending', test => { pending.push(test) })
       .on('end', function () {
         var obj = {
@@ -74,11 +75,11 @@ var Test = function () {
   // --------------------------------------------------------------
   var getMap = new Map()
 
-  var anp1 = function (user, queryParams) {
-    return resolveTest('remoteTest1')
+  var run = function (user, params) {
+    return resolveTest(params.test)
   }
 
-  getMap.set('anp1', {method: anp1, permits: permissions.NONE})
+  getMap.set('run', {method: run, permits: permissions.NONE})
 
   var params = [getMap, null, null, null]
   BaseController.apply(this, params)

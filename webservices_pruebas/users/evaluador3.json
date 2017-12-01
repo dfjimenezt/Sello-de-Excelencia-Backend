@@ -1,0 +1,15 @@
+{
+	"name":"evaluador3",
+	"secondname": "segundo nombre",
+	"lastname":"apellido",
+	"email":"evaluador3@gmail.com",
+	"id_type_document": "1",
+	"document": "201707219",
+	"phone":"10000000",
+	"mobile":"20000000",
+	"password":"1234",
+	"id_level": 1,
+	"id_city": "1",
+	"terms": "1",
+	"role":"2"
+}

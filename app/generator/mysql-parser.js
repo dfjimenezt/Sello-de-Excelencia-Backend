@@ -199,18 +199,35 @@ var tables_template = "" +
     "\tconsole.log(e);\n" +
     "}\n";
 var mySqlGen = function () {
-    this.parse = function () {
+    this.override = false
+    this.parse = function (override) {
+        this.override = override
         //Load file into database
-        var tables = {};
-        getTables(tables).then((promises) => {
+        var tables = {}
+        var permissions = {}
+        return getTables(tables).then((promises) => {
             return Promise.all(promises)
         }).then((info) => {
-            let str = tables_template.replace(new RegExp("{{TABLES}}", "g"), JSON.stringify(tables));
-            fs.writeFileSync("./public/admin/tables.js", str);
+            let file_name = './public/admin/tables.js'
+            let write = !fs.existsSync(file_name)
+            write = write || this.override
+            if (!write) {
+                console.log(file_name + " already exists")
+            } else {
+                let str = tables_template.replace(new RegExp("{{TABLES}}", "g"), JSON.stringify(tables,null,'\t'));
+                fs.writeFileSync(file_name, str)
+            }
             //check permissions
             return getEntities(tables);
         }).then(() => {
-            return getControllers();
+            return getControllers(permissions);
+        }).then(()=>{
+            let str = JSON.stringify(permissions,null,'\t')
+            fs.writeFileSync('./app/utils/permissions.js', `/**
+             * This are the permissions discovered accross the platform
+             */
+            module.exports = ${str}`);
+            return true
         }).catch((e) => {
             console.log(e);
         })
@@ -235,13 +252,15 @@ var mySqlGen = function () {
                 let promise = describeTable(table, info, tables)
                 promises.push(promise);
                 promise.then((info) => {
-                    let file_name = "./app/models/" + table_name + ".js";
-                    if (fs.existsSync(file_name)) {
+                    let file_name = "./app/models/" + table_name + ".js"
+                    let write = !fs.existsSync(file_name)
+                    write = write || this.override
+                    if (!write) {
                         console.log(file_name + " already exists")
-                        return false;
+                    } else {
+                        fs.writeFileSync(file_name, info)
                     }
-                    fs.writeFileSync(file_name, info);
-                    return true;
+                    return write
                 })
             }
             return promises;
@@ -278,7 +297,7 @@ var mySqlGen = function () {
             })
             _table.defaultSort = _table.defaultSort || info[0].Field;
             tables[table.TABLE_NAME] = _table;
-            str = str.replace(new RegExp('{{FIELDS}}', 'g'), JSON.stringify(info));
+            str = str.replace(new RegExp('{{FIELDS}}', 'g'), JSON.stringify(info,null,'\t'));
             return str;
         });
     }
@@ -297,7 +316,7 @@ var mySqlGen = function () {
     /**
      * Controllers
      */
-    function getControllers() {
+    function getControllers(permissions) {
         let dmt_entities = require('../../public/admin/entities.js');
         let dmt_tables = require('../../public/admin/tables.js');
         let dmt_api = require('../../public/admin/api.js');
@@ -324,9 +343,13 @@ var mySqlGen = function () {
             let delete_models = [];
             let delete_maps = [];
 
-
-
             controller.entities.forEach((endpoint) => {
+                for(let i in endpoint.permissions){
+                    if(!permissions[endpoint.permissions[i].toUpperCase()]){
+                        permissions[endpoint.permissions[i].toUpperCase()] = endpoint.permissions[i]
+                    }
+                }
+                
                 if (!endpoint.entity) {
                     return;
                 }
@@ -353,7 +376,7 @@ var mySqlGen = function () {
                     return
                 }
                 function getEntityExample(entity, recursive) {
-                    console.log("parsing : " + entity )
+                    //console.log("parsing : " + entity )
                     recursive = recursive || false
                     let example = {}
                     let params = {}
@@ -409,7 +432,7 @@ var mySqlGen = function () {
                                 params[f.name] = t
                             })
                         }
-                        if (ety.relations) {
+                        /*if (ety.relations) {
                             ety.relations.forEach((relation) => {
                                 let data = getEntityExample(relation.entity, false)
                                 if (relation.type === "1-1") {
@@ -424,7 +447,7 @@ var mySqlGen = function () {
                                     }
                                 }
                             })
-                        }
+                        }*/
                     }
 
                     return {
@@ -439,9 +462,8 @@ var mySqlGen = function () {
 
                 import_models.push(individual_import_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity))
                 models.push(individual_model.replace(new RegExp('{{MODEL_NAME}}', 'g'), prefix + endpoint.entity))
-
-                let doc_data = getEntityExample(endpoint.entity, true)
-
+                
+                let doc_data = getEntityExample(endpoint.entity, false)
                 let get_response = JSON.stringify(doc_data.example, null, '\t')
                 get_response = get_response.split('\n').join('\n\t *\t')
 
@@ -513,11 +535,14 @@ var mySqlGen = function () {
             ctrl = ctrl.replace(new RegExp('{{PUT_MAP}}', 'g'), put_maps.join('\n'))
             ctrl = ctrl.replace(new RegExp('{{DELETE_METHODS}}', 'g'), delete_models.join('\n'))
             ctrl = ctrl.replace(new RegExp('{{DELETE_MAP}}', 'g'), delete_maps.join('\n'))
-            fs.writeFile(file_name, ctrl, (error) => {
-                if (error) {
-                    console.log(error);
-                }
-            });
+            
+            let write = !fs.existsSync(file_name)
+            write = write || this.override
+            if (!write) {
+                console.log(file_name + " already exists")
+            } else {
+                fs.writeFileSync(file_name, ctrl)
+            }
         });
     }
 
@@ -540,14 +565,16 @@ var mySqlGen = function () {
             entity.entity = i
             entity.model = "entity"
             let module_name = i.charAt(0).toUpperCase() + i.slice(1);
-            let str = entity_template.replace(new RegExp('{{ENTITY}}', 'g'), JSON.stringify(entity));
+            let str = entity_template.replace(new RegExp('{{ENTITY}}', 'g'), JSON.stringify(entity,null,'\t'));
             str = str.replace(new RegExp('{{MODULE_NAME}}', 'g'), module_name);
-            let file_name = "./app/models/entity_" + i + ".js";
-            if (fs.existsSync(file_name)) {
+            let file_name = "./app/models/entity_" + i + ".js"
+            let write = !fs.existsSync(file_name)
+            write = write || this.override
+            if (!write) {
                 console.log(file_name + " already exists")
-                //continue
+            } else {
+                fs.writeFileSync(file_name, str)
             }
-            fs.writeFileSync(file_name, str);
             let model = new (require('../models/entity_' + i + '.js'))();
             model.updateView()
         };

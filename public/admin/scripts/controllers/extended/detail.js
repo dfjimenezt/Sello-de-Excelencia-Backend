@@ -1,4 +1,4 @@
-angular.module('dmt-back').controller('detailItemExtendedController', function ($mdDialog, $mdEditDialog, $routeParams, page, $location, $http) {
+angular.module('dmt-back').controller('detailItemExtendedController', function ($mdDialog, $mdEditDialog, $routeParams, page, $location, $http, $filter) {
 	var ctrl = this;
 	ctrl.data = {};
 	ctrl.breadcrum = buildBreadcrum($location.path(), page);
@@ -8,7 +8,11 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 	ctrl.selected = [];
 	ctrl.options = {};
 	ctrl.page = page;
-	ctrl.currentEntity = dmt.entities[page.parent.entity];
+	ctrl.tab = null;
+	ctrl.currentEntity = dmt.entities[page.entity || page.parent.entity];
+	if(!ctrl.currentEntity.relations){
+		ctrl.currentEntity.relations = []
+	}
 	ctrl.currentEntity.relations.forEach((relation) => {
 		ctrl.entities[relation.entity] = {
 			filter: {
@@ -44,40 +48,35 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 		}
 	})
 
-	$http.get("api/configuracion/lang").then((response) => {
-		ctrl.languages = response.data.data;
-	}).catch((e)=>{
-		console.log("no languages available")
-	})
-	ctrl.select = function(selection){
+	ctrl.select = function (selection) {
 		var relation = ctrl.tab
-		if(!relation){
+		if (!relation) {
 			return
 		}
-		if(relation.type === 'n-n'){
+		if (relation.type === 'n-n') {
 			var entity = dmt.entities[relation.intermediate.entity]
-			var url = entity.endpoint+relation.intermediate.entity
+			var url = entity.endpoint
 			var data = {}
 			data[relation.intermediate.rightKey] = selection
 			data[relation.intermediate.leftKey] = $routeParams.id
-			$http.post(url,data)
+			$http.post(url, data)
 		}
 	}
-	ctrl.unselect = function(selection){
+	ctrl.unselect = function (selection) {
 		var relation = ctrl.tab
-		if(!relation){
+		if (!relation) {
 			return
 		}
-		if(relation.type === 'n-n'){
+		if (relation.type === 'n-n') {
 			var entity = dmt.entities[relation.intermediate.entity]
-			var url = entity.endpoint+relation.intermediate.entity+'?'+relation.intermediate.rightKey+'='+selection+'&'+relation.intermediate.leftKey+'='+$routeParams.id
-			//console.log(url)
-			$http.delete(url)	
+			var url = entity.endpoint + '?' + relation.intermediate.rightKey + '=' + selection + '&' + relation.intermediate.leftKey + '=' + $routeParams.id
+			$http.delete(url)
 		}
 	}
-	ctrl.selectTab = function(tab){
+	ctrl.selectTab = function (tab) {
 		ctrl.tab = tab
 	}
+
 	ctrl.create = function (event, relation) {
 		let entity = dmt.entities[relation.entity];
 		$mdDialog.show({
@@ -100,13 +99,45 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 	};
 	ctrl.updateItem = function (item, field, relation) {
 		let entity = dmt.entities[relation.entity];
-		if (item.timestamp) {
-			delete item.timestamp;
-		}
-		if (entity.translate) {
-			item.language = ctrl.language
-		}
-		$http.put(entity.endpoint + relation.entity, item).then(ctrl.getData);
+		var data = new FormData();
+		var update = false;
+		entity.fields.forEach(function (field) {
+			if (field.type !== 'file') {
+				if (typeof item[field.name] === 'object' || typeof item[field.name] === 'array') {
+					if( (item[field.name] instanceof Date)){
+						let _d = item[field.name].toISOString()
+						_d = _d.split('T').join(' ').split('.')[0]
+						data.append(field.name, _d)	
+					}
+					return;
+				}
+				if (field.name === 'timestamp') {
+					return;
+				}
+			}
+			if (field.type === 'boolean') {
+				data.append(field.name, item[field.name] === true ? 1 : 0)
+				return;
+			}
+			if (!item[field.name]) {
+				return;
+			}
+			if (field.name === entity.defaultSort) {
+				update = true;
+			}
+			data.append(field.name, item[field.name])
+		})
+		/*$http({
+			method: 'PUT',
+			url: entity.endpoint,
+			data: item,
+			transformRequest: angular.identity,
+			headers: {'Content-Type': 'multipart/form-data'}
+		})*/
+		var request = new XMLHttpRequest();
+		request.open("PUT", entity.endpoint);
+		request.setRequestHeader("Authorization", localStorage.getItem("token"));
+		request.send(data);
 	};
 	ctrl.delete = function (event, relation) {
 		let entity = dmt.entities[relation.entity];
@@ -132,7 +163,7 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 			placeholder: field.name,
 			cancel: "Cancelar",
 			ok: "Guardar",
-			title: "Editar " + field.name,
+			title: "Editar " + $filter('translate')(field.name),
 			save: function (input) {
 				item[field.name] = input.$modelValue;
 				ctrl.updateItem(item, field, relation);
@@ -189,7 +220,11 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 			intermediate.push("filter_field=" + relation.intermediate.leftKey);
 			intermediate.push("filter_value=" + $routeParams.id);
 			intermediate.push("lang=" + ctrl.language)
-			$http.get(entity.endpoint + relation.intermediate.entity + "?" + intermediate.join("&")).then((response) => {
+			let ety_intermediate = dmt.entities[relation.intermediate.entity];
+			if (!ety_intermediate) {
+				ety_intermediate = dmt.tables[relation.intermediate.entity];
+			}
+			$http.get(ety_intermediate.endpoint + "?" + intermediate.join("&")).then((response) => {
 				response.data.data.forEach(function (item) {
 					if (ctrl.entities[relation.entity].selected.indexOf(item[relation.intermediate.rightKey]) === -1) {
 						ctrl.entities[relation.entity].selected.push(item[relation.intermediate.rightKey])
@@ -201,7 +236,7 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 		str.push("limit=" + ctrl.entities[relation.entity].query.limit)
 		str.push("lang=" + ctrl.language)
 
-		$http.get(entity.endpoint + relation.entity + "?" + str.join("&")).then((response) => {
+		$http.get(entity.endpoint + "?" + str.join("&")).then((response) => {
 			ctrl.entities[relation.entity].table = table;
 			ctrl.entities[relation.entity].data = response.data.data;
 			ctrl.entities[relation.entity].total_results = response.data.total_results
@@ -212,6 +247,9 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 		for (let p in ctrl.currentEntity.fields) { //mysql boolean 1 / 0 to true / false            
 			if (ctrl.currentEntity.fields[p].type === "boolean") {
 				ctrl.data[ctrl.currentEntity.fields[p].name] = ctrl.data[ctrl.currentEntity.fields[p].name] === 1;
+			}
+			if (ctrl.currentEntity.fields[p].type === "datetime") {
+				ctrl.data[ctrl.currentEntity.fields[p].name] = new Date(ctrl.data[ctrl.currentEntity.fields[p].name]);
 			}
 		}
 		if (ctrl.currentEntity.relations) {
@@ -238,12 +276,12 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 		str.push("lang=" + ctrl.language);
 		let filter = str.join("&");
 
-		ctrl.promise = $http.get(ctrl.currentEntity.endpoint + page.parent.entity + "?" + filter);
+		ctrl.promise = $http.get(ctrl.currentEntity.endpoint + "?" + filter);
 		ctrl.promise.then(ctrl.getSuccess).catch(function (response) {
 			window.location.href = "/admin/login";
 		});
 	};
-	if($routeParams.id){
+	if ($routeParams.id) {
 		ctrl.getData();
 	}
 
@@ -297,7 +335,7 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 		if (!base) {
 			base = ctrl.currentEntity.endpoint;
 		}
-		$http.get(base + item.table).then(function (results) {
+		$http.get(base).then(function (results) {
 			item.options = results.data.data;
 		});
 	}
@@ -305,9 +343,17 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 	function addOptions(item, index) {
 		var base = item.endpoint;
 		if (!base) {
+			let entity = dmt.entities[item.table];
+			let table = null
+			if (!entity) {
+				entity = dmt.tables[item.table];
+			} 
+			base = entity.endpoint
+		}
+		if (!base) {
 			base = ctrl.currentEntity.endpoint;
 		}
-		$http.get(base + item.table).then(function (results) {
+		$http.get(base).then(function (results) {
 			ctrl.options[item.name] = results.data.data;
 		});
 	}
@@ -329,28 +375,82 @@ angular.module('dmt-back').controller('detailItemExtendedController', function (
 		window.location.href = "/admin/login";
 	}
 
-	this.saveItem = function () {
+	this.saveItem = function (ev) {
 		ctrl.form.$setSubmitted();
 		if (ctrl.form.$valid) {
 			var base = ctrl.currentEntity.endpoint;
-			let data = {}
+			var data = new FormData();
+			var update = false;
 			ctrl.currentEntity.fields.forEach(function (field) {
-				if (typeof ctrl.data[field.name] === 'object' || typeof ctrl.data[field.name] === 'array')
+				if (field.type !== 'file') {
+					if (typeof ctrl.data[field.name] === 'object' || typeof ctrl.data[field.name] === 'array') {
+						if( (ctrl.data[field.name] instanceof Date)){
+							let _d = ctrl.data[field.name].toISOString()
+							_d = _d.split('T').join(' ').split('.')[0]
+							data.append(field.name, _d)	
+						}
+						return;
+					}
+					if (field.name === 'timestamp') {
+						return;
+					}
+				}
+				if (field.type === 'boolean') {
+					data.append(field.name, ctrl.data[field.name] === true ? 1 : 0)
 					return;
-				data[field.name] = ctrl.data[field.name]
+				}
+				if (!ctrl.data[field.name]) {
+					return;
+				}
+				if (field.name === ctrl.currentEntity.defaultSort) {
+					update = true;
+				}
+					data.append(field.name, ctrl.data[field.name])
+				
 			})
 			if (ctrl.currentEntity.translate) {
-				data.language = ctrl.language;
+				data.append("language", ctrl.language);
 			}
-			if (data.timestamp) {
-				delete data.timestamp;
-			}
-			if (data[ctrl.currentEntity.defaultSort]) {
-				$http.put(base + page.parent.entity, data).then(ctrl.getData).catch(error);
+			var request = new XMLHttpRequest();
+			if (update) {
+				//$http.put(base, data).then(ctrl.getData).catch(error);
+				request.open("PUT", base);
+				request.setRequestHeader("Authorization", localStorage.getItem("token"));
+				request.onload = function(){
+					$mdDialog.show($mdDialog.alert()
+					.parent(angular.element(document.body))
+					.clickOutsideToClose(true)
+					.title('Guardado')
+					.textContent('Se ha guardado exitosamente')
+					.ariaLabel('Guardado exitosamente')
+					.ok('Aceptar')
+					.targetEvent(ev))
+					ctrl.getData();
+				}
+				request.send(data);
 			} else {
-				$http.post(base + page.parent.entity, data).then(ctrl.getData).catch(error);
-			}
+				request.open("POST", base);
+				request.setRequestHeader("Authorization", localStorage.getItem("token"));
+				request.onload = function () {
+					$mdDialog.show($mdDialog.alert()
+						.parent(angular.element(document.body))
+						.clickOutsideToClose(true)
+						.title('Guardado')
+						.textContent('Se ha guardado exitosamente')
+						.ariaLabel('Guardado exitosamente')
+						.ok('Aceptar')
+						.targetEvent(ev)).then(()=>{
+							var url = $location.path()
+							url = url.substr(0,url.lastIndexOf("/"))
+							$location.path(url);
+						})
+				};
+				request.send(data);
 
+				/*$http.post(base, data).then(function () {
+					//ctrl.getData
+				}).catch(error);*/
+			}
 		}
 	};
 });

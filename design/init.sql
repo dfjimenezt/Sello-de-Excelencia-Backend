@@ -83,21 +83,21 @@ INSERT INTO type (`id`,`name`) VALUES ('2','Opción Multiple');
 INSERT INTO type (`id`,`name`) VALUES ('3','Requisito'); 
 #requisito = requisito + sustentación legal + justificacion + criterio + evidencia + ayuda + adjunto
 
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('1','3','1','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('2','3','2','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('3','3','3','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('4','3','4','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('5','3','5','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('6','3','6','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('7','3','7','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('8','3','8','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('9','3','9','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('10','3','10','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('11','3','11','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('12','3','12','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('13','3','13','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('14','3','14','Requisito');
-INSERT INTO question(`id`,`id_type`,`id_form`,`text`) VALUES ('15','3','15','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('1','3','1','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('2','3','2','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('3','3','3','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('4','3','4','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('5','3','5','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('6','3','6','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('7','3','7','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('8','3','8','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('9','3','9','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('10','3','10','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('11','3','11','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('12','3','12','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('13','3','13','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('14','3','14','Requisito');
+INSERT INTO question(`id`,`id_topic`,`id_form`,`text`) VALUES ('15','3','15','Requisito');
 
 
 INSERT INTO availability (`id`,`name`) VALUES ('1','Baja');

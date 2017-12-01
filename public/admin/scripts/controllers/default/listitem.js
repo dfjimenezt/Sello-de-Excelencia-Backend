@@ -1,14 +1,4 @@
-angular.module('dmt-back').filter('linkvalue', function () {
-    return function (items, field, item) {
-        for (i in items) {
-            let it = items[i];
-            if (item[field.name] === it[field.foreign_key]) {
-                return it[field.foreign_name];
-            }
-        }
-    }
-});
-angular.module('dmt-back').controller('listItemController', function ($scope, $mdDialog, $mdEditDialog, page, $http) {
+angular.module('dmt-back').controller('listItemController', function ($scope, $mdDialog, $mdEditDialog, page, $http, $filter) {
     var ctrl = this;
     ctrl.page = page;
     ctrl.entity = dmt.entities[page.entity];
@@ -32,19 +22,33 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
             },
         }).then($scope.getData);
     };
-
+    $scope.load = function (file) {
+        if(!file){
+            return;
+        }
+        var fd = new FormData();
+        fd.append("data", file);
+        var req = new XMLHttpRequest();
+        req.open("POST", ctrl.entity.endpoint);
+        req.setRequestHeader("Authorization", localStorage.getItem("token"));
+        req.onload = function () {
+            $scope.getData();
+        };
+        req.send(fd);
+    }
     $scope.updateItem = function (item, field) {
         if (item.timestamp) {
             delete item.timestamp;
         }
 
-        $http.put(ctrl.entity.endpoint + page.entity, item).then($scope.getData);
+        $http.put(ctrl.entity.endpoint, item).then($scope.getData);
 
     };
     $scope.editField = function (event, item, field) {
         event.stopPropagation();
         if (ctrl.entity.readOnly) { return; }
         if (field.type === "link") { return; }
+        if (field.type === "datetime") { return; }
         if (field.disabled) { return; }
 
         var promise = $mdEditDialog.large({
@@ -52,7 +56,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
             placeholder: field.name,
             cancel: "Cancelar",
             ok: "Guardar",
-            title: "Editar " + field.name,
+            title: "Editar " + $filter('translate')(field.name),
             save: function (input) {
                 item[field.name] = input.$modelValue;
                 $scope.updateItem(item, field);
@@ -115,21 +119,28 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
         order: page ? ctrl.entity.defaultSort : "name",
         limit: 20,
         page: 1,
-        filters: {}
+        filters: ctrl.page.filters || {}
     };
 
     $scope.getSuccess = function (results) {
         $scope.items = results.data.data;
         $scope.total_results = results.data.total_results;
         var booleans = [];
+        var dates = [];
         for (let p in ctrl.entity.fields) { //mysql boolean 1 / 0 to true / false            
             if (ctrl.entity.fields[p].type === "boolean") {
                 booleans.push(ctrl.entity.fields[p].name)
+            }
+            if (ctrl.entity.fields[p].type === "datetime" || ctrl.entity.fields[p].type === "timestamp") {
+                dates.push(ctrl.entity.fields[p].name)
             }
         }
         $scope.items.forEach(function (item) {
             for (let i in booleans) { //mysql boolean 1 / 0 to true / false            
                 item[booleans[i]] = item[booleans[i]] === 1;
+            }
+            for (let i in dates) { //mysql boolean 1 / 0 to true / false            
+                item[dates[i]] = new Date(item[dates[i]]);
             }
         });
     };
@@ -147,11 +158,12 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
                 str.push(encodeURIComponent(p) + "=" + encodeURIComponent($scope.query[p]));
             }
         }
-        for (let p in ctrl.entity.fields) {
-            if (ctrl.entity.fields[p].searchable) {
-                str.push("field=" + ctrl.entity.fields[p].name);
+        /*for (let p in ctrl.entity.fields) {
+            if (ctrl.entity.fields[p].type === "string" || ctrl.entity.fields[p].type === "text") {
+                let prefix = ctrl.entity.fields[p].prefix || ''
+                str.push("field=" + prefix + ctrl.entity.fields[p].name);
             }
-        }
+        }*/
         for (let key in $scope.query.filters) {
             if ($scope.query.filters[key]) {
                 $scope.query.filters[key].forEach((value) => {
@@ -163,7 +175,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
         str.push("lang=" + ctrl.language);
         let filter = str.join("&");
 
-        $scope.promise = $http.get(ctrl.entity.endpoint + page.entity + "?" + filter);
+        $scope.promise = $http.get(ctrl.entity.endpoint + "?" + filter);
         $scope.promise.then($scope.getSuccess).catch(function (response) {
             window.location.href = "/admin/login";
         });
@@ -176,9 +188,17 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
     function addOptions(item, index) {
         var base = item.endpoint;
         if (!base) {
+			let entity = dmt.entities[item.table];
+			let table = null
+			if (!entity) {
+				entity = dmt.tables[item.table];
+			} 
+			base = entity.endpoint
+		}
+        if (!base) {
             base = ctrl.entity.endpoint;
         }
-        $http.get(base + item.table).then(function (results) {
+        $http.get(base).then(function (results) {
             ctrl.options[item.name] = results.data.data;
         });
     }
@@ -216,7 +236,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
                     $scope.query.filters[field.name] = [];
                     ctrl.options[field.name].forEach((option) => {
                         if (option[field.foreign_key] == filter.selected) { //AND relation
-                            $scope.query.filters[field.name].push(option[filter.foreign_key]);
+                            $scope.query.filters[field.name].push(option[filter.filter_key]);
                         }
                     })
                 })
@@ -230,7 +250,7 @@ angular.module('dmt-back').controller('listItemController', function ($scope, $m
         if (!base) {
             base = ctrl.entity.endpoint;
         }
-        $http.get(base + item.table).then(function (results) {
+        $http.get(base).then(function (results) {
             item.options = results.data;
         });
     }

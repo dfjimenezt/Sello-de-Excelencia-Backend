@@ -17,72 +17,63 @@
 */
 if (!localStorage.getItem("token")) {
 	window.location.href = "/admin/login";
+}else{
+	var last = localStorage.getItem("last_access")
+	if(!last){
+		localStorage.setItem("last_access",new Date())
+	}else{
+		last = new Date(last)
+		var now = new Date()
+		if(now - last > 24*60*60*1000){
+			localStorage.removeItem("token");
+			window.location.href = "/admin/login";
+		}
+		localStorage.setItem("last_access",new Date())
+	}
 }
-var app = angular.module('dmt-back', ['ngRoute', 'ngMaterial', 'ngSanitize', 'md.data.table']);
+var app = angular.module('dmt-back', [
+'ngRoute', 
+'ngMaterial', 
+'ngSanitize', 
+'md.data.table',
+'textAngular',
+'ngFileUpload']);
 /**
  * Configuration of the application from config.js
  */
-app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
+app.config(function ($mdThemingProvider, $routeProvider, $locationProvider, $provide) {
+	let primary = $mdThemingProvider
+	.extendPalette('pink',{
+		'400':'a42a5b',
+		'900':'b34f75'
+	})
+	let accent = $mdThemingProvider
+	.extendPalette('cyan',{
+		'400':'00c8d1'
+	})
+	$mdThemingProvider.definePalette('stampBrown', primary)
 	$mdThemingProvider.theme('default')
-		.primaryPalette('indigo')
-		.accentPalette('yellow');
-	$mdThemingProvider.theme('dark', 'default')
-      .primaryPalette('grey')
-	  .accentPalette('blue-grey');
-
+	.primaryPalette('blue',{
+		'default':'400',
+		'hue-1':'900',
+	})
+	.accentPalette('cyan',{
+		'default':'400'
+	})
+	.backgroundPalette('grey')
+	var token = localStorage.getItem("token").split('.')[1]
+	const base64 = token.replace('-', '+').replace('_', '/')
+	var user =  JSON.parse(decodeBase64(base64))
 	for (var name in dmt.entities) {
+		let entity = dmt.entities[name]
 		dmt.api.endpoints.forEach(function (endpoint) {
 			endpoint.entities.forEach(function (ety) {
 				if (ety.entity == name) {
-					dmt.entities[name].endpoint = '/api/' + endpoint.controller + '/'
+					dmt.entities[name].name = name
+					dmt.entities[name].endpoint = '/api/' + endpoint.controller + '/' + ety.entity
 				}
 			})
 		})
-	}
-	for(var name in dmt.tables){
-		if(dmt.entities[name]){
-			continue;
-		}
-		entity = dmt.entities[name] = {
-			table: name,
-			fields: dmt.tables[name].fields,
-			defaultSort: dmt.tables[name].defaultSort
-		}
-		//endpoint: '/api/' + section.path + '/',
-		dmt.api.endpoints.forEach(function (endpoint) {
-			endpoint.entities.forEach(function (ety) {
-				if (ety.entity == name) {
-					entity.endpoint = '/api/' + endpoint.controller + '/'
-				}
-			})
-		})
-	}
-	/**
-	 * Check if the page has an entity, and load the main table, if there is any 1-1 relation if the entity is not in the entities.js file then asume it is a single table.
-	 */
-	function processEntity(name, section) {
-		/**
-		 * Support full entities tree
-		 */
-		while (section.parent) {
-			section = section.parent
-		}
-
-		let entity = dmt.entities[name];
-		if (entity) {
-			entity.table = entity.table
-			entity.fields = dmt.tables[entity.table].fields
-			if (entity.translate) {
-				let translatefields = dmt.tables[entity.translate.table].fields
-				translatefields.forEach((f) => {
-					if (f.name == entity.translate.rightKey || f.name === "id_lang") {
-						return
-					}
-					entity.fields.push(f);
-				})
-			}
-			entity.defaultSort = dmt.tables[entity.table].defaultSort
-		}
 		entity.relations = entity.relations || []
 		entity.relations.forEach((relation) => {
 			if (relation.leftKey) {
@@ -106,13 +97,42 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 				})
 			}
 		})
+		entity.fields = dmt.tables[entity.table].fields
+		if (entity.translate) {
+			let translatefields = dmt.tables[entity.translate.table].fields
+			translatefields.forEach((f) => {
+				if (f.name == entity.translate.rightKey || f.name === "id_lang") {
+					return
+				}
+				f.prefix = entity.translate.table+'_'
+				entity.fields.push(f);
+			})
+		}
+		entity.defaultSort = dmt.tables[entity.table].defaultSort
 	}
 
+	for(var name in dmt.tables){
+		if(dmt.entities[name]){
+			continue;
+		}
+		entity = dmt.entities[name] = {
+			name: name,
+			table: name,
+			fields: dmt.tables[name].fields,
+			defaultSort: dmt.tables[name].defaultSort
+		}
+		//endpoint: '/api/' + section.path + '/',
+		dmt.api.endpoints.forEach(function (endpoint) {
+			endpoint.entities.forEach(function (ety) {
+				if (ety.entity == name) {
+					entity.endpoint = '/api/' + endpoint.controller + '/' + ety.entity
+				}
+			})
+		})
+	}
+	
 	function addPage(path, page, parent) {
 		page.parent = parent;
-		if (page.entity) {
-			processEntity(page.entity, parent)
-		}
 		var route = {
 			controller: page.controller || "listItemController",
 			controllerAs: page.controllerAs || "ctrl",
@@ -122,7 +142,6 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 			}
 		};
 		var _path = path + "/" + page.path;
-		console.log(_path);
 		$routeProvider.when(_path, route);
 		if (page.pages) {
 			page.pages.forEach((child) => {
@@ -134,8 +153,15 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 	/**
 	 * Parse Config File to create the navigation tree
 	 */
+	
 	dmt.config.forEach((section) => {
 		section.pages.forEach((page) => {
+			//check permission and 
+			if(user.permissions.indexOf(page.permission) == -1){
+				page.authorized = false
+				return
+			}
+			page.authorized = true
 			addPage("/" + section.path, page, section);
 		});
 	});
@@ -144,8 +170,38 @@ app.config(function ($mdThemingProvider, $routeProvider, $locationProvider) {
 		redirectTo: '/'
 	});
 	//$locationProvider.html5Mode(true);
+	$provide.decorator('taOptions', ['$delegate', function(taOptions){
+		taOptions.forceTextAngularSanitize = true;
+		taOptions.toolbar = [
+      ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre', 'quote'],
+      ['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol', 'redo', 'undo', 'clear'],
+      ['justifyLeft', 'justifyCenter', 'justifyRight', 'indent', 'outdent'],
+      ['html', 'insertImage','insertLink']
+		]
+		return taOptions
+	}]);
 });
-
+app.constant("STATES",{
+  SERVICE: {
+		'INCOMPLETO': 1, //EN DILIGENCIAMIENTO POR LA ENTIDAD
+		'VERIFICACION': 2,  //EN VERIFICACIÓN POR EL ADMON
+		'EVALUACION': 3, //EN PROCESO DE EVALUACIÓN
+		'CUMPLE': 4, // CUMPLE
+		'NO_CUMPLE': 5 // NO CUMPLE
+	},
+	EVALUATION_REQUEST: {
+		'PENDIENTE': 1, //EN DILIGENCIAMIENTO POR LA ENTIDAD
+		'ERROR': 2, //HAS ERROR
+		'POR_ASIGNAR': 3, //POR ASIGNAR
+		'SOLICITADO': 4, //SOLICITADO VOLUNTARIAMENTE
+		'ASIGNADO': 5, //ASIGNADO POR LA PLATAFORMA
+		'ACEPTADO': 6, //ACEPTADO POR EL EVALUADOR
+		'RECHAZADO': 7, //RECHAZADO POR EL EVALUADOR
+		'RETROALIMENTACION': 8, //EN RETROALIMENTACIÓN
+		'CUMPLE': 9, //CUMPLE
+		'NO_CUMPLE': 10 //NO_CUMPLE
+	}
+})
 app.controller('backCtrl', function ($mdSidenav, $location, $http) {
 	var ctrl = this;
 	$http.defaults.headers.common.Authorization = localStorage.getItem("token");
@@ -153,12 +209,14 @@ app.controller('backCtrl', function ($mdSidenav, $location, $http) {
 	this.logout = function () {
 		delete $http.defaults.headers.common.Authorization;
 		localStorage.removeItem("token");
-		$location.path("/login");
+		window.location.href = "/admin/login";
 	}
 	this.menu = function () {
 		$mdSidenav("menu").toggle();
 	};
 	this.leftMenu = dmt.config;
+
+	this.location = $location
 
 	this.selectPage = function (section, page) {
 		$location.path(section.path + "/" + page.path);

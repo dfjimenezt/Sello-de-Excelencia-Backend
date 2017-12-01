@@ -2,6 +2,7 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 	var ctrl = this;
 	ctrl.data = {};
 	ctrl.options = {};
+	ctrl.filters = {};
 	ctrl.currentEntity = dmt.entities[entity];
 	ctrl.relation = relation;
 	ctrl.parent = parent;
@@ -11,6 +12,7 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 			ctrl.data[ctrl.relation.rightKey] = ctrl.parent.data[ctrl.parent.entity.defaultSort]
 		}
 	}
+
 	function updateFilter(filter) {
 		if (filter.filter) { //affects another filter
 			ctrl.currentEntity.filters.forEach((item) => {
@@ -35,30 +37,36 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 				}
 			});
 		} else { //direct fields
-			if (filter.selected === "null") { //cleaning the filter
-				filter.fields.forEach((field) => { //iterate trough the values
-					$scope.query.filters[field.name] = [];
-				})
-				$scope.getData();
-			} else {
-				filter.fields.forEach((field) => { //iterate trough the values
-					ctrl.options[field.name].forEach((option) => {
-						$scope.query.filters[field.name] = [];
-						if (option[field.foreign_key] == filter.selected) { //AND relation
-							$scope.query.filters[field.name].push(option[filter.foreign_key]);
-						}
-					})
-				})
-				$scope.getData();
+			var filters = {};
+			function updateOptions(field){
+				var url = dmt.entities[field.entity].endpoint
+				if (filter.selected !== "null") {
+					url += '?filter_field=' + field.foreign_key + '&filter_value=' + filter.selected;
+				}
+				$http.get(url).then(function (results) {
+					ctrl.options[field.name] = results.data;
+				})	
 			}
+			filter.fields.forEach(updateOptions);
+			/*filter.fields.forEach((field) => { //iterate trough the values
+				var url = dmt.entities[field.entity].endpoint
+				if (filter.selected !== "null") {
+					url += '?filter_field=' + field.foreign_key + '&filter_value=' + filter.selected;
+				}
+				$http.get(url).then(function (results) {
+					ctrl.options[item.name] = results.data;
+				})
+			})*/
+
 		}
 	}
+	ctrl.updateFilter = updateFilter;
 	function addFilters(item, index) {
 		var base = item.endpoint;
 		if (!base) {
 			base = ctrl.currentEntity.endpoint;
 		}
-		$http.get(base + item.table).then(function (results) {
+		$http.get(base).then(function (results) {
 			item.options = results.data;
 		});
 	}
@@ -66,9 +74,17 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 	function addOptions(item, index) {
 		var base = item.endpoint;
 		if (!base) {
+			let entity = dmt.entities[item.table];
+			let table = null
+			if (!entity) {
+				entity = dmt.tables[item.table];
+			} 
+			base = entity.endpoint
+		}
+		if (!base) {
 			base = ctrl.currentEntity.endpoint;
 		}
-		$http.get(base + item.table).then(function (results) {
+		$http.get(base).then(function (results) {
 			ctrl.options[item.name] = results.data;
 		});
 	}
@@ -99,7 +115,7 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 			if (ctrl.data.timestamp) {
 				delete ctrl.data.timestamp;
 			}
-			if(ctrl.currentEntity.translate){
+			if (ctrl.currentEntity.translate) {
 				ctrl.data.language = ctrl.language
 			}
 			/*var fd = new FormData();
@@ -107,7 +123,7 @@ angular.module('dmt-back').controller('addItemController', function ($mdDialog, 
 				fd.append(i,ctrl.data[i]);
 			}*/
 
-			$http.post(base + entity, ctrl.data).then(success).catch(error);
+			$http.post(base, ctrl.data).then(success).catch(error);
 		}
 	};
 });
