@@ -7,7 +7,6 @@ Aplicación que permite postular, validar y certificar la alta calidad de los tr
   1. Node.js version 4 o superior.
 	2. Mysql version 5.6 o superior.
 
-
 ## Instalación
 Clonar el Repositorio
 ```shell
