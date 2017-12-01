@@ -13,7 +13,7 @@ Clonar el Repositorio
   $ git clone https://github.com/dfjimenezt/Sello-de-Excelencia-Backend.git
   $ cd Sello-de-Excelencia-Backend
   $ npm install
-	$ gcloud init
+  $ gcloud init
 ```
 
 ```shell
